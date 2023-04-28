@@ -10,6 +10,10 @@ import bait.checker
 import bait.gen.js as jsgen
 import os
 
+const TOOLS := [
+	'help'
+]
+
 fun show_help() {
 	println('usage: bait [options] <command|file>
 Example:
@@ -236,6 +240,20 @@ fun parse_args(args []string) prefs.Pref {
 	return pref
 }
 
+fun launch_tool(name string) {
+	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
+	tool_source := tool_base_path + '.bt'
+	tool_exe := tool_base_path + '.js'
+	baitexe := os.resource_abs_path('bait.js')
+	// TODO add os.execute and replace this occurence of os.system
+	comp_res := os.system('node ${baitexe} ${tool_source} -o ${tool_exe}')
+	if comp_res != 0 {
+		eprintln('Failed to compile tool "${name}"')
+		exit(1)
+	}
+	exit(os.system('node ${tool_exe}'))
+}
+
 fun main() {
 	args := os.ARGS.slice(2, os.ARGS.length)
 	if args.length == 0 {
@@ -243,6 +261,10 @@ fun main() {
 		exit(0)
 	}
 	pref := parse_args(args)
+	if TOOLS.contains(pref.command) {
+		launch_tool(pref.command)
+		return
+	}
 	match pref.command {
 		'help' {
 			show_help()
@@ -270,6 +292,6 @@ fun main() {
 		ensure_dir_exists(os.dir(pref.out_name))
 		exit(transpile(pref))
 	}
-	eprintln('error: unknown command: "${pref.command}"')
+	eprintln('error: unknown file or command: "${pref.command}"')
 	exit(1)
 }
