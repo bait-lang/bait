@@ -10,7 +10,6 @@ fun main() {
 		return
 	}
 	print_topic(os.ARGS[2])
-
 }
 
 fun print_topic(topic string) {

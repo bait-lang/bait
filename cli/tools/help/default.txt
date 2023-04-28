@@ -1,7 +1,7 @@
 Usage:
   bait [options] <command|file>
 
-Example:
+Examples:
   bait my_file.bt
   bait -o lib.js src/
 
