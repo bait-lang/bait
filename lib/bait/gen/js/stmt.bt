@@ -1,0 +1,248 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package js
+
+import bait.ast
+import bait.token
+
+fun (g Gen) stmts(stmts []ast.Stmt) {
+	g.indent += 1
+	for stmt in stmts {
+		g.stmt(stmt)
+	}
+	g.indent -= 1
+}
+
+fun (g Gen) stmt(stmt ast.Stmt) {
+	if stmt is ast.AssignStmt {
+		g.assign_stmt(stmt)
+	} else if stmt is ast.ConstDecl {
+		g.const_decl(stmt)
+	} else if stmt is ast.ExprStmt {
+		g.expr(stmt.expr)
+		if not g.empty_line {
+			g.writeln("")
+		}
+	} else if stmt is ast.EnumDecl {
+		g.enum_decl(stmt)
+	} else if stmt is ast.ForLoop {
+		g.for_loop(stmt)
+	} else if stmt is ast.ForClassicLoop {
+		g.for_classic_loop(stmt)
+	} else if stmt is ast.ForInLoop {
+		g.for_in_loop(stmt)
+	} else if stmt is ast.FunDecl {
+		g.fun_decl(stmt)
+	} else if stmt is ast.GlobalDecl {
+		g.global_decl(stmt)
+	} else if stmt is ast.LoopControlStmt {
+		g.control_stmt(stmt)
+	} else if stmt is ast.ReturnStmt {
+		g.return_stmt(stmt)
+	} else if stmt is ast.StructDecl {
+		g.struct_decl(stmt)
+	} else if stmt is ast.TypeDecl {
+		// Nothing to do here
+	} else {
+		g.error('cannot generate stmt: ${stmt}', stmt.pos)
+	}
+}
+
+fun (g Gen) assign_stmt(node ast.AssignStmt){
+	if node.op == token.TokenKind.decl_assign {
+		left := node.left as ast.Ident
+		if left.is_mut {
+			g.write('let ')
+		} else {
+			g.write('const ')
+		}
+	}
+	if node.left_type == ast.TypeIdx.string {
+		if node.op == token.TokenKind.plus_assign {
+			g.expr(node.left)
+			g.write(' = ')
+			g.write('string_add(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.right)
+			g.writeln(')')
+			return
+		}
+	}
+	g.is_lhs_assign = true
+	g.expr(node.left)
+	g.is_lhs_assign = false
+	if g.is_array_map_set {
+		g.expr(node.right)
+		g.writeln(')')
+		g.is_array_map_set = false
+		return
+	}
+	g.write(' ')
+	g.write(node.op.js_repr())
+	g.write(' ')
+	g.expr(node.right)
+	if not g.is_for_loop_head {
+		g.writeln('')
+	}
+}
+
+fun (g Gen) const_decl(node ast.ConstDecl){
+	g.write('const ')
+	g.write(js_name(node.name))
+	g.write(' = ')
+	g.expr(node.expr)
+	g.writeln('')
+}
+
+fun (g Gen) enum_decl(node ast.EnumDecl){
+	g.type_defs_out += 'const ' + js_name(node.name) + ' = {\n'
+	for i, variant in node.variants {
+		g.type_defs_out += '\t${variant}: ${i}'
+		if i < node.variants.length - 1 {
+			g.type_defs_out += ','
+		}
+		g.type_defs_out += '\n'
+	}
+	g.type_defs_out += '}\n'
+}
+
+fun (g Gen) control_stmt(node ast.LoopControlStmt){
+	g.writeln(node.kind.js_repr())
+}
+
+fun (g Gen) for_loop(node ast.ForLoop){
+	g.write('while (')
+	g.expr(node.cond)
+	g.writeln(') {')
+	g.stmts(node.stmts)
+	g.writeln('}')
+}
+
+fun (g Gen) for_classic_loop(node ast.ForClassicLoop){
+	g.is_for_loop_head = true
+	g.write('for (')
+	g.stmt(node.init)
+	g.write('; ')
+	g.expr(node.cond)
+	g.write('; ')
+	g.stmt(node.inc)
+	g.writeln(') {')
+	g.is_for_loop_head = false
+	g.stmts(node.stmts)
+	g.writeln('}')
+}
+
+fun (g Gen) for_in_loop(node ast.ForInLoop){
+	mut i := node.idxvar
+	if i == '' {
+		i = g.new_temp_var()
+	}
+	sym := g.table.get_sym(node.expr_type)
+	if sym.kind == ast.TypeKind.map {
+		g.for_in_map(node)
+		return
+	}
+	container := g.expr_string(node.expr)
+	g.writeln('for (let ${i} = 0; ${i} < ${container}.length; ${i}++) {')
+	if sym.kind == ast.TypeKind.array {
+		g.writeln('\tconst ${node.valvar} = array_get(${container}, ${i})')
+	} else if sym.kind == ast.TypeKind.string {
+		g.writeln('\tconst ${node.valvar} = string_get(${container}, ${i})')
+	} else {
+		g.writeln('\tconst ${node.valvar} = ${container}[${i}]')
+	}
+	g.stmts(node.stmts)
+	g.writeln('}')
+}
+
+fun (g Gen) for_in_map(node ast.ForInLoop){
+	container := g.expr_string(node.expr)
+	keys_var := g.new_temp_var()
+	g.writeln('const ${keys_var} = map_keys(${container})')
+	i := g.new_temp_var()
+	g.writeln('for (let ${i} = 0; ${i} < ${keys_var}.length; ${i}++) {')
+	g.writeln('\tconst ${node.idxvar} = array_get(${keys_var}, ${i})')
+	g.writeln('\tconst ${node.valvar} = map_get(${container}, ${node.idxvar})')
+	g.stmts(node.stmts)
+	g.writeln('}')
+}
+
+fun (g Gen) fun_decl(node ast.FunDecl) {
+	g.write('function ')
+	if node.is_method {
+		sym := g.table.get_sym(node.params[0].typ)
+		g.write(js_name(sym.name + '_' + node.name))
+	} else {
+		g.write(js_name(node.name))
+	}
+	g.write('(')
+	g.fun_params(node.params)
+	g.writeln(') {')
+	g.stmts(node.stmts)
+	g.writeln('}\n')
+}
+
+fun (g Gen) fun_params(params []ast.Param){
+	for i, p in params {
+		g.write(js_name(p.name))
+		if i < params.length - 1 {
+			g.write(", ")
+		}
+	}
+}
+
+fun (g Gen) global_decl(node ast.GlobalDecl){
+	name := js_name(node.name)
+	expr := g.expr_string(node.expr)
+	g.global_out += 'var ${name} = ${expr}\n'
+}
+
+fun (g Gen) return_stmt(node ast.ReturnStmt){
+	g.write('return')
+	if not node.expr is ast.EmptyExpr {
+		g.write(" ")
+		g.expr(node.expr)
+	}
+	g.writeln('')
+}
+
+fun (g Gen) struct_decl(node ast.StructDecl){
+	g.write('function ')
+	jsname := js_name(node.name)
+	g.write(jsname)
+	g.write('({ ')
+	for i, field in node.fields {
+		g.write('${field.name} = ')
+		if node.typ == field.typ {
+			g.write('this')
+		} else {
+			g.write_default_value(field.typ)
+		}
+		if i < node.fields.length - 1 {
+			g.write(', ')
+		}
+	}
+	if node.fields.length > 0 {
+		g.write(' ')
+	}
+	g.writeln('}) {')
+	g.indent += 1
+	for field in node.fields {
+		g.writeln('this.${field.name} = ${field.name}')
+	}
+	g.indent -= 1
+	g.writeln('}')
+	g.writeln('${jsname}.prototype = {')
+	g.indent += 1
+	// TODO fix indent of nested structs
+	g.writeln('toString() {')
+	g.write('\treturn \`${jsname}{\n')
+	for field in node.fields {
+		g.write('    ${field.name}: \$')
+		g.write('{this.${field.name}.toString()}\n')
+	}
+	g.writeln('}\`}')
+	g.indent -= 1
+	g.writeln('}')
+}

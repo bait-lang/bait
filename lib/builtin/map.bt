@@ -1,0 +1,34 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package builtin
+
+struct map{
+	data any // JS.Map
+	length i32
+}
+
+fun (m map) get(key string) any {
+	return #JS.'m.data.get(key.str)'
+}
+
+fun (m map) set(key string, val any) {
+	if not m.contains(key) {
+		m.length += 1
+	}
+	#JS.'m.data.set(key.str, val)'
+}
+
+fun (m map) get_set(key string, zero any) any {
+	if not m.contains(key) {
+		m.set(key, zero)
+	}
+	return m.get(key)
+}
+
+pub fun (m map) contains(key string) bool {
+	return #JS.'m.data.has(key.str)'
+}
+
+pub fun (m map) keys() []string {
+	return from_js_string_arr(#JS.'Array.from(m.data.keys())')
+}

@@ -1,0 +1,420 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package checker
+
+import bait.ast
+import bait.token
+
+fun (c Checker) expr(expr ast.Expr) i32 {
+	if expr is ast.AnonFun {
+		return c.anon_fun(expr)
+	} else if expr is ast.ArrayInit {
+		return c.array_init(expr)
+	} else if expr is ast.AsCast {
+		return c.as_cast(expr)
+	} else if expr is ast.BoolLiteral {
+		return ast.TypeIdx.bool
+	} else if expr is ast.CallExpr {
+		return c.call_expr(expr)
+	} else if expr is ast.CastExpr {
+		return c.cast_expr(expr)
+	} else if expr is ast.CharLiteral {
+		return ast.TypeIdx.u8
+	} else if expr is ast.EnumVal {
+		return c.enum_val(expr)
+	} else if expr is ast.Ident {
+		return c.ident(expr)
+	} else if expr is ast.IfExpr {
+		return c.if_expr(expr)
+	} else if expr is ast.IndexExpr {
+		return c.index_expr(expr)
+	} else if expr is ast.InfixExpr {
+		return c.infix_expr(expr)
+	} else if expr is ast.IntegerLiteral {
+		return ast.TypeIdx.i32
+	} else if expr is ast.MapInit {
+		return c.map_init(expr)
+	} else if expr is ast.MatchExpr {
+		return c.match_expr(expr)
+	} else if expr is ast.ParExpr {
+		return c.par_expr(expr)
+	} else if expr is ast.PrefixExpr {
+		return c.prefix_expr(expr)
+	} else if expr is ast.SelectorExpr {
+		return c.selector_expr(expr)
+	} else if expr is ast.StringLiteral {
+		return c.string_literal(expr)
+	} else if expr is ast.StringInterLiteral {
+		return c.string_inter_literal(expr)
+	} else if expr is ast.StructInit {
+		return c.struct_init(expr)
+	} else if expr is ast.TypeOf {
+		return c.type_of(expr)
+	} else {
+		c.error('unexpected expr: ${expr}', expr.pos)
+	}
+}
+
+
+
+fun (c Checker) anon_fun(node ast.AnonFun) i32 {
+	c.open_scope()
+	c.fun_params(node.params)
+	c.stmts(node.stmts)
+	c.close_scope()
+	return node.typ
+}
+
+fun (c Checker) array_init(node ast.ArrayInit) i32 {
+	if node.exprs.length > 0 {
+		for i, e in node.exprs {
+			typ := c.expr(e)
+			if i == 0 {
+				node.elem_type = typ
+			}
+		}
+		node.typ = c.table.find_or_register_array(node.elem_type)
+	}
+	return node.typ
+}
+
+fun (c Checker) as_cast(node ast.AsCast) i32 {
+	// TODO check if expr is part of target
+	expr_type := c.expr(node.expr)
+	node.expr_type = expr_type
+	if node.expr is ast.Ident {
+		expr := node.expr as ast.Ident
+		c.scope.update_type(expr.name, node.target)
+	}
+	return node.target
+}
+
+fun (c Checker) call_expr(node ast.CallExpr) i32 {
+	if node.lang == 'js' {
+		for arg in node.args {
+			arg.typ = c.expr(arg.expr)
+		}
+		// TODO require JS function declarations and use declared return type here
+		return ast.TypeIdx.void
+	}
+	if node.is_method{
+		return c.method_call(node)
+	}
+	return c.fun_call(node)
+}
+
+fun (c Checker) fun_call(node ast.CallExpr) i32 {
+	mut found := c.table.fun_decls.contains(node.name)
+	if not found and not node.name.contains('.') and node.pkg != 'builtin' {
+		full_name := node.pkg + '.' + node.name
+		if c.table.fun_decls.contains(full_name) {
+			node.name = full_name
+			found = true
+		}
+	}
+	if not found {
+		obj := c.scope.get(node.name)
+		if obj.kind == ast.ObjectKind.function {
+			found = true
+		}
+	}
+	if found {
+		def := c.table.fun_decls[node.name]
+		if not def.is_pub and node.pkg != c.pkg {
+			c.error('function ${def.name} is private', node.pos)
+		}
+		arg_count_matches := node.args.length == def.params.length
+		if not arg_count_matches {
+			c.error('expected ' + def.params.length + ' arguments but got '+ node.args.length, node.pos)
+		}
+		if node.name == 'println' {
+			// TODO check arg can be printed
+			for arg in node.args {
+				arg.typ = c.expr(arg.expr)
+			}
+			return ast.TypeIdx.void
+		}
+		for i, arg in node.args {
+			arg.typ = c.expr(arg.expr)
+			if arg_count_matches {
+				param_type := def.params[i].typ
+				if not c.check_types(arg.typ, param_type) {
+					c.error('type ${arg.typ} not matches ${param_type} in argument ${i + 1}', node.pos)
+				}
+			}
+		}
+		node.return_type = def.return_type
+	} else {
+		c.error('unknown function ${node.name}', node.pos)
+	}
+	return node.return_type
+}
+
+fun (c Checker) method_call(node ast.CallExpr) i32 {
+	left_expr_type := c.expr(node.left)
+	left_sym := c.table.get_sym(left_expr_type)
+	def := c.table.get_method(left_sym, node.name)
+	if def.name.length == 0 {
+		c.error('method ${node.name} not found on type ${left_sym.name}', node.pos)
+		return ast.TypeIdx.void
+	}
+	if not def.is_pub and left_sym.pkg != c.pkg {
+		c.error('method ${def.name} is private', node.pos)
+	}
+	arg_count_matches := node.args.length + 1 == def.params.length
+	if not arg_count_matches {
+		c.error('expected ${def.params.length - 1} arguments but got ${node.args.length}', node.pos)
+	}
+	for i, arg in node.args {
+		arg.typ = c.expr(arg.expr)
+		if arg_count_matches {
+			param_type := def.params[i + 1].typ
+			if not c.check_types(arg.typ, param_type) {
+				c.error('type ${arg.typ} not matches ${param_type} in argument ${i + 1}', node.pos)
+			}
+		}
+	}
+	node.left_type = def.params[0].typ
+	node.return_type = def.return_type
+	return node.return_type
+}
+
+fun (c Checker) cast_expr(node ast.CastExpr) i32 {
+	c.expr(node.expr)
+	return node.target
+}
+
+fun (c Checker) enum_val(node ast.EnumVal) i32 {
+	sym := c.table.get_sym(node.typ)
+	if sym.kind == ast.TypeKind.placeholder {
+		c.error('undefined enum ${node.name}', node.pos)
+		return ast.TypeIdx.void
+	}
+	if not sym.is_pub and sym.name.contains('.') and sym.pkg != c.pkg {
+		c.error('enum ${sym.name} is private', node.pos)
+		return ast.TypeIdx.void
+	}
+	info := sym.info as ast.EnumInfo
+	if not info.vals.contains(node.val) {
+		c.error('enum ${sym.name} has no value ${node.val}', node.pos)
+		return ast.TypeIdx.void
+	}
+	node.name = sym.name
+	return node.typ
+}
+
+fun (c Checker) ident(node ast.Ident) i32 {
+	if node.lang == 'js' {
+		return ast.TypeIdx.void
+	}
+	mut obj := c.scope.get(node.name)
+	if obj.typ != ast.TypeIdx.placeholder {
+		return obj.typ
+	}
+	if not node.name.contains('.') and node.pkg != 'builtin' and node.pkg != 'main' {
+		node.name = node.pkg + '.' + node.name
+	}
+	obj = c.table.global_scope.get(node.name)
+	if obj.typ == ast.TypeIdx.placeholder {
+		c.error('undefined variable ${node.name}', node.pos)
+	}
+	if obj.kind == ast.ObjectKind.constant and not obj.is_pub and node.pkg != c.pkg {
+		c.error('const ${node.name} is private', node.pos)
+	}
+	return obj.typ
+}
+
+fun (c Checker) if_expr(node ast.IfExpr) i32 {
+	for i, b in node.branches {
+		if not node.has_else or i < node.branches.length - 1 {
+			c.expr(b.cond)
+		}
+		c.open_scope()
+		c.stmts(b.stmts)
+		c.close_scope()
+	}
+	// TODO make an actual expression
+	return ast.TypeIdx.void
+}
+
+fun (c Checker) index_expr(node ast.IndexExpr) i32 {
+	node.left_type = c.expr(node.left)
+	c.expr(node.index)
+	sym := c.table.get_sym(node.left_type)
+	if sym.kind == ast.TypeKind.array {
+		info := sym.info as ast.ArrayInfo
+		return info.elem_type
+	}
+	if sym.kind == ast.TypeKind.map {
+		info := sym.info as ast.MapInfo
+		return info.val_type
+	}
+	if sym.kind == ast.TypeKind.string {
+		if c.is_lhs_assign{
+			c.error('cannot assign to string index', node.pos)
+			return ast.TypeIdx.void
+		}
+		return ast.TypeIdx.u8
+	}
+	return node.left_type
+}
+
+fun (c Checker) infix_expr(node ast.InfixExpr) i32 {
+	node.left_type = c.expr(node.left)
+	if node.op == token.TokenKind.key_is {
+		if node.left is ast.Ident {
+			mut right := node.right as ast.Ident
+			if not right.name.contains('.') {
+				right.name = right.pkg + '.' + right.name
+			}
+			node.right_type = c.table.type_idxs[right.name]
+			left := node.left as ast.Ident
+			c.scope.update_type(left.name, node.right_type)
+		} else if node.left is ast.SelectorExpr {
+			mut right := node.right as ast.Ident
+			if not right.name.contains('.') {
+				right.name = right.pkg + '.' + right.name
+			}
+			node.right_type = c.table.type_idxs[right.name]
+			left := node.left as ast.SelectorExpr
+			name := (left.expr as ast.Ident).name + '.' + left.field_name
+			c.scope.update_type(name, node.right_type)
+		}
+		return ast.TypeIdx.bool
+	}
+	node.right_type = c.expr(node.right)
+	if node.op.is_compare() {
+		return ast.TypeIdx.bool
+	}
+	return node.left_type
+}
+
+fun (c Checker) map_init(node ast.MapInit) i32 {
+	if node.keys.length > 0 {
+		for i, key in node.keys {
+			key_type := c.expr(key)
+			val_type := c.expr(node.vals[i])
+			if i == 0 {
+				node.key_type = key_type
+				node.val_type = val_type
+			}
+		}
+		node.typ = c.table.find_or_register_map(node.key_type, node.val_type)
+	} else {
+		sym := c.table.get_sym(node.typ)
+		info := sym.info as ast.MapInfo
+		node.key_type = info.key_type
+		node.val_type = info.val_type
+	}
+	return node.typ
+}
+
+fun (c Checker) match_expr(node ast.MatchExpr) i32 {
+	node.cond_type = c.expr(node.cond)
+	if node.branches.length == 0 {
+		c.error('match expression must have at least one branch', node.pos)
+		return ast.TypeIdx.void
+	}
+	sym := c.table.get_sym(node.cond_type)
+	node.is_sumtype = sym.kind == ast.TypeKind.sum_type
+	for b in node.branches {
+		c.open_scope()
+		for e in b.exprs {
+			if node.is_sumtype {
+				expr := e as ast.Ident
+				variant := c.table.type_idxs[expr.name]
+				info := sym.info as ast.SumTypeInfo
+				if not info.variants.contains(variant) {
+					c.error('sum type ${sym.name} has no variant ${expr.name}', expr.pos)
+					continue
+				}
+				cond := node.cond as ast.Ident
+				c.scope.update_type(cond.name, variant)
+			} else {
+				b.expr_types.push(c.expr(e))
+			}
+		}
+		c.stmts(b.stmts)
+		c.close_scope()
+	}
+	// TODO make an actual expression
+	return ast.TypeIdx.void
+}
+
+fun (c Checker) par_expr(node ast.ParExpr) i32 {
+	return c.expr(node.expr)
+}
+
+fun (c Checker) prefix_expr(node ast.PrefixExpr) i32 {
+	typ := c.expr(node.right)
+	return typ
+}
+
+fun (c Checker) selector_expr(node ast.SelectorExpr) i32 {
+	if node.expr is ast.IndexExpr {
+		expr := node.expr as ast.IndexExpr
+		expr.is_selector = true
+	}
+	typ := c.expr(node.expr)
+	sym := c.table.get_sym(typ)
+	if [ast.TypeKind.struct_, ast.TypeKind.array, ast.TypeKind.string, ast.TypeKind.map].contains(sym.kind) {
+		field := sym.find_field(node.field_name, c.table)
+		if field.name.length == 0 {
+			c.error('${sym.name} has no field ${node.field_name}', node.pos)
+			return ast.TypeIdx.void
+		}
+		return field.typ
+	}
+	if sym.kind == ast.TypeKind.sum_type {
+		// TODO check if field is present on all variants (with same type)
+		c.error('cast to the variant before accessing field of sumtype ${sym.name}', node.pos)
+		return ast.TypeIdx.void
+	}
+	// TODO other variants of selector expr
+	return ast.TypeIdx.any
+}
+
+fun (c Checker) string_literal(node ast.StringLiteral) i32 {
+	if node.lang != 'bait' {
+		return ast.TypeIdx.void
+	}
+	return ast.TypeIdx.string
+}
+
+fun (c Checker) string_inter_literal(node ast.StringInterLiteral) i32 {
+	for e in node.exprs {
+		typ := c.expr(e)
+		node.expr_types.push(typ)
+	}
+	return ast.TypeIdx.string
+}
+
+fun (c Checker) struct_init(node ast.StructInit) i32 {
+	sym := c.table.get_sym(node.typ)
+	if sym.kind == ast.TypeKind.placeholder {
+		c.error('undefined struct ${node.name}', node.pos)
+		return ast.TypeIdx.void
+	}
+	if not sym.is_pub and sym.name.contains('.') and sym.pkg != c.pkg {
+		c.error('struct ${sym.name} is private', node.pos)
+		return ast.TypeIdx.void
+	}
+	node.name = sym.name
+	for field in node.fields {
+		def := sym.find_field(field.name, c.table)
+		if def.name.length == 0 {
+			c.error('struct ${sym.name} has no field ${field.name}', node.pos)
+		}
+		expr_type := c.expr(field.expr)
+		if not c.check_types(expr_type, def.typ) {
+			c.error('cannot assign to field ${field.name}: expected ${def.typ}, got ${expr_type} ', node.pos)
+		}
+	}
+	return node.typ
+}
+
+fun (c Checker) type_of(node ast.TypeOf) i32 {
+	typ := c.expr(node.expr)
+	node.typ = typ
+	return ast.TypeIdx.string
+}

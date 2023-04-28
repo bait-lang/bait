@@ -1,0 +1,33 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package ast
+
+pub type TypeInfo := ArrayInfo | EnumInfo | FunInfo | MapInfo | StructInfo | SumTypeInfo | EmptyInfo
+
+pub struct ArrayInfo{
+	elem_type i32
+}
+
+pub struct EnumInfo {
+	vals []string
+}
+
+pub struct FunInfo{
+	param_types []i32
+	return_type i32
+}
+
+pub struct MapInfo{
+	key_type i32
+	val_type i32
+}
+
+pub struct StructInfo{
+	fields []StructField
+}
+
+pub struct SumTypeInfo{
+	variants []i32
+}
+
+pub struct EmptyInfo{}

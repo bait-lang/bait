@@ -1,0 +1,41 @@
+name: Generate baitjs
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'cli/**'
+      - 'src/**'
+
+jobs:
+  gen-baitjs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Build baitjs
+        run: npm run make
+      - name: Generate, commit and push latest bait.js
+        run: |
+          git config --global user.name "tiabeast-bot"
+          git config --global user.email "131296262+tiabeast-bot@users.noreply.github.com"
+
+          rm -rf baitjs
+          git clone --depth 1 https://tiabeast-bot:${{ secrets.TIABEAST_BOT_TOKEN }}@github.com/tiabeast/baitjs.git baitjs
+
+          node bait.js cli/bait.bt -o baitjs/bait.js
+
+          if [ $(wc -l bait.js | awk '{print $1}') -le 1000 ]; then
+              echo "bait.js is too small. Something went wrong."
+              exit 1
+          fi
+
+          git -C baitjs add bait.js
+          git -C baitjs commit -m "update bait.js"
+
+          git -C baitjs pull --rebase
+          git -C baitjs push

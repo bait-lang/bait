@@ -1,0 +1,47 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package token
+
+enum Precedence {
+	lowest
+	cond
+	as_is
+	compare
+	sum
+	product
+	prefix
+	call
+	index
+}
+
+pub fun (t Token) precedence() i32 {
+	match t.kind {
+		TokenKind.lbr {
+			return Precedence.index
+		}
+		TokenKind.dot {
+			return Precedence.call
+		}
+		TokenKind.key_not {
+			return Precedence.prefix
+		}
+		TokenKind.mul, TokenKind.div, TokenKind.mod {
+			return Precedence.product
+		}
+		TokenKind.plus, TokenKind.minus {
+			return Precedence.sum
+		}
+		TokenKind.eq, TokenKind.ne, TokenKind.lt, TokenKind.gt, TokenKind.le, TokenKind.ge {
+			return Precedence.compare
+		}
+		TokenKind.key_as, TokenKind.key_is {
+			return Precedence.as_is
+		}
+		TokenKind.key_and, TokenKind.key_or {
+			return Precedence.cond
+		}
+		else {
+			return Precedence.lowest
+		}
+	}
+}

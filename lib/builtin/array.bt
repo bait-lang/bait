@@ -1,0 +1,59 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package builtin
+
+struct array {
+	data any // JS array
+	length i32
+}
+
+pub fun (a array) get(i i32) any {
+	return #JS.'a.data[i]'
+}
+
+pub fun (a array) set(i i32, val any) {
+	#JS.'a.data[i] = val'
+}
+
+pub fun (a array) push(el any) {
+	#JS.'a.data.push(el)'
+	a.length += 1
+}
+
+pub fun (a array) contains(el any) bool {
+	return #JS.'a.data.includes(el)'
+}
+
+pub fun (a []string) contains(s string) bool {
+	for el in a {
+		if el == s {
+			return true
+		}
+	}
+	return false
+}
+
+pub fun (a array) slice(start i32, end i32) array {
+	return array{
+		data: #JS.'a.data.slice(start, end)'
+		length: end - start
+	}
+}
+
+pub fun (a array) concat(b array) array {
+	return array{
+		data: #JS.'a.data.concat(b.data)'
+		length: a.length + b.length
+	}
+}
+
+pub fun (a array) filter(fn fun (any) bool) array {
+	return from_js_arr(#JS.'a.data.filter(fn)')
+}
+
+fun from_js_arr(a any) array {
+	return array{
+		data: a
+		length: a.length
+	}
+}

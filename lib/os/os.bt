@@ -1,0 +1,71 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package os
+
+import #JS.fs
+import #JS.path
+import #JS.child_process
+
+pub const ARGS := from_js_string_arr(#JS.'process.argv')
+
+pub fun ls(dir string) []string {
+	return from_js_string_arr(#JS.fs.readdirSync(dir.str))
+}
+
+pub fun exists(path string) bool {
+	return #JS.fs.existsSync(#JS.'path.str')
+}
+
+pub fun file_name(path string) string {
+	return from_js_string(#JS.path.basename(#JS.'path.str'))
+}
+
+pub fun dir(path string) string {
+	return from_js_string(#JS.path.dirname(#JS.'path.str'))
+}
+
+pub fun is_dir(path string) bool {
+	return #JS.'js_fs.lstatSync(path.str).isDirectory()'
+}
+
+pub fun mkdir(dir string) {
+	#JS.fs.mkdirSync(dir.str)
+}
+
+pub fun mkdir_all(dir string) {
+	#JS.fs.mkdirSync(dir.str, #JS.'{ recursive: true }')
+}
+
+pub fun read_file(path string) string {
+	return from_js_string(#JS.'js_fs.readFileSync(path.str).toString()')
+}
+
+pub fun write_file(path string, text string) {
+	#JS.fs.writeFileSync(#JS.'path.str', text.str)
+}
+
+pub fun getwd() string {
+	return from_js_string(#JS.'process.cwd()')
+}
+
+pub fun join_path(base string, dirs []string) string {
+	js_dirs := dirs.to_js_arr()
+	return from_js_string(#JS.path.join(base.str, #JS.'...js_dirs'))
+}
+
+pub fun abs_path(path string) string {
+	return from_js_string(#JS.path.resolve(getwd().str, #JS.'path.str'))
+}
+
+pub fun resource_abs_path(path string) string {
+	return join_path(from_js_string(#JS.'__dirname'), [path])
+}
+
+pub fun system(cmd string) i32 {
+	#JS.'try {
+		js_child_process.execSync(cmd.str, { stdio: "inherit" })
+	} catch (e) {
+		return e.status
+	}'
+	return 0
+}

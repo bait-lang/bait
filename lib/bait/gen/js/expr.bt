@@ -1,0 +1,424 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package js
+
+import bait.ast
+import bait.token
+
+fun (g Gen) expr(expr ast.Expr) {
+	if expr is ast.AnonFun {
+		g.anon_fun(expr)
+	} else if expr is ast.ArrayInit {
+		g.array_init(expr)
+	} else if expr is ast.AsCast {
+		g.expr(expr.expr)
+	} else if expr is ast.BoolLiteral {
+		g.bool_literal(expr)
+	} else if expr is ast.CallExpr {
+		g.call_expr(expr)
+	} else if expr is ast.CastExpr {
+		g.cast_expr(expr)
+	} else if expr is ast.CharLiteral {
+		g.char_literal(expr)
+	} else if expr is ast.EnumVal {
+		g.enum_val(expr)
+	} else if expr is ast.Ident {
+		g.ident(expr)
+	} else if expr is ast.IfExpr {
+		g.if_expr(expr)
+	} else if expr is ast.IndexExpr {
+		g.index_expr(expr)
+	} else if expr is ast.InfixExpr {
+		g.infix_expr(expr)
+	} else if expr is ast.IntegerLiteral {
+		g.integer_literal(expr)
+	} else if expr is ast.MapInit {
+		g.map_init(expr)
+	} else if expr is ast.MatchExpr {
+		g.match_expr(expr)
+	} else if expr is ast.ParExpr {
+		g.par_expr(expr)
+	} else if expr is ast.PrefixExpr {
+		g.prefix_expr(expr)
+	} else if expr is ast.SelectorExpr {
+		g.selector_expr(expr)
+	} else if expr is ast.StringLiteral {
+		g.string_literal(expr)
+	} else if expr is ast.StringInterLiteral {
+		g.string_inter_literal(expr)
+	} else if expr is ast.StructInit {
+		g.struct_init(expr)
+	} else if expr is ast.TypeOf {
+		g.type_of(expr)
+	} else {
+		g.error('cannot generate expr: ${expr}', expr.pos)
+	}
+}
+
+fun (g Gen) expr_string(expr ast.Expr) string {
+	was_line_empty := g.empty_line
+	start := g.out.length
+	g.expr(expr)
+	s := g.out.substr(start, g.out.length)
+	g.out = g.out.substr(0, start)
+	g.empty_line = was_line_empty
+	return s.trim_space()
+}
+
+fun (g Gen) anon_fun(node ast.AnonFun) {
+	g.write('function (')
+	for i, param in node.params {
+		g.write(param.name)
+		if i < node.params.length - 1 {
+			g.write(', ')
+		}
+	}
+	g.writeln(') {')
+	g.stmts(node.stmts)
+	g.write('}')
+}
+
+fun (g Gen) array_init(node ast.ArrayInit) {
+	g.write('new array({ data: [')
+	for i, expr in node.exprs {
+		g.expr(expr)
+		if i < node.exprs.length - 1 {
+			g.write(', ')
+		}
+	}
+	g.write('], length: ${node.exprs.length} })')
+}
+
+fun (g Gen) bool_literal(node ast.BoolLiteral){
+	if node.val {
+		g.write('true')
+	} else {
+		g.write('false')
+	}
+}
+
+fun (g Gen) call_expr(node ast.CallExpr) {
+	if node.lang == 'bait' {
+		if node.is_method {
+			sym := g.table.get_sym(node.left_type)
+			g.write(js_name(sym.name + '_' + node.name))
+		} else {
+			g.write(js_name(node.name))
+		}
+	} else {
+		g.write('js_${node.name}')
+	}
+	if ['println', 'eprintln'].contains(node.name) {
+		g.write('(')
+		g.expr_to_string(node.args[0].expr, node.args[0].typ)
+		g.write(')')
+		return
+	}
+	g.write('(')
+	if node.is_method {
+		g.expr(node.left)
+		if node.args.length > 0 {
+			g.write(', ')
+		}
+	}
+	g.call_args(node.args)
+	g.write(')')
+}
+
+fun (g Gen) call_args(args []ast.CallArg) {
+	for i, a in args {
+		g.expr(a.expr)
+		if i < args.length - 1 {
+			g.write(", ")
+		}
+	}
+}
+
+fun (g Gen) cast_expr(node ast.CastExpr) {
+	g.expr(node.expr)
+}
+
+fun (g Gen) char_literal(node ast.CharLiteral) {
+	g.write('"')
+	g.write(node.val)
+	g.write('"')
+}
+
+fun (g Gen) enum_val(node ast.EnumVal) {
+	g.write(js_name(node.name) + '.' + node.val)
+}
+
+fun (g Gen) ident(node ast.Ident) {
+	if node.lang == 'bait' {
+		g.write(js_name(node.name))
+	} else {
+		g.write('js_${node.name}')
+	}
+}
+
+fun (g Gen) if_expr(node ast.IfExpr){
+	for i, b in node.branches {
+		if i > 0 {
+			g.write("} else ")
+		}
+		if node.has_else and i == node.branches.length - 1 {
+			g.writeln("{")
+		} else {
+			g.write("if (")
+			g.expr(b.cond)
+			g.writeln(") {")
+		}
+		g.stmts(b.stmts)
+	}
+	g.writeln('}')
+}
+
+fun (g Gen) integer_literal(node ast.IntegerLiteral){
+	g.write(node.val)
+}
+
+fun (g Gen) index_expr(node ast.IndexExpr){
+	sym := g.table.get_sym(node.left_type)
+	if sym.kind == ast.TypeKind.map {
+		if g.is_lhs_assign and not node.is_selector {
+			g.is_array_map_set = true
+			g.write('map_set(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.index)
+			g.write(', ')
+		} else {
+			g.write('map_get_set(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.index)
+			g.write(', ')
+			info := sym.info as MapType
+			g.write_default_value(info.val_type)
+			g.write(')')
+		}
+		return
+	}
+	if sym.kind == ast.TypeKind.array {
+		if g.is_lhs_assign and not node.is_selector {
+			g.is_array_map_set = true
+			g.write('array_set(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.index)
+			g.write(', ')
+		} else {
+			g.write('array_get(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.index)
+			g.write(')')
+		}
+		return
+	}
+	if sym.kind == ast.TypeKind.string {
+		g.write('string_get(')
+		g.expr(node.left)
+		g.write(', ')
+		g.expr(node.index)
+		g.write(')')
+		return
+	}
+	g.expr(node.left)
+	g.write('[')
+	g.expr(node.index)
+	g.write(']')
+}
+
+fun (g Gen) infix_expr(node ast.InfixExpr){
+	if node.left_type == ast.TypeIdx.string {
+		if node.op == token.TokenKind.plus {
+			g.write('string_add(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.right)
+			g.write(')')
+			return
+		}
+		if node.op == token.TokenKind.ne or node.op == token.TokenKind.eq {
+			if node.op == token.TokenKind.ne {
+				g.write('!')
+			}
+			g.write('string_eq(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.right)
+			g.write(')')
+			return
+		}
+	}
+	g.expr(node.left)
+	g.write(' ')
+	g.write(node.op.js_repr())
+	g.write(' ')
+	g.expr(node.right)
+}
+
+fun (g Gen) map_init(node ast.MapInit) {
+	g.write('new map({ data: new Map([')
+	for i, key in node.keys {
+		g.write('[')
+		g.expr_to_string(key, node.key_type)
+		g.write(', ')
+		g.expr(node.vals[i])
+		g.write(']')
+		if i < node.keys.length - 1 {
+			g.write(', ')
+		}
+	}
+	g.write(']), length: ${node.keys.length} })')
+}
+
+fun (g Gen) match_expr(node ast.MatchExpr){
+	if node.is_sumtype {
+		g.sumtype_match(node)
+		return
+	}
+	g.write('switch (')
+	g.expr(node.cond)
+	if node.cond_type == ast.TypeIdx.string {
+		g.write('.str')
+	}
+	g.writeln(') {')
+	g.indent += 1
+	for b in node.branches {
+		if b.exprs.length == 0 {
+			g.writeln("default:")
+		} else {
+			for i, e in b.exprs {
+				g.write("case ")
+				if node.cond_type == ast.TypeIdx.string {
+					g.expr_to_string(e, b.expr_types[i])
+				} else {
+					g.expr(e)
+				}
+				g.writeln(":")
+			}
+		}
+		g.indent += 1
+		g.writeln("{")
+		g.stmts(b.stmts)
+		g.writeln("\tbreak")
+		g.writeln("}")
+		g.indent -= 1
+	}
+	g.indent -= 1
+	g.writeln('}')
+}
+
+fun (g Gen) sumtype_match(node ast.MatchExpr){
+	cond := g.expr_string(node.cond)
+	for i, b in node.branches {
+		if i >= 1 {
+			g.write("} else ")
+		}
+		if b.exprs.length == 0 {
+			g.writeln("{")
+		} else {
+			g.write("if (")
+			for j, e in b.exprs {
+				expr := e as ast.Ident
+				g.write("${cond} instanceof ${js_name(expr.name)}")
+				if j < b.exprs.length - 1 {
+					g.write(" || ")
+				}
+			}
+			g.writeln(") {")
+		}
+		g.stmts(b.stmts)
+	}
+	g.writeln('}')
+}
+
+fun (g Gen) par_expr(node ast.ParExpr){
+	g.write('(')
+	g.expr(node.expr)
+	g.write(')')
+}
+
+fun (g Gen) prefix_expr(node ast.PrefixExpr){
+	g.write(node.op.js_repr())
+	if node.right is ast.InfixExpr and (node.right as ast.InfixExpr).op == token.TokenKind.key_is {
+		g.write('(')
+		g.expr(node.right)
+		g.write(')')
+		return
+	}
+	g.expr(node.right)
+}
+
+fun (g Gen) selector_expr(node ast.SelectorExpr) {
+	g.expr(node.expr)
+	g.write('.')
+	g.write(node.field_name)
+}
+
+fun (g Gen) string_literal(node ast.StringLiteral) {
+	if node.lang != 'bait' {
+		g.write(node.val)
+		return
+	}
+	val := node.val.replace('"', '\\"').replace('\n', '\\n')
+	g.write('from_js_string("')
+	g.write(val)
+	g.write('")')
+}
+
+fun (g Gen) string_inter_literal(node ast.StringInterLiteral) {
+	g.write('from_js_string(`')
+	for i, val in node.vals {
+		g.write(val)
+		if i < node.exprs.length {
+			g.write('\${')
+			g.expr_to_string(node.exprs[i], node.expr_types[i])
+			g.write('}')
+		}
+	}
+	g.write('`)')
+}
+
+fun (g Gen) struct_init(node ast.StructInit) {
+	g.write('new ' + js_name(node.name) + '({')
+	if node.fields.length == 0 {
+		g.write('})')
+		return
+	}
+	g.write(' ')
+	for i, field in node.fields {
+		g.write('${field.name}: ')
+		g.expr(field.expr)
+		if i < node.fields.length - 1 {
+			g.write(', ')
+		}
+	}
+	g.write(' })')
+}
+
+fun (g Gen) type_of(node ast.TypeOf) {
+	sym := g.table.get_sym(node.typ)
+	g.write('"' + sym.name + '"')
+}
+
+fun (g Gen) expr_to_string(expr ast.Expr, typ i32) {
+	sym := g.table.get_sym(typ)
+	if sym.kind == ast.TypeKind.string {
+		g.expr(expr)
+		g.write('.str')
+	} else if g.table.get_method(sym, 'str').name.length > 0 {
+		mut name := js_name(sym.name)
+		if sym.kind == ast.TypeKind.array {
+			name = 'array'
+		}
+		g.write('${name}_str(')
+		g.expr(expr)
+		g.write(')')
+	} else {
+		g.expr(expr)
+		g.write('.toString()')
+	}
+}

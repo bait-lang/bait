@@ -1,0 +1,279 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package main
+
+import bait.prefs
+import bait.ast
+import bait.tokenizer
+import bait.parser
+import bait.checker
+import bait.gen.js as jsgen
+import os
+
+fun show_help() {
+	println('usage: bait [options] <command|file>
+Example:
+   bait my_file.bt
+   bait -o lib.js src/
+
+Commands:
+   help   Prints this message.
+
+Options:
+   -o, --out <file>   Output file name (default: "out.js").
+')
+}
+
+fun foo(){
+	x := 1
+}
+
+fun print_ast(path string) {
+	text := os.read_file(path)
+	tokens := tokenizer.tokenize(text, path)
+	ast := parser.parse(tokens, path, ast.new_table())
+	println(ast)
+	exit(0)
+}
+
+fun ensure_dir_exists(dir string) {
+	if not os.exists(dir) {
+		os.mkdir(dir)
+	}
+}
+
+fun order_pkgs(ordered []string, pkg string, deps map[string][]string) {
+	for d in deps[pkg] {
+		order_pkgs(ordered, d, deps)
+	}
+	if not ordered.contains(pkg) {
+		ordered.push(pkg)
+	}
+}
+
+fun resolve_import_dir(pkg string) string {
+	mut dir := os.resource_abs_path(os.join_path("lib", [pkg]))
+	if not os.exists(dir) {
+		dir = os.join_path(os.getwd(), ["lib", pkg])
+	}
+	return dir
+}
+
+fun transpile(pref prefs.Pref) i32 {
+	builtin_dir := resolve_import_dir("builtin")
+	mut paths := bait_files_from_dir(builtin_dir)
+	paths = paths.concat(get_user_files(pref.command))
+	mut table := ast.new_table()
+	mut files := []ast.File
+	for p in paths {
+		text2 := os.read_file(p)
+		tokens2 := tokenizer.tokenize(text2, p)
+		files.push(parser.parse(tokens2, p, table))
+	}
+	root_pkg := files[files.length - 1].pkg_decl.full_name
+	for i:=0; i<files.length; i+=1 {
+		f := files[i]
+		for imp in f.imports {
+			if imp.lang != 'bait' {
+				continue
+			}
+			mut import_dir := resolve_import_dir(imp.name.replace('.', '/'))
+			if pref.is_test and not os.exists(import_dir) {
+				import_dir = os.dir(f.path)
+			}
+			mut imp_paths := bait_files_from_dir(import_dir)
+			imp_paths = imp_paths.filter(fun (p string) bool {
+				return not paths.contains(p)
+			})
+			for p in imp_paths {
+				paths.push(p)
+				text2 := os.read_file(p)
+				tokens2 := tokenizer.tokenize(text2, p)
+				files.push(parser.parse(tokens2, p, table))
+			}
+		}
+	}
+	mut deps := map[string][]string
+	for f in files {
+		pkg_name := f.pkg_decl.full_name
+		if pkg_name != 'builtin' {
+			deps[pkg_name].push('builtin')
+		}
+		for imp in f.imports {
+			if imp.lang != 'bait' {
+				continue
+			}
+			deps[pkg_name].push(imp.name)
+		}
+	}
+	mut pkg_order := []string
+	order_pkgs(pkg_order, root_pkg, deps)
+	mut sorted_files := []ast.File
+	for pkg in pkg_order {
+		for f in files {
+			if f.pkg_decl.full_name == pkg {
+				sorted_files.push(f)
+			}
+		}
+	}
+	got_errors := checker.check_files(sorted_files, table)
+	if got_errors {
+		return 1
+	}
+	res := jsgen.gen(sorted_files, table, pref) + '\n'
+	os.write_file(pref.out_name, res)
+	return 0
+}
+
+fun run_tests(pref prefs.Pref) i32 {
+	mut files_to_test := []string
+	for a in pref.args {
+		if os.is_dir(a){
+			files_to_test = files_to_test.concat(test_files_from_dir_recursive(a))
+		} else if os.exists(a) and a.ends_with('_test.bt') {
+			files_to_test.push(a)
+		} else {
+			eprintln('Unrecognized file or directory: "${a}"')
+			exit(1)
+		}
+	}
+	mut test_prefs := pref
+	mut has_fails := false
+	for i, file in files_to_test {
+		test_prefs.command = file
+		test_prefs.out_name = '/tmp/test_${i}.js'
+		res := transpile(test_prefs)
+		if res != 0 {
+			has_fails = true
+			println('FAIL ${file}')
+			continue
+		}
+		run_res := os.system('node ${test_prefs.out_name}')
+		if run_res == 0 {
+			println('OK ${file}')
+		} else {
+			has_fails = true
+			println('FAIL ${file}')
+		}
+	}
+	if has_fails {
+		return 1
+	}
+	return 0
+}
+
+fun update() {
+	os.system('git pull')
+	res := transpile(prefs.Pref{
+		command: 'cli/bait.bt'
+		out_name: 'bait.js'
+	})
+	if res != 0 {
+		os.system('./make.sh')
+	}
+	println('Updated successfully.')
+	exit(0)
+}
+
+fun bait_files_from_dir(dir string) []string {
+	all_files := os.ls(dir)
+	mut files := []string
+	for f in all_files {
+		if f.ends_with('_test.bt') {
+			continue
+		}
+		if f.ends_with('.bt') {
+			files.push(os.join_path(dir, [f]))
+		}
+	}
+	return files
+}
+
+fun test_files_from_dir_recursive(dir string) []string {
+	all_files := os.ls(dir)
+	mut test_files := []string
+	for file in all_files {
+		p := os.join_path(dir, [file])
+		if os.is_dir(p){
+			test_files = test_files.concat(test_files_from_dir_recursive(p))
+		} else if os.exists(p) and p.ends_with('_test.bt') {
+			test_files.push(p)
+		}
+	}
+	return test_files
+}
+
+fun get_user_files(upath string) []string {
+	if os.is_dir(upath) {
+		return bait_files_from_dir(upath)
+	}
+	if os.exists(upath) and upath.ends_with('.bt') {
+		return [upath]
+	}
+	return []string
+}
+
+fun parse_args(args []string) prefs.Pref {
+	mut pref := prefs.Pref{}
+	for i := 0; i < args.length; i += 1{
+		arg := args[i]
+		match arg {
+			"-o", '--out' {
+				i += 1
+				pref.out_name = args[i]
+			}
+			else{
+				if pref.command.length == 0 {
+					pref.command = arg
+				} else {
+					pref.args.push(arg)
+				}
+			}
+		}
+	}
+	if pref.out_name.length == 0 {
+		pref.out_name = "out.js"
+	}
+	if pref.command == 'test' {
+		pref.is_test = true
+	}
+	return pref
+}
+
+fun main() {
+	args := os.ARGS.slice(2, os.ARGS.length)
+	if args.length == 0 {
+		show_help()
+		exit(0)
+	}
+	pref := parse_args(args)
+	match pref.command {
+		'help' {
+			show_help()
+			exit(0)
+		}
+		'ast' {
+			print_ast(pref.args[0])
+			exit(0)
+		}
+		'self' {
+			exit(transpile(prefs.Pref{
+				command: 'cli/bait.bt'
+				out_name: 'bait.js'
+			}))
+		}
+		'test' {
+			exit(run_tests(pref))
+		}
+		'up' {
+			update()
+			exit(0)
+		}
+	}
+	if os.exists(pref.command) {
+		ensure_dir_exists(os.dir(pref.out_name))
+		exit(transpile(pref))
+	}
+	eprintln('error: unknown command: "${pref.command}"')
+	exit(1)
+}

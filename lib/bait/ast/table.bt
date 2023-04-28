@@ -1,0 +1,139 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package ast
+
+pub struct Table {
+	global_scope Scope
+	fun_decls map[string]FunDecl
+	type_idxs map[string]i32
+	type_symbols []TypeSymbol
+}
+
+pub fun new_table() Table {
+	mut t := Table{
+		global_scope: Scope{
+			parent: any(0)
+		}
+	}
+	t.register_builtins()
+	return t
+}
+
+pub fun (t Table) get_idx(name string) i32 {
+	return t.type_idxs[name]
+}
+
+pub fun (t Table) get_sym(idx i32) TypeSymbol {
+	return t.type_symbols[idx]
+}
+
+pub fun (t Table) register_sym(sym TypeSymbol) i32 {
+	idx := t.get_idx(sym.name)
+	if idx > 0 {
+		cur_sym := t.get_sym(idx)
+		if cur_sym.kind == TypeKind.placeholder {
+			sym.methods = cur_sym.methods
+			t.type_symbols[idx] = sym
+			return idx
+		}
+		if BUILTIN_STRUCT_INDEXES.contains(idx) {
+			mut new_sym := sym
+			new_sym.kind = cur_sym.kind
+			t.type_symbols[idx] = new_sym
+			return idx
+		}
+
+	}
+	new_idx := t.type_symbols.length
+	t.type_symbols.push(sym)
+	t.type_idxs[sym.name] = new_idx
+	return new_idx
+}
+
+pub fun (t Table) find_or_register_array(elem_type i32) i32 {
+	elem_sym := t.get_sym(elem_type)
+	name := '[]' + elem_sym.name
+	idx := t.get_idx(name)
+	if idx > 0 {
+		return idx
+	}
+	return t.register_sym(TypeSymbol{
+		kind: TypeKind.array
+		name: name
+		parent: i32(TypeIdx.array)
+		info: ArrayInfo{
+			elem_type: elem_type
+		}
+	})
+}
+
+pub fun (t Table) find_or_register_map(key_type i32, val_type i32) i32 {
+	key_sym := t.get_sym(key_type)
+	val_sym := t.get_sym(val_type)
+	name := 'map[${key_sym.name}]${val_sym.name}'
+	idx := t.get_idx(name)
+	if idx > 0 {
+		return idx
+	}
+	return t.register_sym(TypeSymbol{
+		kind: TypeKind.map
+		name: name
+		parent: i32(TypeIdx.map)
+		info: MapInfo{
+			key_type: key_type
+			val_type: val_type
+		}
+	})
+}
+
+pub fun (t Table) find_or_register_fun(param_types []i32, return_type i32) i32 {
+	name := 'fun_' + t.fun_signature(param_types, return_type)
+	idx := t.get_idx(name)
+	if idx > 0 {
+		return idx
+	}
+	return t.register_sym(TypeSymbol{
+		kind: TypeKind.fun_
+		name: name
+		info: FunInfo{
+			param_types: param_types
+			return_type: return_type
+		}
+	})
+}
+
+pub fun (t Table) fun_signature(param_types []i32, return_type i32) string {
+	mut sig := ''
+	for param in param_types {
+		sig += t.get_sym(param).name + '_'
+	}
+	sig += '_' + t.get_sym(return_type).name
+	return sig
+}
+
+pub fun (t Table) find_type_or_add_placeholder(name string) i32 {
+	idx := t.get_idx(name)
+	if idx > 0 {
+		return idx
+	}
+	return t.register_sym(TypeSymbol{
+		kind: TypeKind.placeholder
+		name: name
+	})
+}
+
+pub fun (t Table) get_method(sym TypeSymbol, name string) FunDecl {
+	mut s := sym
+	for true {
+		for m in s.methods {
+			if m.name == name {
+				return m
+			}
+		}
+		if s.parent == 0 {
+			break
+		}
+		s = t.get_sym(s.parent)
+	}
+	return FunDecl{}
+}

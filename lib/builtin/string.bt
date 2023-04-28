@@ -1,0 +1,94 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package builtin
+
+struct string {
+	str any // Js.String
+	length i32
+}
+
+#JS.'string.prototype = {
+	toString: function() {
+		return this.str
+	}
+}'
+
+fun (s string) get(i i32) u8 {
+	return #JS.'s.str.charAt(i)'
+}
+
+pub fun (s string) replace(val string, rep string) string {
+	return from_js_string(#JS.'s.str.replaceAll(val.str, rep.str)')
+}
+
+pub fun (s string) substr(start i32, end i32) string {
+	return from_js_string(#JS.'s.str.slice(start, end)')
+}
+
+pub fun (s string) index(search string) i32 {
+	return #JS.'s.str.indexOf(search.str)'
+}
+
+pub fun (s string) last_index(search string) i32 {
+	return #JS.'s.str.lastIndexOf(search.str)'
+}
+
+pub fun (s string) repeat(count i32) string {
+	return from_js_string(#JS.'s.str.repeat(count)')
+}
+
+pub fun (s string) trim_space() string {
+	return from_js_string(#JS.'s.str.trim()')
+}
+
+pub fun (s string) starts_with(prefix string) bool {
+	return #JS.'s.str.startsWith(prefix.str)'
+}
+
+pub fun (s string) ends_with(suffix string) bool {
+	return #JS.'s.str.endsWith(suffix.str)'
+}
+
+pub fun (s string) contains(substr string) bool {
+	return #JS.'s.str.includes(substr.str)'
+}
+
+pub fun (s string) is_upper() bool {
+	return #JS.'s.str == s.str.toUpperCase() && s.str != s.str.toLowerCase()'
+}
+
+fun (a string) add (b string) string {
+	return from_js_string(#JS.'a.str + b.str')
+}
+
+fun (a string) eq (b string) bool {
+	return #JS.'a.str === b.str'
+}
+
+pub fun (arr []string) join(sep string) string {
+	js_arr := arr.to_js_arr()
+	return from_js_string(#JS.'js_arr.join(sep.str)')
+}
+
+pub fun from_js_string(js_s any) string {
+	return string{
+		str: js_s
+		length: i32(#JS.'js_s.length')
+	}
+}
+
+pub fun from_js_string_arr(js_arr any) []string {
+	mut a := []string
+	for i := 0; i < #JS.'js_arr.length'; i += 1 {
+		a.push(from_js_string(#JS.'js_arr[i]'))
+	}
+	return a
+}
+
+pub fun (arr []string) to_js_arr() any {
+	js_arr := #JS.'[]'
+	for s in arr {
+		#JS.'js_arr.push(s.str)'
+	}
+	return js_arr
+}

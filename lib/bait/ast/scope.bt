@@ -1,0 +1,49 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package ast
+
+pub struct Scope {
+	parent Scope
+	objects map[string]ScopeObject
+}
+
+pub struct ScopeObject{
+	typ i32
+	kind ObjectKind
+	is_pub bool
+}
+
+pub enum ObjectKind {
+	variable
+	constant
+	function
+	global_
+}
+
+pub fun (s Scope) register(name string, obj ScopeObject) {
+	if s.objects.contains(name) {
+		return
+	}
+	s.objects[name] = obj
+}
+
+pub fun (s Scope) get(name string) ScopeObject {
+	if s.objects.contains(name) {
+		return s.objects[name]
+	}
+	if s.parent != 0 {
+		return s.parent.get(name)
+	}
+	return ScopeObject{
+		typ: i32(TypeIdx.placeholder)
+	}
+}
+
+pub fun (s Scope) update_type(name string, typ i32) {
+	s.objects[name].typ = typ
+}
+
+pub fun (s Scope) is_known(name string) bool {
+	obj := s.get(name)
+	return obj.typ != TypeIdx.placeholder
+}

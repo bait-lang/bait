@@ -1,0 +1,150 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package js
+
+import bait.prefs
+import bait.ast
+import bait.token
+
+const JS_RESERVED := ['case', 'default', 'new', 'var', 'with']
+
+struct Gen {
+	table ast.Table
+	path string
+	type_defs_out string
+	global_out string
+	out string
+	indent i32
+	empty_line bool
+	import_names []string
+	tmp_counter i32
+	is_for_loop_head bool
+	is_lhs_assign bool
+	is_array_map_set bool
+}
+
+fun gen(files []ast.File, table ast.Table, pref prefs.Pref) string {
+	mut g := Gen{
+		table: table
+		indent: -1
+		empty_line: true
+		tmp_counter: -1
+	}
+	for file in files {
+		g.path = file.path
+		g.process_imports(file.imports)
+		g.stmts(file.stmts)
+		g.out += "\n"
+	}
+	if pref.is_test {
+		g.gen_test_main()
+	}
+	g.main_call()
+	headers := g.headers()
+	return headers + g.type_defs_out + g.global_out + '\n' + g.out
+}
+
+
+fun (g Gen) new_temp_var() string {
+	g.tmp_counter += 1
+	return '_t${g.tmp_counter}'
+}
+
+fun (g Gen) write(s string){
+	if g.indent > 0 and g.empty_line {
+		g.out += '\t'.repeat(g.indent)
+	}
+	g.out += s
+	g.empty_line = false
+}
+
+fun (g Gen) writeln (s string){
+	if g.indent > 0 and g.empty_line {
+		g.out += '\t'.repeat(g.indent)
+	}
+	g.out += s + "\n"
+	g.empty_line = true
+}
+
+fun (g Gen) process_imports(imports []ast.Import) {
+	for imp in imports {
+		if imp.lang == 'bait' or g.import_names.contains(imp.name) {
+			continue
+		}
+		g.import_names.push(imp.name)
+	}
+}
+
+fun (g Gen) headers() string {
+	mut headers := ''
+	for imp in g.import_names {
+		headers += 'const js_${imp} = require("${imp}")\n'
+	}
+	return headers + '\n'
+}
+
+fun (g Gen) gen_test_main() {
+	g.writeln('function main() {')
+	g.indent += 1
+	for key, func in g.table.fun_decls {
+		if func.is_test {
+			name := js_name(func.name)
+			g.writeln('${name}()')
+		}
+	}
+	g.writeln('exit(testing__TestRunner_exit_code(testing__test_runner))')
+	g.indent -= 1
+	g.writeln('}')
+}
+
+fun (g Gen) main_call() {
+	g.out += "main()"
+}
+
+
+fun (g Gen) write_default_value(typ i32) {
+	match typ {
+		ast.TypeIdx.i8, ast.TypeIdx.i16, ast.TypeIdx.i32, ast.TypeIdx.i64,
+		ast.TypeIdx.u8, ast.TypeIdx.u16, ast.TypeIdx.u32, ast.TypeIdx.u64 {
+			g.write('0')
+		}
+		ast.TypeIdx.f32, ast.TypeIdx.f64 {
+			g.write('0.0')
+		}
+		ast.TypeIdx.bool {
+			g.write('false')
+		}
+		ast.TypeIdx.string {
+			g.write('from_js_string("")')
+		}
+		else {
+			sym := g.table.get_sym(typ)
+			if sym.kind == ast.TypeKind.array {
+				g.write('new array({ data: [], length: 0 })')
+			} else if sym.kind == ast.TypeKind.map {
+				g.write('new map({ data: new Map(), length: 0 })')
+			} else if sym.kind == ast.TypeKind.struct_ {
+				g.write('new ${js_name(sym.name)}({})')
+			} else {
+				g.write('undefined')
+			}
+		}
+	}
+}
+
+fun (g Gen) warn(msg string, pos token.Pos){
+	println('${g.path}:${pos.line}:${pos.col} warning: ${msg}')
+}
+
+fun (g Gen) error(msg string, pos token.Pos){
+	eprintln('${g.path}:${pos.line}:${pos.col} error: ${msg}')
+	exit(1)
+}
+
+fun js_name(n string) string {
+	name := n.replace('.', '__').replace('[]', 'array_')
+	if JS_RESERVED.contains(name) {
+		return 'bait_${name}'
+	}
+	return name
+}

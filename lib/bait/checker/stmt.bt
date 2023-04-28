@@ -1,0 +1,164 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package checker
+
+import bait.ast
+import bait.token
+
+fun (c Checker) stmts(stmts []ast.Stmt){
+	for stmt in stmts{
+		c.stmt(stmt)
+	}
+}
+
+fun (c Checker) stmt(stmt ast.Stmt){
+	if stmt is ast.AssignStmt {
+		c.assign_stmt(stmt)
+	} else if stmt is ast.ConstDecl {
+		c.const_decl(stmt)
+	} else if stmt is ast.ExprStmt {
+		c.expr_stmt(stmt)
+	} else if stmt is ast.EnumDecl {
+		c.enum_decl(stmt)
+	} else if stmt is ast.ForLoop {
+		c.for_loop(stmt)
+	} else if stmt is ast.ForClassicLoop {
+		c.for_classic_loop(stmt)
+	} else if stmt is ast.ForInLoop {
+		c.for_in_loop(stmt)
+	} else if stmt is ast.FunDecl {
+		c.fun_decl(stmt)
+	} else if stmt is ast.GlobalDecl {
+		c.global_decl(stmt)
+	} else if stmt is ast.LoopControlStmt {
+		c.control_stmt(stmt)
+	} else if stmt is ast.ReturnStmt {
+		c.return_stmt(stmt)
+	} else if stmt is ast.StructDecl {
+		c.struct_decl(stmt)
+	} else if stmt is ast.TypeDecl {
+		c.type_decl(stmt)
+	} else {
+		c.error('unexpected stmt: ${stmt}', stmt.pos)
+	}
+}
+
+fun (c Checker) assign_stmt(node ast.AssignStmt) {
+	if node.op == token.TokenKind.decl_assign {
+		typ := c.expr(node.right)
+		left := node.left as ast.Ident
+		if c.scope.is_known(left.name) {
+			c.error('redeclaration of ${left.name}', node.pos)
+			return
+		}
+		c.scope.register(left.name, ast.ScopeObject{typ: typ})
+		c.expr(node.left)
+		return
+	}
+	c.is_lhs_assign = true
+	node.left_type = c.expr(node.left)
+	c.is_lhs_assign = false
+	node.right_type = c.expr(node.right)
+	if not c.check_types(node.right_type, node.left_type) {
+		c.error('cannot assign type ${node.right_type} to ${node.left_type}', node.pos)
+	}
+}
+
+fun (c Checker) const_decl(node ast.ConstDecl) {
+	typ := c.expr(node.expr)
+	c.table.global_scope.update_type(node.name, typ)
+}
+
+fun (c Checker) expr_stmt(node ast.ExprStmt) {
+	expr := node.expr
+	c.expr(expr)
+	if expr is ast.CallExpr or expr is ast.IfExpr or expr is ast.MatchExpr or (expr is ast.StringLiteral and expr.lang == 'js') {
+		return
+	}
+	c.error('expression evaluated but not used', expr.pos)
+}
+
+fun (c Checker) enum_decl(node ast.EnumDecl) {
+}
+
+fun (c Checker) for_loop(node ast.ForLoop) {
+	c.open_scope()
+	c.expr(node.cond)
+	c.stmts(node.stmts)
+	c.close_scope()
+}
+
+fun (c Checker) for_classic_loop(node ast.ForClassicLoop) {
+	c.open_scope()
+	c.stmt(node.init)
+	c.expr(node.cond)
+	c.stmt(node.inc)
+	c.stmts(node.stmts)
+	c.close_scope()
+}
+
+fun (c Checker) for_in_loop(node ast.ForInLoop) {
+	c.open_scope()
+	node.expr_type = c.expr(node.expr)
+	sym := c.table.get_sym(node.expr_type)
+	mut idx_type := i32(ast.TypeIdx.placeholder)
+	mut val_type := i32(ast.TypeIdx.placeholder)
+	if sym.kind == ast.TypeKind.array {
+		idx_type = i32(ast.TypeIdx.i32)
+		val_type = (sym.info as ast.ArrayInfo).elem_type
+	} else if sym.kind == ast.TypeKind.map {
+		info := sym.info as ast.MapInfo
+		idx_type = info.key_type
+		val_type = info.val_type
+	} else if sym.kind == ast.TypeKind.string {
+		idx_type = i32(ast.TypeIdx.i32)
+		val_type = i32(ast.TypeIdx.u8)
+	} else {
+		c.error('cannot iterate over ${sym.name}', node.pos)
+	}
+	if node.idxvar.length > 0 {
+		c.scope.register(node.idxvar, ast.ScopeObject{typ: idx_type})
+	}
+	c.scope.register(node.valvar, ast.ScopeObject{typ: val_type})
+	c.stmts(node.stmts)
+	c.close_scope()
+}
+
+fun (c Checker) fun_decl(node ast.FunDecl) {
+	c.open_scope()
+	c.fun_params(node.params)
+	c.stmts(node.stmts)
+	c.close_scope()
+}
+
+fun (c Checker) fun_params(params []ast.Param){
+	for p in params {
+		sym := c.table.get_sym(p.typ)
+		if sym.kind == ast.TypeKind.fun_ {
+			c.scope.register(p.name, ast.ScopeObject{
+				typ: p.typ
+				kind: ast.ObjectKind.function
+			})
+		} else {
+			c.scope.register(p.name, ast.ScopeObject{typ: p.typ})
+		}
+	}
+}
+
+fun (c Checker) global_decl(node ast.GlobalDecl){
+	typ := c.expr(node.expr)
+	c.table.global_scope.update_type(node.name, typ)
+}
+
+fun (c Checker) control_stmt(node ast.LoopControlStmt) {}
+
+fun (c Checker) return_stmt(node ast.ReturnStmt) {
+	if not node.expr is ast.EmptyExpr {
+		c.expr(node.expr)
+	}
+}
+
+fun (c Checker) struct_decl(node ast.StructDecl) {
+}
+
+fun (c Checker) type_decl(node ast.TypeDecl) {}

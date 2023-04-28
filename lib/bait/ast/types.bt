@@ -1,0 +1,98 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package ast
+
+pub enum TypeIdx {
+	placeholder
+	void
+	i8
+	i16
+	i32
+	i64
+	u8
+	u16
+	u32
+	u64
+	f32
+	f64
+	bool
+	string
+	array
+	map
+	any
+}
+
+const BUILTIN_STRUCT_INDEXES := [
+	TypeIdx.string,
+	TypeIdx.array,
+	TypeIdx.map
+]
+
+pub enum TypeKind {
+	placeholder
+	string
+	array
+	map
+	struct_
+	enum_
+	sum_type
+	fun_
+}
+
+pub struct TypeSymbol{
+	name string
+	kind TypeKind
+	info TypeInfo
+	methods []FunDecl
+	parent i32
+	is_pub bool
+	pkg string
+}
+
+pub fun (sym TypeSymbol) find_field(name string, t Table) StructField {
+	if sym.info is StructInfo {
+		info := sym.info as StructInfo
+		for f in info.fields {
+			if f.name == name {
+				return f
+			}
+		}
+	}
+	if BUILTIN_STRUCT_INDEXES.contains(sym.parent) {
+		parent_sym := t.get_sym(sym.parent)
+		return parent_sym.find_field(name, t)
+	}
+	return StructField{}
+}
+
+pub fun (t Table) register_builtins(){
+	t.register_sym(TypeSymbol{
+		name: 'placeholder'
+		kind: TypeKind.placeholder
+	})
+	t.register_sym(TypeSymbol{name: 'void'})
+	t.register_sym(TypeSymbol{name: 'i8'})
+	t.register_sym(TypeSymbol{name: 'i16'})
+	t.register_sym(TypeSymbol{name: 'i32'})
+	t.register_sym(TypeSymbol{name: 'i64'})
+	t.register_sym(TypeSymbol{name: 'u8'})
+	t.register_sym(TypeSymbol{name: 'u16'})
+	t.register_sym(TypeSymbol{name: 'u32'})
+	t.register_sym(TypeSymbol{name: 'u64'})
+	t.register_sym(TypeSymbol{name: 'f32'})
+	t.register_sym(TypeSymbol{name: 'f64'})
+	t.register_sym(TypeSymbol{name: 'bool'})
+	t.register_sym(TypeSymbol{
+		name: 'string'
+		kind: TypeKind.string
+	})
+	t.register_sym(TypeSymbol{
+		name: 'array'
+		kind: TypeKind.array
+	})
+	t.register_sym(TypeSymbol{
+		name: 'map'
+		kind: TypeKind.map
+	})
+	t.register_sym(TypeSymbol{name: 'any'})
+}

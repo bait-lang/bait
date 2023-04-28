@@ -1,0 +1,154 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package parser
+
+import bait.ast
+import bait.token
+
+pub struct Parser {
+	path string
+	table ast.Table
+	tokens []token.Token
+	idx i32
+	prev_tok token.Token
+	tok token.Token
+	next_tok token.Token
+	pkg_name string
+	import_aliases map[string]string
+	expr_pkg string
+	is_test_file bool
+	is_for_init bool
+	is_struct_possible bool
+}
+
+pub fun parse(tokens []token.Token, path string, table ast.Table) ast.File {
+	mut p := Parser{
+		path: path
+		table: table
+		tokens: tokens
+		is_struct_possible: true
+	}
+	p.is_test_file = path.ends_with('_test.bt')
+	p.next()
+	p.next()
+	pkg_decl := p.package_decl()
+	imports := p.import_stmts()
+	mut stmts := []ast.Stmt
+	for p.tok.kind != token.TokenKind.eof {
+		stmts.push(p.toplevel_stmt())
+	}
+	return ast.File{
+		path: path
+		pkg_decl: pkg_decl
+		imports: imports
+		stmts: stmts
+	}
+}
+
+fun (p Parser) package_decl() ast.PackageDecl {
+	if p.tok.kind != token.TokenKind.key_package {
+		p.pkg_name = "main"
+		return ast.PackageDecl{
+			name: "main"
+			full_name: "main"
+		}
+	}
+	p.next()
+	name := p.check_name()
+	mut full_name := name
+	if full_name != 'main' and p.path.contains('lib/') {
+		rel_path := p.path.substr(p.path.index('lib/') + 4, p.path.length)
+		full_name = rel_path.substr(0, rel_path.last_index('/')).replace('/', '.')
+	}
+	p.pkg_name = full_name
+	return ast.PackageDecl{
+		name:name
+		full_name:full_name
+	}
+}
+
+fun (p Parser) import_stmts() [] ast.Import{
+	mut imports := []ast.Import
+	for p.tok.kind == token.TokenKind.key_import {
+		p.next()
+		mut lang := 'bait'
+		if p.tok.kind == token.TokenKind.hash {
+			p.next()
+			p.check(token.TokenKind.dot)
+			lang = 'js'
+		}
+		mut name_parts := []string
+		name_parts.push(p.check_name())
+		for p.tok.kind == token.TokenKind.dot {
+			p.next()
+			name_parts.push(p.check_name())
+		}
+		name := name_parts.join('.')
+		mut alias := name_parts[name_parts.length - 1]
+		if p.tok.kind == token.TokenKind.key_as {
+			p.next()
+			alias = p.check_name()
+		}
+		p.import_aliases[alias] = name
+		imports.push(ast.Import{
+			name:name
+			alias: alias
+			lang: lang
+		})
+	}
+	return imports
+}
+
+fun (p Parser) parse_block() []ast.Stmt {
+	p.check(token.TokenKind.lcur)
+	mut bstmts := []ast.Stmt
+	for not [token.TokenKind.eof, token.TokenKind.rcur].contains(p.tok.kind) {
+		bstmts.push(p.stmt())
+	}
+	p.check(token.TokenKind.rcur)
+	return bstmts
+}
+
+fun (p Parser) check (expected token.TokenKind) {
+	if p.tok.kind != expected {
+		p.error('unexpected ${p.tok.kind}, expecting ${expected}')
+	}
+	p.next()
+}
+
+fun (p Parser) check_name() string {
+	p.check(token.TokenKind.name)
+	return p.prev_tok.val
+}
+
+fun (p Parser) prepend_pkg(val string) string {
+	if p.pkg_name == 'builtin' or p.pkg_name == 'main' or p.pkg_name.length == 0{
+		return val
+	}
+	return p.pkg_name + '.' + val
+}
+
+fun (p Parser) prepend_expr_pkg(val string) string {
+	if p.expr_pkg.length == 0 or p.expr_pkg == p.pkg_name {
+		return val
+	}
+	res := p.expr_pkg + '.' + val
+	p.expr_pkg = ''
+	return res
+}
+
+fun (p Parser) next() {
+	p.prev_tok = p.tok
+	p.tok = p.next_tok
+	p.next_tok = p.tokens[p.idx]
+	p.idx += 1
+}
+
+fun (p Parser) error(msg string){
+	p.error_with_pos(msg, p.tok.pos)
+}
+
+fun (p Parser) error_with_pos(msg string, pos token.Pos){
+	eprintln(p.path + ':' + pos.line + ':' + pos.col + ' error: ' + msg)
+	exit(1)
+}

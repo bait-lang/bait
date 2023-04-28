@@ -1,0 +1,306 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package ast
+
+import bait.token
+
+pub type Stmt := AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt
+
+pub type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CastExpr | CharLiteral | EnumVal | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
+
+pub struct AssignStmt{
+	op token.TokenKind
+	left Expr
+	left_type i32
+	right Expr
+	right_type i32
+	pos token.Pos
+}
+
+pub struct ConstDecl{
+	name string
+	expr Expr
+	pos token.Pos
+}
+
+pub struct EnumDecl{
+	name string
+	variants []string
+	pos token.Pos
+}
+
+pub struct ExprStmt{
+	expr Expr
+}
+
+pub struct ForLoop{
+	cond Expr
+	stmts []Stmt
+	pos token.Pos
+}
+
+pub struct ForClassicLoop{
+	init Stmt
+	cond Expr
+	inc Stmt
+	stmts []Stmt
+	pos token.Pos
+}
+
+pub struct ForInLoop{
+	idxvar string
+	valvar string
+	expr Expr
+	expr_type i32
+	stmts []Stmt
+	pos token.Pos
+}
+
+pub struct AnonFun{
+	params []Param
+	stmts []Stmt
+	return_type i32
+	name string
+	typ i32
+	pos token.Pos
+}
+
+pub struct FunDecl{
+	is_pub bool
+	name string
+	params []Param
+	stmts []Stmt
+	return_type i32
+	is_method bool
+	is_test bool
+	pos token.Pos
+}
+
+pub struct Param{
+	name string
+	typ i32
+}
+
+pub struct LoopControlStmt{
+	kind token.TokenKind
+	pos token.Pos
+}
+
+pub struct GlobalDecl{
+	name string
+	expr Expr
+	pos token.Pos
+}
+
+pub struct ReturnStmt{
+	expr Expr
+	pos token.Pos
+}
+
+pub struct StructDecl{
+	name string
+	typ i32
+	fields []StructField
+	pos token.Pos
+}
+
+pub struct StructField{
+	name string
+	typ i32
+}
+
+pub struct TypeDecl {
+	name string
+	typ i32
+	variants []i32
+	pos token.Pos
+}
+
+pub struct ArrayInit{
+	exprs []Expr
+	typ i32
+	elem_type i32
+	pos token.Pos
+}
+
+pub struct AsCast{
+	expr Expr
+	expr_type i32
+	target i32
+	pos token.Pos
+}
+
+pub struct BoolLiteral{
+	val bool
+	pos token.Pos
+}
+
+pub struct CallExpr{
+	name string
+	args []CallArg
+	lang string
+	return_type i32
+	is_method bool
+	left Expr
+	left_type i32
+	pkg string
+	pos token.Pos
+}
+
+pub struct CallArg {
+	expr Expr
+	typ i32
+}
+
+pub struct CastExpr {
+	expr Expr
+	target i32
+	pos token.Pos
+}
+
+pub struct CharLiteral{
+	val string
+	pos token.Pos
+}
+
+pub struct EnumVal {
+	name string
+	val string
+	typ i32
+	pos token.Pos
+}
+
+pub struct Ident{
+	name string
+	is_mut bool
+	pkg string
+	lang string
+	pos token.Pos
+}
+
+pub struct IfExpr{
+	has_else bool
+	branches []IfBranch
+	pos token.Pos
+}
+
+pub struct IfBranch{
+	cond Expr
+	stmts []Stmt
+	pos token.Pos
+}
+
+pub struct IndexExpr{
+	left Expr
+	index Expr
+	left_type i32
+	is_selector bool
+	pos token.Pos
+}
+
+pub struct InfixExpr{
+	left Expr
+	left_type i32
+	right Expr
+	right_type i32
+	op token.TokenKind
+	pos token.Pos
+}
+
+pub struct IntegerLiteral{
+	val string
+	pos token.Pos
+}
+
+pub struct MatchExpr{
+	cond Expr
+	cond_type i32
+	branches []MatchBranch
+	is_sumtype bool
+	pos token.Pos
+}
+
+pub struct MatchBranch{
+	exprs []Expr
+	expr_types []i32
+	stmts []Stmt
+	pos token.Pos
+}
+
+pub struct MapInit{
+	typ i32
+	key_type i32
+	val_type i32
+	keys []Expr
+	vals []Expr
+	pos token.Pos
+}
+
+pub struct ParExpr {
+	expr Expr
+	pos token.Pos
+}
+
+pub struct PrefixExpr{
+	op token.TokenKind
+	right Expr
+	pos token.Pos
+}
+
+pub struct SelectorExpr{
+	expr Expr
+	field_name string
+	pos token.Pos
+}
+
+pub struct StringLiteral{
+	val string
+	lang string
+	pos token.Pos
+}
+
+pub struct StringInterLiteral{
+	vals []string
+	exprs []Expr
+	expr_types []i32
+	pos token.Pos
+}
+
+pub struct StructInit{
+	name string
+	typ i32
+	fields []StructInitField
+	pos token.Pos
+}
+
+pub struct StructInitField{
+	name string
+	expr Expr
+	pos token.Pos
+}
+
+pub struct TypeOf {
+	expr Expr
+	typ i32
+	pos token.Pos
+}
+
+pub struct EmptyExpr{}
+
+pub struct PackageDecl{
+	name string
+	full_name string
+}
+
+pub struct Import{
+	name string
+	alias string
+	lang string
+}
+
+pub struct File{
+	path string
+	pkg_decl PackageDecl
+	imports []Import
+	stmts []Stmt
+}

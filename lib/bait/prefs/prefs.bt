@@ -1,0 +1,10 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package prefs
+
+pub struct Pref {
+	command string
+	out_name string
+	args []string
+	is_test bool
+}

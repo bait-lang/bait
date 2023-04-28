@@ -1,0 +1,54 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package checker
+
+import bait.ast
+import bait.token
+
+struct Checker{
+	table ast.Table
+	scope ast.Scope
+	path string
+	pkg string
+	errors []string
+	is_lhs_assign bool
+}
+
+pub fun check_files(files []ast.File, table ast.Table) bool {
+	mut c := Checker{
+		table: table
+		scope: ast.Scope{
+			// TODO how to handle recursive sturct inits?
+			parent: any(0)
+		}
+	}
+	for f in files {
+		c.check(f)
+	}
+	return c.errors.length > 0
+}
+
+fun (c Checker) check(file ast.File) {
+	c.path = file.path
+	c.pkg = file.pkg_decl.full_name
+	c.stmts(file.stmts)
+}
+
+fun (c Checker) open_scope(){
+	c.scope = ast.Scope{
+		parent: c.scope
+	}
+}
+
+fun (c Checker) close_scope(){
+	c.scope = c.scope.parent
+}
+
+fun (c Checker) warn(msg string, pos token.Pos){
+	println('${c.path}:${pos.line}:${pos.col} warning: ${msg}')
+}
+
+fun (c Checker) error(msg string, pos token.Pos){
+	eprintln('${c.path}:${pos.line}:${pos.col} error: ${msg}')
+	c.errors.push(msg)
+}

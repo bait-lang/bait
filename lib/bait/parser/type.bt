@@ -1,0 +1,96 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package parser
+
+import bait.ast
+import bait.token
+
+fun (p Parser) parse_type() i32 {
+	if p.tok.kind == token.TokenKind.lbr{
+		p.next()
+		p.check(token.TokenKind.rbr)
+		elem_type := p.parse_type()
+		return p.table.find_or_register_array(elem_type)
+	}
+	if p.tok.kind == token.TokenKind.key_fun {
+		return p.parse_fun_type()
+	}
+	mut name := p.check_name()
+	if name == 'map' {
+		return p.parse_map_type()
+	}
+	if p.tok.kind == token.TokenKind.dot {
+		pkg := p.import_aliases[name]
+		p.next()
+		name = pkg + '.' + p.check_name()
+	} else if p.expr_pkg.length > 0 {
+		name = p.prepend_expr_pkg(name)
+	} else if not name.contains('.') and not p.table.type_idxs.contains(name) {
+		name = p.prepend_pkg(name)
+	}
+	match name{
+		'i8' { return ast.TypeIdx.i8 }
+		'i16' { return ast.TypeIdx.i16 }
+		'i32' { return ast.TypeIdx.i32 }
+		'i64' { return ast.TypeIdx.i64 }
+		'u8' { return ast.TypeIdx.u8 }
+		'u16' { return ast.TypeIdx.u16 }
+		'u32' { return ast.TypeIdx.u32 }
+		'u64' { return ast.TypeIdx.u64 }
+		'f32' { return ast.TypeIdx.f32 }
+		'f64' { return ast.TypeIdx.f64 }
+		'bool' { return ast.TypeIdx.bool }
+		'string' { return ast.TypeIdx.string }
+		'any' { return ast.TypeIdx.any }
+	}
+	return p.table.find_type_or_add_placeholder(name)
+}
+
+fun (p Parser) parse_fun_type() i32 {
+	p.next()
+	p.check(token.TokenKind.lpar)
+	mut param_types := []i32
+	for p.tok.kind != token.TokenKind.rpar{
+		typ := p.parse_type()
+		param_types.push(typ)
+		if p.tok.kind != token.TokenKind.rpar{
+			p.check(token.TokenKind.comma)
+		}
+	}
+	p.check(token.TokenKind.rpar)
+	mut return_type := i32(ast.TypeIdx.void)
+	if p.tok.pos.line == p.prev_tok.pos.line {
+		return_type = p.parse_type()
+	}
+	return p.table.find_or_register_fun(param_types, return_type)
+}
+
+fun (p Parser) parse_map_type() i32 {
+	if p.tok.kind == token.TokenKind.rpar and p.pkg_name == 'builtin' {
+		return ast.TypeIdx.map
+	}
+	p.check(token.TokenKind.lbr)
+	key_type := p.parse_type()
+	if key_type != ast.TypeIdx.string {
+		p.error('map key type must be string')
+	}
+	p.check(token.TokenKind.rbr)
+	val_type := p.parse_type()
+	return p.table.find_or_register_map(key_type, val_type)
+}
+
+fun (p Parser) infer_expr_type(expr ast.Expr) i32 {
+	mut typ := i32(ast.TypeIdx.void)
+	match expr {
+		ast.StructInit{
+			typ = expr.typ
+		}
+		ast.ArrayInit{
+			typ = expr.typ
+		}
+		ast.MapInit{
+			typ = expr.typ
+		}
+	}
+	return typ
+}

@@ -1,0 +1,11 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package builtin
+
+pub fun (n f32) str() string {
+	return #JS.'n.toString()'
+}
+
+pub fun (n f64) str() string {
+	return #JS.'n.toString()'
+}

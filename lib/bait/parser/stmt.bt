@@ -1,0 +1,413 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package parser
+
+import bait.ast
+import bait.token
+
+fun (p Parser) toplevel_stmt() ast.Stmt {
+	match p.tok.kind {
+		token.TokenKind.key_pub{
+			return p.pub_stmt()
+		}
+		token.TokenKind.hash {
+			return p.expr_stmt()
+		}
+		token.TokenKind.key_const{
+			return p.const_decl()
+		}
+		token.TokenKind.key_enum{
+			return p.enum_decl()
+		}
+		token.TokenKind.key_fun{
+			return p.fun_decl()
+		}
+		token.TokenKind.key_global{
+			return p.global_decl()
+		}
+		token.TokenKind.key_struct{
+			return p.struct_decl()
+		}
+		token.TokenKind.key_type{
+			return p.type_decl()
+		}
+		else{
+			p.error('bad toplevel token: kind: ${p.tok.kind}, val: ${p.tok.val}')
+		}
+	}
+}
+
+fun (p Parser) pub_stmt() ast.Stmt {
+	match p.next_tok.kind {
+		token.TokenKind.key_const{
+			return p.const_decl()
+		}
+		token.TokenKind.key_enum{
+			return p.enum_decl()
+		}
+		token.TokenKind.key_fun{
+			return p.fun_decl()
+		}
+		token.TokenKind.key_struct{
+			return p.struct_decl()
+		}
+		token.TokenKind.key_type{
+			return p.type_decl()
+		}
+		else{
+			p.error('cannot use pub keyword before ${p.next_tok.kind}')
+		}
+	}
+}
+
+fun (p Parser) stmt() ast.Stmt {
+	match p.tok.kind {
+		token.TokenKind.key_mut, token.TokenKind.name {
+			return p.assign_or_expr_stmt()
+		}
+		token.TokenKind.key_break, token.TokenKind.key_continue {
+			return p.control_stmt()
+		}
+		token.TokenKind.key_for {
+			return p.for_loop()
+		}
+		token.TokenKind.key_return {
+			return p.return_stmt()
+		}
+		else{
+			return p.expr_stmt()
+		}
+	}
+}
+
+fun (p Parser) assign_or_expr_stmt()ast.Stmt{
+	left := p.expr(0)
+	if p.tok.kind.is_assign() {
+		return p.assign_stmt(left)
+	}
+	return ast.ExprStmt{expr: left}
+}
+
+fun (p Parser) assign_stmt(left ast.Expr){
+	pos := p.tok.pos
+	op := p.tok.kind
+	p.next()
+	right := p.expr(0)
+	return ast.AssignStmt{
+		op:op
+		left: left
+		right: right
+		pos: pos
+	}
+}
+
+fun (p Parser) const_decl()ast.ConstDecl{
+	pos := p.tok.pos
+	is_pub := p.tok.kind == token.TokenKind.key_pub
+	if is_pub {
+		p.next()
+	}
+	p.next()
+	name := p.prepend_pkg(p.check_name())
+	p.check(token.TokenKind.decl_assign)
+	expr := p.expr(0)
+	typ := p.infer_expr_type(expr)
+	p.table.global_scope.register(name, ast.ScopeObject{
+		typ: typ
+		kind: ast.ObjectKind.constant
+		is_pub: is_pub
+	})
+	return ast.ConstDecl{
+		name: name
+		expr: expr
+		pos: pos
+	}
+}
+
+fun (p Parser) control_stmt()ast.LoopControlStmt{
+	pos := p.tok.pos
+	p.next()
+	return ast.LoopControlStmt{
+		kind:p.prev_tok.kind
+		pos: pos
+	}
+}
+
+fun (p Parser) expr_stmt()ast.ExprStmt{
+	expr := p.expr(0)
+	return ast.ExprStmt{
+		expr: expr
+	}
+}
+
+fun (p Parser) enum_decl()ast.EnumDecl{
+	pos := p.tok.pos
+	is_pub := p.tok.kind == token.TokenKind.key_pub
+	if is_pub {
+		p.next()
+	}
+	p.next()
+	name := p.prepend_pkg(p.check_name())
+	p.check(token.TokenKind.lcur)
+	mut variants := []string
+	for p.tok.kind != token.TokenKind.rcur {
+		vname := p.check_name()
+		variants.push(vname)
+	}
+	p.check(token.TokenKind.rcur)
+	p.table.register_sym(ast.TypeSymbol{
+		name: name
+		is_pub: is_pub
+		pkg: p.pkg_name
+		kind: ast.TypeKind.enum_
+		info: ast.EnumInfo{
+			vals: variants
+		}
+	})
+	return ast.EnumDecl{
+		name: name
+		variants: variants
+		pos: pos
+	}
+}
+
+fun (p Parser) for_loop()ast.Stmt{
+	pos := p.tok.pos
+	p.next()
+	if p.next_tok.kind == token.TokenKind.decl_assign {
+		p.is_for_init = true
+		init := p.assign_or_expr_stmt()
+		p.is_for_init = false
+		p.check(token.TokenKind.semicolon)
+		cond := p.expr(0)
+		p.check(token.TokenKind.semicolon)
+		inc := p.stmt()
+		stmts := p.parse_block()
+		return ast.ForClassicLoop{
+			init:init
+			cond:cond
+			inc:inc
+			stmts: stmts
+			pos: pos
+		}
+	}
+	if p.next_tok.kind == token.TokenKind.key_in or p.next_tok.kind == token.TokenKind.comma {
+		mut idxvar := ''
+		if p.next_tok.kind == token.TokenKind.comma {
+			idxvar = p.check_name()
+			p.next()
+		}
+		valvar := p.check_name()
+		p.check(token.TokenKind.key_in)
+		p.is_struct_possible = false
+		expr := p.expr(0)
+		p.is_struct_possible = true
+		stmts := p.parse_block()
+		return ast.ForInLoop{
+			idxvar:idxvar
+			valvar: valvar
+			expr: expr
+			stmts: stmts
+			pos: pos
+		}
+	}
+	cond := p.expr(0)
+	stmts := p.parse_block()
+	return ast.ForLoop{
+		cond:cond
+		stmts: stmts
+		pos: pos
+	}
+}
+
+fun (p Parser) fun_decl()ast.FunDecl{
+	pos := p.tok.pos
+	is_pub := p.tok.kind == token.TokenKind.key_pub
+	if is_pub {
+		p.next()
+	}
+	p.check(token.TokenKind.key_fun)
+	mut is_method := false
+	mut params := []ast.Param
+	if p.tok.kind == token.TokenKind.lpar {
+		is_method = true
+		p.next()
+		rec_name := p.check_name()
+		rec_type := p.parse_type()
+		params.push(ast.Param{
+			name:rec_name
+			typ:rec_type
+		})
+		p.check(token.TokenKind.rpar)
+	}
+	mut name := p.check_name()
+	if not is_method {
+		name = p.prepend_pkg(name)
+	}
+	p.check(token.TokenKind.lpar)
+	params = params.concat(p.fun_params())
+	p.check(token.TokenKind.rpar)
+	mut return_type := i32(ast.TypeIdx.void)
+	if p.tok.kind != token.TokenKind.lcur {
+		return_type = p.parse_type()
+	}
+	mut node := ast.FunDecl{
+		is_test: p.is_test_file and name.starts_with('test_')
+		is_pub: is_pub
+		name: name
+		params: params
+		return_type: return_type
+		pos: pos
+	}
+	if is_method {
+		sym := p.table.get_sym(params[0].typ)
+		sym.methods.push(node)
+	} else {
+		p.table.fun_decls[name] = node
+		mut param_types := []i32
+		for param in params {
+			param_types.push(param.typ)
+		}
+		typ := p.table.find_or_register_fun(param_types, return_type)
+		p.table.global_scope.register(name, ast.ScopeObject{
+			typ: typ
+			kind: ast.ObjectKind.function
+			is_pub: is_pub
+		})
+	}
+	f_stmts := p.parse_block()
+	node.stmts = f_stmts
+	node.is_method = is_method
+	return node
+}
+
+fun (p Parser) fun_params() []ast.Param{
+	mut params := []ast.Param
+	for p.tok.kind != token.TokenKind.rpar{
+		param := ast.Param{
+			name: p.check_name()
+			typ: p.parse_type()
+		}
+		params.push(param)
+		if p.tok.kind != token.TokenKind.rpar{
+			p.check(token.TokenKind.comma)
+		}
+	}
+	return params
+}
+
+fun (p Parser) global_decl()ast.GlobalDecl{
+	pos := p.tok.pos
+	p.check(token.TokenKind.key_global)
+	name := p.prepend_pkg(p.check_name())
+	p.check(token.TokenKind.decl_assign)
+	expr := p.expr(0)
+	typ := p.infer_expr_type(expr)
+	p.table.global_scope.register(name, ast.ScopeObject{
+		typ: typ
+		kind: ast.ObjectKind.global_
+	})
+	return ast.GlobalDecl{
+		name: name
+		expr: expr
+		pos: pos
+	}
+}
+
+fun (p Parser) return_stmt()ast.ReturnStmt{
+	pos := p.tok.pos
+	p.check(token.TokenKind.key_return)
+	mut expr := ast.EmptyExpr{} as ast.Expr
+	if p.tok.pos.line == pos.line {
+		expr = p.expr(0)
+	}
+	return ast.ReturnStmt{
+		expr:expr
+		pos: pos
+	}
+}
+
+fun (p Parser) struct_decl()ast.StructDecl{
+	pos := p.tok.pos
+	is_pub := p.tok.kind == token.TokenKind.key_pub
+	if is_pub {
+		p.next()
+	}
+	p.check(token.TokenKind.key_struct)
+	name := p.prepend_pkg(p.check_name())
+	p.check(token.TokenKind.lcur)
+	mut fields := []ast.StructField
+	for p.tok.kind != token.TokenKind.rcur {
+		fname := p.check_name()
+		ftyp := p.parse_type()
+		field := ast.StructField{name: fname typ: ftyp}
+		fields.push(field)
+	}
+	p.check(token.TokenKind.rcur)
+	tsym := ast.TypeSymbol{
+		kind: ast.TypeKind.struct_
+		name: name
+		is_pub: is_pub
+		pkg: p.pkg_name
+		info: ast.StructInfo{
+			fields: fields
+		}
+	}
+	typ := p.table.register_sym(tsym)
+	return ast.StructDecl{
+		name: name
+		typ: typ
+		fields: fields
+		pos: pos
+	}
+}
+
+fun (p Parser) type_decl() ast.TypeDecl {
+	pos := p.tok.pos
+	is_pub := p.tok.kind == token.TokenKind.key_pub
+	if is_pub {
+		p.next()
+	}
+	p.next()
+	name := p.prepend_pkg(p.check_name())
+	p.check(token.TokenKind.decl_assign)
+	is_fun_type := p.tok.kind == token.TokenKind.key_fun
+	mut variants := []i32
+	variants.push(p.parse_type())
+	if is_fun_type {
+		sym := p.table.get_sym(variants[0])
+		typ := p.table.register_sym(ast.TypeSymbol{
+			kind: ast.TypeKind.fun_
+			name: name
+			is_pub: is_pub
+			pkg: p.pkg_name
+			info: sym.info
+		})
+		return ast.TypeDecl{
+			name: name
+			typ: typ
+			variants: variants
+			pos: pos
+		}
+	}
+	for p.tok.kind == token.TokenKind.pipe {
+		p.next()
+		variants.push(p.parse_type())
+	}
+	// TODO differentiate sumtype from alias (single variant)
+	typ := p.table.register_sym(ast.TypeSymbol{
+		kind: ast.TypeKind.sum_type
+		name: name
+		is_pub: is_pub
+		pkg: p.pkg_name
+		info: ast.SumTypeInfo{
+			variants: variants
+		}
+	})
+	return ast.TypeDecl{
+		name: name
+		typ: typ
+		variants: variants
+		pos: pos
+	}
+}

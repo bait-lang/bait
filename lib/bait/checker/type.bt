@@ -1,0 +1,49 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package checker
+
+import bait.ast
+
+fun (c Checker) check_types(got i32, expected i32, ) {
+	if got == expected {
+		return true
+	}
+	// TODO remove any type
+	if got == ast.TypeIdx.any or expected == ast.TypeIdx.any {
+		return true
+	}
+	got_sym := c.table.get_sym(got)
+	exp_sym := c.table.get_sym(expected)
+	if exp_sym.kind == ast.TypeKind.array and got_sym.kind == ast.TypeKind.array {
+		if exp_sym.name == 'array' or got_sym.name == 'array' {
+			return true
+		}
+		// TODO remove any type
+		got_info := got_sym.info as ast.ArrayInfo
+		if got_info.elem_type == ast.TypeIdx.any {
+			return true
+		}
+		exp_info := exp_sym.info as ast.ArrayInfo
+		if exp_info.elem_type == ast.TypeIdx.any {
+			return true
+		}
+	}
+	if exp_sym.kind == ast.TypeKind.sum_type {
+		info := exp_sym.info as ast.SumTypeInfo
+		return info.variants.contains(got)
+	}
+	if got_sym.kind == ast.TypeKind.fun_ and exp_sym.kind == ast.TypeKind.fun_ {
+		got_info := got_sym.info as ast.FunInfo
+		exp_info := exp_sym.info as ast.FunInfo
+		if got_info.param_types.length != exp_info.param_types.length {
+			return false
+		}
+		for i := 0; i < got_info.param_types.length; i += 1 {
+			if not c.check_types(got_info.param_types[i], exp_info.param_types[i]) {
+				return false
+			}
+		}
+		return c.check_types(got_info.return_type, exp_info.return_type)
+	}
+	return false
+}
