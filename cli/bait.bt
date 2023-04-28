@@ -240,18 +240,18 @@ fun parse_args(args []string) prefs.Pref {
 	return pref
 }
 
-fun launch_tool(name string) {
+fun launch_tool(name string, args []string) {
 	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
 	tool_source := tool_base_path + '.bt'
 	tool_exe := tool_base_path + '.js'
+	tool_args := args.join(' ')
 	baitexe := os.resource_abs_path('bait.js')
-	// TODO add os.execute and replace this occurence of os.system
-	comp_res := os.system('node ${baitexe} ${tool_source} -o ${tool_exe}')
-	if comp_res != 0 {
-		eprintln('Failed to compile tool "${name}"')
+	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
+	if comp_res.code != 0 {
+		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
 		exit(1)
 	}
-	exit(os.system('node ${tool_exe}'))
+	exit(os.system('node ${tool_exe} ${tool_args}'))
 }
 
 fun main() {
@@ -262,7 +262,7 @@ fun main() {
 	}
 	pref := parse_args(args)
 	if TOOLS.contains(pref.command) {
-		launch_tool(pref.command)
+		launch_tool(pref.command, pref.args)
 		return
 	}
 	match pref.command {
