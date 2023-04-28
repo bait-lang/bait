@@ -24,10 +24,6 @@ Options:
 ')
 }
 
-fun foo(){
-	x := 1
-}
-
 fun print_ast(path string) {
 	text := os.read_file(path)
 	tokens := tokenizer.tokenize(text, path)
