@@ -10,19 +10,9 @@ import bait.checker
 import bait.gen.js as jsgen
 import os
 
-fun show_help() {
-	println('usage: bait [options] <command|file>
-Example:
-   bait my_file.bt
-   bait -o lib.js src/
-
-Commands:
-   help   Prints this message.
-
-Options:
-   -o, --out <file>   Output file name (default: "out.js").
-')
-}
+const TOOLS := [
+	'help'
+]
 
 fun print_ast(path string) {
 	text := os.read_file(path)
@@ -236,18 +226,33 @@ fun parse_args(args []string) prefs.Pref {
 	return pref
 }
 
+fun launch_tool(name string, args []string) {
+	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
+	tool_source := tool_base_path + '.bt'
+	tool_exe := tool_base_path + '.js'
+	tool_args := args.join(' ')
+	baitexe := os.resource_abs_path('bait.js')
+	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
+	if comp_res.code != 0 {
+		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
+		exit(1)
+	}
+	exit(os.system('node ${tool_exe} ${tool_args}'))
+}
+
 fun main() {
 	args := os.ARGS.slice(2, os.ARGS.length)
 	if args.length == 0 {
-		show_help()
-		exit(0)
+		// TODO allow context aware empty struct inits without type
+		launch_tool('help', []string)
+		return
 	}
 	pref := parse_args(args)
+	if TOOLS.contains(pref.command) {
+		launch_tool(pref.command, pref.args)
+		return
+	}
 	match pref.command {
-		'help' {
-			show_help()
-			exit(0)
-		}
 		'ast' {
 			print_ast(pref.args[0])
 			exit(0)
@@ -270,6 +275,6 @@ fun main() {
 		ensure_dir_exists(os.dir(pref.out_name))
 		exit(transpile(pref))
 	}
-	eprintln('error: unknown command: "${pref.command}"')
+	eprintln('error: unknown file or command: "${pref.command}"')
 	exit(1)
 }
