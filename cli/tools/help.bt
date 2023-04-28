@@ -2,6 +2,25 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package main
 
+import os
+
 fun main() {
-	println('TODO help')
+	if os.ARGS.length == 2 {
+		print_topic('default')
+		return
+	}
+	print_topic(os.ARGS[2])
+
+}
+
+fun print_topic(topic string) {
+	help_root := os.resource_abs_path('help')
+	topic_path := '${help_root}/${topic}.txt'
+	if not os.exists(topic_path) {
+		// TODO escape ` in interpolated strings
+		eprintln('help: unknown topic ´${topic}´')
+		exit(1)
+	}
+	content := os.read_file(topic_path)
+	println(content)
 }

@@ -14,20 +14,6 @@ const TOOLS := [
 	'help'
 ]
 
-fun show_help() {
-	println('usage: bait [options] <command|file>
-Example:
-   bait my_file.bt
-   bait -o lib.js src/
-
-Commands:
-   help   Prints this message.
-
-Options:
-   -o, --out <file>   Output file name (default: "out.js").
-')
-}
-
 fun print_ast(path string) {
 	text := os.read_file(path)
 	tokens := tokenizer.tokenize(text, path)
@@ -257,8 +243,9 @@ fun launch_tool(name string, args []string) {
 fun main() {
 	args := os.ARGS.slice(2, os.ARGS.length)
 	if args.length == 0 {
-		show_help()
-		exit(0)
+		// TODO allow context aware empty struct inits without type
+		launch_tool('help', []string)
+		return
 	}
 	pref := parse_args(args)
 	if TOOLS.contains(pref.command) {
@@ -266,10 +253,6 @@ fun main() {
 		return
 	}
 	match pref.command {
-		'help' {
-			show_help()
-			exit(0)
-		}
 		'ast' {
 			print_ast(pref.args[0])
 			exit(0)
