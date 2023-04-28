@@ -61,6 +61,24 @@ pub fun resource_abs_path(path string) string {
 	return join_path(from_js_string(#JS.'__dirname'), [path])
 }
 
+struct Result {
+	code i32
+	stdout string
+	stderr string
+}
+
+pub fun exec(cmd string) Result {
+	mut res := Result{}
+	#JS.'try {
+		const stdout = js_child_process.execSync(cmd.str, {stdio: ["pipe", "pipe", "pipe"]}).toString()
+		res.stdout = from_js_string(stdout)
+	} catch (e) {
+		res.code = e.status
+		res.stderr = from_js_string(e.stderr.toString())
+	}'
+	return res
+}
+
 pub fun system(cmd string) i32 {
 	#JS.'try {
 		js_child_process.execSync(cmd.str, { stdio: "inherit" })
