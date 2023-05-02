@@ -8,11 +8,13 @@ All notable changes will be documented in this file.
 _unreleased_
 
 **Additions**
-- bait: add support for launching external tools
+- bait
+  - add support for launching external tools
+  - add `build` command (it can be omitted)
 - os: new function `exec(cmd) Result`
 
 **Changes**
-- move help into a tool
+- move `help` into a tool
 
 
 ## 0.0.1
