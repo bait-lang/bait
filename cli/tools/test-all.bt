@@ -1,0 +1,21 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package main
+
+import os
+
+const TOOLS := ['build-examples']
+
+fun main() {
+	mut fails := 0
+	for tool in TOOLS {
+		cmd := 'node ${$BAITEXE} ${tool}'
+		code := os.system(cmd)
+		if code != 0 {
+			fails += 1
+		}
+	}
+	if fails > 0 {
+		exit(1)
+	}
+}
