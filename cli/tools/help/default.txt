@@ -12,8 +12,9 @@ Commands:
   test <dir>    Run all tests in the given directory.
   ast <file>    Prints the Abstract Syntax Tree (AST) for the given file.
 
-  self        Recompile bait.
-  up          Update to the latest git commit.
+  self          Recompile bait.
+  up            Update to the latest git commit.
+  version       Print the version text.
 
 Use "bait help <command>" for more information about some commands.
 Right now only build has detailed help.
