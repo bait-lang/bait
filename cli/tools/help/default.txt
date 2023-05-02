@@ -1,16 +1,19 @@
 Usage:
-  bait [options] <command|file>
+  bait [options] <command|path>
 
 Examples:
   bait my_file.bt
   bait -o lib.js src/
 
+Note: If no command is specified, the "build" command is assumed.
+
 Commands:
-  test <dir>  Run all tests in the given directory.
-  ast <file>  Prints the Abstract Syntax Tree (AST) for the given file.
+  build <path>  Compile files and packages.
+  test <dir>    Run all tests in the given directory.
+  ast <file>    Prints the Abstract Syntax Tree (AST) for the given file.
+
   self        Recompile bait.
   up          Update to the latest git commit.
-  help        Prints this message.
 
-Options:
-  -o, --out <file>   Output file name (default: "out.js").
+Use "bait help <command>" for more information about some commands.
+Right now only build has detailed help.
