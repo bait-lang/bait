@@ -243,16 +243,21 @@ fun launch_tool(name string, args []string) {
 fun main() {
 	args := os.ARGS.slice(2, os.ARGS.length)
 	if args.length == 0 {
-		// TODO allow context aware empty struct inits without type
+		// TODO allow context aware empty array inits without type
 		launch_tool('help', []string)
 		return
 	}
-	pref := parse_args(args)
+	mut pref := parse_args(args)
 	if TOOLS.contains(pref.command) {
 		launch_tool(pref.command, pref.args)
 		return
 	}
 	match pref.command {
+		'build' {
+			pref.command = pref.args[0]
+			ensure_dir_exists(os.dir(pref.out_name))
+			exit(transpile(pref))
+		}
 		'ast' {
 			print_ast(pref.args[0])
 			exit(0)

@@ -1,0 +1,5 @@
+Usage:
+  bait ["build"] [options] <file.bt|directory>
+
+Options:
+  -o, --out <file>   Output file name (default: "out.js").
