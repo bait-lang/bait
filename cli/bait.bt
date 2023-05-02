@@ -263,6 +263,12 @@ fun main() {
 			print_ast(pref.args[0])
 			return
 		}
+		'self' {
+			exit(transpile(prefs.Pref{
+				command: 'cli/bait.bt'
+				out_name: 'bait.js'
+			}))
+		}
 		'version' {
 			println('Bait ${VERSION}')
 			return
