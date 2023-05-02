@@ -9,6 +9,7 @@ import bait.token
 const JS_RESERVED := ['case', 'default', 'new', 'var', 'with']
 
 struct Gen {
+	pref prefs.Pref
 	table ast.Table
 	path string
 	type_defs_out string
@@ -25,6 +26,7 @@ struct Gen {
 
 fun gen(files []ast.File, table ast.Table, pref prefs.Pref) string {
 	mut g := Gen{
+		pref: pref
 		table: table
 		indent: -1
 		empty_line: true

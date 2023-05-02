@@ -7,4 +7,6 @@ pub struct Pref {
 	out_name string
 	args []string
 	is_test bool
+	baitexe string
+	baitroot string
 }

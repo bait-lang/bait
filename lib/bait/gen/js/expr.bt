@@ -20,6 +20,8 @@ fun (g Gen) expr(expr ast.Expr) {
 		g.cast_expr(expr)
 	} else if expr is ast.CharLiteral {
 		g.char_literal(expr)
+	} else if expr is ast.CompTimeVar {
+		g.comp_time_var(expr)
 	} else if expr is ast.EnumVal {
 		g.enum_val(expr)
 	} else if expr is ast.Ident {
@@ -142,6 +144,13 @@ fun (g Gen) char_literal(node ast.CharLiteral) {
 	g.write('"')
 	g.write(node.val)
 	g.write('"')
+}
+
+fun (g Gen) comp_time_var(node ast.CompTimeVar){
+	match node.name{
+		'BAITEXE' {g.write('from_js_string("${g.pref.baitexe}")')}
+		'BAITROOT' {g.write('from_js_string("${g.pref.baitroot}")')}
+	}
 }
 
 fun (g Gen) enum_val(node ast.EnumVal) {

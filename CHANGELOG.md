@@ -12,7 +12,10 @@ _unreleased_
   - add support for launching external tools
   - add `build` command (it can be omitted)
   - add `version` command
-- os: new function `exec(cmd) Result`
+- compile time variables (`$BAITEXE` and `$BAITROOT`)
+- os: new functions
+  - `exec(cmd) Result`
+  - `executable() string`
 
 **Changes**
 - move `help` into a tool

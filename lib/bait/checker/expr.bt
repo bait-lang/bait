@@ -20,6 +20,8 @@ fun (c Checker) expr(expr ast.Expr) i32 {
 		return c.cast_expr(expr)
 	} else if expr is ast.CharLiteral {
 		return ast.TypeIdx.u8
+	} else if expr is ast.CompTimeVar {
+		return c.comp_time_var(expr)
 	} else if expr is ast.EnumVal {
 		return c.enum_val(expr)
 	} else if expr is ast.Ident {
@@ -182,6 +184,15 @@ fun (c Checker) method_call(node ast.CallExpr) i32 {
 fun (c Checker) cast_expr(node ast.CastExpr) i32 {
 	c.expr(node.expr)
 	return node.target
+}
+
+const SUPPORTED_COMPTIME_VARS := ['BAITEXE', 'BAITROOT']
+
+fun (c Checker) comp_time_var(node ast.CompTimeVar) i32 {
+	if not SUPPORTED_COMPTIME_VARS.contains(node.name) {
+		c.error('unsupported comptime var "${node.name}"', node.pos)
+	}
+	return ast.TypeIdx.string
 }
 
 fun (c Checker) enum_val(node ast.EnumVal) i32 {

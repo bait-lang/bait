@@ -53,6 +53,10 @@ pub fun join_path(base string, dirs []string) string {
 	return from_js_string(#JS.path.join(base.str, #JS.'...js_dirs'))
 }
 
+pub fun executable() string {
+	return from_js_string(#JS.'__filename')
+}
+
 pub fun abs_path(path string) string {
 	return from_js_string(#JS.path.resolve(getwd().str, #JS.'path.str'))
 }
