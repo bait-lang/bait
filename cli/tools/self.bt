@@ -1,0 +1,13 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package main
+
+import os
+
+fun main() {
+	res := os.exec('node ${$BAITEXE} cli/bait.bt -o bait.js')
+	if res.code != 0 {
+		exit(1)
+	}
+	println('Bait compiled successfully into "bait.js"')
+}

@@ -14,7 +14,7 @@ const VERSION := '0.0.2-dev'
 
 const TOOLS := [
 	'up',
-	// 'self',
+	'self',
 	'help',
 	'test-all',
 	'build-examples',
@@ -262,12 +262,6 @@ fun main() {
 		'ast' {
 			print_ast(pref.args[0])
 			return
-		}
-		'self' {
-			exit(transpile(prefs.Pref{
-				command: 'cli/bait.bt'
-				out_name: 'bait.js'
-			}))
 		}
 		'version' {
 			println('Bait ${VERSION}')
