@@ -1,0 +1,3 @@
+Other commands:
+  test-all        Run most checks of the CI pipeline locally.
+  build-examples  Test if all examples can be built.

@@ -17,7 +17,7 @@ fun print_topic(topic string) {
 	topic_path := '${help_root}/${topic}.txt'
 	if not os.exists(topic_path) {
 		// TODO escape ` in interpolated strings
-		eprintln('help: unknown topic ´${topic}´')
+		eprintln('help: unknown topic "${topic}"')
 		exit(1)
 	}
 	content := os.read_file(topic_path)

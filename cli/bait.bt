@@ -13,7 +13,9 @@ import os
 const VERSION := '0.0.2-dev'
 
 const TOOLS := [
-	'help'
+	'help',
+	'test-all',
+	'build-examples',
 ]
 
 fun print_ast(path string) {
