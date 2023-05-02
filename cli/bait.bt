@@ -13,6 +13,8 @@ import os
 const VERSION := '0.0.2-dev'
 
 const TOOLS := [
+	'up',
+	// 'self',
 	'help',
 	'test-all',
 	'build-examples',
@@ -153,19 +155,6 @@ fun run_tests(pref prefs.Pref) i32 {
 	return 0
 }
 
-fun update() {
-	os.system('git pull')
-	res := transpile(prefs.Pref{
-		command: 'cli/bait.bt'
-		out_name: 'bait.js'
-	})
-	if res != 0 {
-		os.system('./make.sh')
-	}
-	println('Updated successfully.')
-	exit(0)
-}
-
 fun bait_files_from_dir(dir string) []string {
 	all_files := os.ls(dir)
 	mut files := []string
@@ -272,7 +261,7 @@ fun main() {
 		}
 		'ast' {
 			print_ast(pref.args[0])
-			exit(0)
+			return
 		}
 		'self' {
 			exit(transpile(prefs.Pref{
@@ -280,13 +269,9 @@ fun main() {
 				out_name: 'bait.js'
 			}))
 		}
-		'up' {
-			update()
-			exit(0)
-		}
 		'version' {
 			println('Bait ${VERSION}')
-			exit(0)
+			return
 		}
 	}
 	if os.exists(pref.command) {
