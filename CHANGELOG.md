@@ -14,7 +14,7 @@ _unreleased_
   - add `version` command
   - add `build-examples` and `test-all` tools
 - compile time variables (`$BAITEXE` and `$BAITROOT`)
-- CI pipeline that runs basic checks
+- CI pipeline that builds examples for now
 - os: new functions
   - `exec(cmd) Result`
   - `executable() string`
