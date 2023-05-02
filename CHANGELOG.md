@@ -11,6 +11,7 @@ _unreleased_
 - bait
   - add support for launching external tools
   - add `build` command (it can be omitted)
+  - add `version` command
 - os: new function `exec(cmd) Result`
 
 **Changes**

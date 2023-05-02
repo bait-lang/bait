@@ -10,6 +10,8 @@ import bait.checker
 import bait.gen.js as jsgen
 import os
 
+const VERSION := '0.0.2-dev'
+
 const TOOLS := [
 	'help'
 ]
@@ -258,6 +260,9 @@ fun main() {
 			ensure_dir_exists(os.dir(pref.out_name))
 			exit(transpile(pref))
 		}
+		'test' {
+			exit(run_tests(pref))
+		}
 		'ast' {
 			print_ast(pref.args[0])
 			exit(0)
@@ -268,11 +273,12 @@ fun main() {
 				out_name: 'bait.js'
 			}))
 		}
-		'test' {
-			exit(run_tests(pref))
-		}
 		'up' {
 			update()
+			exit(0)
+		}
+		'version' {
+			println('Bait ${VERSION}')
 			exit(0)
 		}
 	}
