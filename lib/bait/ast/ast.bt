@@ -6,7 +6,7 @@ import bait.token
 
 pub type Stmt := AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt
 
-pub type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CastExpr | CharLiteral | EnumVal | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
+pub type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CastExpr | CharLiteral | CompTimeVar | EnumVal | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
 
 pub struct AssignStmt{
 	op token.TokenKind
@@ -160,6 +160,11 @@ pub struct CastExpr {
 
 pub struct CharLiteral{
 	val string
+	pos token.Pos
+}
+
+pub struct CompTimeVar{
+	name string
 	pos token.Pos
 }
 
