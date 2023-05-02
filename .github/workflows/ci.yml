@@ -16,5 +16,7 @@ jobs:
           node-version: 16
       - name: Build baitjs
         run: npm run make
+      - name: Build tools
+        run: node bait.js build-tools
       - name: Build examples
         run: node bait.js build-examples

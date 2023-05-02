@@ -5,19 +5,19 @@ package main
 import os
 
 fun main() {
-	examples_dir := os.join_path($BAITROOT, ['examples'])
-	examples := os.ls(examples_dir)
+	tools_dir := os.join_path($BAITROOT, ['cli', 'tools'])
+	tools := os.ls(tools_dir)
 	mut fails := 0
-	for example in examples {
-		if not example.ends_with('.bt') {
+	for tool in tools {
+		if not tool.ends_with('.bt') {
 			continue
 		}
-		cmd := 'node ${$BAITEXE} ${examples_dir}/${example}'
+		cmd := 'node ${$BAITEXE} ${tools_dir}/${tool}'
 		res := os.exec(cmd)
 		if res.code == 0 {
-			println('OK ${example}')
+			println('OK ${tool}')
 		} else {
-			println('FAIL ${example}')
+			println('FAIL ${tool}')
 			fails += 1
 		}
 	}

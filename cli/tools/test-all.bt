@@ -4,7 +4,7 @@ package main
 
 import os
 
-const TOOLS := ['build-examples']
+const TOOLS := ['build-examples', 'build-tools']
 
 fun main() {
 	mut fails := 0

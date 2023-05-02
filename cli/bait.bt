@@ -16,6 +16,7 @@ const TOOLS := [
 	'help',
 	'test-all',
 	'build-examples',
+	'build-tools',
 ]
 
 fun print_ast(path string) {

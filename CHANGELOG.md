@@ -12,9 +12,9 @@ _unreleased_
   - add support for launching external tools
   - add `build` command (it can be omitted)
   - add `version` command
-  - add `build-examples` and `test-all` tools
+  - add `build-examples`, `build-tools` and `test-all` tools
 - compile time variables (`$BAITEXE` and `$BAITROOT`)
-- CI pipeline that builds examples for now
+- CI pipeline with very basic checks
 - os: new functions
   - `exec(cmd) Result`
   - `executable() string`
