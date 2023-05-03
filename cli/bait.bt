@@ -13,6 +13,7 @@ import os
 const VERSION := '0.0.2-dev'
 
 const TOOLS := [
+	'ast',
 	'up',
 	'self',
 	'help',
@@ -20,14 +21,6 @@ const TOOLS := [
 	'build-examples',
 	'build-tools',
 ]
-
-fun print_ast(path string) {
-	text := os.read_file(path)
-	tokens := tokenizer.tokenize(text, path)
-	ast := parser.parse(tokens, path, ast.new_table())
-	println(ast)
-	exit(0)
-}
 
 fun ensure_dir_exists(dir string) {
 	if not os.exists(dir) {
@@ -258,10 +251,6 @@ fun main() {
 		}
 		'test' {
 			exit(run_tests(pref))
-		}
-		'ast' {
-			print_ast(pref.args[0])
-			return
 		}
 		'version' {
 			println('Bait ${VERSION}')

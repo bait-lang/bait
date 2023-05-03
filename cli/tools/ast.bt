@@ -1,0 +1,16 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package main
+
+import os
+import bait.ast
+import bait.tokenizer
+import bait.parser
+
+fun main() {
+	path := os.ARGS[2]
+	text := os.read_file(path)
+	tokens := tokenizer.tokenize(text, path)
+	ast := parser.parse(tokens, path, ast.new_table())
+	println(ast)
+}
