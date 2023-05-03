@@ -8,6 +8,11 @@ node baitjs/bait.js cli/bait.bt -o bait1.js
 node bait1.js cli/bait.bt -o bait2.js
 node bait2.js self
 
+if [ ! -f bait.js ]; then
+    echo "make: compilation failed"
+    exit 1
+fi
+
 if [ $(wc -l bait.js | awk '{print $1}') -le 1000 ]; then
     echo "bait.js is too small. Something went wrong."
     exit 1

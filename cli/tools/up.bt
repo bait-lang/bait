@@ -1,0 +1,19 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package main
+
+import os
+
+fun main() {
+	os.system('git pull')
+	res := os.exec('node ${$BAITEXE} self')
+	if res.code == 0 {
+		println('Updated successfully.')
+		return
+	}
+	println('"bait self" failed, running make...')
+	make_res := os.system('./make.sh')
+	if make_res != 0 {
+		exit(1)
+	}
+}
