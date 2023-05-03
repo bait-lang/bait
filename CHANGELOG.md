@@ -20,7 +20,7 @@ _unreleased_
   - `executable() string`
 
 **Changes**
-- move `help` into a tool
+- move `help`, `self` and `up` into tools
 
 
 ## 0.0.1
