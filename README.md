@@ -1,4 +1,18 @@
-# Bait programming language
+# Bait Programming Language
+Simple compiled language for building reliable software.
+
+## Key Features
+> **Note** Bait is in an alpha state. Incomplete features are marked with :construction:. Breaking changes may occur.
+
+- Clean and simple syntax that is easy to learn
+- :construction: type and memory safety with immutability by default
+- JavaScript backend
+- :construction: C and native backends
+- :construction: cross-platform support and cross-compilation
+
+## Documentation
+- [Language Overview](docs/docs.md)
+
 ## Building from Source
 ```sh
 git clone https://github.com/tiabeast/bait
