@@ -9,7 +9,7 @@ node bait1.js cli/bait.bt -o bait2.js
 node bait2.js self
 
 if [ ! -f bait.js ]; then
-    echo "make: self compilation failed"
+    echo "make: compilation failed"
     exit 1
 fi
 

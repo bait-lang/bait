@@ -229,7 +229,7 @@ fun launch_tool(name string, args []string) {
 	tool_source := tool_base_path + '.bt'
 	tool_exe := tool_base_path + '.js'
 	tool_args := args.join(' ')
-	baitexe := os.resource_abs_path('bait.js')
+	baitexe := os.executable()
 	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
 	if comp_res.code != 0 {
 		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
@@ -262,12 +262,6 @@ fun main() {
 		'ast' {
 			print_ast(pref.args[0])
 			return
-		}
-		'self' {
-			exit(transpile(prefs.Pref{
-				command: 'cli/bait.bt'
-				out_name: 'bait.js'
-			}))
 		}
 		'version' {
 			println('Bait ${VERSION}')
