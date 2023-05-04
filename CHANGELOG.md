@@ -16,11 +16,22 @@ _unreleased_
 - compile time variables (`$BAITEXE` and `$BAITROOT`)
 - CI pipeline with very basic checks
 - os: new functions
-  - `exec(cmd) Result`
+  - `cp(string, string)`
+  - `chdir(string)`
+  - `home_dir() string`
+  - `rmdir(string)`, `rmdir_all(string)`
+  - `read_lines(string) []string`
   - `executable() string`
+  - `getenv(string) string`, `setenv(string, string)`
+  - `exec(string) Result`
+- Really basic documentation
 
 **Changes**
 - move `help`, `self` and `up` into tools
+- baitjs generation
+  - move logic into `gen-baitjs` tool
+  - include branch, hash and commit message from the corresponding bait commit
+- `self`: backup the bait.js file
 
 
 ## 0.0.1

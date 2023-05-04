@@ -13,6 +13,10 @@ pub fun ls(dir string) []string {
 	return from_js_string_arr(#JS.fs.readdirSync(dir.str))
 }
 
+pub fun cp(src string, dest string) {
+	#JS.fs.copyFileSync(src.str, dest.str)
+}
+
 pub fun exists(path string) bool {
 	return #JS.fs.existsSync(#JS.'path.str')
 }

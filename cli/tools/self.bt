@@ -5,6 +5,7 @@ package main
 import os
 
 fun main() {
+	os.cp('bait.js', 'bait2.js')
 	res := os.exec('node ${$BAITEXE} cli/bait.bt -o bait.js')
 	if res.code != 0 {
 		exit(1)
