@@ -35,8 +35,10 @@ jobs:
               exit 1
           fi
 
-          git -C $BAITJS_DIR add bait.js
-          git -C $BAITJS_DIR diff-index --quiet HEAD || git -C $BAITJS_DIR commit -m "update bait.js"
-
-          git -C $BAITJS_DIR pull --rebase
-          git -C $BAITJS_DIR push
+          cd $BAITJS_DIR
+          git add bait.js
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "update bait.js"
+            git pull --rebase
+            git push
+          fi
