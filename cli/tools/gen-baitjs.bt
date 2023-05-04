@@ -26,7 +26,10 @@ fun main() {
 	os.system('git add .')
 	has_changes := os.system('git diff-index --quiet HEAD')
 	if has_changes != 0 {
-		os.system('git commit -m "update bait.js"')
+		commit_hash := os.exec('git rev-parse --short HEAD').stdout.trim_space()
+		commit_msg := os.exec('git log -1 --oneline --pretty="%s" HEAD').stdout.trim_space()
+
+		os.system('git commit -m "[bait] ${commit_hash} - ${commit_msg}"')
 		os.system('git pull --rebase')
 		os.system('git push')
 	}
