@@ -2,6 +2,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package os
 
+import #JS.os
 import #JS.fs
 import #JS.path
 import #JS.child_process
@@ -20,6 +21,14 @@ pub fun file_name(path string) string {
 	return from_js_string(#JS.path.basename(#JS.'path.str'))
 }
 
+pub fun chdir(dir string) {
+	#JS.'process.chdir(dir.str)'
+}
+
+pub fun home_dir() string {
+	return from_js_string(#JS.os.homedir())
+}
+
 pub fun dir(path string) string {
 	return from_js_string(#JS.path.dirname(#JS.'path.str'))
 }
@@ -36,8 +45,20 @@ pub fun mkdir_all(dir string) {
 	#JS.fs.mkdirSync(dir.str, #JS.'{ recursive: true }')
 }
 
+pub fun rmdir(dir string) {
+	#JS.fs.rmdirSync(dir.str)
+}
+
+pub fun rmdir_all(dir string) {
+	#JS.fs.rmdirSync(dir.str, #JS.'{ recursive: true }')
+}
+
 pub fun read_file(path string) string {
 	return from_js_string(#JS.'js_fs.readFileSync(path.str).toString()')
+}
+
+pub fun read_lines(path string) []string {
+	return from_js_string_arr(#JS.'js_fs.readFileSync(path.str).toString().split("\\n")')
 }
 
 pub fun write_file(path string, text string) {
@@ -63,6 +84,14 @@ pub fun abs_path(path string) string {
 
 pub fun resource_abs_path(path string) string {
 	return join_path(from_js_string(#JS.'__dirname'), [path])
+}
+
+pub fun getenv(key string) string {
+	return from_js_string(#JS.'process.env[key.str]')
+}
+
+pub fun setenv(key string, value string) {
+	#JS.'process.env[key.str] = value.str'
 }
 
 struct Result {
