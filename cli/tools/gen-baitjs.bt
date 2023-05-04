@@ -1,0 +1,33 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package main
+
+import os
+
+fun main() {
+	os.system('git config --global user.name "tiabeast-bot"')
+	os.system('git config --global user.email "131296262+tiabeast-bot@users.noreply.github.com"')
+
+	baitjs_dir := os.join_path(os.home_dir(), ['.bait', 'baitjs'])
+	os.rmdir_all(baitjs_dir)
+
+	access_token := os.getenv('TIABEAST_BOT_TOKEN')
+	os.system('git clone --depth 1 https://tiabeast-bot:${access_token}@github.com/tiabeast/baitjs.git ${baitjs_dir}')
+
+	os.system('node bait.js cli/bait.bt -o ${baitjs_dir}/bait.js')
+
+	lines := os.read_lines('bait.js')
+	if lines < 3000 {
+		eprintln('bait.js is too small. Something went wrong.')
+		exit(1)
+	}
+
+	os.chdir(baitjs_dir)
+	os.system('git add .')
+	has_changes := os.system('git diff-index --quiet HEAD')
+	if has_changes != 0 {
+		os.system('git commit -m "update bait.js"')
+		os.system('git pull --rebase')
+		os.system('git push')
+	}
+}
