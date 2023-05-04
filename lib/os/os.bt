@@ -26,7 +26,8 @@ pub fun chdir(dir string) {
 }
 
 pub fun home_dir() string {
-	return from_js_string(#JS.os.homedir())
+	// TODO fix JS import and package name conflict e.g. #JS.os and package os
+	return from_js_string(#JS.'js_os.homedir()')
 }
 
 pub fun dir(path string) string {
