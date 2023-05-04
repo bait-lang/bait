@@ -1,10 +1,12 @@
-if [ -f baitjs/bait.js ]; then
-    git -C baitjs pull
+BAITJS_DIR="$HOME/.bait/baitjs"
+
+if [ -f $BAITJS_DIR/bait.js ]; then
+    git -C $BAITJS_DIR pull
 else
-   git clone --depth 1 https://github.com/tiabeast/baitjs baitjs
+   git clone --depth 1 https://github.com/tiabeast/baitjs $BAITJS_DIR
 fi
 
-node baitjs/bait.js cli/bait.bt -o bait1.js
+node $BAITJS_DIR/bait.js cli/bait.bt -o bait1.js
 node bait1.js cli/bait.bt -o bait2.js
 node bait2.js self
 
