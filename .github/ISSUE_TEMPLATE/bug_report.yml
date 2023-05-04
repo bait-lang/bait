@@ -1,0 +1,57 @@
+name: 🐛 Bug Report
+description: Report a bug
+title: (bug summary)
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description and Reproduction Steps
+      description: |
+        What is the problem?
+        Please provide a short description and a self-contained, concise code snippet for reproduction.
+        For more complex issues please provide a minimal repo that reproduces the issue.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current Behavior
+      description: |
+        What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: |
+        What did you expect to happen instead?
+        Please include the complete error, exception or stack trace.
+    validations:
+      required: true
+
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Possible Solution and Additional Information
+      description: Suggest a fix for the bug or include anything else that might be helpful for troubleshooting.
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Bait version
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment details (OS name and version, Node.js version, etc.)
+    validations:
+      required: true

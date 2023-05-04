@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 General Questions about Bait
+    url: https://github.com/tiabeast/bait/discussions/categories/questions-and-answers
+    about: Ask or answer questions in the discussions section.
