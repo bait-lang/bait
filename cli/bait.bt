@@ -56,7 +56,7 @@ fun transpile(pref prefs.Pref) i32 {
 	for p in paths {
 		text2 := os.read_file(p)
 		tokens2 := tokenizer.tokenize(text2, p)
-		files.push(parser.parse(tokens2, p, table))
+		files.push(parser.parse(tokens2, p, table, pref))
 	}
 	root_pkg := files[files.length - 1].pkg_decl.full_name
 	for i:=0; i<files.length; i+=1 {
@@ -77,7 +77,7 @@ fun transpile(pref prefs.Pref) i32 {
 				paths.push(p)
 				text2 := os.read_file(p)
 				tokens2 := tokenizer.tokenize(text2, p)
-				files.push(parser.parse(tokens2, p, table))
+				files.push(parser.parse(tokens2, p, table, pref))
 			}
 		}
 	}
@@ -203,6 +203,9 @@ fun parse_args(args []string) prefs.Pref {
 			"-o", '--out' {
 				i += 1
 				pref.out_name = args[i]
+			}
+			'--script' {
+				pref.is_script = true
 			}
 			else{
 				if pref.command.length == 0 {
