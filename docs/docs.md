@@ -27,7 +27,7 @@ count = 3
 
 ## Constants
 ```bait
-const PI := 3.14
+const ANSWER := 42
 ```
 
 ## Primitive Types
@@ -38,8 +38,6 @@ string
 
 i8 i16 i32 i64
 u8 u16 u32 u64
-
-f32 f64
 ```
 
 ## Arrays
