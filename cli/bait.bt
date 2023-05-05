@@ -138,14 +138,8 @@ fun run_tests(pref prefs.Pref) i32 {
 	for i, file in files_to_test {
 		test_prefs.command = file
 		test_prefs.out_name = '/tmp/test_${i}.js'
-		res := transpile(test_prefs)
-		if res != 0 {
-			has_fails = true
-			println('FAIL ${file}')
-			continue
-		}
-		run_res := os.system('node ${test_prefs.out_name}')
-		if run_res == 0 {
+		res := run(test_prefs)
+		if res == 0 {
 			println('OK ${file}')
 		} else {
 			has_fails = true
