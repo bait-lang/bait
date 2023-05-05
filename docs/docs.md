@@ -67,7 +67,7 @@ arr[3] = 4
 ```bait
 import os
 
-fn main(){
+fun main(){
     text := os.read_file('myfile.txt')
 }
 ```
@@ -149,7 +149,7 @@ struct Rect{
 
 r := Rect{
     width: 5
-    heigth: 10
+    height: 10
 }
 ```
 

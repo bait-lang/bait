@@ -13,7 +13,8 @@ _unreleased_
   - add `build` command (it can be omitted)
   - add `run` command
   - add `version` command
-  - add `build-examples`, `build-tools` and `test-all` tools
+  - add `build-examples`, `build-tools`, `check-md` and `test-all` tools
+- `build`: add `--script` option to enable script mode, where no main function is required
 - compile time variables (`$BAITEXE` and `$BAITROOT`)
 - CI pipeline with very basic checks
 - os: new functions
@@ -25,6 +26,8 @@ _unreleased_
   - `executable() string`
   - `getenv(string) string`, `setenv(string, string)`
   - `exec(string) Result`
+- new methods:
+  - `string.split_lines() []string`
 - Really basic documentation
 
 **Changes**

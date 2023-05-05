@@ -3,3 +3,4 @@ Usage:
 
 Options:
   -o, --out <file>   Output file name (default: "out.js").
+  --script           Enable script mode, which does not require the main function.

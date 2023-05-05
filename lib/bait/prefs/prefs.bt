@@ -7,6 +7,8 @@ pub struct Pref {
 	out_name string
 	args []string
 	is_test bool
+	is_script bool
+	// Compile time pseudo variables
 	baitexe string
 	baitroot string
 }

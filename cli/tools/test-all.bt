@@ -6,6 +6,13 @@ import os
 
 const TOOLS := ['build-examples', 'build-tools']
 
+const TOOLS_WITH_ARGS := create_tools_with_args()
+fun create_tools_with_args() map[string][]string {
+	mut tools := map[string][]string
+	tools['check-md'] = ['docs/docs.md', 'README.md']
+	return tools
+}
+
 fun main() {
 	mut fails := 0
 	for tool in TOOLS {
@@ -13,6 +20,15 @@ fun main() {
 		code := os.system(cmd)
 		if code != 0 {
 			fails += 1
+		}
+	}
+	for tool, args in TOOLS_WITH_ARGS {
+		for arg_string in args {
+			cmd := 'node ${$BAITEXE} ${tool} ${arg_string}'
+			code := os.system(cmd)
+			if code != 0 {
+				fails += 1
+			}
 		}
 	}
 	if fails > 0 {

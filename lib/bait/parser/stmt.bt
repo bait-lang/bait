@@ -32,6 +32,9 @@ fun (p Parser) toplevel_stmt() ast.Stmt {
 			return p.type_decl()
 		}
 		else{
+			if p.pref.is_script {
+				return p.script_mode_main()
+			}
 			p.error('bad toplevel token: kind: ${p.tok.kind}, val: ${p.tok.val}')
 		}
 	}
@@ -58,6 +61,19 @@ fun (p Parser) pub_stmt() ast.Stmt {
 			p.error('cannot use pub keyword before ${p.next_tok.kind}')
 		}
 	}
+}
+
+fun (p Parser) script_mode_main() ast.FunDecl {
+	mut stmts := []ast.Stmt
+	for p.tok.kind != token.TokenKind.eof {
+		stmts.push(p.stmt())
+	}
+	mut node := ast.FunDecl{
+		name: 'main.main'
+	}
+	p.table.fun_decls['main.main'] = node
+	node.stmts = stmts
+	return node
 }
 
 fun (p Parser) stmt() ast.Stmt {
