@@ -4,6 +4,44 @@ package main
 
 import os
 
+struct CodeBlock {
+	start i32
+	end i32
+	text string
+}
+
 fun main() {
-	// TODO
+	args := os.ARGS.slice(2, os.ARGS.length)
+	md_files := args.filter(fun (a string) bool {
+		return a.ends_with(".md")
+	})
+	for file in md_files {
+		blocks := collect_code_blocks(file)
+		println(blocks)
+	}
+}
+
+fun collect_code_blocks(path string) []CodeBlock{
+	lines := os.read_lines(path)
+	mut blocks := []CodeBlock
+	mut inside_block := false
+	mut start := 0
+	mut text := ''
+	for i, line in lines {
+		if line.starts_with("```bait") {
+			inside_block = true
+			start = i
+			text = ''
+		} else if inside_block and line.starts_with("```") {
+			inside_block = false
+			blocks.push(CodeBlock {
+				start: start
+				end: i
+				text: text
+			})
+		} else if inside_block {
+			text += line + '\n'
+		}
+	}
+	return blocks
 }
