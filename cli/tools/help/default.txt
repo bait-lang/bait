@@ -8,7 +8,8 @@ Examples:
 Note: If no command is specified, the "build" command is assumed.
 
 Important Commands:
-  build <path>  Compile files and packages.
+  build <path>  Compile files and projects.
+  run <path>    Builds and executes files or projects.
   test <dir>    Run all tests in the given directory.
   ast <file>    Prints the Abstract Syntax Tree (AST) for the given file.
 
@@ -18,4 +19,4 @@ Important Commands:
 
 Use "bait help other" to see less often used commands.
 Use "bait help <command>" for more information about some commands.
-Right now only build and self have detailed help.
+Right now only build, run and self have detailed help.

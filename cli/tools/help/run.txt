@@ -1,0 +1,6 @@
+Usage:
+  bait run [options] <file.bt|directory>
+
+This command is the same as `bait build` and running the compiled executable.
+
+For supported run options, see `bait help build`.

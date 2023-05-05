@@ -112,6 +112,15 @@ fun transpile(pref prefs.Pref) i32 {
 	return 0
 }
 
+fun run(pref prefs.Pref) i32 {
+	comp_res := transpile(pref)
+	if comp_res != 0 {
+		return comp_res
+	}
+	run_res := os.system('node ${pref.out_name}')
+	return run_res
+}
+
 fun run_tests(pref prefs.Pref) i32 {
 	mut files_to_test := []string
 	for a in pref.args {
@@ -129,14 +138,8 @@ fun run_tests(pref prefs.Pref) i32 {
 	for i, file in files_to_test {
 		test_prefs.command = file
 		test_prefs.out_name = '/tmp/test_${i}.js'
-		res := transpile(test_prefs)
-		if res != 0 {
-			has_fails = true
-			println('FAIL ${file}')
-			continue
-		}
-		run_res := os.system('node ${test_prefs.out_name}')
-		if run_res == 0 {
+		res := run(test_prefs)
+		if res == 0 {
 			println('OK ${file}')
 		} else {
 			has_fails = true
@@ -249,6 +252,11 @@ fun main() {
 			pref.command = pref.args[0]
 			ensure_dir_exists(os.dir(pref.out_name))
 			exit(transpile(pref))
+		}
+		'run' {
+			pref.command = pref.args[0]
+			ensure_dir_exists(os.dir(pref.out_name))
+			exit(run(pref))
 		}
 		'test' {
 			exit(run_tests(pref))
