@@ -112,6 +112,15 @@ fun transpile(pref prefs.Pref) i32 {
 	return 0
 }
 
+fun run(pref prefs.Pref) i32 {
+	comp_res := transpile(pref)
+	if comp_res != 0 {
+		return comp_res
+	}
+	run_res := os.system('node ${pref.out_name}')
+	return run_res
+}
+
 fun run_tests(pref prefs.Pref) i32 {
 	mut files_to_test := []string
 	for a in pref.args {
@@ -249,6 +258,11 @@ fun main() {
 			pref.command = pref.args[0]
 			ensure_dir_exists(os.dir(pref.out_name))
 			exit(transpile(pref))
+		}
+		'run' {
+			pref.command = pref.args[0]
+			ensure_dir_exists(os.dir(pref.out_name))
+			exit(run(pref))
 		}
 		'test' {
 			exit(run_tests(pref))
