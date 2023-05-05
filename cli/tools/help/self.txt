@@ -1,0 +1,5 @@
+Usage:
+  bait self [options]
+
+Options:
+  --no-backup  Do not create a copy of the original exe before recompilation.

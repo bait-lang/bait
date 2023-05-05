@@ -6,9 +6,11 @@ else
    git clone --depth 1 https://github.com/tiabeast/baitjs $BAITJS_DIR
 fi
 
+rm -f bait.js
+
 node $BAITJS_DIR/bait.js cli/bait.bt -o bait1.js
 node bait1.js cli/bait.bt -o bait2.js
-node bait2.js self
+node bait2.js self --no-backup
 
 if [ ! -f bait.js ]; then
     echo "make: compilation failed"
@@ -22,4 +24,4 @@ fi
 
 rm bait1.js bait2.js
 
-echo "bait.js has been successfully built. Run it with 'node bait.js'"
+echo "Run it with 'node bait.js'"

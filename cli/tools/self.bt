@@ -5,7 +5,9 @@ package main
 import os
 
 fun main() {
-	os.cp('bait.js', 'bait2.js')
+	if not os.ARGS.contains('--no-backup') {
+		os.cp($BAITEXE, 'old_bait.js')
+	}
 	res := os.exec('node ${$BAITEXE} cli/bait.bt -o bait.js')
 	if res.code != 0 {
 		exit(1)

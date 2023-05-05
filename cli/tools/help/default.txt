@@ -18,4 +18,4 @@ Important Commands:
 
 Use "bait help other" to see less often used commands.
 Use "bait help <command>" for more information about some commands.
-Right now only build has detailed help.
+Right now only build and self have detailed help.
