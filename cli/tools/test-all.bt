@@ -4,7 +4,7 @@ package main
 
 import os
 
-const TOOLS := ['build-examples', 'build-tools', 'check-md']
+const TOOLS := ['build-examples', 'build-tools']
 
 fun main() {
 	mut fails := 0
@@ -14,6 +14,10 @@ fun main() {
 		if code != 0 {
 			fails += 1
 		}
+	}
+	md_code := os.system('node ${$BAITEXE} check-md docs/docs.md')
+	if md_code != 0 {
+		fails += 1
 	}
 	if fails > 0 {
 		exit(1)
