@@ -52,7 +52,7 @@ fun collect_code_blocks(path string) []CodeBlock{
 
 fun check_block_runs(block CodeBlock) bool {
 	os.write_file('/tmp/tmp.bt', block.text)
-	res := os.exec('node ${$BAITEXE} /tmp/tmp.bt')
+	res := os.exec('node ${$BAITEXE} /tmp/tmp.bt --script')
 	if res.code != 0 {
 		println('Error in block ${block.start_idx + 1}:${block.end_idx + 1}')
 		println(res.stderr)
