@@ -1,6 +1,12 @@
 # Bait Programming Language
 Simple compiled language for building reliable software.
 
+```bait
+fun main() {
+    println('hello world')
+}
+```
+
 ## Key Features
 > **Note** Bait is in an alpha state. Incomplete features are marked with :construction:. Breaking changes may occur.
 

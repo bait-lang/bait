@@ -57,6 +57,14 @@ pub fun (s string) is_upper() bool {
 	return #JS.'s.str == s.str.toUpperCase() && s.str != s.str.toLowerCase()'
 }
 
+pub fun (s string) split_lines() []string {
+	res := from_js_string_arr(#JS.'s.str.split("\n")')
+	if res[res.length - 1].length == 0 {
+		return res.slice(0, res.length - 1)
+	}
+	return res
+}
+
 fun (a string) add (b string) string {
 	return from_js_string(#JS.'a.str + b.str')
 }
