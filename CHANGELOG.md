@@ -11,6 +11,7 @@ _unreleased_
 - bait
   - add support for launching external tools
   - add `build` command (it can be omitted)
+  - add `run` command
   - add `version` command
   - add `build-examples`, `build-tools` and `test-all` tools
 - compile time variables (`$BAITEXE` and `$BAITROOT`)
