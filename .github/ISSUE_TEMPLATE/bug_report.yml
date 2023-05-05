@@ -1,3 +1,5 @@
+# https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema
+
 name: 🐛 Bug Report
 description: Report a bug
 title: (bug summary)
@@ -6,11 +8,14 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: Description and Reproduction Steps
+      label: Description and Reproduction Sample
       description: |
         What is the problem?
         Please provide a short description and a self-contained, concise code snippet for reproduction.
         For more complex issues please provide a minimal repo that reproduces the issue.
+      value: |
+        ```bait
+        ```
     validations:
       required: true
 
@@ -20,6 +25,7 @@ body:
       label: Current Behavior
       description: |
         What actually happened?
+        Please include the complete error, exception or stack trace.
     validations:
       required: true
 
@@ -27,9 +33,7 @@ body:
     id: expected
     attributes:
       label: Expected Behavior
-      description: |
-        What did you expect to happen instead?
-        Please include the complete error, exception or stack trace.
+      description: What did you expect to happen instead?
     validations:
       required: true
 
@@ -52,6 +56,10 @@ body:
   - type: textarea
     id: environment
     attributes:
-      label: Environment details (OS name and version, Node.js version, etc.)
+      label: Environment details
+      value: |
+        OS:
+        Node:
+        [...]
     validations:
       required: true
