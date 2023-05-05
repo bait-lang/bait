@@ -5,19 +5,23 @@ package main
 import os
 
 struct CodeBlock {
-	start i32
-	end i32
+	start_idx i32
+	end_idx i32
 	text string
 }
 
 fun main() {
-	args := os.ARGS.slice(2, os.ARGS.length)
-	md_files := args.filter(fun (a string) bool {
-		return a.ends_with(".md")
-	})
-	for file in md_files {
-		blocks := collect_code_blocks(file)
-		println(blocks)
+	file := os.ARGS[2]
+	blocks := collect_code_blocks(file)
+	mut has_errors := false
+	for block in blocks {
+		res := check_block_runs(block)
+		if not res {
+			has_errors = true
+		}
+	}
+	if has_errors {
+		exit(1)
 	}
 }
 
@@ -28,15 +32,15 @@ fun collect_code_blocks(path string) []CodeBlock{
 	mut start := 0
 	mut text := ''
 	for i, line in lines {
-		if line.starts_with("```bait") {
+		if line.starts_with('```bait') {
 			inside_block = true
 			start = i
 			text = ''
 		} else if inside_block and line.starts_with("```") {
 			inside_block = false
 			blocks.push(CodeBlock {
-				start: start
-				end: i
+				start_idx: start
+				end_idx: i
 				text: text
 			})
 		} else if inside_block {
@@ -44,4 +48,15 @@ fun collect_code_blocks(path string) []CodeBlock{
 		}
 	}
 	return blocks
+}
+
+fun check_block_runs(block CodeBlock) bool {
+	os.write_file('/tmp/tmp.bt', block.text)
+	res := os.exec('node ${$BAITEXE} /tmp/tmp.bt')
+	if res.code != 0 {
+		println('Error in block ${block.start_idx + 1}:${block.end_idx + 1}')
+		println(res.stderr)
+		return false
+	}
+	return true
 }
