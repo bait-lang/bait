@@ -288,7 +288,7 @@ fun (t Tokenizer) error(msg string){
 
 fun (t Tokenizer) error_with_line(msg string, line i32){
 	col := t.pos - t.last_nl_pos
-	eprintln(t.path + ':' + line + ':' + col + ' error: ' + msg)
+	eprintln('${t.path}:${line}:${col} error: ${msg}')
 	exit(1)
 }
 

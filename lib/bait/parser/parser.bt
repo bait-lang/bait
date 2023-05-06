@@ -152,6 +152,6 @@ fun (p Parser) error(msg string){
 }
 
 fun (p Parser) error_with_pos(msg string, pos token.Pos){
-	eprintln(p.path + ':' + pos.line + ':' + pos.col + ' error: ' + msg)
+	eprintln('${p.path}:${pos.line}:${pos.col} error: ${msg}')
 	exit(1)
 }
