@@ -18,6 +18,7 @@ const TOOLS := [
 	'doctor',
 	'help',
 	'test-all',
+	'test-self',
 	'build-examples',
 	'build-tools',
 	'check-md',

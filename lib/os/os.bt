@@ -13,6 +13,20 @@ pub fun ls(dir string) []string {
 	return from_js_string_arr(#JS.fs.readdirSync(dir.str))
 }
 
+pub fun walk_ext(dir string, ext string) []string {
+	mut ext_files := []string
+	all_files := ls(dir)
+	for file in all_files {
+		fpath := os.join_path(dir, [file])
+		if is_dir(fpath) {
+			ext_files = ext_files.concat(walk_ext(fpath, ext))
+		} else if fpath.ends_with(ext) {
+			ext_files.push(fpath)
+		}
+	}
+	return ext_files
+}
+
 pub fun cp(src string, dest string) {
 	#JS.fs.copyFileSync(src.str, dest.str)
 }
