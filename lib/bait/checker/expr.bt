@@ -186,7 +186,16 @@ fun (c Checker) cast_expr(node ast.CastExpr) i32 {
 	return node.target
 }
 
-const SUPPORTED_COMPTIME_VARS := ['BAITEXE', 'BAITDIR']
+const SUPPORTED_COMPTIME_VARS := [
+	'PKG',
+	'FILE',
+	'LINE',
+	'FILE_LINE',
+	'FUN',
+	'BAITEXE',
+	'BAITDIR',
+	'BAITHASH',
+]
 
 fun (c Checker) comp_time_var(node ast.CompTimeVar) i32 {
 	if not SUPPORTED_COMPTIME_VARS.contains(node.name) {

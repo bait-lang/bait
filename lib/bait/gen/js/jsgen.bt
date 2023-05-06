@@ -12,6 +12,7 @@ struct Gen {
 	pref prefs.Pref
 	table ast.Table
 	path string
+	pkg string
 	type_defs_out string
 	global_out string
 	out string
@@ -34,6 +35,7 @@ fun gen(files []ast.File, table ast.Table, pref prefs.Pref) string {
 	}
 	for file in files {
 		g.path = file.path
+		g.pkg = file.pkg_decl.full_name
 		g.process_imports(file.imports)
 		g.stmts(file.stmts)
 		g.out += "\n"

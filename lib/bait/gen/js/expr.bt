@@ -147,10 +147,18 @@ fun (g Gen) char_literal(node ast.CharLiteral) {
 }
 
 fun (g Gen) comp_time_var(node ast.CompTimeVar){
+	g.write('from_js_string("')
 	match node.name{
-		'BAITEXE' {g.write('from_js_string("${g.pref.baitexe}")')}
-		'BAITDIR' {g.write('from_js_string("${g.pref.baitdir}")')}
+		'PKG' {g.write(g.pkg)}
+		'FILE' {g.write(g.path)}
+		'LINE' {g.write('${node.pos.line}')}
+		'FILE_LINE' {g.write('${g.path}:${node.pos.line}')}
+		'FUN' {g.write('TODO')}
+		'BAITEXE' {g.write(g.pref.baitexe)}
+		'BAITDIR' {g.write(g.pref.baitdir)}
+		'BAITHASH' {g.write('TODO')}
 	}
+	g.write('")')
 }
 
 fun (g Gen) enum_val(node ast.EnumVal) {
