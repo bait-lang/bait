@@ -1,0 +1,7 @@
+Update the compiler to the latest commit from https://github.com/tiabeast/bait.
+
+Usage:
+  bait up [options]
+
+Options:
+  -v, --verbose  Enable verbose output.

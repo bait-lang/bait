@@ -1,9 +1,9 @@
 Usage:
-  bait [options] <command|path>
+  bait <command|path> [options]
 
 Examples:
   bait my_file.bt
-  bait -o lib.js src/
+  bait src/ -o lib.js
 
 Note: If no command is specified, the "build" command is assumed.
 
@@ -19,4 +19,4 @@ Important Commands:
 
 Use "bait help other" to see less often used commands.
 Use "bait help <command>" for more information about some commands.
-Right now only build, run and self have detailed help.
+Right now only build, run, self and up have detailed help.
