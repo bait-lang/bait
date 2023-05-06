@@ -10,6 +10,8 @@ fun main() {
 	}
 	res := os.exec('node ${$BAITEXE} cli/bait.bt -o bait.js')
 	if res.code != 0 {
+		println('"bait self" failed:')
+		println(res.stderr)
 		exit(1)
 	}
 	println('Bait compiled successfully into "bait.js"')
