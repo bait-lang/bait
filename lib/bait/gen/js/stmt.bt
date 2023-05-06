@@ -169,6 +169,7 @@ fun (g Gen) for_in_map(node ast.ForInLoop){
 }
 
 fun (g Gen) fun_decl(node ast.FunDecl) {
+	g.cur_fun = node
 	g.write('function ')
 	if node.is_method {
 		sym := g.table.get_sym(node.params[0].typ)

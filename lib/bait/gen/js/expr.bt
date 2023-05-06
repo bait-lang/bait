@@ -4,6 +4,7 @@ package js
 
 import bait.ast
 import bait.token
+import os
 
 fun (g Gen) expr(expr ast.Expr) {
 	if expr is ast.AnonFun {
@@ -150,10 +151,10 @@ fun (g Gen) comp_time_var(node ast.CompTimeVar){
 	g.write('from_js_string("')
 	match node.name{
 		'PKG' {g.write(g.pkg)}
-		'FILE' {g.write(g.path)}
+		'FILE' {g.write(os.abs_path(g.path))}
 		'LINE' {g.write('${node.pos.line}')}
 		'FILE_LINE' {g.write('${g.path}:${node.pos.line}')}
-		'FUN' {g.write('TODO')}
+		'FUN' {g.write(g.cur_fun.name)}
 		'BAITEXE' {g.write(g.pref.baitexe)}
 		'BAITDIR' {g.write(g.pref.baitdir)}
 		'BAITHASH' {g.write('TODO')}
