@@ -14,7 +14,10 @@ body:
         Please provide a short description and a self-contained, concise code snippet for reproduction.
         For more complex issues please provide a minimal repo that reproduces the issue.
       value: |
+        description
+
         ```bait
+
         ```
     validations:
       required: true
@@ -49,6 +52,7 @@ body:
   - type: textarea
     id: environment
     attributes:
-      label: Environment details (`bait doctor`)
+      label: Environment details (bait doctor)
+      value: "`bait doctor`"
     validations:
       required: true

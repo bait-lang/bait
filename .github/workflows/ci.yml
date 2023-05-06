@@ -20,6 +20,8 @@ jobs:
         run: node bait.js build-tools
       - name: Build examples
         run: node bait.js build-examples
+      - name: Run tests
+        run: node bait.js test .
       - name: Check markdown code blocks
         run: |
           node bait.js check-md docs/docs.md
