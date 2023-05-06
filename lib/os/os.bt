@@ -100,6 +100,10 @@ pub fun setenv(key string, value string) {
 	#JS.'process.env[key.str] = value.str'
 }
 
+pub fun arch() string {
+	return from_js_string(#JS.'js_os.arch()')
+}
+
 struct Result {
 	code i32
 	stdout string

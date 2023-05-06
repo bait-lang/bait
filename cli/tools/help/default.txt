@@ -16,6 +16,7 @@ Important Commands:
   self          Recompile bait.
   up            Update to the latest git commit.
   version       Print the version text.
+  doctor        Display version and system information for bug reporting.
 
 Use "bait help other" to see less often used commands.
 Use "bait help <command>" for more information about some commands.

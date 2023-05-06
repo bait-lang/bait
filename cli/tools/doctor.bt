@@ -1,0 +1,16 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package main
+
+import bait.util
+import os
+
+fun main(){
+	println('Version: Bait ${util.VERSION}')
+	os_type := from_js_string(#JS.'process.platform')
+	println('OS: ${os_type}/${os.arch()}')
+	git_version := os.exec('git --version').stdout.trim_space()
+	println('Git: ${git_version}')
+	node_version := os.exec('node --version').stdout.trim_space()
+	println('Node.js: ${node_version}')
+}
