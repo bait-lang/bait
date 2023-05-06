@@ -11,4 +11,5 @@ pub struct Pref {
 	// Compile time pseudo variables
 	baitexe string
 	baitdir string
+	baithash string
 }

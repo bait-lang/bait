@@ -157,7 +157,7 @@ fun (g Gen) comp_time_var(node ast.CompTimeVar){
 		'FUN' {g.write(g.cur_fun.name)}
 		'BAITEXE' {g.write(g.pref.baitexe)}
 		'BAITDIR' {g.write(g.pref.baitdir)}
-		'BAITHASH' {g.write('TODO')}
+		'BAITHASH' {g.write(g.pref.baithash)}
 	}
 	g.write('")')
 }

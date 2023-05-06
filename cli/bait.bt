@@ -196,6 +196,7 @@ fun parse_args(args []string) prefs.Pref {
 	mut pref := prefs.Pref{
 		baitexe: baitexe
 		baitdir: os.dir(baitexe)
+		baithash: os.exec('git rev-parse --short HEAD').stdout.trim_space()
 	}
 	for i := 0; i < args.length; i += 1{
 		arg := args[i]
