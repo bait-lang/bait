@@ -15,7 +15,8 @@ _unreleased_
   - add `version` command
   - add `build-examples`, `build-tools`, `check-md` and `test-all` tools
 - `build`: add `--script` option to enable script mode, where no main function is required
-- compile time variables (`$BAITEXE` and `$BAITROOT`)
+- add compile time pseudo variables
+  - `$PKG`, `$FILE`, `$LINE`, `$FILE_LINE`, `$FUN`, `$BAITEXE`, `$BAITDIR`, `$BAITHASH`
 - CI pipeline with very basic checks
 - os: new functions
   - `cp(string, string)`
