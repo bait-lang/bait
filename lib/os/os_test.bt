@@ -4,7 +4,7 @@ import os
 import testing
 
 fun test_read_lines() {
-	lines := os.read_lines("${$BAITROOT}/lib/os/tests/3_lines.txt")
+	lines := os.read_lines("${$BAITDIR}/lib/os/tests/3_lines.txt")
 	testing.assert(lines.length == 3)
 	testing.assert(lines[1] == '2')
 }

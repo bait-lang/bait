@@ -194,9 +194,29 @@ struct Circle{}
 type Shape := Triangle | Rectangle | Circle
 ```
 
+## Conditional Compilation
+### Compile Time Pseudo Variables
+Bait supports a few pseudo variables of `string` type.
+They are replaced with the actual value during compilation.
+
+| Variable     | Description                         | Example                 |
+| ------------ | ----------------------------------- | ----------------------- |
+| `$PKG`       | Name of the current package.        | `main`                  |
+| `$FILE`      | Absolute path of the source file.   | `/path/to/file.bt`      |
+| `$LINE`      | Line number of it's appearance.     | `123`                   |
+| `$FILE_LINE` | Relative path followed by the line. | `tests/my_test.bt:27`   |
+| `$FUN`       | Name of the current function.       | `test_read_line`        |
+| `$BAITEXE`   | Absolut path to the Bait compiler.  | `/path/to/bait/bait.js` |
+| `$BAITDIR`   | Directory where the compiler is in. | `/path/to/bait`         |
+| `$BAITHASH`  | Short commit hash of the compiler.  | `5e7fd6e`               |
+
+They are useful for running external tools or debugging. For example:
+```bait
+eprintln('error in file ${$FILE}, line ${$LINE}, function ${$PKG}.${$FUN}')
+```
+
 <!-- TODO
 advanced
   JS interop
-  compile time vars @BAITEXE, ...
   global vars
 -->

@@ -194,8 +194,9 @@ fun get_user_files(upath string) []string {
 fun parse_args(args []string) prefs.Pref {
 	baitexe := os.executable()
 	mut pref := prefs.Pref{
-		baitexe:baitexe
-		baitroot: os.dir(baitexe)
+		baitexe: baitexe
+		baitdir: os.dir(baitexe)
+		baithash: os.exec('git rev-parse --short HEAD').stdout.trim_space()
 	}
 	for i := 0; i < args.length; i += 1{
 		arg := args[i]

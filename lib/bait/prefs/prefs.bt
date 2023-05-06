@@ -10,5 +10,6 @@ pub struct Pref {
 	is_script bool
 	// Compile time pseudo variables
 	baitexe string
-	baitroot string
+	baitdir string
+	baithash string
 }
