@@ -11,13 +11,12 @@ _unreleased_
 - bait
   - add support for launching external tools
   - add `build` command (it can be omitted)
-  - add `run` command
-  - add `version` command
+  - add `run`, `version` and `doctor` commands
   - add `build-examples`, `build-tools`, `check-md` and `test-all` tools
 - `build`: add `--script` option to enable script mode, where no main function is required
 - add compile time pseudo variables
   - `$PKG`, `$FILE`, `$LINE`, `$FILE_LINE`, `$FUN`, `$BAITEXE`, `$BAITDIR`, `$BAITHASH`
-- CI pipeline with very basic checks
+- CI pipeline with some basic checks
 - os: new functions
   - `cp(string, string)`
   - `chdir(string)`
@@ -26,10 +25,12 @@ _unreleased_
   - `read_lines(string) []string`
   - `executable() string`
   - `getenv(string) string`, `setenv(string, string)`
+  - `arch() string`
   - `exec(string) Result`
 - new methods:
   - `string.split_lines() []string`
 - Really basic documentation
+- Issue templates
 
 **Changes**
 - move `help`, `self` and `up` into tools

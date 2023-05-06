@@ -13,8 +13,9 @@ import os
 
 const TOOLS := [
 	'ast',
-	'up',
 	'self',
+	'up',
+	'doctor',
 	'help',
 	'test-all',
 	'build-examples',
