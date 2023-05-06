@@ -149,7 +149,7 @@ fun (g Gen) char_literal(node ast.CharLiteral) {
 fun (g Gen) comp_time_var(node ast.CompTimeVar){
 	match node.name{
 		'BAITEXE' {g.write('from_js_string("${g.pref.baitexe}")')}
-		'BAITROOT' {g.write('from_js_string("${g.pref.baitroot}")')}
+		'BAITDIR' {g.write('from_js_string("${g.pref.baitdir}")')}
 	}
 }
 

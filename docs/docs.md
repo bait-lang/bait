@@ -208,7 +208,7 @@ They are replaced with the actual value during compilation.
 | `$FUN`       | Name of the current function.       | `test_read_line`        |
 | `$BAITEXE`   | Absolut path to the Bait compiler.  | `/path/to/bait/bait.js` |
 | `$BAITDIR`   | Directory where the compiler is in. | `/path/to/bait`         |
-| `$BAIT_HASH` | Short commit hash of the compiler.  | `5e7fd6e`               |
+| `$BAITHASH`  | Short commit hash of the compiler.  | `5e7fd6e`               |
 
 They are useful for running external tools or debugging. For example:
 ```bait

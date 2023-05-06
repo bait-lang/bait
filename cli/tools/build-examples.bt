@@ -5,7 +5,7 @@ package main
 import os
 
 fun main() {
-	examples_dir := os.join_path($BAITROOT, ['examples'])
+	examples_dir := os.join_path($BAITDIR, ['examples'])
 	examples := os.ls(examples_dir)
 	mut fails := 0
 	for example in examples {
