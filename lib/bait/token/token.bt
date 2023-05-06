@@ -47,6 +47,7 @@ pub enum TokenKind {
 	hash
 	key_and
 	key_as
+	key_assert
 	key_break
 	key_const
 	key_continue
@@ -77,6 +78,7 @@ pub fun keyword_to_kind(name string) TokenKind {
 	match name {
 		'and' { return TokenKind.key_and }
 		'as' { return TokenKind.key_as }
+		'assert' { return TokenKind.key_assert }
 		'break' { return TokenKind.key_break }
 		'const' { return TokenKind.key_const }
 		'continue' { return TokenKind.key_continue }
@@ -237,6 +239,7 @@ pub fun (kind TokenKind) str() string {
 		TokenKind.hash { return 'hash' }
 		TokenKind.key_and { return 'key_and' }
 		TokenKind.key_as { return 'key_as' }
+		TokenKind.key_assert { return 'key_assert' }
 		TokenKind.key_break { return 'key_break' }
 		TokenKind.key_const { return 'key_const' }
 		TokenKind.key_continue { return 'key_continue' }

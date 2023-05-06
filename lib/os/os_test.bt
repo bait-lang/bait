@@ -1,10 +1,9 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 import os
-import testing
 
 fun test_read_lines() {
 	lines := os.read_lines("${$BAITDIR}/lib/os/tests/3_lines.txt")
-	testing.assert(lines.length == 3)
-	testing.assert(lines[1] == '2')
+	assert lines.length == 3
+	assert lines[1] == '2'
 }

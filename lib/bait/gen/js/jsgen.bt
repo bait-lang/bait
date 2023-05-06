@@ -97,7 +97,7 @@ fun (g Gen) gen_test_main() {
 			g.writeln('${name}()')
 		}
 	}
-	g.writeln('exit(testing__TestRunner_exit_code(testing__test_runner))')
+	g.writeln('exit(TestRunner_exit_code(test_runner))')
 	g.indent -= 1
 	g.writeln('}')
 }

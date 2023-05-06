@@ -14,7 +14,9 @@ fun (g Gen) stmts(stmts []ast.Stmt) {
 }
 
 fun (g Gen) stmt(stmt ast.Stmt) {
-	if stmt is ast.AssignStmt {
+	if stmt is ast.AssertStmt {
+		g.assert_stmt(stmt)
+	} else if stmt is ast.AssignStmt {
 		g.assign_stmt(stmt)
 	} else if stmt is ast.ConstDecl {
 		g.const_decl(stmt)
@@ -46,6 +48,17 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 	} else {
 		g.error('cannot generate stmt: ${stmt}', stmt.pos)
 	}
+}
+
+fun (g Gen) assert_stmt(node ast.AssertStmt) {
+	g.write('if (')
+	g.expr(node.expr)
+	g.writeln(') {')
+	g.writeln('\tTestRunner_assert_pass(test_runner)')
+	g.writeln('} else {')
+	// todo set info
+	g.writeln('\tTestRunner_assert_fail(test_runner)')
+	g.writeln('}')
 }
 
 fun (g Gen) assign_stmt(node ast.AssignStmt){
