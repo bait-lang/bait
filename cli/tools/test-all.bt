@@ -4,7 +4,7 @@ package main
 
 import os
 
-const TOOLS := ['build-examples', 'build-tools']
+const TOOLS := ['build-examples', 'build-tools', 'test-self']
 
 const TOOLS_WITH_ARGS := create_tools_with_args()
 fun create_tools_with_args() map[string][]string {
