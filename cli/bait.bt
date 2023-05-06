@@ -8,9 +8,8 @@ import bait.tokenizer
 import bait.parser
 import bait.checker
 import bait.gen.js as jsgen
+import bait.util
 import os
-
-const VERSION := '0.0.2-dev ${$BAITHASH}'
 
 const TOOLS := [
 	'ast',
@@ -267,7 +266,7 @@ fun main() {
 			exit(run_tests(pref))
 		}
 		'version' {
-			println('Bait ${VERSION}')
+			println('Bait ${util.VERSION}')
 			return
 		}
 	}
