@@ -18,6 +18,7 @@ _unreleased_
   - `$PKG`, `$FILE`, `$LINE`, `$FILE_LINE`, `$FUN`, `$BAITEXE`, `$BAITDIR`, `$BAITHASH`
 - CI pipeline with some basic checks
 - os: new functions
+  - `walk_ext(string, string) []string`
   - `cp(string, string)`
   - `chdir(string)`
   - `home_dir() string`
