@@ -212,7 +212,7 @@ They are replaced with the actual value during compilation.
 
 They are useful for running external tools or debugging. For example:
 ```bait
-eprintln('error in file ${$FILE}, line ${$LINE}, function ${$PKG}.${$FUN})
+eprintln('error in file ${$FILE}, line ${$LINE}, function ${$PKG}.${$FUN}')
 ```
 
 <!-- TODO
