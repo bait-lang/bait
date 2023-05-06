@@ -10,7 +10,7 @@ import bait.checker
 import bait.gen.js as jsgen
 import os
 
-const VERSION := '0.0.2-dev'
+const VERSION := '0.0.2-dev ${$BAITHASH}'
 
 const TOOLS := [
 	'ast',
