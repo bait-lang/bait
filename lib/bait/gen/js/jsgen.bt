@@ -1,9 +1,10 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
-// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package js
 
 import bait.preference
 import bait.ast
+import bait.errors
 import bait.token
 
 const JS_RESERVED := ['case', 'default', 'new', 'var', 'with']
@@ -143,7 +144,7 @@ fun (g Gen) warn(msg string, pos token.Pos){
 }
 
 fun (g Gen) error(msg string, pos token.Pos){
-	eprintln('${g.path}:${pos.line}:${pos.col} error: ${msg}')
+	errors.compiler_message(g.path, pos, msg)
 	exit(1)
 }
 

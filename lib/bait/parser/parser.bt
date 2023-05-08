@@ -1,8 +1,9 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
-// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package parser
 
 import bait.preference
+import bait.errors
 import bait.ast
 import bait.token
 
@@ -148,10 +149,6 @@ fun (p Parser) next() {
 }
 
 fun (p Parser) error(msg string){
-	p.error_with_pos(msg, p.tok.pos)
-}
-
-fun (p Parser) error_with_pos(msg string, pos token.Pos){
-	eprintln('${p.path}:${pos.line}:${pos.col} error: ${msg}')
+	errors.compiler_message(p.path, p.tok.pos, msg)
 	exit(1)
 }

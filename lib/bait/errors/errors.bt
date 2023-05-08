@@ -1,0 +1,9 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package errors
+
+import bait.token
+
+pub fun compiler_message(path string, pos token.Pos, msg string) {
+	eprintln('${path}:${pos.line}:${pos.col} error: ${msg}')
+}

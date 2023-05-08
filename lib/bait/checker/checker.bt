@@ -1,8 +1,9 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
-// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package checker
 
 import bait.ast
+import bait.errors
 import bait.token
 
 struct Checker{
@@ -10,7 +11,7 @@ struct Checker{
 	scope ast.Scope
 	path string
 	pkg string
-	errors []string
+	had_error bool
 	is_lhs_assign bool
 }
 
@@ -25,7 +26,7 @@ pub fun check_files(files []ast.File, table ast.Table) bool {
 	for f in files {
 		c.check(f)
 	}
-	return c.errors.length > 0
+	return not c.had_error
 }
 
 fun (c Checker) check(file ast.File) {
@@ -49,6 +50,6 @@ fun (c Checker) warn(msg string, pos token.Pos){
 }
 
 fun (c Checker) error(msg string, pos token.Pos){
-	eprintln('${c.path}:${pos.line}:${pos.col} error: ${msg}')
-	c.errors.push(msg)
+	errors.compiler_message(c.path, pos, msg)
+	c.had_error = true
 }
