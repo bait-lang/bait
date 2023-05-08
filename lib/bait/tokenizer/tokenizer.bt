@@ -1,8 +1,9 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
-// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package tokenizer
 
 import bait.token
+import bait.errors
 
 struct Tokenizer {
 	path string
@@ -287,8 +288,11 @@ fun (t Tokenizer) error(msg string){
 }
 
 fun (t Tokenizer) error_with_line(msg string, line i32){
-	col := t.pos - t.last_nl_pos
-	eprintln('${t.path}:${line}:${col} error: ${msg}')
+	pos := token.Pos{
+		line: line
+		col: t.pos - t.last_nl_pos
+	}
+	errors.compiler_message('error', t.path, pos, msg)
 	exit(1)
 }
 

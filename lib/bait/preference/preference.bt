@@ -1,0 +1,68 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package preference
+
+import os
+
+pub struct Prefs {
+	command string
+	args []string
+	out_name string
+	should_run bool
+	is_test bool
+	is_script bool
+	// Compile time pseudo variables
+	baitexe string
+	baitdir string
+	baithash string
+}
+
+pub fun parse_args(args []string) Prefs {
+	p := Prefs{}
+	// No arguments will invoke help
+	if args.length == 0 {
+		p.command = 'help'
+		return p
+	}
+	for i := 0; i < args.length; i += 1{
+		arg := args[i]
+		match arg {
+			"-o", '--out' {
+				i += 1
+				p.out_name = args[i]
+			}
+			'--script' {
+				p.is_script = true
+			}
+			else{
+				if p.command.length == 0 {
+					p.command = arg
+				} else {
+					p.args.push(arg)
+				}
+			}
+		}
+	}
+	// `build` is just an optional alias and removed here
+	if p.command == 'build' {
+		p.command = p.args[0]
+	}
+	// `run` is handled like `build` but with the `should_run` flag set
+	if p.command == 'run' {
+		p.command = p.args[0]
+		p.should_run = true
+	}
+	if p.command == 'test' {
+		p.is_test = true
+	}
+	if p.out_name.length == 0 {
+		p.out_name = "out.js"
+	}
+	return p
+}
+
+pub fun (p Prefs) set_comptime_vars() {
+	p.baitexe = os.executable()
+	p.baitdir = os.dir(p.baitexe)
+	p.baithash = os.exec('git rev-parse --short HEAD').stdout.trim_space()
+}

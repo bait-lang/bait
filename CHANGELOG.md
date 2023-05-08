@@ -10,6 +10,7 @@ _unreleased_
 ### Breaking Changes
 - Remove `testing` package
 - Replace `testing.assert()` with builtin `assert` keyword
+- Move `bait.prefs` to `bait.preference`
 
 ### Compiler CLI and Tooling
 - `build` command (it can be omitted)
@@ -38,6 +39,7 @@ _unreleased_
 - baitjs generation
   - move logic into `gen-baitjs` tool
   - include branch, hash and commit message from the corresponding bait commit
+- Refactor preference parsing and error printing
 
 
 ## 0.0.1

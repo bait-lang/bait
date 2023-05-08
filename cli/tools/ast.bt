@@ -3,7 +3,7 @@
 package main
 
 import os
-import bait.prefs
+import bait.preference
 import bait.ast
 import bait.tokenizer
 import bait.parser
@@ -12,6 +12,6 @@ fun main() {
 	path := os.ARGS[2]
 	text := os.read_file(path)
 	tokens := tokenizer.tokenize(text, path)
-	ast := parser.parse(tokens, path, ast.new_table(), prefs.Pref{})
+	ast := parser.parse(tokens, path, ast.new_table(), preference.Prefs{})
 	println(ast)
 }
