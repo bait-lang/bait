@@ -78,6 +78,9 @@ fun (p Parser) script_mode_main() ast.FunDecl {
 
 fun (p Parser) stmt() ast.Stmt {
 	match p.tok.kind {
+		token.TokenKind.key_assert {
+			return p.assert_stmt()
+		}
 		token.TokenKind.key_mut, token.TokenKind.name {
 			return p.assign_or_expr_stmt()
 		}
@@ -102,6 +105,16 @@ fun (p Parser) assign_or_expr_stmt()ast.Stmt{
 		return p.assign_stmt(left)
 	}
 	return ast.ExprStmt{expr: left}
+}
+
+fun (p Parser) assert_stmt() ast.AssertStmt{
+	p.next()
+	pos := p.tok.pos
+	expr := p.expr(0)
+	return ast.AssertStmt{
+		expr: expr
+		pos: pos
+	}
 }
 
 fun (p Parser) assign_stmt(left ast.Expr){

@@ -7,6 +7,10 @@ All notable changes will be documented in this file.
 ## 0.0.2
 _unreleased_
 
+**Breaking**
+- Remove `testing` package
+- Replace `testing.assert()` with builtin `assert` keyword
+
 **Additions**
 - bait
   - add support for launching external tools
@@ -34,6 +38,7 @@ _unreleased_
 - Issue templates
 
 **Changes**
+- Improve output of failed asserts (file, line, function, got and expected)
 - move `help`, `self` and `up` into tools
 - baitjs generation
   - move logic into `gen-baitjs` tool

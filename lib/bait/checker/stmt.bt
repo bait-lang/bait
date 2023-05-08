@@ -12,7 +12,9 @@ fun (c Checker) stmts(stmts []ast.Stmt){
 }
 
 fun (c Checker) stmt(stmt ast.Stmt){
-	if stmt is ast.AssignStmt {
+	if stmt is ast.AssertStmt {
+		c.assert_stmt(stmt)
+	} else if stmt is ast.AssignStmt {
 		c.assign_stmt(stmt)
 	} else if stmt is ast.ConstDecl {
 		c.const_decl(stmt)
@@ -41,6 +43,10 @@ fun (c Checker) stmt(stmt ast.Stmt){
 	} else {
 		c.error('unexpected stmt: ${stmt}', stmt.pos)
 	}
+}
+
+fun (c Checker) assert_stmt(node ast.AssertStmt){
+	c.expr(node.expr)
 }
 
 fun (c Checker) assign_stmt(node ast.AssignStmt) {
