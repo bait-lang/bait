@@ -7,43 +7,37 @@ All notable changes will be documented in this file.
 ## 0.0.2
 _unreleased_
 
-**Breaking**
+### Breaking Changes
 - Remove `testing` package
 - Replace `testing.assert()` with builtin `assert` keyword
 
-**Additions**
-- bait
-  - add support for launching external tools
-  - add `build` command (it can be omitted)
-  - add `run`, `version` and `doctor` commands
-  - add `build-examples`, `build-tools`, `check-md`, `test-self` and `test-all` tools
+### Compiler CLI and Tooling
+- `build` command (it can be omitted)
+- `run`, `version` and `doctor` commands
+- move `help`, `self` and `up` into tools
+- build-examples`, `build-tools`, `check-md`, `test-self` and `test-all` tools
 - `build`: add `--script` option to enable script mode, where no main function is required
+- `self`: backup the bait.js file
+
+### Standard Library
+- new functions
+  - os: `walk_ext()`, `cp()`, `chdir()`, `home_dir()`, `rmdir()`,
+    `rmdir_all()`, `read_lines()`, `executable()`, `getenv()`, `setenv()`,
+    `arch()`, `exec()`
+- new methods: `string.split_lines()`
+
+### Documentation
+- Syntax overview as starting point for writing the docs
+- GitHub: issue templates
+
+### Other Changes
+- Improve output of failed asserts (file, line, function, got and expected)
 - add compile time pseudo variables
   - `$PKG`, `$FILE`, `$LINE`, `$FILE_LINE`, `$FUN`, `$BAITEXE`, `$BAITDIR`, `$BAITHASH`
 - CI pipeline with some basic checks
-- os: new functions
-  - `walk_ext(string, string) []string`
-  - `cp(string, string)`
-  - `chdir(string)`
-  - `home_dir() string`
-  - `rmdir(string)`, `rmdir_all(string)`
-  - `read_lines(string) []string`
-  - `executable() string`
-  - `getenv(string) string`, `setenv(string, string)`
-  - `arch() string`
-  - `exec(string) Result`
-- new methods:
-  - `string.split_lines() []string`
-- Really basic documentation
-- Issue templates
-
-**Changes**
-- Improve output of failed asserts (file, line, function, got and expected)
-- move `help`, `self` and `up` into tools
 - baitjs generation
   - move logic into `gen-baitjs` tool
   - include branch, hash and commit message from the corresponding bait commit
-- `self`: backup the bait.js file
 
 
 ## 0.0.1
