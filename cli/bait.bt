@@ -110,16 +110,11 @@ fun transpile(prefs preference.Prefs) i32 {
 	}
 	res := jsgen.gen(sorted_files, table, prefs) + '\n'
 	os.write_file(prefs.out_name, res)
-	return 0
-}
-
-fun run(prefs preference.Prefs) i32 {
-	comp_res := transpile(prefs)
-	if comp_res != 0 {
-		return comp_res
+	if prefs.should_run{
+		run_res := os.system('node ${prefs.out_name}')
+		return run_res
 	}
-	run_res := os.system('node ${prefs.out_name}')
-	return run_res
+	return 0
 }
 
 fun run_tests(prefs preference.Prefs) i32 {
@@ -139,7 +134,8 @@ fun run_tests(prefs preference.Prefs) i32 {
 	for i, file in files_to_test {
 		test_prefs.command = file
 		test_prefs.out_name = '/tmp/test_${i}.js'
-		res := run(test_prefs)
+		test_prefs.should_run = true
+		res := transpile(test_prefs)
 		if res == 0 {
 			println('OK ${file}')
 		} else {
@@ -195,14 +191,14 @@ fun launch_tool(name string, args []string) i32 {
 	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
 	tool_source := tool_base_path + '.bt'
 	tool_exe := tool_base_path + '.js'
-	tool_args := args.join(' ')
+	args_string := args.join(' ')
 	baitexe := os.executable()
 	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
 	if comp_res.code != 0 {
 		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
 		return 1
 	}
-	return os.system('node ${tool_exe} ${tool_args}')
+	return os.system('node ${tool_exe} ${args_string}')
 }
 
 fun main() {
@@ -213,11 +209,6 @@ fun main() {
 		exit(launch_tool(prefs.command, prefs.args))
 	}
 	match prefs.command {
-		'run' {
-			prefs.command = prefs.args[0]
-			ensure_dir_exists(os.dir(prefs.out_name))
-			exit(run(prefs))
-		}
 		'test' {
 			exit(run_tests(prefs))
 		}

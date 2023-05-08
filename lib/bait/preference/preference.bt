@@ -8,6 +8,7 @@ pub struct Prefs {
 	command string
 	args []string
 	out_name string
+	should_run bool
 	is_test bool
 	is_script bool
 	// Compile time pseudo variables
@@ -45,6 +46,11 @@ pub fun parse_args(args []string) Prefs {
 	// `build` is just an optional alias and removed here
 	if p.command == 'build' {
 		p.command = prefs.args[0]
+	}
+	// `run` is handled like `build` but with the `should_run` flag set
+	if p.command == 'run' {
+		p.command = prefs.args[0]
+		p.should_run = true
 	}
 	if p.command == 'test' {
 		p.is_test = true
