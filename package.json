@@ -1,7 +1,0 @@
-{
-  "scripts": {
-    "make": "./make.sh",
-    "self": "npm run test-self && node bait.js self",
-    "test-self": "node bait.js cli -o bait2.js && node bait2.js cli"
-  }
-}
