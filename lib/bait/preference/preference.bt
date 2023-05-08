@@ -18,6 +18,7 @@ pub struct Prefs {
 
 pub fun parse_args(args []string) Prefs {
 	p := Prefs{}
+	// No arguments will invoke help
 	if args.length == 0 {
 		p.command = 'help'
 		return p
@@ -41,11 +42,15 @@ pub fun parse_args(args []string) Prefs {
 			}
 		}
 	}
-	if p.out_name.length == 0 {
-		p.out_name = "out.js"
+	// `build` is just an optional alias and removed here
+	if p.command == 'build' {
+		p.command = prefs.args[0]
 	}
 	if p.command == 'test' {
 		p.is_test = true
+	}
+	if p.out_name.length == 0 {
+		p.out_name = "out.js"
 	}
 	return p
 }

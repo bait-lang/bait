@@ -191,7 +191,7 @@ fun get_user_files(upath string) []string {
 	return []string
 }
 
-fun launch_tool(name string, args []string) {
+fun launch_tool(name string, args []string) i32 {
 	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
 	tool_source := tool_base_path + '.bt'
 	tool_exe := tool_base_path + '.js'
@@ -200,9 +200,9 @@ fun launch_tool(name string, args []string) {
 	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
 	if comp_res.code != 0 {
 		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
-		exit(1)
+		return 1
 	}
-	exit(os.system('node ${tool_exe} ${tool_args}'))
+	return os.system('node ${tool_exe} ${tool_args}')
 }
 
 fun main() {
@@ -210,15 +210,9 @@ fun main() {
 	mut prefs := preference.parse_args(args)
 	prefs.set_comptime_vars()
 	if TOOLS.contains(prefs.command) {
-		launch_tool(prefs.command, prefs.args)
-		return
+		exit(launch_tool(prefs.command, prefs.args))
 	}
 	match prefs.command {
-		'build' {
-			prefs.command = prefs.args[0]
-			ensure_dir_exists(os.dir(prefs.out_name))
-			exit(transpile(prefs))
-		}
 		'run' {
 			prefs.command = prefs.args[0]
 			ensure_dir_exists(os.dir(prefs.out_name))
