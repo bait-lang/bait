@@ -34,6 +34,7 @@ _unreleased_
 - Issue templates
 
 **Changes**
+- Improve output of failed asserts (file, line, function, got and expected)
 - move `help`, `self` and `up` into tools
 - baitjs generation
   - move logic into `gen-baitjs` tool
