@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 16
       - name: Build baitjs
-        run: npm run make
+        run: ./make.sh
       - name: Generate, commit and push latest bait.js
         env:
           TIABEAST_BOT_TOKEN: ${{ secrets.TIABEAST_BOT_TOKEN }}
