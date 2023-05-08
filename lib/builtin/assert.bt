@@ -37,8 +37,11 @@ fun (tr TestRunner) assert_pass() {
 
 fun (tr TestRunner) assert_fail() {
 	tr.fails += 1
-	// TODO print info
-	println('assert failed')
+	println('${tr.file}:${tr.line} ${tr.fun_name}')
+	if tr.exp_val.length > 0 {
+		println('   left: ${tr.exp_val}')
+		println('  right: ${tr.got_val}')
+	}
 }
 
 fun (tr TestRunner) exit_code() i32 {

@@ -94,6 +94,7 @@ fun (g Gen) gen_test_main() {
 	for key, func in g.table.fun_decls {
 		if func.is_test {
 			name := js_name(func.name)
+			g.writeln('TestRunner_set_test_info(test_runner, from_js_string("${g.path}"), from_js_string("${name}"))')
 			g.writeln('${name}()')
 		}
 	}
