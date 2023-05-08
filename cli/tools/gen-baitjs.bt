@@ -1,18 +1,23 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
-// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package main
 
 import os
 
+const GIT_USER := 'tiabeast-bot'
+const GIT_MAIL := '131296262+tiabeast-bot@users.noreply.github.com'
+
+const MAIN_REPO_COMMIT_URL := 'https://github.com/tiabeast/bait/commit'
+
 fun main() {
-	os.system('git config --global user.name "tiabeast-bot"')
-	os.system('git config --global user.email "131296262+tiabeast-bot@users.noreply.github.com"')
+	os.system('git config --global user.name "${GIT_USER}"')
+	os.system('git config --global user.email "${GIT_MAIL}"')
 
 	baitjs_dir := os.join_path(os.home_dir(), ['.bait', 'baitjs'])
 	os.rmdir_all(baitjs_dir)
 
 	access_token := os.getenv('TIABEAST_BOT_TOKEN')
-	os.system('git clone --depth 1 https://tiabeast-bot:${access_token}@github.com/tiabeast/baitjs.git ${baitjs_dir}')
+	os.system('git clone --depth 1 https://${GIT_USER}:${access_token}@github.com/tiabeast/baitjs.git ${baitjs_dir}')
 
 	os.system('node bait.js cli/bait.bt -o ${baitjs_dir}/bait.js')
 
@@ -25,12 +30,13 @@ fun main() {
 	os.system('git -C ${baitjs_dir} add .')
 	has_changes := os.system('git -C ${baitjs_dir} diff-index --quiet HEAD')
 	if has_changes != 0 {
-		branch_name := os.exec('git rev-parse --abbrev-ref HEAD').stdout.trim_space()
-		commit_hash := os.exec('git rev-parse --short HEAD').stdout.trim_space()
-		commit_msg := os.exec('git log -1 --oneline --pretty="%s" HEAD').stdout.trim_space()
-
+		branch := os.exec('git rev-parse --abbrev-ref HEAD').stdout.trim_space()
+		commit_hash := os.exec('git rev-parse HEAD').stdout.trim_space()
+		short_hash := commit_hash.substr(0, 7)
+		original_msg := os.exec('git log -1 --oneline --pretty="%s" HEAD').stdout.trim_space()
+		commit_msg := '[bait:${branch}] ${short_hash} - ${original_msg} \n\n${MAIN_REPO_COMMIT_URL}/${commit_hash}'
 		os.chdir(baitjs_dir)
-		os.system('git commit -m "[bait:${branch_name}] ${commit_hash} - ${commit_msg}"')
+		os.system('git commit -m "${commit_msg}"')
 		os.system('git pull --rebase')
 		os.system('git push')
 	}
