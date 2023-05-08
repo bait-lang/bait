@@ -4,6 +4,6 @@ package errors
 
 import bait.token
 
-pub fun compiler_message(path string, pos token.Pos, msg string) {
-	eprintln('${path}:${pos.line}:${pos.col} error: ${msg}')
+pub fun compiler_message(kind string, path string, pos token.Pos, msg string) {
+	eprintln('${path}:${pos.line}:${pos.col} ${kind}: ${msg}')
 }

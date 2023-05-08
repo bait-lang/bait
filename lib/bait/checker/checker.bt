@@ -46,10 +46,10 @@ fun (c Checker) close_scope(){
 }
 
 fun (c Checker) warn(msg string, pos token.Pos){
-	println('${c.path}:${pos.line}:${pos.col} warning: ${msg}')
+	errors.compiler_message('warning', c.path, pos, msg)
 }
 
 fun (c Checker) error(msg string, pos token.Pos){
-	errors.compiler_message(c.path, pos, msg)
+	errors.compiler_message('error', c.path, pos, msg)
 	c.had_error = true
 }

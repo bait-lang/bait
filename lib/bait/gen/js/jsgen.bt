@@ -144,7 +144,7 @@ fun (g Gen) warn(msg string, pos token.Pos){
 }
 
 fun (g Gen) error(msg string, pos token.Pos){
-	errors.compiler_message(g.path, pos, msg)
+	errors.compiler_message('error', g.path, pos, msg)
 	exit(1)
 }
 

@@ -292,7 +292,7 @@ fun (t Tokenizer) error_with_line(msg string, line i32){
 		line: line
 		col: t.pos - t.last_nl_pos
 	}
-	errors.compiler_message(t.path, pos, msg)
+	errors.compiler_message('error', t.path, pos, msg)
 	exit(1)
 }
 
