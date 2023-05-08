@@ -18,6 +18,10 @@ pub struct Prefs {
 
 pub fun parse_args(args []string) Prefs {
 	p := Prefs{}
+	if args.length == 0 {
+		p.command = 'help'
+		return p
+	}
 	for i := 0; i < args.length; i += 1{
 		arg := args[i]
 		match arg {

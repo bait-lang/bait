@@ -207,11 +207,6 @@ fun launch_tool(name string, args []string) {
 
 fun main() {
 	args := os.ARGS.slice(2, os.ARGS.length)
-	if args.length == 0 {
-		// TODO allow context aware empty array inits without type
-		launch_tool('help', []string)
-		return
-	}
 	mut prefs := preference.parse_args(args)
 	prefs.set_comptime_vars()
 	if TOOLS.contains(prefs.command) {
