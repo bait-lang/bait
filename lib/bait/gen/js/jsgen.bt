@@ -2,14 +2,14 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package js
 
-import bait.prefs
+import bait.preference
 import bait.ast
 import bait.token
 
 const JS_RESERVED := ['case', 'default', 'new', 'var', 'with']
 
 struct Gen {
-	pref prefs.Pref
+	pref preference.Prefs
 	table ast.Table
 	path string
 	pkg string
@@ -26,7 +26,7 @@ struct Gen {
 	is_array_map_set bool
 }
 
-fun gen(files []ast.File, table ast.Table, pref prefs.Pref) string {
+fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	mut g := Gen{
 		pref: pref
 		table: table

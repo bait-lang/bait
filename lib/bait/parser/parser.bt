@@ -2,12 +2,12 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package parser
 
-import bait.prefs
+import bait.preference
 import bait.ast
 import bait.token
 
 pub struct Parser {
-	pref prefs.Pref
+	pref preference.Prefs
 	path string
 	table ast.Table
 	tokens []token.Token
@@ -23,7 +23,7 @@ pub struct Parser {
 	is_struct_possible bool
 }
 
-pub fun parse(tokens []token.Token, path string, table ast.Table, pref prefs.Pref) ast.File {
+pub fun parse(tokens []token.Token, path string, table ast.Table, pref preference.Prefs) ast.File {
 	mut p := Parser{
 		pref: pref
 		path: path

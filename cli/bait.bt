@@ -2,7 +2,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package main
 
-import bait.prefs
+import bait.preference
 import bait.ast
 import bait.tokenizer
 import bait.parser
@@ -48,16 +48,16 @@ fun resolve_import_dir(pkg string) string {
 	return dir
 }
 
-fun transpile(pref prefs.Pref) i32 {
+fun transpile(prefs preference.Prefs) i32 {
 	builtin_dir := resolve_import_dir("builtin")
 	mut paths := bait_files_from_dir(builtin_dir)
-	paths = paths.concat(get_user_files(pref.command))
+	paths = paths.concat(get_user_files(prefs.command))
 	mut table := ast.new_table()
 	mut files := []ast.File
 	for p in paths {
 		text2 := os.read_file(p)
 		tokens2 := tokenizer.tokenize(text2, p)
-		files.push(parser.parse(tokens2, p, table, pref))
+		files.push(parser.parse(tokens2, p, table, prefs))
 	}
 	root_pkg := files[files.length - 1].pkg_decl.full_name
 	for i:=0; i<files.length; i+=1 {
@@ -67,7 +67,7 @@ fun transpile(pref prefs.Pref) i32 {
 				continue
 			}
 			mut import_dir := resolve_import_dir(imp.name.replace('.', '/'))
-			if pref.is_test and not os.exists(import_dir) {
+			if prefs.is_test and not os.exists(import_dir) {
 				import_dir = os.dir(f.path)
 			}
 			mut imp_paths := bait_files_from_dir(import_dir)
@@ -78,7 +78,7 @@ fun transpile(pref prefs.Pref) i32 {
 				paths.push(p)
 				text2 := os.read_file(p)
 				tokens2 := tokenizer.tokenize(text2, p)
-				files.push(parser.parse(tokens2, p, table, pref))
+				files.push(parser.parse(tokens2, p, table, prefs))
 			}
 		}
 	}
@@ -109,23 +109,23 @@ fun transpile(pref prefs.Pref) i32 {
 	if got_errors {
 		return 1
 	}
-	res := jsgen.gen(sorted_files, table, pref) + '\n'
-	os.write_file(pref.out_name, res)
+	res := jsgen.gen(sorted_files, table, prefs) + '\n'
+	os.write_file(prefs.out_name, res)
 	return 0
 }
 
-fun run(pref prefs.Pref) i32 {
-	comp_res := transpile(pref)
+fun run(prefs preference.Prefs) i32 {
+	comp_res := transpile(prefs)
 	if comp_res != 0 {
 		return comp_res
 	}
-	run_res := os.system('node ${pref.out_name}')
+	run_res := os.system('node ${prefs.out_name}')
 	return run_res
 }
 
-fun run_tests(pref prefs.Pref) i32 {
+fun run_tests(prefs preference.Prefs) i32 {
 	mut files_to_test := []string
-	for a in pref.args {
+	for a in prefs.args {
 		if os.is_dir(a){
 			files_to_test = files_to_test.concat(test_files_from_dir_recursive(a))
 		} else if os.exists(a) and a.ends_with('_test.bt') {
@@ -135,7 +135,7 @@ fun run_tests(pref prefs.Pref) i32 {
 			exit(1)
 		}
 	}
-	mut test_prefs := pref
+	mut test_prefs := prefs
 	mut has_fails := false
 	for i, file in files_to_test {
 		test_prefs.command = file
@@ -192,41 +192,6 @@ fun get_user_files(upath string) []string {
 	return []string
 }
 
-fun parse_args(args []string) prefs.Pref {
-	baitexe := os.executable()
-	mut pref := prefs.Pref{
-		baitexe: baitexe
-		baitdir: os.dir(baitexe)
-		baithash: os.exec('git rev-parse --short HEAD').stdout.trim_space()
-	}
-	for i := 0; i < args.length; i += 1{
-		arg := args[i]
-		match arg {
-			"-o", '--out' {
-				i += 1
-				pref.out_name = args[i]
-			}
-			'--script' {
-				pref.is_script = true
-			}
-			else{
-				if pref.command.length == 0 {
-					pref.command = arg
-				} else {
-					pref.args.push(arg)
-				}
-			}
-		}
-	}
-	if pref.out_name.length == 0 {
-		pref.out_name = "out.js"
-	}
-	if pref.command == 'test' {
-		pref.is_test = true
-	}
-	return pref
-}
-
 fun launch_tool(name string, args []string) {
 	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
 	tool_source := tool_base_path + '.bt'
@@ -248,34 +213,35 @@ fun main() {
 		launch_tool('help', []string)
 		return
 	}
-	mut pref := parse_args(args)
-	if TOOLS.contains(pref.command) {
-		launch_tool(pref.command, pref.args)
+	mut prefs := preference.parse_args(args)
+	prefs.set_comptime_vars()
+	if TOOLS.contains(prefs.command) {
+		launch_tool(prefs.command, prefs.args)
 		return
 	}
-	match pref.command {
+	match prefs.command {
 		'build' {
-			pref.command = pref.args[0]
-			ensure_dir_exists(os.dir(pref.out_name))
-			exit(transpile(pref))
+			prefs.command = prefs.args[0]
+			ensure_dir_exists(os.dir(prefs.out_name))
+			exit(transpile(prefs))
 		}
 		'run' {
-			pref.command = pref.args[0]
-			ensure_dir_exists(os.dir(pref.out_name))
-			exit(run(pref))
+			prefs.command = prefs.args[0]
+			ensure_dir_exists(os.dir(prefs.out_name))
+			exit(run(prefs))
 		}
 		'test' {
-			exit(run_tests(pref))
+			exit(run_tests(prefs))
 		}
 		'version' {
 			println('Bait ${util.VERSION}')
 			return
 		}
 	}
-	if os.exists(pref.command) {
-		ensure_dir_exists(os.dir(pref.out_name))
-		exit(transpile(pref))
+	if os.exists(prefs.command) {
+		ensure_dir_exists(os.dir(prefs.out_name))
+		exit(transpile(prefs))
 	}
-	eprintln('error: unknown file or command: "${pref.command}"')
+	eprintln('error: unknown file or command: "${prefs.command}"')
 	exit(1)
 }
