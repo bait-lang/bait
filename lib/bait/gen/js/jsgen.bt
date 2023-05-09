@@ -127,9 +127,13 @@ fun (g Gen) write_default_value(typ i32) {
 		else {
 			sym := g.table.get_sym(typ)
 			if sym.kind == ast.TypeKind.array {
-				g.write('new array({ data: [], length: 0 })')
+				g.array_init(ast.ArrayInit{
+					exprs: []ast.Expr
+				})
 			} else if sym.kind == ast.TypeKind.map {
-				g.write('new map({ data: new Map(), length: 0 })')
+				g.map_init(ast.MapInit{
+					keys: []ast.Expr
+				})
 			} else if sym.kind == ast.TypeKind.struct_ {
 				g.write('new ${js_name(sym.name)}({})')
 			} else {
