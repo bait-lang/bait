@@ -140,7 +140,7 @@ fun (g Gen) write_default_value(typ i32) {
 }
 
 fun (g Gen) warn(msg string, pos token.Pos){
-	println('${g.path}:${pos.line}:${pos.col} warning: ${msg}')
+	errors.compiler_message('warning', g.path, pos, msg)
 }
 
 fun (g Gen) error(msg string, pos token.Pos){

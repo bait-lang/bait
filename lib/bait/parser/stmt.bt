@@ -1,5 +1,5 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
-// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package parser
 
 import bait.ast
@@ -132,10 +132,7 @@ fun (p Parser) assign_stmt(left ast.Expr){
 
 fun (p Parser) const_decl()ast.ConstDecl{
 	pos := p.tok.pos
-	is_pub := p.tok.kind == token.TokenKind.key_pub
-	if is_pub {
-		p.next()
-	}
+	is_pub := p.check_pub()
 	p.next()
 	name := p.prepend_pkg(p.check_name())
 	p.check(token.TokenKind.decl_assign)
@@ -171,10 +168,7 @@ fun (p Parser) expr_stmt()ast.ExprStmt{
 
 fun (p Parser) enum_decl()ast.EnumDecl{
 	pos := p.tok.pos
-	is_pub := p.tok.kind == token.TokenKind.key_pub
-	if is_pub {
-		p.next()
-	}
+	is_pub := p.check_pub()
 	p.next()
 	name := p.prepend_pkg(p.check_name())
 	p.check(token.TokenKind.lcur)
@@ -251,10 +245,7 @@ fun (p Parser) for_loop()ast.Stmt{
 
 fun (p Parser) fun_decl()ast.FunDecl{
 	pos := p.tok.pos
-	is_pub := p.tok.kind == token.TokenKind.key_pub
-	if is_pub {
-		p.next()
-	}
+	is_pub := p.check_pub()
 	p.check(token.TokenKind.key_fun)
 	mut is_method := false
 	mut params := []ast.Param
@@ -358,10 +349,7 @@ fun (p Parser) return_stmt()ast.ReturnStmt{
 
 fun (p Parser) struct_decl()ast.StructDecl{
 	pos := p.tok.pos
-	is_pub := p.tok.kind == token.TokenKind.key_pub
-	if is_pub {
-		p.next()
-	}
+	is_pub := p.check_pub()
 	p.check(token.TokenKind.key_struct)
 	name := p.prepend_pkg(p.check_name())
 	p.check(token.TokenKind.lcur)
@@ -393,10 +381,7 @@ fun (p Parser) struct_decl()ast.StructDecl{
 
 fun (p Parser) type_decl() ast.TypeDecl {
 	pos := p.tok.pos
-	is_pub := p.tok.kind == token.TokenKind.key_pub
-	if is_pub {
-		p.next()
-	}
+	is_pub := p.check_pub()
 	p.next()
 	name := p.prepend_pkg(p.check_name())
 	p.check(token.TokenKind.decl_assign)
