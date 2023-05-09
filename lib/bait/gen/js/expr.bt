@@ -390,7 +390,8 @@ fun (g Gen) string_literal(node ast.StringLiteral) {
 fun (g Gen) string_inter_literal(node ast.StringInterLiteral) {
 	g.write('from_js_string(`')
 	for i, val in node.vals {
-		g.write(val)
+		esc_val := val.replace('`', '\\`')
+		g.write(esc_val)
 		if i < node.exprs.length {
 			g.write('\${')
 			g.expr_to_string(node.exprs[i], node.expr_types[i])
