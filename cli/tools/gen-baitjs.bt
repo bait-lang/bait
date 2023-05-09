@@ -10,6 +10,12 @@ const GIT_MAIL := '131296262+tiabeast-bot@users.noreply.github.com'
 const MAIN_REPO_COMMIT_URL := 'https://github.com/tiabeast/bait/commit'
 
 fun main() {
+	is_ci := os.getenv('CI') == 'true'
+	if not is_ci {
+		eprintln('gen-baitjs is only meant to be run in CI.')
+		exit(1)
+	}
+
 	os.system('git config --global user.name "${GIT_USER}"')
 	os.system('git config --global user.email "${GIT_MAIL}"')
 

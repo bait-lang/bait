@@ -107,7 +107,10 @@ pub fun resource_abs_path(path string) string {
 }
 
 pub fun getenv(key string) string {
-	return from_js_string(#JS.'process.env[key.str]')
+	if #JS.'process.env[key.str]' {
+		return from_js_string(#JS.'process.env[key.str]')
+	}
+	return ''
 }
 
 pub fun setenv(key string, value string) {
