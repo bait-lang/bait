@@ -15,3 +15,12 @@ pub fun eprintln(msg string) {
 pub fun exit(code i32) {
 	#JS.process.exit(code)
 }
+
+pub fun panic(msg string) {
+	eprintln('Panic: ${msg}\n${js_stacktrace()}')
+	exit(1)
+}
+
+fun js_stacktrace() string {
+	return from_js_string(#JS.'new Error().stack')
+}

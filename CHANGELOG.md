@@ -22,6 +22,7 @@ _unreleased_
 
 ### Standard Library
 - new functions
+  - builtin: `panic()`
   - os: `walk_ext()`, `cp()`, `chdir()`, `home_dir()`, `rmdir()`,
     `rmdir_all()`, `read_lines()`, `executable()`, `getenv()`, `setenv()`,
     `arch()`, `exec()`
