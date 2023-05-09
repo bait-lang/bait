@@ -8,6 +8,11 @@ fun test_simple_interpolation(){
 }
 
 fun test_escape_backtick(){
-	x := 1
-	assert '` ${x}' == '` 1'
+	x := 'a'
+	assert '` ${x}' == '` a'
+}
+
+fun test_escape_dollar() {
+	x := 'a'
+	assert '\${x} ${x}' == '\${x} a'
 }
