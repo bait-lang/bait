@@ -24,6 +24,15 @@ pub fun (a array) contains(el any) bool {
 	return #JS.'a.data.includes(el)'
 }
 
+pub fun (a []u8) contains(c u8) {
+	for el in a {
+		if el == c {
+			return true
+		}
+	}
+	return false
+}
+
 pub fun (a []string) contains(s string) bool {
 	for el in a {
 		if el == s {

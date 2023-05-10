@@ -17,3 +17,8 @@ fun test_u8_match() {
 		else { assert false }
 	}
 }
+
+fun test_array_contains(){
+	arr := [` `, `A`]
+	assert arr.contains(` `)
+}
