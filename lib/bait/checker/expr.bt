@@ -19,6 +19,7 @@ fun (c Checker) expr(expr ast.Expr) i32 {
 	} else if expr is ast.CastExpr {
 		return c.cast_expr(expr)
 	} else if expr is ast.CharLiteral {
+		// c.warn('char literals are not supported yet', expr.pos)
 		return ast.TypeIdx.u8
 	} else if expr is ast.CompTimeVar {
 		return c.comp_time_var(expr)

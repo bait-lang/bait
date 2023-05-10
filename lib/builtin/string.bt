@@ -17,6 +17,14 @@ fun (s string) get(i i32) u8 {
 	return #JS.'s.str.charAt(i)'
 }
 
+pub fun (s string) get_str(i i32) string {
+	return from_js_string(#JS.'s.str.charAt(i)')
+}
+
+pub fun (s string) get_code() i32 {
+	return #JS.'s.str.charCodeAt(0)'
+}
+
 pub fun (s string) replace(val string, rep string) string {
 	return from_js_string(#JS.'s.str.replaceAll(val.str, rep.str)')
 }
