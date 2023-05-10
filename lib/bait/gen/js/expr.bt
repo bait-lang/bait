@@ -142,9 +142,9 @@ fun (g Gen) cast_expr(node ast.CastExpr) {
 }
 
 fun (g Gen) char_literal(node ast.CharLiteral) {
-	g.write('"')
+	g.write('new u8("')
 	g.write(node.val)
-	g.write('"')
+	g.write('")')
 }
 
 fun (g Gen) comp_time_var(node ast.CompTimeVar){
@@ -263,6 +263,27 @@ fun (g Gen) infix_expr(node ast.InfixExpr){
 				g.write('!')
 			}
 			g.write('string_eq(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.right)
+			g.write(')')
+			return
+		}
+	}
+	if node.left_type == ast.TypeIdx.u8 {
+		if node.op == token.TokenKind.plus {
+			g.write('u8_add(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.right)
+			g.write(')')
+			return
+		}
+		if node.op == token.TokenKind.ne or node.op == token.TokenKind.eq {
+			if node.op == token.TokenKind.ne {
+				g.write('!')
+			}
+			g.write('u8_eq(')
 			g.expr(node.left)
 			g.write(', ')
 			g.expr(node.right)

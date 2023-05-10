@@ -14,7 +14,7 @@ struct string {
 }'
 
 fun (s string) get(i i32) u8 {
-	return #JS.'s.str.charAt(i)'
+	return #JS.'new u8(s.str.charCodeAt(i))'
 }
 
 pub fun (s string) get_str(i i32) string {
