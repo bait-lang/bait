@@ -23,7 +23,8 @@ fun main() {
 	}
 	self_res := os.exec('node ${$BAITEXE} self')
 	if self_res.code == 0 {
-		println('Bait updated successfully to ${util.VERSION}.')
+		new_version := os.exec('node ${$BAITEXE} version').stdout.trim_space()
+		println('Bait updated successfully to ${new_version}.')
 		return
 	}
 	println('"bait self" failed, running make...')

@@ -7,7 +7,10 @@ All notable changes will be documented in this file.
 ## 0.0.3
 _unreleased_
 
-### Fixes
+### CLI and Tooling
+- `up`: actually print newest version after update
+
+### Compiler
 - Fix escaping of
   - double quotes in strings
   - backticks in interpolated strings
