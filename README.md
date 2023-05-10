@@ -32,6 +32,7 @@ Now you should have Bait compiled to JS at `<path to repo>/bait.js`.
 
 The compiler has to be used like `node ./bait.js run examples/hello_world.bt`.
 
+## Upgrading to the latest version
 To update Bait to the latest commit, run `node ./bait.js up`.
 
 ## License

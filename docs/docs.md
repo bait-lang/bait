@@ -1,4 +1,6 @@
 # Bait Documentation
+> Documentation of the standard library is :construction:
+
 ## Comments
 ```bait
 // Line comment
