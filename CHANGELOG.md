@@ -5,7 +5,7 @@ All notable changes will be documented in this file.
 
 
 ## 0.0.2
-_unreleased_
+_10 Mai 2023_
 
 ### Breaking Changes
 - Remove `testing` package
