@@ -120,10 +120,10 @@ fun transpile(prefs preference.Prefs) i32 {
 fun run_tests(prefs preference.Prefs) i32 {
 	mut files_to_test := []string
 	for a in prefs.args {
-		if os.is_dir(a){
-			files_to_test = files_to_test.concat(test_files_from_dir_recursive(a))
-		} else if os.exists(a) and a.ends_with('_test.bt') {
+		if os.exists(a) and a.ends_with('_test.bt') {
 			files_to_test.push(a)
+		} else if os.is_dir(a){
+			files_to_test = files_to_test.concat(os.walk_ext(a, '_test.bt'))
 		} else {
 			eprintln('Unrecognized file or directory: "${a}"')
 			exit(1)
@@ -161,20 +161,6 @@ fun bait_files_from_dir(dir string) []string {
 		}
 	}
 	return files
-}
-
-fun test_files_from_dir_recursive(dir string) []string {
-	all_files := os.ls(dir)
-	mut test_files := []string
-	for file in all_files {
-		p := os.join_path(dir, [file])
-		if os.is_dir(p){
-			test_files = test_files.concat(test_files_from_dir_recursive(p))
-		} else if os.exists(p) and p.ends_with('_test.bt') {
-			test_files.push(p)
-		}
-	}
-	return test_files
 }
 
 fun get_user_files(upath string) []string {
