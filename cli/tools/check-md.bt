@@ -12,6 +12,7 @@ struct CodeBlock {
 
 fun main() {
 	file := os.ARGS[2]
+	println('Checkind code blocks in ${file}...')
 	blocks := collect_code_blocks(file)
 	mut has_errors := false
 	for block in blocks {
