@@ -12,7 +12,7 @@ struct Tokenizer {
 	line i32
 	last_nl_pos i32
 	is_string_inter bool
-	str_quote string
+	str_quote u8
 }
 
 pub fun tokenize(text string, path string) []token.Token {
@@ -50,122 +50,122 @@ fun (t Tokenizer) next_token() token.Token {
 		if t.pos >= t.text.length {
 			return t.new_token(token.TokenKind.eof, '')
 		}
-		cs := t.text.get_str(t.pos)
-		if is_name_start_char(cs) {
+		c := t.text[t.pos]
+		if is_name_start_char(c) {
 			return t.name_or_keyword()
-		} else if is_digit(cs) {
+		} else if is_digit(c) {
 			num := t.number_val()
 			return t.new_token(token.TokenKind.number, num)
 		}
-		nextcs := t.text.get_str(t.pos + 1)
-		match cs {
-			"'", '"' {
-				str := t.string_val(cs)
+		nextc := t.text[t.pos + 1]
+		match c {
+			`'`, `\"` {
+				str := t.string_val(c)
 				return t.new_token(token.TokenKind.string, str)
 
 			}
-			'`' {
+			`\`` {
 				val := t.char_val()
 				return t.new_token(token.TokenKind.char, val)
 			}
-			'.' {
+			`.` {
 				return t.new_token(token.TokenKind.dot, "")
 			}
-			',' {
+			`,` {
 				return t.new_token(token.TokenKind.comma, "")
 			}
-			'+' {
-				if nextcs == '='{
+			`+` {
+				if nextc == `=`{
 					t.pos += 1
 					return t.new_token(token.TokenKind.plus_assign, "")
 				}
 				return t.new_token(token.TokenKind.plus, "")
 			}
-			'-' {
-				if nextcs == '='{
+			`-` {
+				if nextc == `=`{
 					t.pos += 1
 					return t.new_token(token.TokenKind.minus_assign, "")
 				}
 				return t.new_token(token.TokenKind.minus, "")
 			}
-			'*' {
-				if nextcs == '='{
+			`*` {
+				if nextc == `=`{
 					t.pos += 1
 					return t.new_token(token.TokenKind.mul_assign, "")
 				}
 				return t.new_token(token.TokenKind.mul, "")
 			}
-			'/' {
-				if nextcs == '='{
+			`/` {
+				if nextc == `=`{
 					t.pos += 1
 					return t.new_token(token.TokenKind.div_assign, "")
 				}
-				if nextcs == '/'{
+				if nextc == `/`{
 					t.ignore_line()
 					continue
 				}
 				return t.new_token(token.TokenKind.div, "")
 			}
-			'%' {
-				if nextcs == '='{
+			`%` {
+				if nextc == `=`{
 					t.pos += 1
 					return t.new_token(token.TokenKind.mod_assign, "")
 				}
 				return t.new_token(token.TokenKind.mod, "")
 			}
-			'=' {
-				if nextcs == '='{
+			`=` {
+				if nextc == `=`{
 					t.pos += 1
 					return t.new_token(token.TokenKind.eq, "")
 				}
 				return t.new_token(token.TokenKind.assign, "")
 			}
-			':' {
-				if nextcs == '='{
+			`:` {
+				if nextc == `=`{
 					t.pos += 1
 					return t.new_token(token.TokenKind.decl_assign, "")
 				}
 				return t.new_token(token.TokenKind.colon, "")
 			}
-			';' {
+			`;` {
 				return t.new_token(token.TokenKind.semicolon, "")
 			}
-			'!' {
-				if nextcs == '='{
+			`!` {
+				if nextc == `=`{
 					t.pos += 1
 					return t.new_token(token.TokenKind.ne, "")
 				}
 			}
-			'<' {
-				if nextcs == '='{
+			`<` {
+				if nextc == `=`{
 					t.pos += 1
 					return t.new_token(token.TokenKind.le, "")
 				}
 				return t.new_token(token.TokenKind.lt, "")
 			}
-			'>' {
-				if nextcs == '='{
+			`>` {
+				if nextc == `=`{
 					t.pos += 1
 					return t.new_token(token.TokenKind.ge, "")
 				}
 				return t.new_token(token.TokenKind.gt, "")
 			}
-			'(' {
+			`(` {
 				return t.new_token(token.TokenKind.lpar, "")
 			}
-			')' {
+			`)` {
 				return t.new_token(token.TokenKind.rpar, "")
 			}
-			'[' {
+			`[` {
 				return t.new_token(token.TokenKind.lbr, "")
 			}
-			']' {
+			`]` {
 				return t.new_token(token.TokenKind.rbr, "")
 			}
-			'{' {
+			`{` {
 				return t.new_token(token.TokenKind.lcur, "")
 			}
-			'}' {
+			`}` {
 				if t.is_string_inter {
 					t.is_string_inter = false
 					str := t.string_val(t.str_quote)
@@ -173,20 +173,20 @@ fun (t Tokenizer) next_token() token.Token {
 				}
 				return t.new_token(token.TokenKind.rcur, "")
 			}
-			'|' {
+			`|` {
 				return t.new_token(token.TokenKind.pipe, "")
 			}
-			'$' {
+			`$` {
 				return t.new_token(token.TokenKind.dollar, "")
 			}
-			'#' {
+			`#` {
 				t.pos += 1
 				name := t.name_val()
 				return t.new_token(token.TokenKind.hash, name)
 			}
 			else {}
 		}
-		t.error('unknown char ${cs}')
+		t.error('unknown char ${c}')
 	}
 	return t.new_token(token.TokenKind.eof, "")
 }
@@ -204,7 +204,7 @@ fun (t Tokenizer) name_val() string{
 	start := t.pos
 	t.pos += 1
 	for t.pos < t.text.length {
-		if not is_name_char(t.text.get_str(t.pos)) {
+		if not is_name_char(t.text[t.pos]) {
 			break
 		}
 		t.pos += 1
@@ -215,15 +215,15 @@ fun (t Tokenizer) name_val() string{
 
 fun (t Tokenizer) number_val() string {
 	start := t.pos
-	for is_digit(t.text.get_str(t.pos)) {
+	for is_digit(t.text[t.pos]) {
 		t.pos += 1
 	}
 	t.pos -= 1
 	return t.text.substr(start, t.pos + 1)
 }
 
-fun (t Tokenizer) string_val(quote string) string {
-	is_js := t.text.get_str(t.pos - 1) == '.'
+fun (t Tokenizer) string_val(quote u8) string {
+	is_js := t.text[t.pos - 1] == `.`
 	start_line := t.line
 	start := t.pos + 1
 	for true {
@@ -231,18 +231,18 @@ fun (t Tokenizer) string_val(quote string) string {
 		if t.pos >= t.text.length {
 			t.error_with_line('unfinished string literal', start_line)
 		}
-		cs := t.text.get_str(t.pos)
-		if cs == '\n' {
+		c := t.text[t.pos]
+		if c == `\n` {
 			t.last_nl_pos = t.pos
 			t.line += 1
-		} else if cs == '\\' {
+		} else if c == `\\` {
 			t.pos += 1
-		} else if not is_js and cs == '$' and t.text.get_str(t.pos + 1) == '{' {
+		} else if not is_js and c == `$` and t.text[t.pos + 1] == `{` {
 			t.is_string_inter = true
 			t.str_quote = quote
 			t.pos -= 1
 			return t.text.substr(start, t.pos + 1)
-		} else if cs == quote {
+		} else if c == quote {
 			break
 		}
 	}
@@ -253,10 +253,10 @@ fun (t Tokenizer) char_val() string {
 	start := t.pos + 1
 	for true {
 		t.pos += 1
-		c := t.text.get_str(t.pos)
-		if c == '\\' {
+		c := t.text[t.pos]
+		if c == `\\` {
 			t.pos += 1
-		} else if c == '`' {
+		} else if c == `\`` {
 			break
 		}
 	}
@@ -265,11 +265,11 @@ fun (t Tokenizer) char_val() string {
 
 fun (t Tokenizer) skip_whitespace(){
 	for t.pos < t.text.length {
-		c := t.text.get_str(t.pos)
-		if c == '\n' {
+		c := t.text[t.pos]
+		if c == `\n` {
 			t.last_nl_pos = t.pos
 			t.line += 1
-		} else if not [' ', '\t', '\r'].contains(c) {
+		} else if not [` `, `\t`, `\r`].contains(c) {
 			return
 		}
 		t.pos += 1
@@ -277,7 +277,7 @@ fun (t Tokenizer) skip_whitespace(){
 }
 
 fun (t Tokenizer) ignore_line() {
-	for t.pos < t.text.length and t.text.get_str(t.pos) != '\n' {
+	for t.pos < t.text.length and t.text[t.pos] != `\n` {
 		t.pos += 1
 	}
 	t.last_nl_pos = t.pos
@@ -297,16 +297,14 @@ fun (t Tokenizer) error_with_line(msg string, line i32){
 	exit(1)
 }
 
-fun is_name_start_char(c string) {
-	code := c.get_code()
-	return code >= 97 and code <= 122 or code >= 65 and code <= 90 or code == 95
+fun is_name_start_char(c u8) {
+	return c >= `a` and c <= `z` or c >= `A` and c <= `Z` or c == `_`
 }
 
-fun is_name_char(c string) {
+fun is_name_char(c u8) {
 	return is_name_start_char(c) or is_digit(c)
 }
 
-fun is_digit(c string) {
-	code := c.get_code()
-	return code >= 48 and code <= 57
+fun is_digit(c u8) {
+	return c >= `0` and c <= `9`
 }

@@ -437,8 +437,7 @@ fun (p Parser) name_expr(lang string)ast.Expr{
 	if p.is_struct_possible and p.next_tok.kind == token.TokenKind.lcur {
 		return p.struct_init()
 	}
-	// TODO use u8 and is_capital
-	if p.next_tok.kind == token.TokenKind.dot and p.tok.val.get_str(0).is_upper() and not p.tok.val.is_upper() {
+	if p.next_tok.kind == token.TokenKind.dot and p.tok.val[0].is_capital() and not p.tok.val.is_upper() {
 		return p.enum_val()
 	}
 	return p.ident(lang)
