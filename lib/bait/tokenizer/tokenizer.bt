@@ -223,7 +223,7 @@ fun (t Tokenizer) number_val() string {
 }
 
 fun (t Tokenizer) string_val(quote string) string {
-	is_js := t.text[t.pos - 1] == `.`
+	is_js := t.text.get_str(t.pos - 1) == '.'
 	start_line := t.line
 	start := t.pos + 1
 	for true {
@@ -231,14 +231,13 @@ fun (t Tokenizer) string_val(quote string) string {
 		if t.pos >= t.text.length {
 			t.error_with_line('unfinished string literal', start_line)
 		}
-		c := t.text[t.pos]
 		cs := t.text.get_str(t.pos)
-		if c == `\n` {
+		if cs == '\n' {
 			t.last_nl_pos = t.pos
 			t.line += 1
-		} else if c == `\\` {
+		} else if cs == '\\' {
 			t.pos += 1
-		} else if not is_js and c == `$` and t.text[t.pos + 1] == `{` {
+		} else if not is_js and cs == '$' and t.text.get_str(t.pos + 1) == '{' {
 			t.is_string_inter = true
 			t.str_quote = quote
 			t.pos -= 1
@@ -266,11 +265,11 @@ fun (t Tokenizer) char_val() string {
 
 fun (t Tokenizer) skip_whitespace(){
 	for t.pos < t.text.length {
-		c := t.text[t.pos]
-		if c == `\n` {
+		c := t.text.get_str(t.pos)
+		if c == '\n' {
 			t.last_nl_pos = t.pos
 			t.line += 1
-		} else if not [` `, `\t`, `\r`].contains(c) {
+		} else if not [' ', '\t', '\r'].contains(c) {
 			return
 		}
 		t.pos += 1
@@ -278,7 +277,7 @@ fun (t Tokenizer) skip_whitespace(){
 }
 
 fun (t Tokenizer) ignore_line() {
-	for t.pos < t.text.length and t.text[t.pos] != `\n` {
+	for t.pos < t.text.length and t.text.get_str(t.pos) != '\n' {
 		t.pos += 1
 	}
 	t.last_nl_pos = t.pos
@@ -300,7 +299,6 @@ fun (t Tokenizer) error_with_line(msg string, line i32){
 
 fun is_name_start_char(c string) {
 	code := c.get_code()
-	// return c >= `a` and c <= `z` or c >= `A` and c <= `Z` or c == `_`
 	return code >= 97 and code <= 122 or code >= 65 and code <= 90 or code == 95
 }
 
@@ -310,6 +308,5 @@ fun is_name_char(c string) {
 
 fun is_digit(c string) {
 	code := c.get_code()
-	// return c >= `0` and c <= `9`
 	return code >= 48 and code <= 57
 }
