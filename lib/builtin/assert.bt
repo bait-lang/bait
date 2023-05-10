@@ -33,11 +33,11 @@ fun (tr TestRunner) assert_pass() {
 
 fun (tr TestRunner) assert_fail() {
 	tr.fails += 1
-	println('${tr.file}:${tr.line} ${tr.fun_name}')
-	println(tr.expr_string)
+	eprintln('${tr.file}:${tr.line} ${tr.fun_name}')
+	eprintln(tr.expr_string)
 	if tr.exp_val.length > 0 {
-		println('   left: ${tr.exp_val}')
-		println('  right: ${tr.got_val}')
+		eprintln('   left: ${tr.exp_val}')
+		eprintln('  right: ${tr.got_val}')
 	}
 }
 
