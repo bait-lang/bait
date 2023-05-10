@@ -318,6 +318,8 @@ fun (g Gen) match_expr(node ast.MatchExpr){
 	g.expr(node.cond)
 	if node.cond_type == ast.TypeIdx.string {
 		g.write('.str')
+	} else if node.cond_type == ast.TypeIdx.u8 {
+		g.write('.val')
 	}
 	g.writeln(') {')
 	g.indent += 1
@@ -329,6 +331,9 @@ fun (g Gen) match_expr(node ast.MatchExpr){
 				g.write("case ")
 				if node.cond_type == ast.TypeIdx.string {
 					g.expr_to_string(e, b.expr_types[i])
+				} else if node.cond_type == ast.TypeIdx.u8 {
+					g.expr(e)
+					g.write('.val')
 				} else {
 					g.expr(e)
 				}

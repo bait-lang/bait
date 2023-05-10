@@ -9,3 +9,11 @@ fun test_u8_operations() {
 	assert a < b
 	assert `2` + `2` == `d`
 }
+
+fun test_u8_match() {
+	c := `c`
+	match c {
+		`c` { assert true }
+		else { assert false }
+	}
+}
