@@ -6,5 +6,6 @@ fun test_u8_operations() {
 	b := `b`
 	assert a == `a`
 	assert a != b
+	assert a < b
 	assert `2` + `2` == `d`
 }

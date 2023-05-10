@@ -279,17 +279,13 @@ fun (g Gen) infix_expr(node ast.InfixExpr){
 			g.write(')')
 			return
 		}
-		if node.op == token.TokenKind.ne or node.op == token.TokenKind.eq {
-			if node.op == token.TokenKind.ne {
-				g.write('!')
-			}
-			g.write('u8_eq(')
-			g.expr(node.left)
-			g.write(', ')
-			g.expr(node.right)
-			g.write(')')
-			return
-		}
+		g.expr(node.left)
+		g.write('.val ')
+		g.write(node.op.js_repr())
+		g.write(' ')
+		g.expr(node.right)
+		g.write('.val')
+		return
 	}
 	g.expr(node.left)
 	g.write(' ')

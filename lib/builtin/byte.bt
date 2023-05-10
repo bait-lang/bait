@@ -20,10 +20,6 @@ pub fun (c u8) ascii() string {
 	return from_js_string(#JS.'String.fromCharCode(c.val)')
 }
 
-fun (a u8) add (b u8) bool {
+fun (a u8) add (b u8) u8 {
 	return #JS.'new u8(a.val + b.val)'
-}
-
-fun (a u8) eq (b u8) bool {
-	return #JS.'a.val === b.val'
 }
