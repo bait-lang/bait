@@ -7,7 +7,7 @@ on:
       - main
     paths:
       - 'cli/**'
-      - 'src/**'
+      - 'lib/**'
 
 jobs:
   gen-baitjs:
