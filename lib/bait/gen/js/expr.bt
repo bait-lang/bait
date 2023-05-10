@@ -4,6 +4,7 @@ package js
 
 import bait.ast
 import bait.token
+import bait.util
 import os
 
 fun (g Gen) expr(expr ast.Expr) {
@@ -143,7 +144,7 @@ fun (g Gen) cast_expr(node ast.CastExpr) {
 
 fun (g Gen) char_literal(node ast.CharLiteral) {
 	g.write('new u8("')
-	g.write(node.val)
+	g.write(util.escape_char(node.val, `\"`))
 	g.write('")')
 }
 
@@ -403,7 +404,7 @@ fun (g Gen) string_literal(node ast.StringLiteral) {
 		g.write(node.val)
 		return
 	}
-	val := node.val.replace('"', '\\"').replace('\n', '\\n')
+	val := util.escape_char(node.val.replace('\n', '\\n'), `\"`)
 	g.write('from_js_string("')
 	g.write(val)
 	g.write('")')
@@ -412,7 +413,7 @@ fun (g Gen) string_literal(node ast.StringLiteral) {
 fun (g Gen) string_inter_literal(node ast.StringInterLiteral) {
 	g.write('from_js_string(`')
 	for i, val in node.vals {
-		g.write(val)
+		g.write(util.escape_char(val, `\``))
 		if i < node.exprs.length {
 			g.write('\${')
 			g.expr_to_string(node.exprs[i], node.expr_types[i])

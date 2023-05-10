@@ -4,6 +4,15 @@ All notable changes will be documented in this file.
 > Right now Bait is in an Alpha State (`0.0.x`). Breaking changes might occur anytime.
 
 
+## 0.0.3
+_unreleased_
+
+### Fixes
+- Fix escaping of
+  - double quotes in strings
+  - backticks in interpolated strings
+  - double quotes in char literals
+
 ## 0.0.2
 _10 Mai 2023_
 

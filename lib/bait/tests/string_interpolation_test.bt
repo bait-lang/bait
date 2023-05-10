@@ -1,0 +1,18 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+
+fun test_simple_interpolation(){
+	greet := 'hello'
+	to := 'world'
+	assert '${greet} ${to}' == 'hello world'
+}
+
+fun test_escape_backtick(){
+	x := 'a'
+	assert '` ${x}' == '` a'
+}
+
+fun test_escape_dollar() {
+	x := 'a'
+	assert '\${x} ${x}' == '\${x} a'
+}
