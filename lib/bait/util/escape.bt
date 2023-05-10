@@ -1,0 +1,26 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package util
+
+pub fun escape_char(s string, esc_char u8) string {
+	mut res := ''
+	mut is_escaped := false
+	mut i := 0
+	for i < s.length {
+		c := s[i]
+		if c == esc_char {
+			if not is_escaped {
+				res += '\\'
+			}
+		}
+		res += c.ascii()
+		i += 1
+		// Set is_escaped with respect to double backslashes
+		if c == `\\` and not is_escaped {
+			is_escaped = true
+		} else {
+			is_escaped = false
+		}
+	}
+	return res
+}
