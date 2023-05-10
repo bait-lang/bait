@@ -7,6 +7,11 @@ All notable changes will be documented in this file.
 ## 0.0.3
 _unreleased_
 
+### Fixes
+- Fix escaping of
+  - double quotes in strings
+  - backticks in interpolated strings
+  - double quotes in char literals
 
 ## 0.0.2
 _10 Mai 2023_

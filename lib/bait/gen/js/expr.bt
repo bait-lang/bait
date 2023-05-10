@@ -144,7 +144,7 @@ fun (g Gen) cast_expr(node ast.CastExpr) {
 
 fun (g Gen) char_literal(node ast.CharLiteral) {
 	g.write('new u8("')
-	g.write(node.val)
+	g.write(util.escape_char(node.val, `\"`))
 	g.write('")')
 }
 
