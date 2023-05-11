@@ -273,36 +273,6 @@ fun (c Checker) index_expr(node ast.IndexExpr) i32 {
 	return node.left_type
 }
 
-fun (c Checker) infix_expr(node ast.InfixExpr) i32 {
-	node.left_type = c.expr(node.left)
-	if node.op == token.TokenKind.key_is {
-		if node.left is ast.Ident {
-			mut right := node.right as ast.Ident
-			if not right.name.contains('.') {
-				right.name = right.pkg + '.' + right.name
-			}
-			node.right_type = c.table.type_idxs[right.name]
-			left := node.left as ast.Ident
-			c.scope.update_type(left.name, node.right_type)
-		} else if node.left is ast.SelectorExpr {
-			mut right := node.right as ast.Ident
-			if not right.name.contains('.') {
-				right.name = right.pkg + '.' + right.name
-			}
-			node.right_type = c.table.type_idxs[right.name]
-			left := node.left as ast.SelectorExpr
-			name := (left.expr as ast.Ident).name + '.' + left.field_name
-			c.scope.update_type(name, node.right_type)
-		}
-		return ast.TypeIdx.bool
-	}
-	node.right_type = c.expr(node.right)
-	if node.op.is_compare() {
-		return ast.TypeIdx.bool
-	}
-	return node.left_type
-}
-
 fun (c Checker) map_init(node ast.MapInit) i32 {
 	if node.keys.length > 0 {
 		for i, key in node.keys {
