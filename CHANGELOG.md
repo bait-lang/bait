@@ -9,6 +9,7 @@ _unreleased_
 
 ### Breaking
 - Remove `type(var)` cast syntax in favor of `as` casting: `var as Type`
+- `$FILE` comptime var now gives the relative path. Use `$ABS_FILE` for the old behaviour
 
 ### CLI and Tooling
 - `up`: Actually print newest version after update
@@ -29,6 +30,7 @@ _unreleased_
 - `os.exec()`: Fix missing output of stderr without execution errors
 
 ### Other Changes
+- Add `$ABS_FILE` compile time variable
 - Add lot's of new tests
 
 ## 0.0.2

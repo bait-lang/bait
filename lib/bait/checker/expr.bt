@@ -182,6 +182,7 @@ fun (c Checker) method_call(node ast.CallExpr) i32 {
 const SUPPORTED_COMPTIME_VARS := [
 	'PKG',
 	'FILE',
+	'ABS_FILE',
 	'LINE',
 	'FILE_LINE',
 	'FUN',

@@ -204,7 +204,8 @@ They are replaced with the actual value during compilation.
 | Variable     | Description                         | Example                 |
 | ------------ | ----------------------------------- | ----------------------- |
 | `$PKG`       | Name of the current package.        | `main`                  |
-| `$FILE`      | Absolute path of the source file.   | `/path/to/file.bt`      |
+| `$FILE`      | Relative path of the source file.   | `lib/builtin/file.bt`   |
+| `$ABS_FILE`  | Absolute path of the source file.   | `/path/to/file.bt`      |
 | `$LINE`      | Line number of it's appearance.     | `123`                   |
 | `$FILE_LINE` | Relative path followed by the line. | `tests/my_test.bt:27`   |
 | `$FUN`       | Name of the current function.       | `test_read_line`        |
