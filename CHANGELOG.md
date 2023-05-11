@@ -7,6 +7,9 @@ All notable changes will be documented in this file.
 ## 0.0.3
 _unreleased_
 
+### Breaking
+- Remove `type(var)` cast syntax in favor of `as` casting: `var as Type`
+
 ### CLI and Tooling
 - `up`: Actually print newest version after update
 - `self`: Always show stderr output

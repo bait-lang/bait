@@ -162,19 +162,6 @@ fun (p Parser) bool_literal()ast.BoolLiteral{
 	}
 }
 
-fun (p Parser) cast_expr() ast.CastExpr {
-	pos := p.tok.pos
-	target := p.parse_type()
-	p.check(token.TokenKind.lpar)
-	expr := p.expr(0)
-	p.check(token.TokenKind.rpar)
-	return ast.CastExpr{
-		target: target
-		expr: expr
-		pos: pos
-	}
-}
-
 fun (p Parser) char_literal()ast.CharLiteral{
 	pos := p.tok.pos
 	p.next()
@@ -429,9 +416,6 @@ fun (p Parser) name_expr(lang string)ast.Expr{
 		return p.map_init()
 	}
 	if p.next_tok.kind == token.TokenKind.lpar {
-		if p.table.type_idxs.contains(p.tok.val) {
-			return p.cast_expr()
-		}
 		return p.fun_call(lang)
 	}
 	if p.is_struct_possible and p.next_tok.kind == token.TokenKind.lcur {

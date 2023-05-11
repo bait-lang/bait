@@ -16,10 +16,7 @@ fun (c Checker) expr(expr ast.Expr) i32 {
 		return ast.TypeIdx.bool
 	} else if expr is ast.CallExpr {
 		return c.call_expr(expr)
-	} else if expr is ast.CastExpr {
-		return c.cast_expr(expr)
 	} else if expr is ast.CharLiteral {
-		// c.warn('char literals are not supported yet', expr.pos)
 		return ast.TypeIdx.u8
 	} else if expr is ast.CompTimeVar {
 		return c.comp_time_var(expr)
@@ -180,12 +177,6 @@ fun (c Checker) method_call(node ast.CallExpr) i32 {
 	node.left_type = def.params[0].typ
 	node.return_type = def.return_type
 	return node.return_type
-}
-
-fun (c Checker) cast_expr(node ast.CastExpr) i32 {
-	c.warn('Use of deprecated type casts. Use `x as MyType` instead.', node.pos)
-	c.expr(node.expr)
-	return node.target
 }
 
 const SUPPORTED_COMPTIME_VARS := [
