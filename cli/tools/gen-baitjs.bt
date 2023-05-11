@@ -65,6 +65,7 @@ fun main() {
 	original_msg := os.exec('git log -1 --oneline --pretty="%s" HEAD').stdout.trim_space()
 
 	// Create commit in baitjs
+	println('Creating commit...')
 	os.chdir(baitjs_dir)
 	commit_msg := '[bait:${branch}] ${short_hash} - ${original_msg}'
 	errors += os.system('git commit -m "${commit_msg}" -m "${MAIN_REPO_COMMIT_URL}/${commit_hash}"')
