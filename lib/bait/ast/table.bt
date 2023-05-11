@@ -12,7 +12,7 @@ pub struct Table {
 pub fun new_table() Table {
 	mut t := Table{
 		global_scope: Scope{
-			parent: any(0)
+			parent: 0 as any
 		}
 	}
 	t.register_builtins()
@@ -60,7 +60,7 @@ pub fun (t Table) find_or_register_array(elem_type i32) i32 {
 	return t.register_sym(TypeSymbol{
 		kind: TypeKind.array
 		name: name
-		parent: i32(TypeIdx.array)
+		parent: TypeIdx.array as i32
 		info: ArrayInfo{
 			elem_type: elem_type
 		}
@@ -78,7 +78,7 @@ pub fun (t Table) find_or_register_map(key_type i32, val_type i32) i32 {
 	return t.register_sym(TypeSymbol{
 		kind: TypeKind.map
 		name: name
-		parent: i32(TypeIdx.map)
+		parent: TypeIdx.map as i32
 		info: MapInfo{
 			key_type: key_type
 			val_type: val_type

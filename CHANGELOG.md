@@ -10,6 +10,7 @@ _unreleased_
 ### CLI and Tooling
 - `up`: Actually print newest version after update
 - `self`: Always show stderr output
+- `gen-baitjs`: Logging improvements and fix for semirandom fails
 
 ### Compiler
 - Fix escaping of

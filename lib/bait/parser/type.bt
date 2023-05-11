@@ -58,7 +58,7 @@ fun (p Parser) parse_fun_type() i32 {
 		}
 	}
 	p.check(token.TokenKind.rpar)
-	mut return_type := i32(ast.TypeIdx.void)
+	mut return_type := ast.TypeIdx.void as i32
 	if p.tok.pos.line == p.prev_tok.pos.line {
 		return_type = p.parse_type()
 	}
@@ -80,7 +80,7 @@ fun (p Parser) parse_map_type() i32 {
 }
 
 fun (p Parser) infer_expr_type(expr ast.Expr) i32 {
-	mut typ := i32(ast.TypeIdx.void)
+	mut typ := ast.TypeIdx.void as i32
 	match expr {
 		ast.StructInit{
 			typ = expr.typ

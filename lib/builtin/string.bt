@@ -89,7 +89,7 @@ pub fun (arr []string) join(sep string) string {
 pub fun from_js_string(js_s any) string {
 	return string{
 		str: js_s
-		length: i32(#JS.'js_s.length')
+		length: #JS.'js_s.length' as i32
 	}
 }
 

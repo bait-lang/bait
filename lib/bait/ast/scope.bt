@@ -35,7 +35,7 @@ pub fun (s Scope) get(name string) ScopeObject {
 		return s.parent.get(name)
 	}
 	return ScopeObject{
-		typ: i32(TypeIdx.placeholder)
+		typ: TypeIdx.placeholder as i32
 	}
 }
 

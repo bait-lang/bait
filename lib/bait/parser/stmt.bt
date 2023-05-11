@@ -267,7 +267,7 @@ fun (p Parser) fun_decl()ast.FunDecl{
 	p.check(token.TokenKind.lpar)
 	params = params.concat(p.fun_params())
 	p.check(token.TokenKind.rpar)
-	mut return_type := i32(ast.TypeIdx.void)
+	mut return_type := ast.TypeIdx.void as i32
 	if p.tok.kind != token.TokenKind.lcur {
 		return_type = p.parse_type()
 	}

@@ -107,18 +107,18 @@ fun (c Checker) for_in_loop(node ast.ForInLoop) {
 	c.open_scope()
 	node.expr_type = c.expr(node.expr)
 	sym := c.table.get_sym(node.expr_type)
-	mut idx_type := i32(ast.TypeIdx.placeholder)
-	mut val_type := i32(ast.TypeIdx.placeholder)
+	mut idx_type := ast.TypeIdx.placeholder as i32
+	mut val_type := ast.TypeIdx.placeholder as i32
 	if sym.kind == ast.TypeKind.array {
-		idx_type = i32(ast.TypeIdx.i32)
+		idx_type = ast.TypeIdx.i32 as i32
 		val_type = (sym.info as ast.ArrayInfo).elem_type
 	} else if sym.kind == ast.TypeKind.map {
 		info := sym.info as ast.MapInfo
 		idx_type = info.key_type
 		val_type = info.val_type
 	} else if sym.kind == ast.TypeKind.string {
-		idx_type = i32(ast.TypeIdx.i32)
-		val_type = i32(ast.TypeIdx.u8)
+		idx_type = ast.TypeIdx.i32 as i32
+		val_type = ast.TypeIdx.u8 as i32
 	} else {
 		c.error('cannot iterate over ${sym.name}', node.pos)
 	}
