@@ -24,14 +24,14 @@ fun main() {
 	mut errors := 0
 
 	println('Configuring git user...')
-	errors += os.system('git config --global user.name "${GIT_USER}"')
-	errors += os.system('git config --global user.email "${GIT_MAIL}"')
+	errors += git_command('config --global user.name "${GIT_USER}"')
+	errors += git_command('config --global user.email "${GIT_MAIL}"')
 
 	baitjs_dir := os.join_path(os.home_dir(), ['.bait', 'baitjs'])
 	os.rmdir_all(baitjs_dir)
 
 	access_token := os.getenv('TIABEAST_BOT_TOKEN')
-	errors += os.system('git clone --depth 1 https://${GIT_USER}:${access_token}@github.com/tiabeast/baitjs.git ${baitjs_dir}')
+	errors += git_command('clone --depth 1 https://${GIT_USER}:${access_token}@github.com/tiabeast/baitjs.git ${baitjs_dir}')
 
 	println('Building bait.js...')
 	res := os.exec('node bait.js cli/bait.bt -o ${baitjs_dir}/bait.js')
@@ -48,10 +48,10 @@ fun main() {
 	}
 
 	// Stage changes in baitjs repo
-	errors += os.system('git -C ${baitjs_dir} add .')
+	errors += git_command('-C ${baitjs_dir} add .')
 
 	// Exit if there is nothing to commit
-	has_changes := os.system('git -C ${baitjs_dir} diff-index --quiet HEAD')
+	has_changes := git_command('-C ${baitjs_dir} diff-index --quiet HEAD')
 	if has_changes == 0 {
 		println('No changes to commit.')
 		exit(0)
@@ -68,13 +68,18 @@ fun main() {
 	println('Creating commit...')
 	os.chdir(baitjs_dir)
 	commit_msg := '[bait:${branch}] ${short_hash} - ${original_msg}'
-	errors += os.system('git commit -m "${commit_msg}"')
+	errors += git_command('commit -m "${commit_msg}"')
 
 	// Safety rebase and push to baitjs
 	println('Pushing to baitjs...')
-	errors += os.system('git pull --rebase')
-	errors += os.system('git push')
+	errors += git_command('pull --rebase')
+	errors += git_command('push')
 
 	// Exit with the number of errors
 	exit(errors)
+}
+
+fun git_command(cmd string) i32 {
+	println(cmd)
+	return os.system('git ${cmd}')
 }
