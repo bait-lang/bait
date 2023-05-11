@@ -125,7 +125,7 @@ fun (c Checker) fun_call(node ast.CallExpr) i32 {
 		}
 		arg_count_matches := node.args.length == def.params.length
 		if not arg_count_matches {
-			c.error('expected ' + def.params.length + ' arguments but got '+ node.args.length, node.pos)
+			c.error('expected ${def.params.length} arguments but got ${node.args.length}', node.pos)
 		}
 		if node.name == 'println' {
 			// TODO check arg can be printed
@@ -222,14 +222,14 @@ fun (c Checker) ident(node ast.Ident) i32 {
 		return ast.TypeIdx.void
 	}
 	mut obj := c.scope.get(node.name)
-	if obj.typ != ast.TypeIdx.placeholder {
+	if obj.typ != ast.TypeIdx.placeholder as i32 {
 		return obj.typ
 	}
 	if not node.name.contains('.') and node.pkg != 'builtin' and node.pkg != 'main' {
 		node.name = node.pkg + '.' + node.name
 	}
 	obj = c.table.global_scope.get(node.name)
-	if obj.typ == ast.TypeIdx.placeholder {
+	if obj.typ == ast.TypeIdx.placeholder as i32 {
 		c.error('undefined variable ${node.name}', node.pos)
 	}
 	if obj.kind == ast.ObjectKind.constant and not obj.is_pub and node.pkg != c.pkg {
@@ -269,36 +269,6 @@ fun (c Checker) index_expr(node ast.IndexExpr) i32 {
 			return ast.TypeIdx.void
 		}
 		return ast.TypeIdx.u8
-	}
-	return node.left_type
-}
-
-fun (c Checker) infix_expr(node ast.InfixExpr) i32 {
-	node.left_type = c.expr(node.left)
-	if node.op == token.TokenKind.key_is {
-		if node.left is ast.Ident {
-			mut right := node.right as ast.Ident
-			if not right.name.contains('.') {
-				right.name = right.pkg + '.' + right.name
-			}
-			node.right_type = c.table.type_idxs[right.name]
-			left := node.left as ast.Ident
-			c.scope.update_type(left.name, node.right_type)
-		} else if node.left is ast.SelectorExpr {
-			mut right := node.right as ast.Ident
-			if not right.name.contains('.') {
-				right.name = right.pkg + '.' + right.name
-			}
-			node.right_type = c.table.type_idxs[right.name]
-			left := node.left as ast.SelectorExpr
-			name := (left.expr as ast.Ident).name + '.' + left.field_name
-			c.scope.update_type(name, node.right_type)
-		}
-		return ast.TypeIdx.bool
-	}
-	node.right_type = c.expr(node.right)
-	if node.op.is_compare() {
-		return ast.TypeIdx.bool
 	}
 	return node.left_type
 }

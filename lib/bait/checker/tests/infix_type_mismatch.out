@@ -1,0 +1,1 @@
+lib/bait/checker/tests/infix_type_mismatch.in.bt:1:13 error: infix expr: cannot compare 4 to 13

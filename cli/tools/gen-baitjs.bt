@@ -42,7 +42,7 @@ fun main() {
 
 	// Sanity check for a reasonable file size
 	lines := os.read_lines('bait.js')
-	if lines < 4000 {
+	if lines.length < 4000 {
 		eprintln('bait.js is too small. Something went wrong.')
 		exit(1)
 	}

@@ -127,7 +127,7 @@ pub fun from_js_string(js_s any) string {
 
 pub fun from_js_string_arr(js_arr any) []string {
 	mut a := []string
-	for i := 0; i < #JS.'js_arr.length'; i += 1 {
+	for i := 0; i < #JS.'js_arr.length' as i32; i += 1 {
 		a.push(from_js_string(#JS.'js_arr[i]'))
 	}
 	return a
