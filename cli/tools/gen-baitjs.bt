@@ -68,7 +68,7 @@ fun main() {
 	println('Creating commit...')
 	os.chdir(baitjs_dir)
 	commit_msg := '[bait:${branch}] ${short_hash} - ${original_msg}'
-	errors += git_command('commit -m "${commit_msg}" -m "${MAIN_REPO_COMMIT_URL}/${commit_hash}"}"')
+	errors += git_command('commit -m "${commit_msg}" -m "${MAIN_REPO_COMMIT_URL}/${commit_hash}"')
 
 	// Safety rebase and push to baitjs
 	println('Pushing to baitjs...')
