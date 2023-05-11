@@ -293,6 +293,7 @@ pub struct TypeOf {
 pub struct Attribute{
 	name string
 	arg string
+	pos token.Pos
 }
 
 pub struct EmptyExpr{}

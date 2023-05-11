@@ -110,6 +110,7 @@ fun (p Parser) import_stmts() [] ast.Import{
 // Parses one or more attributes
 fun (p Parser) parse_attributes() {
 	for p.tok.kind == token.TokenKind.attr {
+		pos := p.tok.pos
 		name := p.tok.val
 		p.next()
 		mut arg := ''
@@ -121,6 +122,7 @@ fun (p Parser) parse_attributes() {
 		p.attributes.push(ast.Attribute{
 			name: name
 			arg: arg
+			pos: pos
 		})
 	}
 }
