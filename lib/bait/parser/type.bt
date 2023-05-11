@@ -71,7 +71,7 @@ fun (p Parser) parse_map_type() i32 {
 	}
 	p.check(token.TokenKind.lbr)
 	key_type := p.parse_type()
-	if key_type != ast.TypeIdx.string {
+	if key_type != ast.TypeIdx.string as i32 {
 		p.error('map key type must be string')
 	}
 	p.check(token.TokenKind.rbr)

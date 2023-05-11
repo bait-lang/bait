@@ -125,7 +125,7 @@ fun (c Checker) fun_call(node ast.CallExpr) i32 {
 		}
 		arg_count_matches := node.args.length == def.params.length
 		if not arg_count_matches {
-			c.error('expected ' + def.params.length + ' arguments but got '+ node.args.length, node.pos)
+			c.error('expected ${def.params.length} arguments but got ${node.args.length}', node.pos)
 		}
 		if node.name == 'println' {
 			// TODO check arg can be printed
@@ -222,14 +222,14 @@ fun (c Checker) ident(node ast.Ident) i32 {
 		return ast.TypeIdx.void
 	}
 	mut obj := c.scope.get(node.name)
-	if obj.typ != ast.TypeIdx.placeholder {
+	if obj.typ != ast.TypeIdx.placeholder as i32 {
 		return obj.typ
 	}
 	if not node.name.contains('.') and node.pkg != 'builtin' and node.pkg != 'main' {
 		node.name = node.pkg + '.' + node.name
 	}
 	obj = c.table.global_scope.get(node.name)
-	if obj.typ == ast.TypeIdx.placeholder {
+	if obj.typ == ast.TypeIdx.placeholder as i32 {
 		c.error('undefined variable ${node.name}', node.pos)
 	}
 	if obj.kind == ast.ObjectKind.constant and not obj.is_pub and node.pkg != c.pkg {

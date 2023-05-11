@@ -31,7 +31,7 @@ pub fun (s Scope) get(name string) ScopeObject {
 	if s.objects.contains(name) {
 		return s.objects[name]
 	}
-	if s.parent != 0 {
+	if s.parent != 0 as Scope {
 		return s.parent.get(name)
 	}
 	return ScopeObject{
@@ -45,5 +45,5 @@ pub fun (s Scope) update_type(name string, typ i32) {
 
 pub fun (s Scope) is_known(name string) bool {
 	obj := s.get(name)
-	return obj.typ != TypeIdx.placeholder
+	return obj.typ != TypeIdx.placeholder as i32
 }
