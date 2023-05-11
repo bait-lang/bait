@@ -62,7 +62,7 @@ fun main() {
 	branch := os.exec('git rev-parse --abbrev-ref HEAD').stdout.trim_space()
 	commit_hash := os.exec('git rev-parse HEAD').stdout.trim_space()
 	short_hash := commit_hash.substr(0, 7)
-	original_msg := os.exec('git log -1 --oneline --pretty="%s" HEAD').stdout.trim_space()
+	original_msg := os.exec('git log -1 --oneline --pretty=%s HEAD').stdout.trim_space()
 
 	// Create commit in baitjs
 	println('Creating commit...')
