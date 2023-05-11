@@ -8,13 +8,18 @@ All notable changes will be documented in this file.
 _unreleased_
 
 ### CLI and Tooling
-- `up`: actually print newest version after update
+- `up`: Actually print newest version after update
+- `self`: Always show stderr output
 
 ### Compiler
 - Fix escaping of
-  - double quotes in strings
-  - backticks in interpolated strings
-  - double quotes in char literals
+  - Double quotes in strings
+  - Backticks in interpolated strings
+  - Double quotes in char literals
+
+### Standard Library
+- `os.exec()`: Fix missing output of stderr without execution errors
+
 
 ## 0.0.2
 _10 Mai 2023_

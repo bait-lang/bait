@@ -129,13 +129,11 @@ struct Result {
 
 pub fun exec(cmd string) Result {
 	mut res := Result{}
-	#JS.'try {
-		const stdout = js_child_process.execSync(cmd.str, {stdio: ["pipe", "pipe", "pipe"]}).toString()
-		res.stdout = from_js_string(stdout)
-	} catch (e) {
-		res.code = e.status
-		res.stderr = from_js_string(e.stderr.toString())
-	}'
+	#JS.'const commands = cmd.str.split(" ")
+	const out = js_child_process.spawnSync(commands[0], commands.slice(1))
+	res.code = out.status
+	res.stdout = from_js_string(out.stdout.toString())
+	res.stderr = from_js_string(out.stderr.toString())'
 	return res
 }
 
