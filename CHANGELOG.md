@@ -16,7 +16,10 @@ _unreleased_
 - `self`: Always show stderr output
 - `gen-baitjs`: Logging improvements and fix for semirandom fails
 
-### Compiler
+### Checker
+- Add error if infix types do not match
+
+### JSGen
 - Fix escaping of
   - Double quotes in strings
   - Backticks in interpolated strings
