@@ -184,9 +184,14 @@ fun (t Tokenizer) next_token() token.Token {
 				name := t.name_val()
 				return t.new_token(token.TokenKind.hash, name)
 			}
+			`@` {
+				t.pos += 1
+				name := t.name_val()
+				return t.new_token(token.TokenKind.attr, name)
+			}
 			else {}
 		}
-		t.error('unknown char ${c}')
+		t.error('unknown char `${c.ascii()}`')
 	}
 	return t.new_token(token.TokenKind.eof, "")
 }

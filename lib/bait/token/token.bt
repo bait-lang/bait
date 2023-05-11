@@ -10,6 +10,7 @@ pub struct Token {
 
 pub enum TokenKind {
 	eof
+	attr
 	name
 	string
 	char
@@ -202,6 +203,7 @@ pub fun (kind TokenKind) js_repr() string {
 pub fun (kind TokenKind) str() string {
 	match kind {
 		TokenKind.eof { return 'eof' }
+		TokenKind.attr { return 'attr' }
 		TokenKind.name { return 'name' }
 		TokenKind.string { return 'string' }
 		TokenKind.char { return 'char' }
