@@ -20,15 +20,18 @@ fun ci_or_exit() {
 fun main() {
 	ci_or_exit()
 
+	// Count the number of errors by adding the os.system return values
+	mut errors := 0
+
 	println('Configuring git user...')
-	os.system('git config --global user.name "${GIT_USER}"')
-	os.system('git config --global user.email "${GIT_MAIL}"')
+	errors += os.system('git config --global user.name "${GIT_USER}"')
+	errors += os.system('git config --global user.email "${GIT_MAIL}"')
 
 	baitjs_dir := os.join_path(os.home_dir(), ['.bait', 'baitjs'])
 	os.rmdir_all(baitjs_dir)
 
 	access_token := os.getenv('TIABEAST_BOT_TOKEN')
-	os.system('git clone --depth 1 https://${GIT_USER}:${access_token}@github.com/tiabeast/baitjs.git ${baitjs_dir}')
+	errors += os.system('git clone --depth 1 https://${GIT_USER}:${access_token}@github.com/tiabeast/baitjs.git ${baitjs_dir}')
 
 	println('Building bait.js...')
 	res := os.exec('node bait.js cli/bait.bt -o ${baitjs_dir}/bait.js')
@@ -44,8 +47,10 @@ fun main() {
 		exit(1)
 	}
 
-	// Stage changes and check if there are any
-	os.system('git -C ${baitjs_dir} add .')
+	// Stage changes in baitjs repo
+	errors += os.system('git -C ${baitjs_dir} add .')
+
+	// Exit if there is nothing to commit
 	has_changes := os.system('git -C ${baitjs_dir} diff-index --quiet HEAD')
 	if has_changes == 0 {
 		println('No changes to commit.')
@@ -59,11 +64,17 @@ fun main() {
 	short_hash := commit_hash.substr(0, 7)
 	original_msg := os.exec('git log -1 --oneline --pretty="%s" HEAD').stdout.trim_space()
 
-	// Commit and push changes to baitjs
-	println('Pushing to baitjs...')
-	commit_msg := '[bait:${branch}] ${short_hash} - ${original_msg} \n\n${MAIN_REPO_COMMIT_URL}/${commit_hash}'
+	// Create commit in baitjs
+	println('Creating commit...')
 	os.chdir(baitjs_dir)
-	os.system('git commit -m "${commit_msg}"')
-	os.system('git pull --rebase')
-	os.system('git push')
+	commit_msg := '[bait:${branch}] ${short_hash} - ${original_msg}'
+	errors += os.system('git commit -m "${commit_msg}"')
+
+	// Safety rebase and push to baitjs
+	println('Pushing to baitjs...')
+	errors += os.system('git pull --rebase')
+	errors += os.system('git push')
+
+	// Exit with the number of errors
+	exit(errors)
 }
