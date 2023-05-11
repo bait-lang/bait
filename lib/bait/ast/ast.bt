@@ -78,6 +78,7 @@ pub struct FunDecl{
 	return_type i32
 	is_method bool
 	is_test bool
+	attrs []Attribute
 	pos token.Pos
 }
 
@@ -287,6 +288,11 @@ pub struct TypeOf {
 	expr Expr
 	typ i32
 	pos token.Pos
+}
+
+pub struct Attribute{
+	name string
+	arg string
 }
 
 pub struct EmptyExpr{}
