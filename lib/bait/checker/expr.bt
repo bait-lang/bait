@@ -183,6 +183,7 @@ fun (c Checker) method_call(node ast.CallExpr) i32 {
 }
 
 fun (c Checker) cast_expr(node ast.CastExpr) i32 {
+	c.warn('Use of deprecated type casts. Use `x as MyType` instead.', node.pos)
 	c.expr(node.expr)
 	return node.target
 }
