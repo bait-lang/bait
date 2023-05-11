@@ -22,8 +22,14 @@ _unreleased_
   - Double quotes in char literals
 
 ### Standard Library
+- builtin:
+  - new `string` methods:
+    - `all_before()`, `all_before_last()`
+    - `all_after()`, `all_after_last()`
 - `os.exec()`: Fix missing output of stderr without execution errors
 
+### Other Changes
+- Add lot's of new tests
 
 ## 0.0.2
 _10 Mai 2023_
