@@ -9,6 +9,8 @@ const GIT_MAIL := '131296262+tiabeast-bot@users.noreply.github.com'
 
 const MAIN_REPO_COMMIT_URL := 'https://github.com/tiabeast/bait/commit'
 
+const is_dry_run := os.ARGS.contains('--dry')
+
 // Exit if not in CI because gen-baitjs is only meant for use in GH Actions
 fun ci_or_exit() {
 	if os.getenv('CI') != 'true' {
@@ -66,14 +68,18 @@ fun main() {
 
 	// Create commit in baitjs
 	println('Creating commit...')
-	os.chdir(baitjs_dir)
 	commit_msg := '[bait:${branch}] ${short_hash} - ${original_msg}'
-	errors += os.system('git commit -a -m "${commit_msg}" -m "${MAIN_REPO_COMMIT_URL}/${commit_hash}"')
+	errors += os.system('git commit -C ${baitjs_dir} -a -m "${commit_msg}" -m "${MAIN_REPO_COMMIT_URL}/${commit_hash}"')
 
-	// Safety rabse and push to baitjs
+	// Safety rebase and push to baitjs
 	println('Pushing to baitjs...')
-	errors += os.system('git pull --rebase')
-	errors += os.system('git push')
+	if is_dry_run {
+		errors += os.system('git -C ${baitjs_dir} pull --rebase --dry-run')
+		errors += os.system('git -C ${baitjs_dir} push')
+	} else {
+		errors += os.system('git -C ${baitjs_dir} pull --rebase --dry-run')
+		errors += os.system('git -C ${baitjs_dir} push')
+	}
 
 	// Exit with the number of errors
 	exit(errors)
