@@ -41,6 +41,38 @@ pub fun (s string) last_index(search string) i32 {
 	return #JS.'s.str.lastIndexOf(search.str)'
 }
 
+pub fun (s string) all_before(search string) string {
+	idx := s.index(search)
+	if idx == -1 {
+		return s
+	}
+	return s.substr(0, idx)
+}
+
+pub fun (s string) all_before_last(search string) string {
+	idx := s.last_index(search)
+	if idx == -1 {
+		return s
+	}
+	return s.substr(0, idx)
+}
+
+pub fun (s string) all_after(search string) string {
+	idx := s.index(search)
+	if idx == -1 {
+		return s
+	}
+	return s.substr(idx + 1, s.length)
+}
+
+pub fun (s string) all_after_last(search string) string {
+	idx := s.last_index(search)
+	if idx == -1 {
+		return s
+	}
+	return s.substr(idx + 1, s.length)
+}
+
 pub fun (s string) repeat(count i32) string {
 	return from_js_string(#JS.'s.str.repeat(count)')
 }

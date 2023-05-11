@@ -1,0 +1,25 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+fun test_index() {
+	assert 'foobar'.index('oo') == 1
+	assert 'spam'.index('x') == -1
+}
+
+fun test_all_before() {
+	assert 'abc'.all_before('x') == 'abc'
+	assert 'foo'.all_before('o') == 'f'
+}
+
+fun test_all_before_last() {
+	assert 'abc'.all_before_last('c') == 'ab'
+	assert 'foo'.all_before_last('o') == 'fo'
+}
+
+fun test_all_after() {
+	assert 'photo'.all_after('o') == 'to'
+}
+
+fun test_all_after_last() {
+	assert 'photo'.all_after_last('o') == ''
+}
