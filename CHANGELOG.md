@@ -35,6 +35,7 @@ _unreleased_
 ### Other Changes
 - Add `$ABS_FILE` compile time variable
 - Add lot's of new tests
+- Improve and expand the documentation
 
 ## 0.0.2
 _10 Mai 2023_

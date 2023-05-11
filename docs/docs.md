@@ -32,7 +32,8 @@ count = 3
 const ANSWER := 42
 ```
 
-## Primitive Types
+## Types
+### Primitive Types
 ```
 bool
 
@@ -42,7 +43,26 @@ i8 i16 i32 i64
 u8 u16 u32 u64
 ```
 
-## Arrays
+> Floats are not yet implemented
+
+### Numbers
+```bait
+num := 123
+```
+
+By default all integers are of type `i32`.
+To get a different type, you can use casting (see [Casting](#casting))
+
+#### Number Promotion
+> Not yet implemented
+
+### Casting
+To perform type casting you can use `var as Type`:
+```bait
+n := 123 as i16
+```
+
+### Arrays
 ```bait
 names := ['John', 'Max']
 
@@ -53,7 +73,7 @@ arr.push(0)
 arr[3] = 4
 ```
 
-## Maps
+### Maps
 ```bait
 mut airports := map[string]string
 airports['lax'] = 'Los Angeles'
@@ -177,6 +197,16 @@ enum Language {
 
 mut lang := Language.french
 lang = Language.english
+```
+
+If you want to compare a enum value to an integer, you have to do a explicit cast:
+```bait
+enum Color {
+    red
+    green
+}
+
+if 1 == Color.green as i32 {}
 ```
 
 ## Type Declarations
