@@ -36,6 +36,7 @@ _unreleased_
 - Add `$ABS_FILE` compile time variable
 - Add lot's of new tests
 - Improve and expand the documentation
+- `make.sh`: add `--local` flag that skips pulling the last commit
 
 ## 0.0.2
 _10 Mai 2023_

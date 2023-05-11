@@ -1,9 +1,15 @@
 BAITJS_DIR="$HOME/.bait/baitjs"
+IS_LOCAL=0; [ "$1" == "--local" ] && IS_LOCAL=1
 
 if [ -f $BAITJS_DIR/bait.js ]; then
-    git -C $BAITJS_DIR pull
-else
+    if [ $IS_LOCAL == 0 ]; then
+        git -C $BAITJS_DIR pull
+    fi
+elif [ $IS_LOCAL == 0 ]; then
    git clone --depth 1 https://github.com/tiabeast/baitjs $BAITJS_DIR
+else
+    echo "baitjs not found locally. Run without \"--local\""
+    exit 1
 fi
 
 rm -f bait.js
