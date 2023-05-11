@@ -68,17 +68,18 @@ fun main() {
 
 	// Create commit in baitjs
 	println('Creating commit...')
+	os.chdir(baitjs_dir)
 	commit_msg := '[bait:${branch}] ${short_hash} - ${original_msg}'
-	errors += os.system('git commit -C ${baitjs_dir} -a -m "${commit_msg}" -m "${MAIN_REPO_COMMIT_URL}/${commit_hash}"')
+	errors += os.system('git commit -a -m "${commit_msg}" -m "${MAIN_REPO_COMMIT_URL}/${commit_hash}"')
 
 	// Safety rebase and push to baitjs
 	println('Pushing to baitjs...')
 	if is_dry_run {
-		errors += os.system('git -C ${baitjs_dir} pull --rebase --dry-run')
-		errors += os.system('git -C ${baitjs_dir} push')
+		errors += os.system('git pull --rebase --dry-run')
+		errors += os.system('git push')
 	} else {
-		errors += os.system('git -C ${baitjs_dir} pull --rebase --dry-run')
-		errors += os.system('git -C ${baitjs_dir} push')
+		errors += os.system('git pull --rebase --dry-run')
+		errors += os.system('git push')
 	}
 
 	// Exit with the number of errors
