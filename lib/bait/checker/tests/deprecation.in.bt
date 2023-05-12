@@ -1,0 +1,17 @@
+@deprecated
+fun foo(){}
+
+@deprecated: 'custom message'
+@deprecated_after: '2345-12-31'
+fun bar() {}
+
+@deprecated: 'custom message 2'
+fun baz() {
+	foo()
+}
+
+fun main() {
+	baz()
+	foo()
+	bar()
+}

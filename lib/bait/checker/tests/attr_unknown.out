@@ -1,1 +1,0 @@
-lib/bait/checker/tests/attr_unknown.in.bt:1:9 error: unknown attribute "xyz_attr"
