@@ -1,5 +1,5 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
-// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package ast
 
 import bait.token
@@ -298,12 +298,6 @@ pub struct StructInitField{
 pub struct TypeOf {
 	expr Expr
 	typ Type
-	pos token.Pos
-}
-
-pub struct Attribute{
-	name string
-	value string
 	pos token.Pos
 }
 
