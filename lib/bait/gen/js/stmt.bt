@@ -102,6 +102,15 @@ fun (g Gen) assert_side_expr(node ast.Expr) {
 		g.write(']')
 	} else if node is ast.Ident {
 		g.write(node.name)
+	} else if node is ast.ArrayInit {
+		g.write('[')
+		for i, expr in node.exprs {
+			g.assert_side_expr(expr)
+			if i < node.exprs.length - 1 {
+				g.write(', ')
+			}
+		}
+		g.write(']')
 	} else if node is ast.IndexExpr {
 		g.assert_side_expr(node.left)
 		g.write('[')
