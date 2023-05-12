@@ -277,8 +277,10 @@ fun (p Parser) fun_decl()ast.FunDecl{
 		name: name
 		params: params
 		return_type: return_type
+		attrs: p.attributes
 		pos: pos
 	}
+	p.attributes = []ast.Attribute
 	if is_method {
 		sym := p.table.get_sym(params[0].typ)
 		sym.methods.push(node)

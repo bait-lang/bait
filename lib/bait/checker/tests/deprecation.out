@@ -1,0 +1,4 @@
+lib/bait/checker/tests/deprecation.in.bt:10:4 warning: function "foo" is deprecated
+lib/bait/checker/tests/deprecation.in.bt:14:4 warning: function "baz" is deprecated; custom message 2
+lib/bait/checker/tests/deprecation.in.bt:15:4 warning: function "foo" is deprecated
+lib/bait/checker/tests/deprecation.in.bt:16:4 warning: function "bar" will be deprecated after 2345-12-31; custom message

@@ -18,6 +18,7 @@ pub struct Parser {
 	next_tok token.Token
 	pkg_name string
 	import_aliases map[string]string
+	attributes []ast.Attribute
 	expr_pkg string
 	is_test_file bool
 	is_for_init bool
@@ -39,6 +40,9 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 	imports := p.import_stmts()
 	mut stmts := []ast.Stmt
 	for p.tok.kind != token.TokenKind.eof {
+		if p.tok.kind == token.TokenKind.attr {
+			p.parse_attributes()
+		}
 		stmts.push(p.toplevel_stmt())
 	}
 	return ast.File{
@@ -101,6 +105,26 @@ fun (p Parser) import_stmts() [] ast.Import{
 		})
 	}
 	return imports
+}
+
+// Parses one or more attributes
+fun (p Parser) parse_attributes() {
+	for p.tok.kind == token.TokenKind.attr {
+		pos := p.tok.pos
+		name := p.tok.val
+		p.next()
+		mut value := ''
+		if p.tok.kind == token.TokenKind.colon {
+			p.next()
+			p.check(token.TokenKind.string)
+			value = p.prev_tok.val
+		}
+		p.attributes.push(ast.Attribute{
+			name: name
+			value: value
+			pos: pos
+		})
+	}
 }
 
 fun (p Parser) parse_block() []ast.Stmt {

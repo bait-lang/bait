@@ -144,6 +144,7 @@ fun (c Checker) fun_call(node ast.CallExpr) i32 {
 			}
 		}
 		node.return_type = def.return_type
+		c.check_attributes_on_call(node, def)
 	} else {
 		c.error('unknown function ${node.name}', node.pos)
 	}
@@ -176,7 +177,38 @@ fun (c Checker) method_call(node ast.CallExpr) i32 {
 	}
 	node.left_type = def.params[0].typ
 	node.return_type = def.return_type
+	c.check_attributes_on_call(node, def)
 	return node.return_type
+}
+
+fun (c Checker) check_attributes_on_call(call ast.CallExpr, def ast.FunDecl) {
+	mut is_deprecated := false
+	mut depr_attr := ast.Attribute{}
+	mut depr_date_attr := ast.Attribute{}
+
+	for attr in def.attrs {
+		if attr.name == 'deprecated_after' {
+			depr_date_attr = attr
+			is_deprecated = true
+		}
+		if attr.name == 'deprecated' {
+			depr_attr = attr
+			is_deprecated = true
+		}
+	}
+
+	if is_deprecated {
+		mut depr_message := 'function "${call.name}" '
+		if depr_date_attr.name.length > 0 {
+			depr_message += 'will be deprecated after ${depr_date_attr.value}'
+		} else {
+			depr_message += 'is deprecated'
+		}
+		if depr_attr.value.length > 0 {
+			depr_message += '; ${depr_attr.value}'
+		}
+		c.warn(depr_message, call.pos)
+	}
 }
 
 const SUPPORTED_COMPTIME_VARS := [
