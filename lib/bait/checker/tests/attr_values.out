@@ -1,0 +1,1 @@
+lib/bait/checker/tests/attr_values.in.bt:3:17 error: attribute "deprecated_after" requires a value

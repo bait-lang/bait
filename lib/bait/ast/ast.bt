@@ -292,7 +292,7 @@ pub struct TypeOf {
 
 pub struct Attribute{
 	name string
-	arg string
+	value string
 	pos token.Pos
 }
 

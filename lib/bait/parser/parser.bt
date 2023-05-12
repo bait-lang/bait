@@ -113,15 +113,15 @@ fun (p Parser) parse_attributes() {
 		pos := p.tok.pos
 		name := p.tok.val
 		p.next()
-		mut arg := ''
+		mut value := ''
 		if p.tok.kind == token.TokenKind.colon {
 			p.next()
 			p.check(token.TokenKind.string)
-			arg = p.prev_tok.val
+			value = p.prev_tok.val
 		}
 		p.attributes.push(ast.Attribute{
 			name: name
-			arg: arg
+			value: value
 			pos: pos
 		})
 	}

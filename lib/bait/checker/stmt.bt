@@ -173,7 +173,15 @@ fun (c Checker) check_attributes(attrs []ast.Attribute){
 			c.error('unknown attribute "${attr.name}"', attr.pos)
 			continue
 		}
-		// TODO check value requirement
+		val_req := KNOWN_ATTRS[attr.name]
+		if val_req == AttrValue.none and attr.value.length > 0 {
+			c.error('attribute "${attr.name}" does not take a value', attr.pos)
+			continue
+		}
+		if val_req == AttrValue.required and attr.value.length == 0 {
+			c.error('attribute "${attr.name}" requires a value', attr.pos)
+			continue
+		}
 	}
 }
 
