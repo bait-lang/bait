@@ -226,6 +226,29 @@ struct Circle{}
 type Shape := Triangle | Rectangle | Circle
 ```
 
+## Attributes
+Various attributes are supported that change the behaviour of functions.
+They are written as `@name: 'value'` before the function declaration.
+
+### Deprecation of Functions
+Functions can be marked as deprecated to trigger compiler warnings when they are used.
+```bait
+@deprecated: 'Use bar() instead.'
+@deprecated_after: '2023-06-12'
+pub fun foo() {}
+```
+
+Calling this function will cause a message like:
+```
+warning: function "foo" will be deprecated after 2023-06-12; Use bar() instead.
+```
+
+### List of Attributes
+| Name                | Description                              | Value                       |
+| ------------------- | ---------------------------------------- | --------------------------- |
+| `@deprecated`       | Marks a function as deprecated.          | Custom message _(optional)_ |
+| `@deprecated_after` | Mark as deprecated after a certain date. | Date _(required)_           |
+
 ## Conditional Compilation
 ### Compile Time Pseudo Variables
 Bait supports a few pseudo variables of `string` type.
@@ -246,6 +269,15 @@ They are replaced with the actual value during compilation.
 They are useful for running external tools or debugging. For example:
 ```bait
 eprintln('error in file ${$FILE}, line ${$LINE}, function ${$PKG}.${$FUN}')
+```
+
+## Global Variables
+While the use of global variables is discouraged, they are important in some cases.
+
+> :construction: In a future version, global variables will require a compiler flag to be enabled.
+
+```bait
+global my_global := 123
 ```
 
 <!-- TODO

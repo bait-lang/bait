@@ -32,11 +32,16 @@ _unreleased_
     - `all_after()`, `all_after_last()`
 - `os.exec()`: Fix missing output of stderr without execution errors
 
+### Attribute System
+- Create a system for annotating functions with attributes
+- Add `@deprecated` and `@deprecated_after`
+
 ### Other Changes
 - Add `$ABS_FILE` compile time variable
 - Add lot's of new tests
 - Improve and expand the documentation
 - `make.sh`: add `--local` flag that skips pulling the last commit
+
 
 ## 0.0.2
 _10 Mai 2023_
