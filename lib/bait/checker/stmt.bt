@@ -130,61 +130,6 @@ fun (c Checker) for_in_loop(node ast.ForInLoop) {
 	c.close_scope()
 }
 
-fun (c Checker) fun_decl(node ast.FunDecl) {
-	c.check_attributes(node.attrs)
-	c.open_scope()
-	c.fun_params(node.params)
-	c.stmts(node.stmts)
-	c.close_scope()
-}
-
-fun (c Checker) fun_params(params []ast.Param){
-	for p in params {
-		sym := c.table.get_sym(p.typ)
-		if sym.kind == ast.TypeKind.fun_ {
-			c.scope.register(p.name, ast.ScopeObject{
-				typ: p.typ
-				kind: ast.ObjectKind.function
-			})
-		} else {
-			c.scope.register(p.name, ast.ScopeObject{typ: p.typ})
-		}
-	}
-}
-
-enum AttrValue {
-	none
-	optional
-	required
-}
-
-fun build_known_attrs() map[string]AttrValue {
-	mut attrs := map[string]AttrValue
-	attrs['deprecated'] = AttrValue.optional
-	attrs['deprecated_after'] = AttrValue.required
-	return attrs
-}
-
-const KNOWN_ATTRS := build_known_attrs()
-
-fun (c Checker) check_attributes(attrs []ast.Attribute){
-	for attr in attrs {
-		if not KNOWN_ATTRS.contains(attr.name) {
-			c.error('unknown attribute "${attr.name}"', attr.pos)
-			continue
-		}
-		val_req := KNOWN_ATTRS[attr.name]
-		if val_req == AttrValue.none and attr.value.length > 0 {
-			c.error('attribute "${attr.name}" does not take a value', attr.pos)
-			continue
-		}
-		if val_req == AttrValue.required and attr.value.length == 0 {
-			c.error('attribute "${attr.name}" requires a value', attr.pos)
-			continue
-		}
-	}
-}
-
 fun (c Checker) global_decl(node ast.GlobalDecl){
 	typ := c.expr(node.expr)
 	c.table.global_scope.update_type(node.name, typ)

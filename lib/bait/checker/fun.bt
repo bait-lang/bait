@@ -1,0 +1,28 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package checker
+
+import bait.ast
+import bait.errors
+
+fun (c Checker) fun_decl(node ast.FunDecl) {
+	c.check_attributes(node.attrs)
+	c.open_scope()
+	c.fun_params(node.params)
+	c.stmts(node.stmts)
+	c.close_scope()
+}
+
+fun (c Checker) fun_params(params []ast.Param){
+	for p in params {
+		sym := c.table.get_sym(p.typ)
+		if sym.kind == ast.TypeKind.fun_ {
+			c.scope.register(p.name, ast.ScopeObject{
+				typ: p.typ
+				kind: ast.ObjectKind.function
+			})
+		} else {
+			c.scope.register(p.name, ast.ScopeObject{typ: p.typ})
+		}
+	}
+}
