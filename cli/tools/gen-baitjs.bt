@@ -81,6 +81,7 @@ fun main() {
 }
 
 fun git_command(cmd string) i32 {
-	println('Running "${cmd}"')
-	return os.system('git ${cmd}')
+	esc_cmd := util.shell_escape(cmd)
+	println('Running "${esc_cmd}"')
+	return os.system('git ${esc_cmd}')
 }

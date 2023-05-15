@@ -26,7 +26,5 @@ pub fun escape_char(s string, esc_char u8) string {
 }
 
 pub fun shell_escape(s string) string {
-	mut e := escape_char(s, `"`)
-	e = escape_char(e, `\``)
-	return escape_char(e, `$`)
+	return escape_char(s, `\``)
 }
