@@ -4,8 +4,18 @@ package checker
 
 import bait.ast
 import bait.errors
+import bait.token
 
 fun (c Checker) fun_decl(node ast.FunDecl) {
+	// TODO move this into a later step maybe check_redefined_functions
+	//   reason: code there can contain many loops as it will only run once IF there are any redefs thus improving perf over this check
+	if c.table.redefined_funs.contains(node.name) {
+		c.fun_redefinitions.push(FunRedefinition{
+			path: c.path
+			pos: node.pos
+			name: node.name
+		})
+	}
 	c.check_attributes(node.attrs)
 	c.open_scope()
 	c.fun_params(node.params)
@@ -23,6 +33,31 @@ fun (c Checker) fun_params(params []ast.Param){
 			})
 		} else {
 			c.scope.register(p.name, ast.ScopeObject{typ: p.typ})
+		}
+	}
+}
+
+struct FunRedefinition {
+	path string
+	pos token.Pos
+	name string
+}
+
+fun (c Checker) check_redefined_functions() {
+	// TODO error only once on tripple redef
+	for name in c.table.redefined_funs {
+		mut redef_idxs := []i32
+		for i, redef in c.fun_redefinitions {
+			if redef.name == name {
+				redef_idxs.push(i)
+			}
+		}
+		// TODO throw error
+		println('redefined fun ${name}')
+		for i in redef_idxs {
+			redef := c.fun_redefinitions[i]
+			println('  ${redef.path}:${redef.pos.line}:${redef.pos.col}')
+			// TODO use compiler notice
 		}
 	}
 }

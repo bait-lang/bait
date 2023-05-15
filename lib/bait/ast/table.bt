@@ -7,6 +7,7 @@ pub struct Table {
 	fun_decls map[string]FunDecl
 	type_idxs map[string]i32
 	type_symbols []TypeSymbol
+	redefined_funs []string
 }
 
 pub fun new_table() Table {

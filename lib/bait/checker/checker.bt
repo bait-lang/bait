@@ -12,6 +12,7 @@ struct Checker{
 	path string
 	pkg string
 	had_error bool
+	fun_redefinitions []FunRedefinition
 	is_lhs_assign bool
 }
 
@@ -26,6 +27,7 @@ pub fun check_files(files []ast.File, table ast.Table) bool {
 	for f in files {
 		c.check(f)
 	}
+	c.check_redefined_functions()
 	return not c.had_error
 }
 
