@@ -1,3 +1,7 @@
+<!--
+Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+This Documentation is subject to the terms of the Mozilla Public License 2.0.
+-->
 # Bait Documentation
 > Documentation of the standard library is :construction:
 
@@ -283,5 +287,4 @@ global my_global := 123
 <!-- TODO
 advanced
   JS interop
-  global vars
 -->

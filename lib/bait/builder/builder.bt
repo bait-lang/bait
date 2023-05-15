@@ -1,0 +1,21 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package builder
+
+import os
+import bait.ast
+import bait.parser
+import bait.preference
+import bait.tokenizer
+
+
+struct Builder {
+	prefs preference.Prefs
+	table ast.Table
+}
+
+fun (b Builder) parse_source_file(path string) ast.File {
+	text := os.read_file(path)
+	tokens := tokenizer.tokenize(text, path)
+	return parser.parse(tokens, path, b.table, b.prefs)
+}

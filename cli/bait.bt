@@ -3,11 +3,7 @@
 package main
 
 import bait.preference
-import bait.ast
-import bait.tokenizer
-import bait.parser
-import bait.checker
-import bait.gen.js as jsgen
+import bait.builder
 import bait.util
 import os
 
@@ -24,154 +20,6 @@ const TOOLS := [
 	'check-md',
 	'gen-baitjs',
 ]
-
-fun ensure_dir_exists(dir string) {
-	if not os.exists(dir) {
-		os.mkdir(dir)
-	}
-}
-
-fun order_pkgs(ordered []string, pkg string, deps map[string][]string) {
-	for d in deps[pkg] {
-		order_pkgs(ordered, d, deps)
-	}
-	if not ordered.contains(pkg) {
-		ordered.push(pkg)
-	}
-}
-
-fun resolve_import_dir(pkg string) string {
-	mut dir := os.resource_abs_path(os.join_path("lib", [pkg]))
-	if not os.exists(dir) {
-		dir = os.join_path(os.getwd(), ["lib", pkg])
-	}
-	return dir
-}
-
-fun transpile(prefs preference.Prefs) i32 {
-	builtin_dir := resolve_import_dir("builtin")
-	mut paths := bait_files_from_dir(builtin_dir)
-	paths = paths.concat(get_user_files(prefs.command))
-	mut table := ast.new_table()
-	mut files := []ast.File
-	for p in paths {
-		text2 := os.read_file(p)
-		tokens2 := tokenizer.tokenize(text2, p)
-		files.push(parser.parse(tokens2, p, table, prefs))
-	}
-	root_pkg := files[files.length - 1].pkg_decl.full_name
-	for i:=0; i<files.length; i+=1 {
-		f := files[i]
-		for imp in f.imports {
-			if imp.lang != 'bait' {
-				continue
-			}
-			mut import_dir := resolve_import_dir(imp.name.replace('.', '/'))
-			if prefs.is_test and not os.exists(import_dir) {
-				import_dir = os.dir(f.path)
-			}
-			mut imp_paths := bait_files_from_dir(import_dir)
-			imp_paths = imp_paths.filter(fun (p string) bool {
-				return not paths.contains(p)
-			})
-			for p in imp_paths {
-				paths.push(p)
-				text2 := os.read_file(p)
-				tokens2 := tokenizer.tokenize(text2, p)
-				files.push(parser.parse(tokens2, p, table, prefs))
-			}
-		}
-	}
-	mut deps := map[string][]string
-	for f in files {
-		pkg_name := f.pkg_decl.full_name
-		if pkg_name != 'builtin' {
-			deps[pkg_name].push('builtin')
-		}
-		for imp in f.imports {
-			if imp.lang != 'bait' {
-				continue
-			}
-			deps[pkg_name].push(imp.name)
-		}
-	}
-	mut pkg_order := []string
-	order_pkgs(pkg_order, root_pkg, deps)
-	mut sorted_files := []ast.File
-	for pkg in pkg_order {
-		for f in files {
-			if f.pkg_decl.full_name == pkg {
-				sorted_files.push(f)
-			}
-		}
-	}
-	if not checker.check_files(sorted_files, table) {
-		return 1
-	}
-	res := jsgen.gen(sorted_files, table, prefs) + '\n'
-	os.write_file(prefs.out_name, res)
-	if prefs.should_run{
-		run_res := os.system('node ${prefs.out_name}')
-		return run_res
-	}
-	return 0
-}
-
-fun run_tests(prefs preference.Prefs) i32 {
-	mut files_to_test := []string
-	for a in prefs.args {
-		if os.exists(a) and a.ends_with('_test.bt') {
-			files_to_test.push(a)
-		} else if os.is_dir(a){
-			files_to_test = files_to_test.concat(os.walk_ext(a, '_test.bt'))
-		} else {
-			eprintln('Unrecognized file or directory: "${a}"')
-			exit(1)
-		}
-	}
-	mut test_prefs := prefs
-	mut has_fails := false
-	for i, file in files_to_test {
-		test_prefs.command = file
-		test_prefs.out_name = '/tmp/test_${i}.js'
-		test_prefs.should_run = true
-		res := transpile(test_prefs)
-		if res == 0 {
-			println('OK ${file}')
-		} else {
-			has_fails = true
-			println('FAIL ${file}')
-		}
-	}
-	if has_fails {
-		return 1
-	}
-	return 0
-}
-
-fun bait_files_from_dir(dir string) []string {
-	all_files := os.ls(dir)
-	mut files := []string
-	for f in all_files {
-		if f.ends_with('_test.bt') {
-			continue
-		}
-		if f.ends_with('.bt') {
-			files.push(os.join_path(dir, [f]))
-		}
-	}
-	return files
-}
-
-fun get_user_files(upath string) []string {
-	if os.is_dir(upath) {
-		return bait_files_from_dir(upath)
-	}
-	if os.exists(upath) and upath.ends_with('.bt') {
-		return [upath]
-	}
-	return []string
-}
 
 fun launch_tool(name string, args []string) i32 {
 	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
@@ -196,7 +44,7 @@ fun main() {
 	}
 	match prefs.command {
 		'test' {
-			exit(run_tests(prefs))
+			exit(builder.run_tests(prefs))
 		}
 		'version' {
 			println('Bait ${util.VERSION}')
@@ -204,8 +52,7 @@ fun main() {
 		}
 	}
 	if os.exists(prefs.command) {
-		ensure_dir_exists(os.dir(prefs.out_name))
-		exit(transpile(prefs))
+		exit(builder.compile(prefs))
 	}
 	eprintln('error: unknown file or command: "${prefs.command}"')
 	exit(1)

@@ -11,7 +11,7 @@ pub struct Prefs {
 	should_run bool
 	is_test bool
 	is_script bool
-	// Compile time pseudo variables
+	// Values for compile time pseudo variables
 	baitexe string
 	baitdir string
 	baithash string
@@ -19,11 +19,13 @@ pub struct Prefs {
 
 pub fun parse_args(args []string) Prefs {
 	p := Prefs{}
-	// No arguments will invoke help
+	// Default action in case of no arguments: help
 	if args.length == 0 {
 		p.command = 'help'
 		return p
 	}
+
+	// Parse options and commands
 	for i := 0; i < args.length; i += 1{
 		arg := args[i]
 		match arg {
@@ -43,15 +45,17 @@ pub fun parse_args(args []string) Prefs {
 			}
 		}
 	}
-	// `build` is just an optional alias and removed here
+
+	// `build` is just an optional alias and replaced with the filepath
 	if p.command == 'build' {
 		p.command = p.args[0]
 	}
-	// `run` is handled like `build` but with the `should_run` flag set
+	// `run` is the same but with `should_run` set to true
 	if p.command == 'run' {
 		p.command = p.args[0]
 		p.should_run = true
 	}
+
 	if p.command == 'test' {
 		p.is_test = true
 	}
