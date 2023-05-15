@@ -7,24 +7,25 @@ import bait.errors
 import bait.token
 
 struct Checker{
+	parsed_files []ast.File
 	table ast.Table
 	scope ast.Scope
 	path string
 	pkg string
 	had_error bool
-	fun_redefinitions []FunRedefinition
 	is_lhs_assign bool
 }
 
 pub fun check_files(files []ast.File, table ast.Table) bool {
 	mut c := Checker{
+		parsed_files: files
 		table: table
 		scope: ast.Scope{
 			// TODO how to handle recursive sturct inits?
 			parent: 0 as any
 		}
 	}
-	for f in files {
+	for f in c.parsed_files {
 		c.check(f)
 	}
 	c.check_redefined_functions()
