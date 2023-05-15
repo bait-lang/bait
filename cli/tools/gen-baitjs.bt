@@ -3,6 +3,7 @@
 package main
 
 import os
+import bait.util
 
 const GIT_USER := 'tiabeast-bot'
 const GIT_MAIL := '131296262+tiabeast-bot@users.noreply.github.com'
@@ -80,5 +81,6 @@ fun main() {
 }
 
 fun git_command(cmd string) i32 {
+	println('Running "${cmd}"')
 	return os.system('git ${cmd}')
 }
