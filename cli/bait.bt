@@ -3,12 +3,7 @@
 package main
 
 import bait.preference
-import bait.ast
 import bait.builder
-import bait.tokenizer
-import bait.parser
-import bait.checker
-import bait.gen.js as jsgen
 import bait.util
 import os
 
@@ -25,12 +20,6 @@ const TOOLS := [
 	'check-md',
 	'gen-baitjs',
 ]
-
-fun ensure_dir_exists(dir string) {
-	if not os.exists(dir) {
-		os.mkdir(dir)
-	}
-}
 
 fun launch_tool(name string, args []string) i32 {
 	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
@@ -63,7 +52,6 @@ fun main() {
 		}
 	}
 	if os.exists(prefs.command) {
-		ensure_dir_exists(os.dir(prefs.out_name))
 		exit(builder.compile(prefs))
 	}
 	eprintln('error: unknown file or command: "${prefs.command}"')

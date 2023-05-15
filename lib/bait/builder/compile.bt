@@ -89,6 +89,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 
 	// Run the code gen and write it to the outfile
 	res := jsgen.gen(sorted_files, b.table, b.prefs) + '\n'
+	ensure_dir_exists(os.dir(b.prefs.out_name))
 	os.write_file(b.prefs.out_name, res)
 
 	// Execute the resulting exe if required
@@ -139,5 +140,11 @@ fun order_pkgs(ordered []string, pkg string, deps map[string][]string) {
 	}
 	if not ordered.contains(pkg) {
 		ordered.push(pkg)
+	}
+}
+
+fun ensure_dir_exists(dir string) {
+	if not os.exists(dir) {
+		os.mkdir(dir)
 	}
 }
