@@ -20,26 +20,62 @@ pub fun (a array) push(el any) {
 	a.length += 1
 }
 
-pub fun (a array) contains(el any) bool {
-	return #JS.'a.data.includes(el)'
+// TODO remove requirement for functions like index, last_index, contains, ... to be duplicated for types that are objects in JS
+
+pub fun (a array) index(el any) i32 {
+	return #JS.'a.data.indexOf(el)'
 }
 
-pub fun (a []u8) contains(c u8) {
-	for el in a {
+pub fun (a []u8) index(c u8) i32 {
+	for i, el in a {
 		if el == c {
-			return true
+			return i
 		}
 	}
-	return false
+	return -1
+}
+
+pub fun (a []string) index(s string) i32 {
+	for i, el in a {
+		if el == s {
+			return i
+		}
+	}
+	return -1
+}
+
+pub fun (a array) last_index(el any) i32 {
+	return #JS.'a.data.lastIndexOf(el)'
+}
+
+pub fun (a []u8) last_index(c u8) i32 {
+	for i := a.length - 1; i >= 0; i -= 1 {
+		if a[i] == c {
+			return i
+		}
+	}
+	return -1
+}
+
+pub fun (a []string) last_index(s string) i32 {
+	for i := a.length - 1; i >= 0; i -= 1 {
+		if a[i] == s {
+			return i
+		}
+	}
+	return -1
+}
+
+pub fun (a array) contains(el any) bool {
+	return a.index(el) >= 0
+}
+
+pub fun (a []u8) contains(c u8) bool {
+	return a.index(c) >= 0
 }
 
 pub fun (a []string) contains(s string) bool {
-	for el in a {
-		if el == s {
-			return true
-		}
-	}
-	return false
+	return a.index(s) >= 0
 }
 
 pub fun (a array) slice(start i32, end i32) array {

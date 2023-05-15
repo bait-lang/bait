@@ -1,6 +1,16 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 
+pub fun test_index_and_last_index() {
+	nums := [1, 2, 1, 2]
+	assert nums.index(1) == 0
+	assert nums.last_index(1) == 2
+
+	strings := ['a', 'b', 'c', 'c']
+	assert strings.index('c') == 2
+	assert strings.last_index('c') == 3
+}
+
 pub fun test_reverse() {
 	a := [1, 2, 3]
 	b := a.reverse()

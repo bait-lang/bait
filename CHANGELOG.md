@@ -36,6 +36,7 @@ _unreleased_
     - `all_after()`, `all_after_last()`
   - new `array` methods:
     - `copy()`
+    - `index()`, `last_index()`
     - `reverse()`, `reverse_in_place()`
 - `os.exec()`: Fix missing output of stderr without execution errors
 
