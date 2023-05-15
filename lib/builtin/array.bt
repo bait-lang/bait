@@ -56,6 +56,24 @@ pub fun (a array) concat(b array) array {
 	}
 }
 
+pub fun (a array) copy() array {
+	return array{
+		data: #JS.'[...a.data]'
+		length: a.length
+	}
+}
+
+pub fun (a array) reverse() array {
+	// Note: Node 20 introduced Array.toReversed() for this
+	b := a.copy()
+	b.reverse_in_place()
+	return b
+}
+
+pub fun (a array) reverse_in_place() {
+	a.data = #JS.'a.data.reverse()'
+}
+
 pub fun (a array) filter(fn fun (any) bool) array {
 	return from_js_arr(#JS.'a.data.filter(fn)')
 }
