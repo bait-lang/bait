@@ -32,38 +32,6 @@ fun ensure_dir_exists(dir string) {
 	}
 }
 
-fun run_tests(prefs preference.Prefs) i32 {
-	mut files_to_test := []string
-	for a in prefs.args {
-		if os.exists(a) and a.ends_with('_test.bt') {
-			files_to_test.push(a)
-		} else if os.is_dir(a){
-			files_to_test = files_to_test.concat(os.walk_ext(a, '_test.bt'))
-		} else {
-			eprintln('Unrecognized file or directory: "${a}"')
-			exit(1)
-		}
-	}
-	mut test_prefs := prefs
-	mut has_fails := false
-	for i, file in files_to_test {
-		test_prefs.command = file
-		test_prefs.out_name = '/tmp/test_${i}.js'
-		test_prefs.should_run = true
-		res := builder.compile(test_prefs)
-		if res == 0 {
-			println('OK ${file}')
-		} else {
-			has_fails = true
-			println('FAIL ${file}')
-		}
-	}
-	if has_fails {
-		return 1
-	}
-	return 0
-}
-
 fun launch_tool(name string, args []string) i32 {
 	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
 	tool_source := tool_base_path + '.bt'
@@ -87,7 +55,7 @@ fun main() {
 	}
 	match prefs.command {
 		'test' {
-			exit(run_tests(prefs))
+			exit(builder.run_tests(prefs))
 		}
 		'version' {
 			println('Bait ${util.VERSION}')

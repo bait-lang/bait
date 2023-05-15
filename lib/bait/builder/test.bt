@@ -1,0 +1,43 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package builder
+
+import os
+import bait.preference
+
+pub fun run_tests(prefs preference.Prefs) i32 {
+	// Collect test files
+	mut files_to_test := []string
+	for a in prefs.args {
+		if os.exists(a) and a.ends_with('_test.bt') {
+			files_to_test.push(a)
+		} else if os.is_dir(a){
+			files_to_test = files_to_test.concat(os.walk_ext(a, '_test.bt'))
+		} else {
+			eprintln('Unrecognized file or directory: "${a}"')
+			exit(1)
+		}
+	}
+
+	mut test_prefs := prefs
+	test_prefs.should_run = true
+	mut has_fails := false
+
+	// Compile and run all tests
+	for i, file in files_to_test {
+		test_prefs.command = file
+		test_prefs.out_name = '/tmp/test_${i}.js'
+		res := compile(test_prefs)
+		if res == 0 {
+			println('OK ${file}')
+		} else {
+			has_fails = true
+			println('FAIL ${file}')
+		}
+	}
+
+	if has_fails {
+		return 1
+	}
+	return 0
+}
