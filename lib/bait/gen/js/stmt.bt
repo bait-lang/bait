@@ -52,7 +52,14 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 
 fun (g Gen) assert_stmt(node ast.AssertStmt) {
 	g.write('if (')
-	g.expr(node.expr)
+	if node.expr is ast.InfixExpr {
+		expr := node.expr as ast.InfixExpr
+		g.expr_to_string(expr.left, expr.left_type)
+		g.write(' ${expr.op.js_repr()} ')
+		g.expr_to_string(expr.right, expr.right_type)
+	} else {
+		g.expr(node.expr)
+	}
 	g.writeln(') {')
 	g.writeln('\tTestRunner_assert_pass(test_runner)')
 	g.writeln('} else {')
