@@ -24,3 +24,7 @@ pub fun escape_char(s string, esc_char u8) string {
 	}
 	return res
 }
+
+pub fun shell_escape(s string) string {
+	return escape_char(s, `\``)
+}
