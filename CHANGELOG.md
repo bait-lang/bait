@@ -16,29 +16,32 @@ _unreleased_
 - `self`: Always show stderr output
 - `gen-baitjs`: Logging improvements and fix for semirandom fails
 
-### Checker
+### Compiler
 - Add error if infix types do not match
-
-### JSGen
+- Create a system for annotating functions with attributes
+  - Add `@deprecated` and `@deprecated_after`
 - Fix escaping of
   - Double quotes in strings
   - Backticks in interpolated strings
   - Double quotes in char literals
+
+### Testing
+- `assert`: fix comparison of arrays, structs, ... (everything that is a object in the JS backend)
+- Add lot's of new unit tests
 
 ### Standard Library
 - builtin:
   - new `string` methods:
     - `all_before()`, `all_before_last()`
     - `all_after()`, `all_after_last()`
+  - new `array` methods:
+    - `copy()`
+    - `index()`, `last_index()`
+    - `reverse()`, `reverse_in_place()`
 - `os.exec()`: Fix missing output of stderr without execution errors
-
-### Attribute System
-- Create a system for annotating functions with attributes
-- Add `@deprecated` and `@deprecated_after`
 
 ### Other Changes
 - Add `$ABS_FILE` compile time variable
-- Add lot's of new tests
 - Improve and expand the documentation
 - `make.sh`: add `--local` flag that skips pulling the last commit
 
