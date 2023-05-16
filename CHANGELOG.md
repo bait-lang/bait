@@ -19,9 +19,10 @@ _unreleased_
 - Script mode is enabled implicitly but will cause a warning
 
 ### Compiler
+- New type and error checks
+  - Infix types must match
+  - Prevent redefinition of functions and methods
 - Colorize error messages
-- Add error if infix types do not match
-- Error if functions or methods are redefined
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`
 - Fix escaping of
