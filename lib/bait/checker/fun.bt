@@ -55,12 +55,10 @@ fun (c Checker) check_redefined_functions() {
 		}
 
 		// Raise the error and show where redefinitions happened
-		// TODO throw error
-		println('redefined fun ${name}')
+		c.generic_error('redfinition of function "${name}"', )
 		for redef in redefinitions {
 			// TODO print fun signature
-			println('  ${redef.path}:${redef.pos.line}:${redef.pos.col}')
-			// TODO use compiler notice
+			errors.notice('conflict', redef.path, redef.pos, 'TODO signature')
 		}
 	}
 }

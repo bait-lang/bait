@@ -23,6 +23,11 @@ pub fun error(path string, pos token.Pos, msg string) {
 	message(Kind.error, 'error', path, pos, msg)
 }
 
+pub fun generic_error(msg string) {
+	title := format_title(Kind.error, "error")
+	eprintln('${title}: ${msg}')
+}
+
 fun message(kind Kind, title string, path string, pos token.Pos, msg string) {
 	// TODO move formatting and coloring to a separate package
 	file_line := bold('${path}:${pos.line}:${pos.col}')
