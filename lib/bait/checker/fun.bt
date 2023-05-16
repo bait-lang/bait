@@ -38,8 +38,15 @@ fun (c Checker) check_redefined_functions() {
 	// Note: It is assumed that there are at most a few redefined functions.
 	// Thus the performance impact of looping over all files and root stmts is negligible.
 
-	// TODO error only once on tripple redef
+	// Remove duplicates that happen in case of a tripple redefinition
+	mut unique_redefs := []string
 	for name in c.table.redefined_funs {
+		if not unique_redefs.contains(name) {
+			unique_redefs.push(name)
+		}
+	}
+
+	for name in unique_redefs {
 		// Collect information about redefinitions
 		mut redefinitions := []FunRedefinition
 		for file in c.parsed_files {
