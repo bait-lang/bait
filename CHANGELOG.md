@@ -21,7 +21,7 @@ _unreleased_
 ### Compiler
 - Colorize error messages
 - Add error if infix types do not match
-- Error if functions are redefined
+- Error if functions or methods are redefined
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`
 - Fix escaping of
