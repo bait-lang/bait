@@ -283,6 +283,10 @@ fun (p Parser) fun_decl()ast.FunDecl{
 	p.attributes = []ast.Attribute
 	if is_method {
 		sym := p.table.get_sym(params[0].typ)
+		// TODO move this error into checker
+		if sym.has_method(name) {
+			p.error('Method "${name}" already exists on type "${sym.name}"')
+		}
 		sym.methods.push(node)
 	} else {
 		if p.table.fun_decls.contains(name) {

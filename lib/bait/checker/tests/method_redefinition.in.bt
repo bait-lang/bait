@@ -1,0 +1,5 @@
+struct Foo{}
+
+fun (f Foo) mymethod(a i32) i32 {}
+
+fun (f Foo) mymethod(b bool) {}
