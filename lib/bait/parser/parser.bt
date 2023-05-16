@@ -181,6 +181,6 @@ fun (p Parser) next() {
 }
 
 fun (p Parser) error(msg string){
-	errors.compiler_message('error', p.path, p.tok.pos, msg)
+	errors.error(p.path, p.tok.pos, msg)
 	exit(1)
 }
