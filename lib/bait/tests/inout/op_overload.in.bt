@@ -1,0 +1,10 @@
+@overload: '*'
+fun some_function(a i32) i32 {}
+
+struct Foo{}
+
+@overload: '+'
+fun (a Foo) plus (b Foo) Foo {}
+
+@overload: '+'
+fun (a Foo) also_plus (b Foo) Foo {}

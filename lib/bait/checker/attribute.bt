@@ -48,8 +48,7 @@ fun (c Checker) check_attributes(node ast.FunDecl){
 
 fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 	if not node.is_method {
-		// TODO test
-		c.warn('operator overloading has to be used on methods', attr.pos)
+		c.warn('operator overloading can only be used on methods', attr.pos)
 		return
 	}
 
@@ -59,7 +58,6 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 	rec_sym := c.table.get_sym(node.params[0].typ)
 	if rec_sym.overloads.contains(attr.value) {
 		// TODO print positions of all overloads
-		// TODO test
 		c.error('"${attr.value}" was overloaded twice for type "${rec_sym.name}"', attr.pos)
 		return
 	}
