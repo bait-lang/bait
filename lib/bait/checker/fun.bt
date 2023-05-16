@@ -9,20 +9,6 @@ import bait.token
 fun (c Checker) fun_decl(node ast.FunDecl) {
 	c.cur_fun = node
 	c.check_attributes(node)
-	// TODO move this into check attrs
-	if node.is_method {
-		overload := node.attrs.find_attr('overload')
-		if overload.name.length > 0 {
-			// TODO check op can be overloaded
-			rec_sym := c.table.get_sym(node.params[0].typ)
-			if rec_sym.overloads.contains(overload.value) {
-				// TODO print positions of all overloads
-				c.error('operator "${overload.value}" was overloaded twice for type "${rec_sym.name}"', overload.pos)
-			} else {
-				rec_sym.overloads[overload.value] = node
-			}
-		}
-	}
 	c.open_scope()
 	c.fun_params(node.params)
 	c.stmts(node.stmts)
