@@ -28,10 +28,24 @@ fun (c Checker) fun_params(params []ast.Param){
 	}
 }
 
+fun (c Checker) fun_signature(node ast.FunDecl) string {
+	mut sig := 'fun ${node.name}('
+	for i, p in node.params {
+		type_name := c.table.get_sym(p.typ).name
+		sig += '${p.name} ${type_name}'
+		if i < node.params.length - 1 {
+			sig += ', '
+		}
+	}
+	sig += ')'
+	return sig
+}
+
 struct FunRedefinition {
 	path string
 	pos token.Pos
 	name string
+	signature string
 }
 
 fun (c Checker) check_redefined_functions() {
@@ -56,6 +70,7 @@ fun (c Checker) check_redefined_functions() {
 						path: file.path
 						pos: stmt.pos
 						name: name
+						signature: c.fun_signature(stmt)
 					})
 				}
 			}
@@ -64,8 +79,7 @@ fun (c Checker) check_redefined_functions() {
 		// Raise the error and show where redefinitions happened
 		c.generic_error('redfinition of function "${name}"', )
 		for redef in redefinitions {
-			// TODO print fun signature
-			errors.notice('conflict', redef.path, redef.pos, 'TODO signature')
+			errors.notice('conflict', redef.path, redef.pos, redef.signature)
 		}
 	}
 }
