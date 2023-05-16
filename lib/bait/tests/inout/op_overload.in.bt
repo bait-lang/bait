@@ -8,3 +8,9 @@ fun (a Foo) plus (b Foo) Foo {}
 
 @overload: '+'
 fun (a Foo) also_plus (b Foo) Foo {}
+
+@overload: '!='
+fun (a Foo) not_equals (b Foo) bool {}
+
+@overload: '+='
+fun (a Foo) plus_equals (b Foo) {}

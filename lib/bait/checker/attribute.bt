@@ -52,7 +52,15 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 		return
 	}
 
-	// TODO check op can be overloaded
+	// Check the operator can be overloaded
+	if ['!=', '>', '<=', '>='].contains(attr.value) {
+		c.error('cannot overload "!=", ">", "<=" and ">=" as they are generated from "==" and "<"', attr.pos)
+		return
+	}
+	if not ['+', '-', '*', '/', '%', '==', '<'].contains(attr.value) {
+		c.error('cannot overload "${attr.value}"', attr.pos)
+		return
+	}
 
 	// Check for duplicate overload
 	rec_sym := c.table.get_sym(node.params[0].typ)
