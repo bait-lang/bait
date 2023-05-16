@@ -21,6 +21,7 @@ _unreleased_
 ### Compiler
 - Colorize error messages
 - Add error if infix types do not match
+- Error if functions are redefined
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`
 - Fix escaping of
@@ -29,7 +30,9 @@ _unreleased_
   - Double quotes in char literals
 
 ### Testing
-- `assert`: fix comparison of arrays, structs, ... (everything that is a object in the JS backend)
+- `assert`
+  - Fix comparison of arrays, structs, ... (everything that is a object in the JS backend)
+  - Fix missing assert details on fail if left side is a empty string
 - Add lot's of new unit tests
 
 ### Standard Library
@@ -47,6 +50,7 @@ _unreleased_
 - Add `$ABS_FILE` compile time variable
 - Improve and expand the documentation
 - `make.sh`: add `--local` flag that skips pulling the last commit
+- Various refactorings
 
 
 ## 0.0.2
