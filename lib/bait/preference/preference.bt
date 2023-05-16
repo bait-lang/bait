@@ -33,6 +33,9 @@ pub fun parse_args(args []string) Prefs {
 				i += 1
 				p.out_name = args[i]
 			}
+			'--nocolor' {
+				os.setenv('BAITCOLOR', '0')
+			}
 			'--script' {
 				p.is_script = true
 			}

@@ -14,7 +14,8 @@ _unreleased_
 ### CLI and Tooling
 - `up`: Actually print newest version after update
 - `self`: Always show stderr output
-- `gen-baitjs`: Logging improvements and fix for semirandom fails
+- `gen-baitjs`: Logging improvements and fix escaping bugs
+- Add `--nocolor` option to disable colorized output
 - Script mode is enabled implicitly but will cause a warning
 
 ### Compiler
