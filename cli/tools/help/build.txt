@@ -3,4 +3,5 @@ Usage:
 
 Options:
   -o, --out <file>   Output file name (default: "out.js").
+  --nocolor          Prevent the use of colors in error messages.
   --script           Enable script mode, which does not require the main function.

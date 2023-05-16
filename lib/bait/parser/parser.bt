@@ -180,7 +180,11 @@ fun (p Parser) next() {
 	p.idx += 1
 }
 
+fun (p Parser) warn(msg string) {
+	errors.warn(p.path, p.tok.pos, msg)
+}
+
 fun (p Parser) error(msg string){
-	errors.compiler_message('error', p.path, p.tok.pos, msg)
+	errors.error(p.path, p.tok.pos, msg)
 	exit(1)
 }

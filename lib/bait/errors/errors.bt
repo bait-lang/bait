@@ -2,8 +2,48 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package errors
 
+import os
 import bait.token
 
-pub fun compiler_message(kind string, path string, pos token.Pos, msg string) {
-	eprintln('${path}:${pos.line}:${pos.col} ${kind}: ${msg}')
+enum Kind {
+	notice
+	warning
+	error
+}
+
+pub fun notice(title string, path string, pos token.Pos, msg string) {
+	message(Kind.notice, title, path, pos, msg)
+}
+
+pub fun warn(path string, pos token.Pos, msg string) {
+	message(Kind.warning, 'warning', path, pos, msg)
+}
+
+pub fun error(path string, pos token.Pos, msg string) {
+	message(Kind.error, 'error', path, pos, msg)
+}
+
+fun message(kind Kind, title string, path string, pos token.Pos, msg string) {
+	// TODO move formatting and coloring to a separate package
+	file_line := bold('${path}:${pos.line}:${pos.col}')
+	eprintln('${file_line} ${format_title(kind, title)}: ${msg}')
+}
+
+fun bold(s string) string {
+	// TODO cache the env var value. However this cannot happen as const because it is set afterwards
+	if os.getenv('BAITCOLOR') == '0' {
+		return s
+	}
+	return '\033[1m' + s + '\033[0m'
+}
+
+fun format_title(k Kind, title string) string {
+	if os.getenv('BAITCOLOR') == '0' {
+		return title
+	}
+	match k {
+		Kind.notice { return '\033[0;35m' + title + '\033[0m' }
+		Kind.warning { return '\033[0;33m' + title + '\033[0m' }
+		Kind.error { return '\033[0;31m' + title + '\033[0m' }
+	}
 }

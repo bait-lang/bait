@@ -16,7 +16,7 @@ fun test_error_in_outs() {
 		assert os.exists(out_file)
 
 		expected := os.read_file(out_file)
-		res := os.exec('node ${$BAITEXE} --script ${file}')
+		res := os.exec('node ${$BAITEXE} --nocolor --script ${file}')
 		assert expected == res.stderr
 	}
 }

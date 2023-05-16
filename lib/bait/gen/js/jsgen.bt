@@ -144,11 +144,11 @@ fun (g Gen) write_default_value(typ i32) {
 }
 
 fun (g Gen) warn(msg string, pos token.Pos){
-	errors.compiler_message('warning', g.path, pos, msg)
+	errors.warn(g.path, pos, msg)
 }
 
 fun (g Gen) error(msg string, pos token.Pos){
-	errors.compiler_message('error', g.path, pos, msg)
+	errors.error(g.path, pos, msg)
 	exit(1)
 }
 
