@@ -123,6 +123,7 @@ pub fun (t Table) find_type_or_add_placeholder(name string) i32 {
 	})
 }
 
+// Get the method of a type symbol or any of its parents.
 pub fun (t Table) get_method(sym TypeSymbol, name string) FunDecl {
 	mut s := sym
 	for true {
