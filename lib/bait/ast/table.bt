@@ -7,6 +7,7 @@ pub struct Table {
 	fun_decls map[string]FunDecl
 	type_idxs map[string]i32
 	type_symbols []TypeSymbol
+	redefined_funs []string
 }
 
 pub fun new_table() Table {
@@ -87,7 +88,7 @@ pub fun (t Table) find_or_register_map(key_type i32, val_type i32) i32 {
 }
 
 pub fun (t Table) find_or_register_fun(param_types []i32, return_type i32) i32 {
-	name := 'fun_' + t.fun_signature(param_types, return_type)
+	name := 'fun_' + t.fun_type_signature(param_types, return_type)
 	idx := t.get_idx(name)
 	if idx > 0 {
 		return idx
@@ -102,7 +103,7 @@ pub fun (t Table) find_or_register_fun(param_types []i32, return_type i32) i32 {
 	})
 }
 
-pub fun (t Table) fun_signature(param_types []i32, return_type i32) string {
+pub fun (t Table) fun_type_signature(param_types []i32, return_type i32) string {
 	mut sig := ''
 	for param in param_types {
 		sig += t.get_sym(param).name + '_'
