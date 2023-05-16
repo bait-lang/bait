@@ -15,17 +15,21 @@ fun build_known_attrs() map[string]AttrValue {
 	mut attrs := map[string]AttrValue
 	attrs['deprecated'] = .optional
 	attrs['deprecated_after'] = .required
+	attrs['overload'] = .required
 	return attrs
 }
 
 const KNOWN_ATTRS := build_known_attrs()
 
-fun (c Checker) check_attributes(attrs []ast.Attribute){
-	for attr in attrs {
+fun (c Checker) check_attributes(node ast.FunDecl){
+	for attr in node.attrs {
+		// Check attribute is implemented
 		if not KNOWN_ATTRS.contains(attr.name) {
-			c.error('unknown attribute "${attr.name}"', attr.pos)
+			c.warn('unknown attribute "${attr.name}"', attr.pos)
 			continue
 		}
+
+		// Check value requirements are met
 		val_req := KNOWN_ATTRS[attr.name]
 		if val_req == .none and attr.value.length > 0 {
 			c.error('attribute "${attr.name}" does not take a value', attr.pos)
@@ -34,6 +38,14 @@ fun (c Checker) check_attributes(attrs []ast.Attribute){
 		if val_req == .required and attr.value.length == 0 {
 			c.error('attribute "${attr.name}" requires a value', attr.pos)
 			continue
+		}
+
+		// Other checks
+		if attr.name == 'overload' {
+			if not node.is_method {
+				c.warn('operator overloading has to be used on methods', attr.pos)
+				continue
+			}
 		}
 	}
 }

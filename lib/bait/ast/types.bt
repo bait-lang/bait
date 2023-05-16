@@ -56,7 +56,7 @@ pub struct TypeSymbol{
 	info TypeInfo
 	methods []FunDecl
 	parent Type
-	operators map[string]FunDecl
+	overloads map[string]FunDecl
 	is_pub bool
 	pkg string
 }
