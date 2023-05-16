@@ -15,8 +15,10 @@ _unreleased_
 - `up`: Actually print newest version after update
 - `self`: Always show stderr output
 - `gen-baitjs`: Logging improvements and fix for semirandom fails
+- Script mode is enabled implicitly but will cause a warning
 
 ### Compiler
+- Colorize error messages
 - Add error if infix types do not match
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`
