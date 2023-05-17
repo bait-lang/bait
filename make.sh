@@ -32,4 +32,4 @@ fi
 
 rm bait1.js bait2.js
 
-echo "Run it with 'node bait.js'"
+echo "Run it with './bait'"

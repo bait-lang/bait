@@ -3,25 +3,9 @@
 package main
 
 import os
+import bait.util.testing
 
 fun main() {
 	tools_dir := os.join_path($BAITDIR, ['cli', 'tools'])
-	tools := os.ls(tools_dir)
-	mut fails := 0
-	for tool in tools {
-		if not tool.ends_with('.bt') {
-			continue
-		}
-		cmd := 'node ${$BAITEXE} ${tools_dir}/${tool}'
-		res := os.exec(cmd)
-		if res.code == 0 {
-			println('OK ${tool}')
-		} else {
-			println('FAIL ${tool}')
-			fails += 1
-		}
-	}
-	if fails > 0 {
-		exit(1)
-	}
+	testing.build_files_in_dir(tools_dir)
 }

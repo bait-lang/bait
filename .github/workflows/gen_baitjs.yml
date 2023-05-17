@@ -18,8 +18,10 @@ jobs:
         with:
           node-version: 16
       - name: Build baitjs
-        run: ./make.sh
+        run: |
+          ./make.sh
+          ./bait symlink
       - name: Generate, commit and push latest bait.js
         env:
           TIABEAST_BOT_TOKEN: ${{ secrets.TIABEAST_BOT_TOKEN }}
-        run: node bait.js gen-baitjs
+        run: bait gen-baitjs
