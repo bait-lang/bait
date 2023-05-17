@@ -11,7 +11,6 @@ Important Commands:
   build <path>  Compile files and projects.
   run <path>    Builds and executes files or projects.
   test <dir>    Run all tests in the given directory.
-  ast <file>    Prints the Abstract Syntax Tree (AST) for the given file.
 
   self          Recompile bait.
   up            Update to the latest git commit.
