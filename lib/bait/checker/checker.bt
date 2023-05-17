@@ -48,10 +48,6 @@ fun (c Checker) close_scope(){
 	c.scope = c.scope.parent
 }
 
-fun (c Checker) warn(msg string, pos token.Pos){
-	errors.warn(c.path, pos, msg)
-}
-
 fun (c Checker) error(msg string, pos token.Pos){
 	errors.error(c.path, pos, msg)
 	c.had_error = true
