@@ -19,7 +19,8 @@ pub fun build_files_in_dir(dir string) {
 		if res.code == 0 {
 			println('OK ${file}')
 		} else {
-			println('FAIL ${file}')
+			eprintln('FAIL ${file}')
+			eprintln(res.stderr)
 			fails += 1
 		}
 	}
