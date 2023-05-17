@@ -15,7 +15,8 @@ _unreleased_
 - `up`: Actually print newest version after update
 - `self`: Always show stderr output
 - `gen-baitjs`: Logging improvements and fix escaping bugs
-- Add `--nocolor` option to disable colorized output
+- `build`: Add `--nocolor` option to disable colorized output
+- Add `--verbose` option and verbose output for launching tools
 - Script mode is enabled implicitly but will cause a warning
 
 ### Compiler
@@ -29,6 +30,7 @@ _unreleased_
   - Double quotes in strings
   - Backticks in interpolated strings
   - Double quotes in char literals
+- Name of the compiled file now defaults to the source name
 
 ### Testing
 - `assert`
