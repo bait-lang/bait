@@ -7,10 +7,12 @@ import bait.builder
 import bait.util
 import os
 
+// List of commands implemented as tool
 const TOOLS := [
 	'ast',
 	'self',
 	'up',
+	'symlink',
 	'doctor',
 	'help',
 	'test-all',
@@ -21,27 +23,68 @@ const TOOLS := [
 	'gen-baitjs',
 ]
 
-fun launch_tool(name string, args []string) i32 {
+fun is_recompile_required(baitexe string, source string, exe string) bool {
+	// No executable
+	if not os.exists(exe) {
+		return true
+	}
+
+	// Source file is newer
+	src_mod := os.file_mod_time(source)
+	exe_mod := os.file_mod_time(exe)
+	if exe_mod < src_mod {
+		return true
+	}
+
+	// Bait executable is newer
+	bait_mod := os.file_mod_time(baitexe)
+	if exe_mod < bait_mod {
+		return true
+	}
+
+	return false
+}
+
+fun launch_tool(name string, args []string, is_verbose bool) i32 {
+	baitexe := os.executable()
 	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
 	tool_source := tool_base_path + '.bt'
 	tool_exe := tool_base_path + '.js'
+
+	// Compile the tool if necessary
+	should_recompile := is_recompile_required(baitexe, tool_source, tool_exe)
+	if should_recompile {
+		comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
+		if comp_res.code != 0 {
+			eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
+			return 1
+		}
+	}
+
+	// Execute
 	args_string := args.join(' ')
-	baitexe := os.executable()
-	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
-	if comp_res.code != 0 {
-		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
-		return 1
+	if is_verbose {
+		println('launching tool')
+		println('  bait:      ${baitexe}')
+		println('  source:    ${tool_source}')
+		println('  recompile: ${should_recompile}')
+		println('  args:      ${args_string}')
 	}
 	return os.system('node ${tool_exe} ${args_string}')
 }
 
 fun main() {
+	// Parse arguments into Prefs struct
 	args := os.ARGS.slice(2, os.ARGS.length)
 	mut prefs := preference.parse_args(args)
 	prefs.set_comptime_vars()
+
+	// Handle tool commands
 	if TOOLS.contains(prefs.command) {
-		exit(launch_tool(prefs.command, prefs.args))
+		exit(launch_tool(prefs.command, prefs.args, prefs.is_verbose))
 	}
+
+	// Handle builtin commands (build, run, test, version)
 	match prefs.command {
 		'test' {
 			exit(builder.run_tests(prefs))

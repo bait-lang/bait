@@ -12,10 +12,12 @@ _unreleased_
 - `$FILE` comptime var now gives the relative path. Use `$ABS_FILE` for the old behaviour
 
 ### CLI and Tooling
+- Add `symlink` command that will link a helper bash script which executes bait with NodeJS
 - `up`: Actually print newest version after update
 - `self`: Always show stderr output
 - `gen-baitjs`: Logging improvements and fix escaping bugs
-- Add `--nocolor` option to disable colorized output
+- `build`: Add `--nocolor` option to disable colorized output
+- Add `--verbose` option and verbose output for launching tools
 - Script mode is enabled implicitly but will cause a warning
 
 ### Compiler
@@ -29,6 +31,7 @@ _unreleased_
   - Double quotes in strings
   - Backticks in interpolated strings
   - Double quotes in char literals
+- Name of the compiled file now defaults to the source name
 
 ### Testing
 - `assert`
@@ -38,14 +41,16 @@ _unreleased_
 
 ### Standard Library
 - builtin:
-  - new `string` methods:
+  - New `string` methods:
     - `all_before()`, `all_before_last()`
     - `all_after()`, `all_after_last()`
-  - new `array` methods:
+  - New `array` methods:
     - `copy()`
     - `index()`, `last_index()`
     - `reverse()`, `reverse_in_place()`
-- `os.exec()`: Fix missing output of stderr without execution errors
+- `os`:
+  - New functions `file_mod_time()`, `rm()`, `symlink()`
+  - `exec()`: Fix missing output of stderr without execution errors
 
 ### Other Changes
 - Add `$ABS_FILE` compile time variable
