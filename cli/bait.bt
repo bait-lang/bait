@@ -22,7 +22,8 @@ const TOOLS := [
 	'gen-baitjs',
 ]
 
-fun requires_recompile(baitexe string, source string, exe string) bool {
+fun is_recompile_required(baitexe string, source string, exe string) bool {
+	// No executable
 	if not os.exists(exe) {
 		return true
 	}
@@ -43,14 +44,15 @@ fun requires_recompile(baitexe string, source string, exe string) bool {
 	return false
 }
 
-fun launch_tool(name string, args []string) i32 {
+fun launch_tool(name string, args []string, is_verbose bool) i32 {
 	baitexe := os.executable()
 	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
 	tool_source := tool_base_path + '.bt'
 	tool_exe := tool_base_path + '.js'
 
 	// Compile the tool if necessary
-	if requires_recompile(baitexe, tool_source, tool_exe) {
+	should_recompile := is_recompile_required(baitexe, tool_source, tool_exe)
+	if should_recompile {
 		comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
 		if comp_res.code != 0 {
 			eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
@@ -60,6 +62,13 @@ fun launch_tool(name string, args []string) i32 {
 
 	// Execute
 	args_string := args.join(' ')
+	if is_verbose {
+		println('launching tool')
+		println('  bait:      ${baitexe}')
+		println('  source:    ${tool_source}')
+		println('  recompile: ${should_recompile}')
+		println('  args:      ${args_string}')
+	}
 	return os.system('node ${tool_exe} ${args_string}')
 }
 
@@ -71,7 +80,7 @@ fun main() {
 
 	// Handle tool commands
 	if TOOLS.contains(prefs.command) {
-		exit(launch_tool(prefs.command, prefs.args))
+		exit(launch_tool(prefs.command, prefs.args, prefs.is_verbose))
 	}
 
 	// Handle builtin commands (build, run, test, version)

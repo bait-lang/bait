@@ -1,11 +1,13 @@
 Usage:
   bait <command|path> [options]
 
+
 Examples:
   bait my_file.bt
   bait src/ -o lib.js
 
 Note: If no command is specified, the "build" command is assumed.
+
 
 Important Commands:
   build <path>  Compile files and projects.
@@ -16,6 +18,11 @@ Important Commands:
   up            Update to the latest git commit.
   version       Print the version text.
   doctor        Display version and system information for bug reporting.
+
+
+General Options:
+  -v, --verbose  Enable verbose output.
+
 
 Use "bait help other" to see less often used commands.
 Use "bait help <command>" for more information about some commands.

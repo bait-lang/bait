@@ -9,6 +9,7 @@ pub struct Prefs {
 	args []string
 	out_name string
 	should_run bool
+	is_verbose bool
 	is_test bool
 	is_script bool
 	// Values for compile time pseudo variables
@@ -32,6 +33,9 @@ pub fun parse_args(args []string) Prefs {
 			"-o", '--out' {
 				i += 1
 				p.out_name = args[i]
+			}
+			'-v', '--verbose' {
+				p.is_verbose = true
 			}
 			'--nocolor' {
 				os.setenv('BAITCOLOR', '0')
