@@ -17,7 +17,7 @@ jobs:
       - name: Build baitjs
         run: |
           ./make.sh
-          sudo ./bait symlink
+          ./bait symlink
       - name: Build tools
         run: bait build-tools
       - name: Build examples
