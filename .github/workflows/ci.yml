@@ -15,14 +15,16 @@ jobs:
         with:
           node-version: 16
       - name: Build baitjs
-        run: ./make.sh
+        run: |
+          ./make.sh
+          sudo ./bait symlink
       - name: Build tools
-        run: node bait.js build-tools
+        run: bait build-tools
       - name: Build examples
-        run: node bait.js build-examples
+        run: bait build-examples
       - name: Run tests
-        run: node bait.js test-self
+        run: bait test-self
       - name: Check markdown code blocks
         run: |
-          node bait.js check-md docs/docs.md
-          node bait.js check-md README.md
+          bait check-md docs/docs.md
+          bait check-md README.md
