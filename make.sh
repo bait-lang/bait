@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 BAITJS_DIR="$HOME/.bait/baitjs"
 IS_LOCAL=0; [ "$1" == "--local" ] && IS_LOCAL=1
 

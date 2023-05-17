@@ -12,6 +12,7 @@ const TOOLS := [
 	'ast',
 	'self',
 	'up',
+	'symlink',
 	'doctor',
 	'help',
 	'test-all',

@@ -12,6 +12,7 @@ _unreleased_
 - `$FILE` comptime var now gives the relative path. Use `$ABS_FILE` for the old behaviour
 
 ### CLI and Tooling
+- Add `symlink` command that will link a helper bash script which executes bait with NodeJS
 - `up`: Actually print newest version after update
 - `self`: Always show stderr output
 - `gen-baitjs`: Logging improvements and fix escaping bugs
@@ -48,7 +49,7 @@ _unreleased_
     - `index()`, `last_index()`
     - `reverse()`, `reverse_in_place()`
 - `os`:
-  - New function `file_mod_time()`
+  - New functions `file_mod_time()`, `rm()`, `symlink()`
   - `exec()`: Fix missing output of stderr without execution errors
 
 ### Other Changes

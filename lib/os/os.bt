@@ -43,6 +43,10 @@ pub fun file_mod_time(path string) i64 {
 	return #JS.'js_fs.lstatSync(path.str).mtimeMs'
 }
 
+pub fun symlink(src string, dest string) {
+	#JS.fs.symlinkSync(src.str, dest.str)
+}
+
 pub fun chdir(dir string) {
 	#JS.'process.chdir(dir.str)'
 }
@@ -66,6 +70,10 @@ pub fun mkdir(dir string) {
 
 pub fun mkdir_all(dir string) {
 	#JS.fs.mkdirSync(dir.str, #JS.'{ recursive: true }')
+}
+
+pub fun rm(path string) {
+	#JS.fs.rmSync(#JS.'path.str')
 }
 
 pub fun rmdir(dir string) {
