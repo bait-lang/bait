@@ -1,5 +1,6 @@
 Other commands:
   ast <file>      Prints the Abstract Syntax Tree (AST) for the given file.
+  symlink         Create a symbolic link for the wrapper script.
 
   test-all        Run most checks of the CI pipeline locally.
   test-self       Run all compiler and lib tests.

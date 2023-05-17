@@ -26,14 +26,15 @@ fun main() {
 git clone https://github.com/tiabeast/bait
 cd bait
 ./make.sh
+sudo ./bait symlink
 ```
 
-Now you should have Bait compiled to JS at `<path to repo>/bait.js`.
+Now you should have Bait compiled to JS at `<repo>/bait.js`.
 
-The compiler has to be used like `node ./bait.js run examples/hello_world.bt`.
+Due to the symlinked wrapper script, the compiler can be used like `bait run examples/hello_world.bt`.
 
 ## Upgrading to the latest version
-To update Bait to the latest commit, run `node ./bait.js up`.
+To update Bait to the latest commit, run `bait up`.
 
 ## License
 Bait is licensed under the Mozilla Public License (`MPL-2.0`).
