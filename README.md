@@ -20,7 +20,7 @@ fun main() {
 - [Language Overview](docs/docs.md)
 
 ## Building from Source
-> Required dependencies: `git` and `Node.js`
+> Required dependencies: `git` and `NodeJS >= 16`
 
 ```sh
 git clone https://github.com/tiabeast/bait
