@@ -7,6 +7,7 @@ import bait.builder
 import bait.util
 import os
 
+// List of commands implemented as tool
 const TOOLS := [
 	'ast',
 	'self',
@@ -21,27 +22,51 @@ const TOOLS := [
 	'gen-baitjs',
 ]
 
+fun requires_recompile(source string, exe string) bool {
+	if not os.exists(exe) {
+		return true
+	}
+	src_mod := os.file_mod_time(source)
+	exe_mod := os.file_mod_time(exe)
+	if exe_mod < src_mod {
+		return true
+	}
+	// TODO set to false
+	return true
+}
+
 fun launch_tool(name string, args []string) i32 {
 	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
 	tool_source := tool_base_path + '.bt'
 	tool_exe := tool_base_path + '.js'
-	args_string := args.join(' ')
-	baitexe := os.executable()
-	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
-	if comp_res.code != 0 {
-		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
-		return 1
+
+	// Compile the tool if necessary
+	if requires_recompile(tool_source, tool_exe) {
+		baitexe := os.executable()
+		comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
+		if comp_res.code != 0 {
+			eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
+			return 1
+		}
 	}
+
+	// Execute
+	args_string := args.join(' ')
 	return os.system('node ${tool_exe} ${args_string}')
 }
 
 fun main() {
+	// Parse arguments into Prefs struct
 	args := os.ARGS.slice(2, os.ARGS.length)
 	mut prefs := preference.parse_args(args)
 	prefs.set_comptime_vars()
+
+	// Handle tool commands
 	if TOOLS.contains(prefs.command) {
 		exit(launch_tool(prefs.command, prefs.args))
 	}
+
+	// Handle builtin commands (build, run, test, version)
 	match prefs.command {
 		'test' {
 			exit(builder.run_tests(prefs))

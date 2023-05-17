@@ -39,6 +39,10 @@ pub fun file_name(path string) string {
 	return from_js_string(#JS.path.basename(#JS.'path.str'))
 }
 
+pub fun file_mod_time(path string) i64 {
+	return #JS.'js_fs.lstatSync(path.str).mtimeMs'
+}
+
 pub fun chdir(dir string) {
 	#JS.'process.chdir(dir.str)'
 }
