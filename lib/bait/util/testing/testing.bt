@@ -1,0 +1,30 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package testing
+
+import os
+
+pub fun build_files_in_dir(dir string) {
+	mut fails := 0
+	files := os.ls(dir)
+
+	for file in files {
+		if not file.ends_with('.bt') {
+			continue
+		}
+
+		cmd := 'node ${$BAITEXE} ${dir}/${file}'
+		res := os.exec(cmd)
+
+		if res.code == 0 {
+			println('OK ${file}')
+		} else {
+			println('FAIL ${file}')
+			fails += 1
+		}
+	}
+
+	if fails > 0 {
+		exit(1)
+	}
+}
