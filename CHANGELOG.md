@@ -14,7 +14,7 @@ _unreleased_
 ### CLI and Tooling
 - Add `symlink` command that will link a helper bash script which executes bait with NodeJS
 - `up`: Actually print newest version after update
-- `self`: Always show stderr output
+- `self`, `build-xxx`: Always show stderr output
 - `gen-baitjs`: Logging improvements and fix escaping bugs
 - `build`: Add `--nocolor` option to disable colorized output
 - Add `--verbose` option and verbose output for launching tools
