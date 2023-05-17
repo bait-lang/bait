@@ -1,0 +1,18 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+enum Color {
+	red
+	green
+	blue
+}
+
+fun test_enum_assign() {
+	mut c := Color.green
+
+	c = Color.blue
+	assert c == Color.blue
+
+	c = .red
+	assert c == Color.red
+}

@@ -63,6 +63,7 @@ fun (c Checker) assign_stmt(node ast.AssignStmt) {
 	}
 	c.is_lhs_assign = true
 	node.left_type = c.expr(node.left)
+	c.expected_type = node.left_type
 	c.is_lhs_assign = false
 	node.right_type = c.expr(node.right)
 	if not c.check_types(node.right_type, node.left_type) {
