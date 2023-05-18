@@ -45,9 +45,7 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 		g.struct_decl(stmt)
 	} else if stmt is ast.TypeDecl {
 		// Nothing to do here
-	} else {
-		g.error('cannot generate stmt: ${stmt}', stmt.pos)
-	}
+	} else {}
 }
 
 fun (g Gen) assert_stmt(node ast.AssertStmt) {
