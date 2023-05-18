@@ -35,6 +35,19 @@ The **compiler packages** are located in `lib/bait/`:
 - `util`: Contains minor helper functions (currently for escpaing) and the Bait version.
   - `util.testing`: Provides common functions for running in-out or build tests.
 
+- The `tests/` folder actually is no package but contains [Compiler Tests](#testing).
+
 ## Tools
 Most commands are implemented as separate tools that will be compiled and executed on demand.
 They are located in `cli/tools/`.
+
+## Testing
+Located in `lib/bait/tests/` are test files for compiler features to make sure code can compile and has the proper functionality.
+
+### `inout_runner_test.bt`
+This test compiler error messages and warnings are actually raised where needed.
+
+It expects pairs of `.in.bt` and `.out` files in the `inout/` directory.
+Each in-file will be compiled and the error output is compared to the out file.
+
+In case it's required to run a in-file with the `test` command, name it like `foo_test.in.bt` and `foo_test.out`.
