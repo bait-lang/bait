@@ -1,0 +1,11 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+import os
+import bait.util.testing
+
+fun test_error_in_outs() {
+	tests_dir := os.dir($FILE)
+	in_out_dir := '${tests_dir}/inout'
+	testing.in_out_runner(in_out_dir)
+}

@@ -46,7 +46,10 @@ fun (c Checker) stmt(stmt ast.Stmt){
 }
 
 fun (c Checker) assert_stmt(node ast.AssertStmt){
-	c.expr(node.expr)
+	typ := c.expr(node.expr)
+	if not c.check_types(typ, ast.TypeIdx.bool as i32) {
+		c.error('assert must be of type bool', node.pos)
+	}
 }
 
 fun (c Checker) assign_stmt(node ast.AssignStmt) {

@@ -52,9 +52,7 @@ fun (g Gen) expr(expr ast.Expr) {
 		g.struct_init(expr)
 	} else if expr is ast.TypeOf {
 		g.type_of(expr)
-	} else {
-		g.error('cannot generate expr: ${expr}', expr.pos)
-	}
+	} else {}
 }
 
 fun (g Gen) expr_string(expr ast.Expr) string {

@@ -1,2 +1,0 @@
-lib/bait/checker/tests/attributes.in.bt:1:9 error: unknown attribute "xyz_attr"
-lib/bait/checker/tests/attributes.in.bt:6:17 error: attribute "deprecated_after" requires a value

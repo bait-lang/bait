@@ -29,3 +29,32 @@ pub fun build_files_in_dir(dir string) {
 		exit(1)
 	}
 }
+
+pub fun in_out_runner(dir string) {
+	in_files := os.walk_ext(dir, '.in.bt')
+
+	for file in in_files {
+		mut in_path := file
+		name_ext := os.file_name(file)
+		name := name_ext.all_before('.in.bt')
+
+		out_file := '${dir}/${name}.out'
+		assert os.exists(out_file)
+
+		mut cmd := 'build'
+		is_test := name_ext.contains('_test.in.bt')
+		if is_test {
+			cmd = 'test'
+			in_path = file.replace('.in', '')
+			os.cp(file, in_path)
+		}
+
+		expected := os.read_file(out_file)
+		res := os.exec('node ${$BAITEXE} --nocolor --script ${cmd} ${in_path}')
+		assert expected == res.stderr
+
+		if is_test {
+			os.rm(in_path)
+		}
+	}
+}

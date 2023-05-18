@@ -230,6 +230,31 @@ struct Circle{}
 type Shape := Triangle | Rectangle | Circle
 ```
 
+## Assert and Unit Testing
+Unit testing is built right into the Bait Compiler with the `test` command.
+
+Test files are recognized by the `_test.bt` suffix and are ignored for normal compilation.
+They may contain at least one test function. These are identified by a `test_` name prefix.
+
+Inside the test functions use `assert some_expr` to check wheter this Expr is true.
+Failed asserts will result in an error and test failure.
+
+For example a really simple test:
+```bt
+// my_test.bt
+
+fun sum(a i32, b i32) i32 {
+    return a + b
+}
+
+fun test_sum() {
+    assert sum(1, 2) == 3
+}
+```
+
+> Test files can right now not be scoped to the package they are in.
+> Everything has to be imported.
+
 ## Attributes
 Various attributes are supported that change the behaviour of functions.
 They are written as `@name: 'value'` before the function declaration.

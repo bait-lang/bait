@@ -35,9 +35,12 @@ _unreleased_
 
 ### Testing
 - `assert`
-  - Fix comparison of arrays, structs, ... (everything that is a object in the JS backend)
+  - Fix runtime error if non-infix asserts fail
   - Fix missing assert details on fail if left side is a empty string
-- Add lot's of new unit tests
+  - Prevent asserting exprs that do not evaluate to a bool
+  - Handle more exprs in fail messages
+- Add an error if a test file contains no test functions
+- Add lot's of new unit tests for lib and the compiler
 
 ### Standard Library
 - builtin:

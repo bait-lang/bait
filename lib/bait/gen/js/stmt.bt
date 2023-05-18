@@ -45,21 +45,12 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 		g.struct_decl(stmt)
 	} else if stmt is ast.TypeDecl {
 		// Nothing to do here
-	} else {
-		g.error('cannot generate stmt: ${stmt}', stmt.pos)
-	}
+	} else {}
 }
 
 fun (g Gen) assert_stmt(node ast.AssertStmt) {
 	g.write('if (')
-	if node.expr is ast.InfixExpr {
-		expr := node.expr as ast.InfixExpr
-		g.expr_to_string(expr.left, expr.left_type)
-		g.write(' ${expr.op.js_repr()} ')
-		g.expr_to_string(expr.right, expr.right_type)
-	} else {
-		g.expr(node.expr)
-	}
+	g.expr(node.expr)
 	g.writeln(') {')
 	g.writeln('\tTestRunner_assert_pass(test_runner)')
 	g.writeln('} else {')
@@ -74,20 +65,38 @@ fun (g Gen) assert_stmt(node ast.AssertStmt) {
 		g.write('), from_js_string(')
 		g.expr_to_string(expr.right, expr.right_type)
 		g.writeln('))')
+		g.writeln('\tTestRunner_assert_fail_infix(test_runner)')
 	} else {
-		g.writeln('\tTestRunner_set_assert_info(test_runner, ${node.pos.line}, from_js_string(""), from_js_string(""))')
+		g.write('\tTestRunner_set_assert_info(test_runner, ${node.pos.line}, from_js_string("assert ')
+		g.assert_side_expr(node.expr)
+		g.writeln('"), from_js_string(""), from_js_string(""), from_js_string(""))')
+		g.writeln('\tTestRunner_assert_fail(test_runner)')
 	}
-	g.writeln('\tTestRunner_assert_fail(test_runner)')
 	g.writeln('}')
 }
 
 fun (g Gen) assert_side_expr(node ast.Expr) {
-	if node is ast.IntegerLiteral {
-		g.write(node.val)
+	if node is ast.BoolLiteral {
+		g.bool_literal(node)
+	} else if node is ast.IntegerLiteral {
+		g.integer_literal(node)
 	} else if node is ast.StringLiteral {
 		g.write("'")
 		g.write(node.val)
 		g.write("'")
+	} else if node is ast.CharLiteral {
+		g.write("`")
+		g.write(node.val)
+		g.write("`")
+	} else if node is ast.ArrayInit {
+		g.write('[')
+		for i, expr in node.exprs {
+			g.assert_side_expr(expr)
+			if i < node.exprs.length - 1 {
+				g.write(', ')
+			}
+		}
+		g.write(']')
 	} else if node is ast.Ident {
 		g.write(node.name)
 	} else if node is ast.IndexExpr {

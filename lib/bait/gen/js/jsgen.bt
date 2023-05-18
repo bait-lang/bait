@@ -90,10 +90,12 @@ fun (g Gen) headers() string {
 }
 
 fun (g Gen) gen_test_main() {
+	mut nr_test_funs := 0
 	g.writeln('function main() {')
 	g.indent += 1
 	for key, func in g.table.fun_decls {
 		if func.is_test {
+			nr_test_funs += 1
 			name := js_name(func.name)
 			g.writeln('TestRunner_set_test_info(test_runner, from_js_string("${g.path}"), from_js_string("${name}"))')
 			g.writeln('${name}()')
@@ -102,6 +104,10 @@ fun (g Gen) gen_test_main() {
 	g.writeln('exit(TestRunner_exit_code(test_runner))')
 	g.indent -= 1
 	g.writeln('}')
+
+	if nr_test_funs == 0 {
+		errors.generic_error('${g.path} contains no tests')
+	}
 }
 
 fun (g Gen) main_call() {
@@ -141,15 +147,6 @@ fun (g Gen) write_default_value(typ i32) {
 			}
 		}
 	}
-}
-
-fun (g Gen) warn(msg string, pos token.Pos){
-	errors.warn(g.path, pos, msg)
-}
-
-fun (g Gen) error(msg string, pos token.Pos){
-	errors.error(g.path, pos, msg)
-	exit(1)
 }
 
 fun js_name(n string) string {
