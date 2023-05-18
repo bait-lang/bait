@@ -85,12 +85,27 @@ fun (g Gen) assert_stmt(node ast.AssertStmt) {
 }
 
 fun (g Gen) assert_side_expr(node ast.Expr) {
-	if node is ast.IntegerLiteral {
-		g.write(node.val)
+	if node is ast.BoolLiteral {
+		g.bool_literal(node)
+	} else if node is ast.IntegerLiteral {
+		g.integer_literal(node)
 	} else if node is ast.StringLiteral {
 		g.write("'")
 		g.write(node.val)
 		g.write("'")
+	} else if node is ast.CharLiteral {
+		g.write("`")
+		g.write(node.val)
+		g.write("`")
+	} else if node is ast.ArrayInit {
+		g.write('[')
+		for i, expr in node.exprs {
+			g.assert_side_expr(expr)
+			if i < node.exprs.length - 1 {
+				g.write(', ')
+			}
+		}
+		g.write(']')
 	} else if node is ast.Ident {
 		g.write(node.name)
 	} else if node is ast.IndexExpr {
