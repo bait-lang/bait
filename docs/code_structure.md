@@ -19,7 +19,7 @@ The **compiler packages** are located in `lib/bait/`:
   - Resolve all types and add this information to the AST.
   - Perform type and error checking.
 
-- `gen/js`: JavaScript backend that generates a single JS file for NodeJS.
+- `gen.js`: JavaScript backend that generates a single JS file for NodeJS.
 
 - `token`: Defines tokens and their precedence.
 
@@ -33,6 +33,7 @@ The **compiler packages** are located in `lib/bait/`:
 - `errors`: Handles output and formatting of errors, warnings and notes.
 
 - `util`: Contains minor helper functions (currently for escpaing) and the Bait version.
+  - `util.testing`: Provides common functions for running in-out or build tests.
 
 ## Tools
 Most commands are implemented as separate tools that will be compiled and executed on demand.

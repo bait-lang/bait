@@ -6,6 +6,6 @@ import bait.util.testing
 
 fun test_error_in_outs() {
 	tests_dir := os.dir($FILE)
-	in_out_dir := '${tests_dir}/tests'
+	in_out_dir := '${tests_dir}/inout'
 	testing.in_out_runner(in_out_dir)
 }

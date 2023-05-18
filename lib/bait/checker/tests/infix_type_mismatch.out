@@ -1,1 +1,0 @@
-lib/bait/checker/tests/infix_type_mismatch.in.bt:1:13 error: infix expr: types 4 and 13 do not match
