@@ -36,6 +36,7 @@ pub fun parse_args(args []string) Prefs {
 			}
 			'-v', '--verbose' {
 				p.is_verbose = true
+				p.args.push(arg) // keep option for tools
 			}
 			'--nocolor' {
 				os.setenv('BAITCOLOR', '0')
