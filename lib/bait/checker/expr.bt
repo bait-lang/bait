@@ -56,8 +56,6 @@ fun (c Checker) expr(expr ast.Expr) i32 {
 	}
 }
 
-
-
 fun (c Checker) anon_fun(node ast.AnonFun) i32 {
 	c.open_scope()
 	c.fun_params(node.params)
@@ -72,6 +70,7 @@ fun (c Checker) array_init(node ast.ArrayInit) i32 {
 			typ := c.expr(e)
 			if i == 0 {
 				node.elem_type = typ
+				// node.expected_type = typ
 			}
 		}
 		node.typ = c.table.find_or_register_array(node.elem_type)
@@ -233,6 +232,11 @@ fun (c Checker) comp_time_var(node ast.CompTimeVar) i32 {
 }
 
 fun (c Checker) enum_val(node ast.EnumVal) i32 {
+	if node.name.length == 0 {
+		node.typ = c.expected_type
+	} else {
+		node.typ = c.table.get_idx(node.name)
+	}
 	sym := c.table.get_sym(node.typ)
 	if sym.kind == ast.TypeKind.placeholder {
 		c.error('undefined enum ${node.name}', node.pos)

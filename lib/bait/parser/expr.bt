@@ -17,6 +17,9 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 		token.TokenKind.dollar {
 			node = p.comp_time_var()
 		}
+		token.TokenKind.dot {
+			node = p.enum_val(false)
+		}
 		token.TokenKind.lbr {
 			node = p.array_init()
 		}
@@ -239,21 +242,24 @@ fun (p Parser) call_args() []ast.CallArg {
 	return args
 }
 
-fun (p Parser) enum_val() ast.EnumVal{
+fun (p Parser) enum_val(has_name bool) ast.EnumVal{
 	pos := p.tok.pos
-	mut name := p.check_name()
-	if p.expr_pkg.length > 0 {
-		name = p.prepend_expr_pkg(name)
-	} else {
-		name = p.prepend_pkg(name)
+	mut name := ''
+	if has_name {
+		name = p.check_name()
+		if p.expr_pkg.length > 0 {
+			name = p.prepend_expr_pkg(name)
+		} else {
+			name = p.prepend_pkg(name)
+		}
 	}
-	typ := p.table.find_type_or_add_placeholder(name)
+	// typ := p.table.find_type_or_add_placeholder(name)
 	p.check(token.TokenKind.dot)
 	val := p.check_name()
 	return ast.EnumVal{
 		name: name
 		val: val
-		typ: typ
+		// typ: typ
 		pos: pos
 	}
 }
@@ -422,7 +428,7 @@ fun (p Parser) name_expr(lang string)ast.Expr{
 		return p.struct_init()
 	}
 	if p.next_tok.kind == token.TokenKind.dot and p.tok.val[0].is_capital() and not p.tok.val.is_upper() {
-		return p.enum_val()
+		return p.enum_val(true)
 	}
 	return p.ident(lang)
 }
