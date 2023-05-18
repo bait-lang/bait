@@ -11,6 +11,10 @@ struct CodeBlock {
 }
 
 fun main() {
+	if os.ARGS.length <= 2 {
+		eprintln('error: please provide a file to be checked')
+		exit(1)
+	}
 	file := os.ARGS[2]
 	println('Checking code blocks in ${file}...')
 	blocks := collect_code_blocks(file)
