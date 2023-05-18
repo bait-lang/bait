@@ -43,6 +43,7 @@ fun (c Checker) stmt(stmt ast.Stmt){
 	} else {
 		c.error('unexpected stmt: ${stmt}', stmt.pos)
 	}
+	c.expected_type = ast.TypeIdx.void as i32
 }
 
 fun (c Checker) assert_stmt(node ast.AssertStmt){
@@ -143,6 +144,7 @@ fun (c Checker) control_stmt(node ast.LoopControlStmt) {}
 
 fun (c Checker) return_stmt(node ast.ReturnStmt) {
 	if not node.expr is ast.EmptyExpr {
+		c.expected_type = c.cur_fun.return_type
 		c.expr(node.expr)
 	}
 }

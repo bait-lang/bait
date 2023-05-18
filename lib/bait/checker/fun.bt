@@ -7,6 +7,7 @@ import bait.errors
 import bait.token
 
 fun (c Checker) fun_decl(node ast.FunDecl) {
+	c.cur_fun = node
 	c.check_attributes(node.attrs)
 	c.open_scope()
 	c.fun_params(node.params)

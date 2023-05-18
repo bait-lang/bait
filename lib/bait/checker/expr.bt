@@ -70,7 +70,7 @@ fun (c Checker) array_init(node ast.ArrayInit) i32 {
 			typ := c.expr(e)
 			if i == 0 {
 				node.elem_type = typ
-				// node.expected_type = typ
+				c.expected_type = typ
 			}
 		}
 		node.typ = c.table.find_or_register_array(node.elem_type)
@@ -353,6 +353,7 @@ fun (c Checker) match_expr(node ast.MatchExpr) i32 {
 				cond := node.cond as ast.Ident
 				c.scope.update_type(cond.name, variant)
 			} else {
+				c.expected_type = node.cond_type
 				b.expr_types.push(c.expr(e))
 			}
 		}

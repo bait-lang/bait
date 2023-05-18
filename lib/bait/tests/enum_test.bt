@@ -7,12 +7,36 @@ enum Color {
 	blue
 }
 
-fun test_enum_assign() {
+fun get_blue() Color {
+	return .blue
+}
+
+fun test_assign() {
 	mut c := Color.green
 
 	c = Color.blue
-	assert c == Color.blue
+	assert c == .blue // Also ensures infix works
 
 	c = .red
-	assert c == Color.red
+	assert c == Color.red // Makes sure infix works with full syntax too
+}
+
+fun test_return() {
+	b := get_blue()
+	assert b == .blue
+}
+
+fun test_match() {
+	mut n := 0
+	c := Color.green
+	match c {
+		.red { assert false }
+		.green { n += 1 }
+		Color.blue { assert false }
+	}
+	assert n == 1
+}
+
+fun test_array_init() {
+	arr := [Color.blue, .green, .blue]
 }

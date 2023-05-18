@@ -13,6 +13,7 @@ struct Checker{
 	path string
 	pkg string
 	had_error bool
+	cur_fun ast.FunDecl
 	expected_type i32
 	is_lhs_assign bool
 }
