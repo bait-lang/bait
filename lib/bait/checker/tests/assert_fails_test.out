@@ -1,0 +1,28 @@
+lib/bait/checker/tests/assert_fails_test.bt:2 test_all
+assert false
+lib/bait/checker/tests/assert_fails_test.bt:3 test_all
+assert `a` != `a`
+  left:  97
+  right: 97
+lib/bait/checker/tests/assert_fails_test.bt:6 test_all
+assert s == 'bar'
+  left:  foo
+  right: bar
+lib/bait/checker/tests/assert_fails_test.bt:7 test_all
+assert s.length < 1
+  left:  3
+  right: 1
+lib/bait/checker/tests/assert_fails_test.bt:10 test_all
+assert arr == [4, 5]
+  left:  array{
+    data: 1,2,3
+    length: 3
+}
+  right: array{
+    data: 4,5
+    length: 2
+}
+lib/bait/checker/tests/assert_fails_test.bt:11 test_all
+assert arr[0] > 7
+  left:  1
+  right: 7

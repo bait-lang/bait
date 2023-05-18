@@ -41,10 +41,8 @@ fun (tr TestRunner) assert_fail_infix() {
 	tr.fails += 1
 	eprintln('${tr.file}:${tr.line} ${tr.fun_name}')
 	eprintln(tr.expr_string)
-	// if tr.exp_val.length > 0 or tr.got_val.length > 0 {
-		eprintln('   left: ${tr.exp_val}')
-		eprintln('  right: ${tr.got_val}')
-	// }
+	eprintln('  left:  ${tr.exp_val}')
+	eprintln('  right: ${tr.got_val}')
 }
 
 fun (tr TestRunner) exit_code() i32 {

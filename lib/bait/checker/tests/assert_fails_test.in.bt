@@ -1,0 +1,12 @@
+fun test_all() {
+	assert false
+	assert `a` != `a`
+
+	s := 'foo'
+	assert s == 'bar'
+	assert s.length < 1
+
+	arr := [1, 2, 3]
+	assert arr == [4, 5]
+	assert arr[0] > 7
+}

@@ -9,14 +9,27 @@ fun test_error_in_outs() {
 	in_files := os.walk_ext(in_out_dir, '.in.bt')
 
 	for file in in_files {
+		mut in_path := file
 		name_ext := os.file_name(file)
 		name := name_ext.all_before('.in.bt')
 
 		out_file := '${in_out_dir}/${name}.out'
 		assert os.exists(out_file)
 
+		mut cmd := 'build'
+		is_test := name_ext.contains('_test.in.bt')
+		if is_test {
+			cmd = 'test'
+			in_path = file.replace('.in', '')
+			os.cp(file, in_path)
+		}
+
 		expected := os.read_file(out_file)
-		res := os.exec('node ${$BAITEXE} --nocolor --script ${file}')
+		res := os.exec('node ${$BAITEXE} --nocolor --script ${cmd} ${in_path}')
 		assert expected == res.stderr
+
+		if is_test {
+			os.rm(in_path)
+		}
 	}
 }
