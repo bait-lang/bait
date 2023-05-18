@@ -2,34 +2,10 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 
 import os
+import bait.util.testing
 
 fun test_error_in_outs() {
 	tests_dir := os.dir($FILE)
 	in_out_dir := '${tests_dir}/tests'
-	in_files := os.walk_ext(in_out_dir, '.in.bt')
-
-	for file in in_files {
-		mut in_path := file
-		name_ext := os.file_name(file)
-		name := name_ext.all_before('.in.bt')
-
-		out_file := '${in_out_dir}/${name}.out'
-		assert os.exists(out_file)
-
-		mut cmd := 'build'
-		is_test := name_ext.contains('_test.in.bt')
-		if is_test {
-			cmd = 'test'
-			in_path = file.replace('.in', '')
-			os.cp(file, in_path)
-		}
-
-		expected := os.read_file(out_file)
-		res := os.exec('node ${$BAITEXE} --nocolor --script ${cmd} ${in_path}')
-		assert expected == res.stderr
-
-		if is_test {
-			os.rm(in_path)
-		}
-	}
+	testing.in_out_runner(in_out_dir)
 }
