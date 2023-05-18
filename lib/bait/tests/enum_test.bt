@@ -11,6 +11,11 @@ fun get_blue() Color {
 	return .blue
 }
 
+struct Car {
+	name string
+	color Color
+}
+
 fun test_assign() {
 	mut c := Color.green
 
@@ -38,5 +43,12 @@ fun test_match() {
 }
 
 fun test_array_init() {
-	arr := [Color.blue, .green, .blue]
+	arr := [Color.blue, .green, .red]
+}
+
+fun test_struct_init() {
+	mycar := Car{
+		name: 'Reliant Robin'
+		color: .red
+	}
 }
