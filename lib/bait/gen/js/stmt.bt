@@ -74,10 +74,13 @@ fun (g Gen) assert_stmt(node ast.AssertStmt) {
 		g.write('), from_js_string(')
 		g.expr_to_string(expr.right, expr.right_type)
 		g.writeln('))')
+		g.writeln('\tTestRunner_assert_fail_infix(test_runner)')
 	} else {
-		g.writeln('\tTestRunner_set_assert_info(test_runner, ${node.pos.line}, from_js_string(""), from_js_string(""))')
+		g.write('\tTestRunner_set_assert_info(test_runner, ${node.pos.line}, from_js_string("assert ')
+		g.assert_side_expr(node.expr)
+		g.writeln('"), from_js_string(""), from_js_string(""), from_js_string(""))')
+		g.writeln('\tTestRunner_assert_fail(test_runner)')
 	}
-	g.writeln('\tTestRunner_assert_fail(test_runner)')
 	g.writeln('}')
 }
 
