@@ -142,6 +142,7 @@ fun (p Parser) const_decl()ast.ConstDecl{
 		typ: typ
 		kind: ast.ObjectKind.constant
 		is_pub: is_pub
+		expr: expr
 	})
 	return ast.ConstDecl{
 		name: name

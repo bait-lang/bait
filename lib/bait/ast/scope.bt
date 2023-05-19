@@ -11,6 +11,7 @@ pub struct ScopeObject{
 	typ i32
 	kind ObjectKind
 	is_pub bool
+	expr Expr // Only for constants. Allows resolving their type early
 }
 
 pub enum ObjectKind {

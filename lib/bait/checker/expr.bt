@@ -270,6 +270,10 @@ fun (c Checker) ident(node ast.Ident) i32 {
 	if obj.typ == ast.PLACEHOLDER_TYPE {
 		c.error('undefined variable ${node.name}', node.pos)
 	}
+	// unresolved constant
+	if obj.typ == ast.VOID_TYPE {
+		obj.typ = c.expr(obj.expr)
+	}
 	if obj.kind == ast.ObjectKind.constant and not obj.is_pub and node.pkg != c.pkg {
 		c.error('const ${node.name} is private', node.pos)
 	}

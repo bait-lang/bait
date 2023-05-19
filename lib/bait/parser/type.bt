@@ -80,7 +80,6 @@ fun (p Parser) parse_map_type() i32 {
 }
 
 fun (p Parser) infer_expr_type(expr ast.Expr) i32 {
-	mut typ := ast.VOID_TYPE
 	match expr {
 		ast.BoolLiteral{ return ast.BOOL_TYPE }
 		ast.CharLiteral{ return ast.U8_TYPE }
@@ -90,5 +89,5 @@ fun (p Parser) infer_expr_type(expr ast.Expr) i32 {
 		ast.ArrayInit{ return expr.typ }
 		ast.MapInit{ return expr.typ }
 	}
-	return ast.PLACEHOLDER_TYPE
+	return ast.VOID_TYPE
 }
