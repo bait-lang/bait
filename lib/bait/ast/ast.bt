@@ -296,7 +296,9 @@ pub struct Attribute{
 	pos token.Pos
 }
 
-pub struct EmptyExpr{}
+pub struct EmptyExpr{
+	pos token.Pos
+}
 
 pub struct PackageDecl{
 	name string

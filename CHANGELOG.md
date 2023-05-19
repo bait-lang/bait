@@ -15,15 +15,19 @@ _unreleased_
 - Add `symlink` command that will link a helper bash script which executes bait with NodeJS
 - `up`: Actually print newest version after update
 - `self`, `build-xxx`: Always show stderr output
+- Rename `test-self` to `test-lib`
 - `gen-baitjs`: Logging improvements and fix escaping bugs
 - `build`: Add `--nocolor` option to disable colorized output
 - Add `--verbose` option and verbose output for launching tools
 - Script mode is enabled implicitly but will cause a warning
 
+### Type and Error Checking
+- Infix types must match
+- Match branch exprs must be of the same type as the condition
+- Prevent redefinition of functions and methods
+
 ### Compiler
-- New type and error checks
-  - Infix types must match
-  - Prevent redefinition of functions and methods
+- Implement short enum access without specifying the name if the type is already known
 - Colorize error messages
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`

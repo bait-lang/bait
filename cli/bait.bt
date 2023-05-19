@@ -16,7 +16,7 @@ const TOOLS := [
 	'doctor',
 	'help',
 	'test-all',
-	'test-self',
+	'test-lib',
 	'build-examples',
 	'build-tools',
 	'check-md',

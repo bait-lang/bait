@@ -339,9 +339,9 @@ fun (c Checker) match_expr(node ast.MatchExpr) i32 {
 	}
 	sym := c.table.get_sym(node.cond_type)
 	node.is_sumtype = sym.kind == ast.TypeKind.sum_type
-	for b in node.branches {
+	for branch in node.branches {
 		c.open_scope()
-		for e in b.exprs {
+		for e in branch.exprs {
 			if node.is_sumtype {
 				expr := e as ast.Ident
 				variant := c.table.type_idxs[expr.name]
@@ -354,10 +354,15 @@ fun (c Checker) match_expr(node ast.MatchExpr) i32 {
 				c.scope.update_type(cond.name, variant)
 			} else {
 				c.expected_type = node.cond_type
-				b.expr_types.push(c.expr(e))
+				expr_type := c.expr(e)
+				if not c.check_types(expr_type, node.cond_type) {
+					expr := e as ast.EmptyExpr
+					c.error('cannot match ${expr_type} to ${node.cond_type}', expr.pos)
+				}
+				branch.expr_types.push(expr_type)
 			}
 		}
-		c.stmts(b.stmts)
+		c.stmts(branch.stmts)
 		c.close_scope()
 	}
 	// TODO make an actual expression
