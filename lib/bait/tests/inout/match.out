@@ -1,0 +1,2 @@
+lib/bait/tests/inout/match.in.bt:2:5 error: cannot match 13 to 4
+lib/bait/tests/inout/match.in.bt:2:5 error: cannot match 12 to 4
