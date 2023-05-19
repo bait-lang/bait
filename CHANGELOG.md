@@ -31,6 +31,7 @@ _unreleased_
 - Colorize error messages
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`
+- Infer more constant types in parser
 - Fix escaping of
   - Double quotes in strings
   - Backticks in interpolated strings

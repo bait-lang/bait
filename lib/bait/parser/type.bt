@@ -80,17 +80,14 @@ fun (p Parser) parse_map_type() i32 {
 }
 
 fun (p Parser) infer_expr_type(expr ast.Expr) i32 {
-	mut typ := ast.TypeIdx.void as i32
 	match expr {
-		ast.StructInit{
-			typ = expr.typ
-		}
-		ast.ArrayInit{
-			typ = expr.typ
-		}
-		ast.MapInit{
-			typ = expr.typ
-		}
+		ast.BoolLiteral{ return ast.TypeIdx.bool as i32 }
+		ast.CharLiteral{ return ast.TypeIdx.u8 as i32 }
+		ast.IntegerLiteral{ return ast.TypeIdx.i32 as i32 }
+		ast.StringLiteral{ return ast.TypeIdx.string as i32 }
+		ast.StructInit{ return expr.typ }
+		ast.ArrayInit{ return expr.typ }
+		ast.MapInit{ return expr.typ }
 	}
-	return typ
+	return ast.TypeIdx.placeholder as i32
 }
