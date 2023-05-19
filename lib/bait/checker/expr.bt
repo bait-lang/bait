@@ -356,7 +356,8 @@ fun (c Checker) match_expr(node ast.MatchExpr) i32 {
 				c.expected_type = node.cond_type
 				expr_type := c.expr(e)
 				if not c.check_types(expr_type, node.cond_type) {
-					c.error('cannot match ${expr_type} to ${node.cond_type}', branch.pos)
+					expr := e as ast.EmptyExpr
+					c.error('cannot match ${expr_type} to ${node.cond_type}', expr.pos)
 				}
 				branch.expr_types.push(expr_type)
 			}
