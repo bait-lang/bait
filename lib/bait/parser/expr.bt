@@ -98,7 +98,7 @@ fun (p Parser) anon_fun()ast.AnonFun{
 	p.check(token.TokenKind.lpar)
 	params := p.fun_params()
 	p.check(token.TokenKind.rpar)
-	mut return_type := ast.TypeIdx.void as i32
+	mut return_type := ast.VOID_TYPE
 	if p.tok.kind != token.TokenKind.lcur {
 		return_type = p.parse_type()
 	}
@@ -119,8 +119,8 @@ fun (p Parser) anon_fun()ast.AnonFun{
 
 fun (p Parser) array_init()ast.ArrayInit{
 	mut exprs := []ast.Expr
-	mut elem_type := ast.TypeIdx.placeholder as i32
-	mut typ := ast.TypeIdx.array as i32
+	mut elem_type := ast.PLACEHOLDER_TYPE
+	mut typ := ast.ARRAY_TYPE
 	pos := p.tok.pos
 	p.check(token.TokenKind.lbr)
 	if p.tok.kind == token.TokenKind.rbr {

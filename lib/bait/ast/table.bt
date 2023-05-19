@@ -37,7 +37,7 @@ pub fun (t Table) register_sym(sym TypeSymbol) i32 {
 			t.type_symbols[idx] = sym
 			return idx
 		}
-		if BUILTIN_STRUCT_INDEXES.contains(idx) {
+		if BUILTIN_STRUCT_TYPES.contains(idx) {
 			mut new_sym := sym
 			new_sym.kind = cur_sym.kind
 			t.type_symbols[idx] = new_sym
@@ -61,7 +61,7 @@ pub fun (t Table) find_or_register_array(elem_type i32) i32 {
 	return t.register_sym(TypeSymbol{
 		kind: TypeKind.array
 		name: name
-		parent: TypeIdx.array as i32
+		parent: ARRAY_TYPE
 		info: ArrayInfo{
 			elem_type: elem_type
 		}
@@ -79,7 +79,7 @@ pub fun (t Table) find_or_register_map(key_type i32, val_type i32) i32 {
 	return t.register_sym(TypeSymbol{
 		kind: TypeKind.map
 		name: name
-		parent: TypeIdx.map as i32
+		parent: MAP_TYPE
 		info: MapInfo{
 			key_type: key_type
 			val_type: val_type

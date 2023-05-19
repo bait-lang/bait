@@ -117,19 +117,17 @@ fun (g Gen) main_call() {
 
 fun (g Gen) write_default_value(typ i32) {
 	match typ {
-		ast.TypeIdx.i8 as i32, ast.TypeIdx.i16 as i32,
-		ast.TypeIdx.i32 as i32, ast.TypeIdx.i64 as i32,
-		ast.TypeIdx.u8 as i32, ast.TypeIdx.u16 as i32,
-		ast.TypeIdx.u32 as i32, ast.TypeIdx.u64 as i32 {
+		ast.I8_TYPE, ast.I16_TYPE, ast.I32_TYPE, ast.I64_TYPE,
+		ast.U8_TYPE, ast.U16_TYPE, ast.U32_TYPE, ast.U64_TYPE {
 			g.write('0')
 		}
-		ast.TypeIdx.f32 as i32, ast.TypeIdx.f64 as i32 {
+		ast.F32_TYPE, ast.F64_TYPE {
 			g.write('0.0')
 		}
-		ast.TypeIdx.bool as i32 {
+		ast.BOOL_TYPE {
 			g.write('false')
 		}
-		ast.TypeIdx.string as i32 {
+		ast.STRING_TYPE {
 			g.write('from_js_string("")')
 		}
 		else {

@@ -14,11 +14,11 @@ fun (c Checker) expr(expr ast.Expr) i32 {
 	} else if expr is ast.AsCast {
 		return c.as_cast(expr)
 	} else if expr is ast.BoolLiteral {
-		return ast.TypeIdx.bool
+		return ast.BOOL_TYPE
 	} else if expr is ast.CallExpr {
 		return c.call_expr(expr)
 	} else if expr is ast.CharLiteral {
-		return ast.TypeIdx.u8
+		return ast.U8_TYPE
 	} else if expr is ast.CompTimeVar {
 		return c.comp_time_var(expr)
 	} else if expr is ast.EnumVal {
@@ -32,7 +32,7 @@ fun (c Checker) expr(expr ast.Expr) i32 {
 	} else if expr is ast.InfixExpr {
 		return c.infix_expr(expr)
 	} else if expr is ast.IntegerLiteral {
-		return ast.TypeIdx.i32
+		return ast.I32_TYPE
 	} else if expr is ast.MapInit {
 		return c.map_init(expr)
 	} else if expr is ast.MatchExpr {
@@ -95,7 +95,7 @@ fun (c Checker) call_expr(node ast.CallExpr) i32 {
 			arg.typ = c.expr(arg.expr)
 		}
 		// TODO require JS function declarations and use declared return type here
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
 	if node.is_method{
 		return c.method_call(node)
@@ -132,7 +132,7 @@ fun (c Checker) fun_call(node ast.CallExpr) i32 {
 			for arg in node.args {
 				arg.typ = c.expr(arg.expr)
 			}
-			return ast.TypeIdx.void
+			return ast.VOID_TYPE
 		}
 		for i, arg in node.args {
 			arg.typ = c.expr(arg.expr)
@@ -157,7 +157,7 @@ fun (c Checker) method_call(node ast.CallExpr) i32 {
 	def := c.table.get_method(left_sym, node.name)
 	if def.name.length == 0 {
 		c.error('method ${node.name} not found on type ${left_sym.name}', node.pos)
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
 	if not def.is_pub and left_sym.pkg != c.pkg {
 		c.error('method ${def.name} is private', node.pos)
@@ -228,7 +228,7 @@ fun (c Checker) comp_time_var(node ast.CompTimeVar) i32 {
 	if not SUPPORTED_COMPTIME_VARS.contains(node.name) {
 		c.error('unsupported comptime var "${node.name}"', node.pos)
 	}
-	return ast.TypeIdx.string
+	return ast.STRING_TYPE
 }
 
 fun (c Checker) enum_val(node ast.EnumVal) i32 {
@@ -240,16 +240,16 @@ fun (c Checker) enum_val(node ast.EnumVal) i32 {
 	sym := c.table.get_sym(node.typ)
 	if sym.kind == ast.TypeKind.placeholder {
 		c.error('undefined enum ${node.name}', node.pos)
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
 	if not sym.is_pub and sym.name.contains('.') and sym.pkg != c.pkg {
 		c.error('enum ${sym.name} is private', node.pos)
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
 	info := sym.info as ast.EnumInfo
 	if not info.vals.contains(node.val) {
 		c.error('enum ${sym.name} has no value ${node.val}', node.pos)
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
 	node.name = sym.name
 	return node.typ
@@ -257,17 +257,17 @@ fun (c Checker) enum_val(node ast.EnumVal) i32 {
 
 fun (c Checker) ident(node ast.Ident) i32 {
 	if node.lang == 'js' {
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
 	mut obj := c.scope.get(node.name)
-	if obj.typ != ast.TypeIdx.placeholder as i32 {
+	if obj.typ != ast.PLACEHOLDER_TYPE {
 		return obj.typ
 	}
 	if not node.name.contains('.') and node.pkg != 'builtin' and node.pkg != 'main' {
 		node.name = node.pkg + '.' + node.name
 	}
 	obj = c.table.global_scope.get(node.name)
-	if obj.typ == ast.TypeIdx.placeholder as i32 {
+	if obj.typ == ast.PLACEHOLDER_TYPE {
 		c.error('undefined variable ${node.name}', node.pos)
 	}
 	if obj.kind == ast.ObjectKind.constant and not obj.is_pub and node.pkg != c.pkg {
@@ -286,7 +286,7 @@ fun (c Checker) if_expr(node ast.IfExpr) i32 {
 		c.close_scope()
 	}
 	// TODO make an actual expression
-	return ast.TypeIdx.void
+	return ast.VOID_TYPE
 }
 
 fun (c Checker) index_expr(node ast.IndexExpr) i32 {
@@ -304,9 +304,9 @@ fun (c Checker) index_expr(node ast.IndexExpr) i32 {
 	if sym.kind == ast.TypeKind.string {
 		if c.is_lhs_assign{
 			c.error('cannot assign to string index', node.pos)
-			return ast.TypeIdx.void
+			return ast.VOID_TYPE
 		}
-		return ast.TypeIdx.u8
+		return ast.U8_TYPE
 	}
 	return node.left_type
 }
@@ -335,7 +335,7 @@ fun (c Checker) match_expr(node ast.MatchExpr) i32 {
 	node.cond_type = c.expr(node.cond)
 	if node.branches.length == 0 {
 		c.error('match expression must have at least one branch', node.pos)
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
 	sym := c.table.get_sym(node.cond_type)
 	node.is_sumtype = sym.kind == ast.TypeKind.sum_type
@@ -366,7 +366,7 @@ fun (c Checker) match_expr(node ast.MatchExpr) i32 {
 		c.close_scope()
 	}
 	// TODO make an actual expression
-	return ast.TypeIdx.void
+	return ast.VOID_TYPE
 }
 
 fun (c Checker) par_expr(node ast.ParExpr) i32 {
@@ -389,24 +389,24 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) i32 {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
 			c.error('${sym.name} has no field ${node.field_name}', node.pos)
-			return ast.TypeIdx.void
+			return ast.VOID_TYPE
 		}
 		return field.typ
 	}
 	if sym.kind == ast.TypeKind.sum_type {
 		// TODO check if field is present on all variants (with same type)
 		c.error('cast to the variant before accessing field of sumtype ${sym.name}', node.pos)
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
 	// TODO other variants of selector expr
-	return ast.TypeIdx.any
+	return ast.ANY_TYPE
 }
 
 fun (c Checker) string_literal(node ast.StringLiteral) i32 {
 	if node.lang != 'bait' {
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
-	return ast.TypeIdx.string
+	return ast.STRING_TYPE
 }
 
 fun (c Checker) string_inter_literal(node ast.StringInterLiteral) i32 {
@@ -414,18 +414,18 @@ fun (c Checker) string_inter_literal(node ast.StringInterLiteral) i32 {
 		typ := c.expr(e)
 		node.expr_types.push(typ)
 	}
-	return ast.TypeIdx.string
+	return ast.STRING_TYPE
 }
 
 fun (c Checker) struct_init(node ast.StructInit) i32 {
 	sym := c.table.get_sym(node.typ)
 	if sym.kind == ast.TypeKind.placeholder {
 		c.error('undefined struct ${node.name}', node.pos)
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
 	if not sym.is_pub and sym.name.contains('.') and sym.pkg != c.pkg {
 		c.error('struct ${sym.name} is private', node.pos)
-		return ast.TypeIdx.void
+		return ast.VOID_TYPE
 	}
 	node.name = sym.name
 	for field in node.fields {
@@ -445,5 +445,5 @@ fun (c Checker) struct_init(node ast.StructInit) i32 {
 fun (c Checker) type_of(node ast.TypeOf) i32 {
 	typ := c.expr(node.expr)
 	node.typ = typ
-	return ast.TypeIdx.string
+	return ast.STRING_TYPE
 }

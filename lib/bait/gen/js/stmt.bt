@@ -121,7 +121,7 @@ fun (g Gen) assign_stmt(node ast.AssignStmt){
 			g.write('const ')
 		}
 	}
-	if node.left_type == ast.TypeIdx.string as i32 {
+	if node.left_type == ast.STRING_TYPE {
 		if node.op == token.TokenKind.plus_assign {
 			g.expr(node.left)
 			g.write(' = ')

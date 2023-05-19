@@ -16,7 +16,7 @@ fun (c Checker) infix_expr(node ast.InfixExpr) i32 {
 		c.error('infix expr: types ${node.right_type} and ${node.left_type} do not match', node.pos)
 	}
 	if node.op.is_compare() {
-		return ast.TypeIdx.bool
+		return ast.BOOL_TYPE
 	}
 	return node.left_type
 }
@@ -41,5 +41,5 @@ fun (c Checker) is_sumtype_variant_infix(node ast.InfixExpr) i32 {
 		name := (left.expr as ast.Ident).name + '.' + left.field_name
 		c.scope.update_type(name, node.right_type)
 	}
-	return ast.TypeIdx.bool
+	return ast.BOOL_TYPE
 }

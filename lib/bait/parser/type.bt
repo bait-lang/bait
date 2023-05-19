@@ -29,19 +29,19 @@ fun (p Parser) parse_type() i32 {
 		name = p.prepend_pkg(name)
 	}
 	match name{
-		'i8' { return ast.TypeIdx.i8 }
-		'i16' { return ast.TypeIdx.i16 }
-		'i32' { return ast.TypeIdx.i32 }
-		'i64' { return ast.TypeIdx.i64 }
-		'u8' { return ast.TypeIdx.u8 }
-		'u16' { return ast.TypeIdx.u16 }
-		'u32' { return ast.TypeIdx.u32 }
-		'u64' { return ast.TypeIdx.u64 }
-		'f32' { return ast.TypeIdx.f32 }
-		'f64' { return ast.TypeIdx.f64 }
-		'bool' { return ast.TypeIdx.bool }
-		'string' { return ast.TypeIdx.string }
-		'any' { return ast.TypeIdx.any }
+		'i8' { return ast.I8_TYPE }
+		'i16' { return ast.I16_TYPE }
+		'i32' { return ast.I32_TYPE }
+		'i64' { return ast.I64_TYPE }
+		'u8' { return ast.U8_TYPE }
+		'u16' { return ast.U16_TYPE }
+		'u32' { return ast.U32_TYPE }
+		'u64' { return ast.U64_TYPE }
+		'f32' { return ast.F32_TYPE }
+		'f64' { return ast.F64_TYPE }
+		'bool' { return ast.BOOL_TYPE }
+		'string' { return ast.STRING_TYPE }
+		'any' { return ast.ANY_TYPE }
 	}
 	return p.table.find_type_or_add_placeholder(name)
 }
@@ -58,7 +58,7 @@ fun (p Parser) parse_fun_type() i32 {
 		}
 	}
 	p.check(token.TokenKind.rpar)
-	mut return_type := ast.TypeIdx.void as i32
+	mut return_type := ast.VOID_TYPE
 	if p.tok.pos.line == p.prev_tok.pos.line {
 		return_type = p.parse_type()
 	}
@@ -67,11 +67,11 @@ fun (p Parser) parse_fun_type() i32 {
 
 fun (p Parser) parse_map_type() i32 {
 	if p.tok.kind == token.TokenKind.rpar and p.pkg_name == 'builtin' {
-		return ast.TypeIdx.map
+		return ast.MAP_TYPE
 	}
 	p.check(token.TokenKind.lbr)
 	key_type := p.parse_type()
-	if key_type != ast.TypeIdx.string as i32 {
+	if key_type != ast.STRING_TYPE {
 		p.error('map key type must be string')
 	}
 	p.check(token.TokenKind.rbr)
@@ -80,14 +80,15 @@ fun (p Parser) parse_map_type() i32 {
 }
 
 fun (p Parser) infer_expr_type(expr ast.Expr) i32 {
+	mut typ := ast.VOID_TYPE
 	match expr {
-		ast.BoolLiteral{ return ast.TypeIdx.bool as i32 }
-		ast.CharLiteral{ return ast.TypeIdx.u8 as i32 }
-		ast.IntegerLiteral{ return ast.TypeIdx.i32 as i32 }
-		ast.StringLiteral{ return ast.TypeIdx.string as i32 }
+		ast.BoolLiteral{ return ast.BOOL_TYPE }
+		ast.CharLiteral{ return ast.U8_TYPE }
+		ast.IntegerLiteral{ return ast.I32_TYPE }
+		ast.StringLiteral{ return ast.STRING_TYPE }
 		ast.StructInit{ return expr.typ }
 		ast.ArrayInit{ return expr.typ }
 		ast.MapInit{ return expr.typ }
 	}
-	return ast.TypeIdx.placeholder as i32
+	return ast.PLACEHOLDER_TYPE
 }

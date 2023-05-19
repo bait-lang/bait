@@ -243,7 +243,7 @@ fun (g Gen) index_expr(node ast.IndexExpr){
 }
 
 fun (g Gen) infix_expr(node ast.InfixExpr){
-	if node.left_type == ast.TypeIdx.string as i32 {
+	if node.left_type == ast.STRING_TYPE {
 		if node.op == token.TokenKind.plus {
 			g.write('string_add(')
 			g.expr(node.left)
@@ -264,7 +264,7 @@ fun (g Gen) infix_expr(node ast.InfixExpr){
 			return
 		}
 	}
-	if node.left_type == ast.TypeIdx.u8 as i32 {
+	if node.left_type == ast.U8_TYPE {
 		if node.op == token.TokenKind.plus {
 			g.write('u8_add(')
 			g.expr(node.left)
@@ -310,9 +310,9 @@ fun (g Gen) match_expr(node ast.MatchExpr){
 	}
 	g.write('switch (')
 	g.expr(node.cond)
-	if node.cond_type == ast.TypeIdx.string as i32 {
+	if node.cond_type == ast.STRING_TYPE {
 		g.write('.str')
-	} else if node.cond_type == ast.TypeIdx.u8 as i32 {
+	} else if node.cond_type == ast.U8_TYPE {
 		g.write('.val')
 	}
 	g.writeln(') {')
@@ -323,9 +323,9 @@ fun (g Gen) match_expr(node ast.MatchExpr){
 		} else {
 			for i, e in b.exprs {
 				g.write("case ")
-				if node.cond_type == ast.TypeIdx.string as i32 {
+				if node.cond_type == ast.STRING_TYPE {
 					g.expr_to_string(e, b.expr_types[i])
-				} else if node.cond_type == ast.TypeIdx.u8 as i32 {
+				} else if node.cond_type == ast.U8_TYPE {
 					g.expr(e)
 					g.write('.val')
 				} else {

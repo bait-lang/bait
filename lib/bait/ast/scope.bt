@@ -35,7 +35,7 @@ pub fun (s Scope) get(name string) ScopeObject {
 		return s.parent.get(name)
 	}
 	return ScopeObject{
-		typ: TypeIdx.placeholder as i32
+		typ: PLACEHOLDER_TYPE
 	}
 }
 
@@ -45,5 +45,5 @@ pub fun (s Scope) update_type(name string, typ i32) {
 
 pub fun (s Scope) is_known(name string) bool {
 	obj := s.get(name)
-	return obj.typ != TypeIdx.placeholder as i32
+	return obj.typ != PLACEHOLDER_TYPE
 }
