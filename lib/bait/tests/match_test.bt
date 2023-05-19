@@ -1,0 +1,19 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+type Int := i32
+
+const INT_1 := 1 as Int
+const INT_5 := 5 as Int
+
+fun test_type_alias(){
+	mut a := 0
+
+	i := 5 as Int
+	match i {
+		INT_1 { assert false }
+		INT_5 { a += 1 }
+	}
+
+	assert a == 1
+}

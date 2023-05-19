@@ -33,6 +33,7 @@ pub enum TypeKind {
 	map
 	struct_
 	enum_
+	alias_type
 	sum_type
 	fun_
 }

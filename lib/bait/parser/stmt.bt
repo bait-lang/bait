@@ -413,13 +413,14 @@ fun (p Parser) type_decl() ast.TypeDecl {
 			pos: pos
 		}
 	}
+	mut kind := ast.TypeKind.alias_type
 	for p.tok.kind == token.TokenKind.pipe {
 		p.next()
 		variants.push(p.parse_type())
+		kind = ast.TypeKind.sum_type
 	}
-	// TODO differentiate sumtype from alias (single variant)
 	typ := p.table.register_sym(ast.TypeSymbol{
-		kind: ast.TypeKind.sum_type
+		kind: kind
 		name: name
 		is_pub: is_pub
 		pkg: p.pkg_name
