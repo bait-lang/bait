@@ -22,8 +22,8 @@ jobs:
         run: bait build-tools
       - name: Build examples
         run: bait build-examples
-      - name: Run tests
-        run: bait test-self
+      - name: Run lib and compiler tests
+        run: bait test-lib
       - name: Check markdown code blocks
         run: |
           bait check-md docs/docs.md
