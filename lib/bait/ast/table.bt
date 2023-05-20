@@ -20,17 +20,17 @@ pub fun new_table() Table {
 	return t
 }
 
-pub fun (t Table) get_idx(name string) i32 {
+pub fun (t Table) get_idx(name string) Type {
 	return t.type_idxs[name]
 }
 
-pub fun (t Table) get_sym(idx i32) TypeSymbol {
+pub fun (t Table) get_sym(idx Type) TypeSymbol {
 	return t.type_symbols[idx]
 }
 
-pub fun (t Table) register_sym(sym TypeSymbol) i32 {
+pub fun (t Table) register_sym(sym TypeSymbol) Type {
 	idx := t.get_idx(sym.name)
-	if idx > 0 {
+	if idx > 0 as Type {
 		cur_sym := t.get_sym(idx)
 		if cur_sym.kind == TypeKind.placeholder {
 			sym.methods = cur_sym.methods
@@ -51,11 +51,11 @@ pub fun (t Table) register_sym(sym TypeSymbol) i32 {
 	return new_idx
 }
 
-pub fun (t Table) find_or_register_array(elem_type i32) i32 {
+pub fun (t Table) find_or_register_array(elem_type Type) Type {
 	elem_sym := t.get_sym(elem_type)
 	name := '[]' + elem_sym.name
 	idx := t.get_idx(name)
-	if idx > 0 {
+	if idx > 0 as Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
@@ -68,12 +68,12 @@ pub fun (t Table) find_or_register_array(elem_type i32) i32 {
 	})
 }
 
-pub fun (t Table) find_or_register_map(key_type i32, val_type i32) i32 {
+pub fun (t Table) find_or_register_map(key_type Type, val_type Type) Type {
 	key_sym := t.get_sym(key_type)
 	val_sym := t.get_sym(val_type)
 	name := 'map[${key_sym.name}]${val_sym.name}'
 	idx := t.get_idx(name)
-	if idx > 0 {
+	if idx > 0 as Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
@@ -87,10 +87,10 @@ pub fun (t Table) find_or_register_map(key_type i32, val_type i32) i32 {
 	})
 }
 
-pub fun (t Table) find_or_register_fun(param_types []i32, return_type i32) i32 {
+pub fun (t Table) find_or_register_fun(param_types []Type, return_type Type) Type {
 	name := 'fun_' + t.fun_type_signature(param_types, return_type)
 	idx := t.get_idx(name)
-	if idx > 0 {
+	if idx > 0 as Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
@@ -103,7 +103,7 @@ pub fun (t Table) find_or_register_fun(param_types []i32, return_type i32) i32 {
 	})
 }
 
-pub fun (t Table) fun_type_signature(param_types []i32, return_type i32) string {
+pub fun (t Table) fun_type_signature(param_types []Type, return_type Type) string {
 	mut sig := ''
 	for param in param_types {
 		sig += t.get_sym(param).name + '_'
@@ -112,9 +112,9 @@ pub fun (t Table) fun_type_signature(param_types []i32, return_type i32) string 
 	return sig
 }
 
-pub fun (t Table) find_type_or_add_placeholder(name string) i32 {
+pub fun (t Table) find_type_or_add_placeholder(name string) Type {
 	idx := t.get_idx(name)
-	if idx > 0 {
+	if idx > 0 as Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
@@ -132,7 +132,7 @@ pub fun (t Table) get_method(sym TypeSymbol, name string) FunDecl {
 				return m
 			}
 		}
-		if s.parent == 0 {
+		if s.parent == PLACEHOLDER_TYPE {
 			break
 		}
 		s = t.get_sym(s.parent)

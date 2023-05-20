@@ -16,9 +16,9 @@ pub struct AssertStmt {
 pub struct AssignStmt{
 	op token.TokenKind
 	left Expr
-	left_type i32
+	left_type Type
 	right Expr
-	right_type i32
+	right_type Type
 	pos token.Pos
 }
 
@@ -56,7 +56,7 @@ pub struct ForInLoop{
 	idxvar string
 	valvar string
 	expr Expr
-	expr_type i32
+	expr_type Type
 	stmts []Stmt
 	pos token.Pos
 }
@@ -64,9 +64,9 @@ pub struct ForInLoop{
 pub struct AnonFun{
 	params []Param
 	stmts []Stmt
-	return_type i32
+	return_type Type
 	name string
-	typ i32
+	typ Type
 	pos token.Pos
 }
 
@@ -75,7 +75,7 @@ pub struct FunDecl{
 	name string
 	params []Param
 	stmts []Stmt
-	return_type i32
+	return_type Type
 	is_method bool
 	is_test bool
 	attrs []Attribute
@@ -84,7 +84,7 @@ pub struct FunDecl{
 
 pub struct Param{
 	name string
-	typ i32
+	typ Type
 }
 
 pub struct LoopControlStmt{
@@ -105,33 +105,33 @@ pub struct ReturnStmt{
 
 pub struct StructDecl{
 	name string
-	typ i32
+	typ Type
 	fields []StructField
 	pos token.Pos
 }
 
 pub struct StructField{
 	name string
-	typ i32
+	typ Type
 }
 
 pub struct TypeDecl {
 	name string
-	typ i32
+	typ Type
 	pos token.Pos
 }
 
 pub struct ArrayInit{
 	exprs []Expr
-	typ i32
-	elem_type i32
+	typ Type
+	elem_type Type
 	pos token.Pos
 }
 
 pub struct AsCast{
 	expr Expr
-	expr_type i32
-	target i32
+	expr_type Type
+	target Type
 	pos token.Pos
 }
 
@@ -144,17 +144,17 @@ pub struct CallExpr{
 	name string
 	args []CallArg
 	lang string
-	return_type i32
+	return_type Type
 	is_method bool
 	left Expr
-	left_type i32
+	left_type Type
 	pkg string
 	pos token.Pos
 }
 
 pub struct CallArg {
 	expr Expr
-	typ i32
+	typ Type
 }
 
 pub struct CharLiteral{
@@ -170,7 +170,7 @@ pub struct CompTimeVar{
 pub struct EnumVal {
 	name string
 	val string
-	typ i32
+	typ Type
 	pos token.Pos
 }
 
@@ -197,16 +197,16 @@ pub struct IfBranch{
 pub struct IndexExpr{
 	left Expr
 	index Expr
-	left_type i32
+	left_type Type
 	is_selector bool
 	pos token.Pos
 }
 
 pub struct InfixExpr{
 	left Expr
-	left_type i32
+	left_type Type
 	right Expr
-	right_type i32
+	right_type Type
 	op token.TokenKind
 	pos token.Pos
 }
@@ -218,7 +218,7 @@ pub struct IntegerLiteral{
 
 pub struct MatchExpr{
 	cond Expr
-	cond_type i32
+	cond_type Type
 	branches []MatchBranch
 	is_sumtype bool
 	pos token.Pos
@@ -226,15 +226,15 @@ pub struct MatchExpr{
 
 pub struct MatchBranch{
 	exprs []Expr
-	expr_types []i32
+	expr_types []Type
 	stmts []Stmt
 	pos token.Pos
 }
 
 pub struct MapInit{
-	typ i32
-	key_type i32
-	val_type i32
+	typ Type
+	key_type Type
+	val_type Type
 	keys []Expr
 	vals []Expr
 	pos token.Pos
@@ -266,13 +266,13 @@ pub struct StringLiteral{
 pub struct StringInterLiteral{
 	vals []string
 	exprs []Expr
-	expr_types []i32
+	expr_types []Type
 	pos token.Pos
 }
 
 pub struct StructInit{
 	name string
-	typ i32
+	typ Type
 	fields []StructInitField
 	pos token.Pos
 }
@@ -285,7 +285,7 @@ pub struct StructInitField{
 
 pub struct TypeOf {
 	expr Expr
-	typ i32
+	typ Type
 	pos token.Pos
 }
 

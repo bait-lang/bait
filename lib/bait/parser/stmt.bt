@@ -294,7 +294,7 @@ fun (p Parser) fun_decl()ast.FunDecl{
 			p.table.redefined_funs.push(name)
 		}
 		p.table.fun_decls[name] = node
-		mut param_types := []i32
+		mut param_types := []ast.Type
 		for param in params {
 			param_types.push(param.typ)
 		}
@@ -396,7 +396,7 @@ fun (p Parser) type_decl() ast.TypeDecl {
 	name := p.prepend_pkg(p.check_name())
 	p.check(token.TokenKind.decl_assign)
 	is_fun_type := p.tok.kind == token.TokenKind.key_fun
-	mut variants := []i32
+	mut variants := []ast.Type
 	variants.push(p.parse_type())
 
 	// Function type

@@ -8,7 +8,7 @@ pub struct Scope {
 }
 
 pub struct ScopeObject{
-	typ i32
+	typ Type
 	kind ObjectKind
 	is_pub bool
 	expr Expr // Only for constants. Allows resolving their type early
@@ -40,7 +40,7 @@ pub fun (s Scope) get(name string) ScopeObject {
 	}
 }
 
-pub fun (s Scope) update_type(name string, typ i32) {
+pub fun (s Scope) update_type(name string, typ Type) {
 	s.objects[name].typ = typ
 }
 

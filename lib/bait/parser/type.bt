@@ -5,7 +5,7 @@ package parser
 import bait.ast
 import bait.token
 
-fun (p Parser) parse_type() i32 {
+fun (p Parser) parse_type() ast.Type {
 	if p.tok.kind == token.TokenKind.lbr{
 		p.next()
 		p.check(token.TokenKind.rbr)
@@ -46,10 +46,10 @@ fun (p Parser) parse_type() i32 {
 	return p.table.find_type_or_add_placeholder(name)
 }
 
-fun (p Parser) parse_fun_type() i32 {
+fun (p Parser) parse_fun_type() ast.Type {
 	p.next()
 	p.check(token.TokenKind.lpar)
-	mut param_types := []i32
+	mut param_types := []ast.Type
 	for p.tok.kind != token.TokenKind.rpar{
 		typ := p.parse_type()
 		param_types.push(typ)
@@ -65,7 +65,7 @@ fun (p Parser) parse_fun_type() i32 {
 	return p.table.find_or_register_fun(param_types, return_type)
 }
 
-fun (p Parser) parse_map_type() i32 {
+fun (p Parser) parse_map_type() ast.Type {
 	if p.tok.kind == token.TokenKind.rpar and p.pkg_name == 'builtin' {
 		return ast.MAP_TYPE
 	}
@@ -79,7 +79,7 @@ fun (p Parser) parse_map_type() i32 {
 	return p.table.find_or_register_map(key_type, val_type)
 }
 
-fun (p Parser) infer_expr_type(expr ast.Expr) i32 {
+fun (p Parser) infer_expr_type(expr ast.Expr) ast.Type {
 	match expr {
 		ast.BoolLiteral{ return ast.BOOL_TYPE }
 		ast.CharLiteral{ return ast.U8_TYPE }

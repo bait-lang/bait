@@ -14,7 +14,7 @@ struct Checker{
 	pkg string
 	had_error bool
 	cur_fun ast.FunDecl
-	expected_type i32
+	expected_type ast.Type
 	is_lhs_assign bool
 }
 

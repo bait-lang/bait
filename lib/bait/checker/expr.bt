@@ -6,7 +6,7 @@ import bait.ast
 import bait.errors
 import bait.token
 
-fun (c Checker) expr(expr ast.Expr) i32 {
+fun (c Checker) expr(expr ast.Expr) ast.Type {
 	if expr is ast.AnonFun {
 		return c.anon_fun(expr)
 	} else if expr is ast.ArrayInit {
@@ -56,7 +56,7 @@ fun (c Checker) expr(expr ast.Expr) i32 {
 	}
 }
 
-fun (c Checker) anon_fun(node ast.AnonFun) i32 {
+fun (c Checker) anon_fun(node ast.AnonFun) ast.Type {
 	c.open_scope()
 	c.fun_params(node.params)
 	c.stmts(node.stmts)
@@ -64,7 +64,7 @@ fun (c Checker) anon_fun(node ast.AnonFun) i32 {
 	return node.typ
 }
 
-fun (c Checker) array_init(node ast.ArrayInit) i32 {
+fun (c Checker) array_init(node ast.ArrayInit) ast.Type {
 	if node.exprs.length > 0 {
 		for i, e in node.exprs {
 			typ := c.expr(e)
@@ -78,7 +78,7 @@ fun (c Checker) array_init(node ast.ArrayInit) i32 {
 	return node.typ
 }
 
-fun (c Checker) as_cast(node ast.AsCast) i32 {
+fun (c Checker) as_cast(node ast.AsCast) ast.Type {
 	// TODO check if expr is part of target
 	expr_type := c.expr(node.expr)
 	node.expr_type = expr_type
@@ -89,7 +89,7 @@ fun (c Checker) as_cast(node ast.AsCast) i32 {
 	return node.target
 }
 
-fun (c Checker) call_expr(node ast.CallExpr) i32 {
+fun (c Checker) call_expr(node ast.CallExpr) ast.Type {
 	if node.lang == 'js' {
 		for arg in node.args {
 			arg.typ = c.expr(arg.expr)
@@ -103,7 +103,7 @@ fun (c Checker) call_expr(node ast.CallExpr) i32 {
 	return c.fun_call(node)
 }
 
-fun (c Checker) fun_call(node ast.CallExpr) i32 {
+fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
 	mut found := c.table.fun_decls.contains(node.name)
 	if not found and not node.name.contains('.') and node.pkg != 'builtin' {
 		full_name := node.pkg + '.' + node.name
@@ -151,7 +151,7 @@ fun (c Checker) fun_call(node ast.CallExpr) i32 {
 	return node.return_type
 }
 
-fun (c Checker) method_call(node ast.CallExpr) i32 {
+fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 	left_expr_type := c.expr(node.left)
 	left_sym := c.table.get_sym(left_expr_type)
 	def := c.table.get_method(left_sym, node.name)
@@ -224,14 +224,14 @@ const SUPPORTED_COMPTIME_VARS := [
 	'BAITHASH',
 ]
 
-fun (c Checker) comp_time_var(node ast.CompTimeVar) i32 {
+fun (c Checker) comp_time_var(node ast.CompTimeVar) ast.Type {
 	if not SUPPORTED_COMPTIME_VARS.contains(node.name) {
 		c.error('unsupported comptime var "${node.name}"', node.pos)
 	}
 	return ast.STRING_TYPE
 }
 
-fun (c Checker) enum_val(node ast.EnumVal) i32 {
+fun (c Checker) enum_val(node ast.EnumVal) ast.Type {
 	if node.name.length == 0 {
 		node.typ = c.expected_type
 	} else {
@@ -255,7 +255,7 @@ fun (c Checker) enum_val(node ast.EnumVal) i32 {
 	return node.typ
 }
 
-fun (c Checker) ident(node ast.Ident) i32 {
+fun (c Checker) ident(node ast.Ident) ast.Type {
 	if node.lang == 'js' {
 		return ast.VOID_TYPE
 	}
@@ -280,7 +280,7 @@ fun (c Checker) ident(node ast.Ident) i32 {
 	return obj.typ
 }
 
-fun (c Checker) if_expr(node ast.IfExpr) i32 {
+fun (c Checker) if_expr(node ast.IfExpr) ast.Type {
 	for i, b in node.branches {
 		if not node.has_else or i < node.branches.length - 1 {
 			c.expr(b.cond)
@@ -293,7 +293,7 @@ fun (c Checker) if_expr(node ast.IfExpr) i32 {
 	return ast.VOID_TYPE
 }
 
-fun (c Checker) index_expr(node ast.IndexExpr) i32 {
+fun (c Checker) index_expr(node ast.IndexExpr) ast.Type {
 	node.left_type = c.expr(node.left)
 	c.expr(node.index)
 	sym := c.table.get_sym(node.left_type)
@@ -315,7 +315,7 @@ fun (c Checker) index_expr(node ast.IndexExpr) i32 {
 	return node.left_type
 }
 
-fun (c Checker) map_init(node ast.MapInit) i32 {
+fun (c Checker) map_init(node ast.MapInit) ast.Type {
 	if node.keys.length > 0 {
 		for i, key in node.keys {
 			key_type := c.expr(key)
@@ -335,7 +335,7 @@ fun (c Checker) map_init(node ast.MapInit) i32 {
 	return node.typ
 }
 
-fun (c Checker) match_expr(node ast.MatchExpr) i32 {
+fun (c Checker) match_expr(node ast.MatchExpr) ast.Type {
 	node.cond_type = c.expr(node.cond)
 	if node.branches.length == 0 {
 		c.error('match expression must have at least one branch', node.pos)
@@ -348,7 +348,7 @@ fun (c Checker) match_expr(node ast.MatchExpr) i32 {
 		for e in branch.exprs {
 			if node.is_sumtype {
 				expr := e as ast.Ident
-				variant := c.table.type_idxs[expr.name]
+				variant := c.table.get_idx(expr.name)
 				info := sym.info as ast.SumTypeInfo
 				if not info.variants.contains(variant) {
 					c.error('sum type ${sym.name} has no variant ${expr.name}', expr.pos)
@@ -373,16 +373,16 @@ fun (c Checker) match_expr(node ast.MatchExpr) i32 {
 	return ast.VOID_TYPE
 }
 
-fun (c Checker) par_expr(node ast.ParExpr) i32 {
+fun (c Checker) par_expr(node ast.ParExpr) ast.Type {
 	return c.expr(node.expr)
 }
 
-fun (c Checker) prefix_expr(node ast.PrefixExpr) i32 {
+fun (c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
 	typ := c.expr(node.right)
 	return typ
 }
 
-fun (c Checker) selector_expr(node ast.SelectorExpr) i32 {
+fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 	if node.expr is ast.IndexExpr {
 		expr := node.expr as ast.IndexExpr
 		expr.is_selector = true
@@ -406,14 +406,14 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) i32 {
 	return ast.ANY_TYPE
 }
 
-fun (c Checker) string_literal(node ast.StringLiteral) i32 {
+fun (c Checker) string_literal(node ast.StringLiteral) ast.Type {
 	if node.lang != 'bait' {
 		return ast.VOID_TYPE
 	}
 	return ast.STRING_TYPE
 }
 
-fun (c Checker) string_inter_literal(node ast.StringInterLiteral) i32 {
+fun (c Checker) string_inter_literal(node ast.StringInterLiteral) ast.Type {
 	for e in node.exprs {
 		typ := c.expr(e)
 		node.expr_types.push(typ)
@@ -421,7 +421,7 @@ fun (c Checker) string_inter_literal(node ast.StringInterLiteral) i32 {
 	return ast.STRING_TYPE
 }
 
-fun (c Checker) struct_init(node ast.StructInit) i32 {
+fun (c Checker) struct_init(node ast.StructInit) ast.Type {
 	sym := c.table.get_sym(node.typ)
 	if sym.kind == ast.TypeKind.placeholder {
 		c.error('undefined struct ${node.name}', node.pos)
@@ -446,7 +446,7 @@ fun (c Checker) struct_init(node ast.StructInit) i32 {
 	return node.typ
 }
 
-fun (c Checker) type_of(node ast.TypeOf) i32 {
+fun (c Checker) type_of(node ast.TypeOf) ast.Type {
 	typ := c.expr(node.expr)
 	node.typ = typ
 	return ast.STRING_TYPE
