@@ -26,6 +26,10 @@ pub fun new_type(t i32) Type {
 	return t as Type
 }
 
+pub fun (t Type) str() string {
+	return (t as i32).str()
+}
+
 const BUILTIN_STRUCT_TYPES := [
 	STRING_TYPE,
 	ARRAY_TYPE,
