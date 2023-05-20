@@ -115,7 +115,7 @@ fun (g Gen) main_call() {
 }
 
 
-fun (g Gen) write_default_value(typ i32) {
+fun (g Gen) write_default_value(typ ast.Type) {
 	match typ {
 		ast.I8_TYPE, ast.I16_TYPE, ast.I32_TYPE, ast.I64_TYPE,
 		ast.U8_TYPE, ast.U16_TYPE, ast.U32_TYPE, ast.U64_TYPE {

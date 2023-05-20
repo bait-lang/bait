@@ -438,7 +438,7 @@ fun (g Gen) type_of(node ast.TypeOf) {
 	g.write('"' + sym.name + '"')
 }
 
-fun (g Gen) expr_to_string(expr ast.Expr, typ i32) {
+fun (g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 	sym := g.table.get_sym(typ)
 	if sym.kind == ast.TypeKind.string {
 		g.expr(expr)

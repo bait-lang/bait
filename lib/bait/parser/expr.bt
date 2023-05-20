@@ -102,7 +102,7 @@ fun (p Parser) anon_fun()ast.AnonFun{
 	if p.tok.kind != token.TokenKind.lcur {
 		return_type = p.parse_type()
 	}
-	mut param_types := []i32
+	mut param_types := []ast.Type
 	for param in params {
 		param_types.push(param.typ)
 	}

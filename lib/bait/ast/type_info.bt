@@ -5,7 +5,7 @@ package ast
 pub type TypeInfo := ArrayInfo | EnumInfo | FunInfo | MapInfo | StructInfo | SumTypeInfo | EmptyInfo
 
 pub struct ArrayInfo{
-	elem_type i32
+	elem_type Type
 }
 
 pub struct EnumInfo {
@@ -13,13 +13,13 @@ pub struct EnumInfo {
 }
 
 pub struct FunInfo{
-	param_types []i32
-	return_type i32
+	param_types []Type
+	return_type Type
 }
 
 pub struct MapInfo{
-	key_type i32
-	val_type i32
+	key_type Type
+	val_type Type
 }
 
 pub struct StructInfo{
@@ -27,7 +27,7 @@ pub struct StructInfo{
 }
 
 pub struct SumTypeInfo{
-	variants []i32
+	variants []Type
 }
 
 pub struct EmptyInfo{}
