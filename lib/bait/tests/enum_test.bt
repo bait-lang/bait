@@ -11,6 +11,8 @@ fun get_blue() Color {
 	return .blue
 }
 
+fun set_color(c Color, val i32) {}
+
 struct Car {
 	name string
 	color Color
@@ -51,4 +53,9 @@ fun test_struct_init() {
 		name: 'Reliant Robin'
 		color: .red
 	}
+}
+
+fun test_fun_call() {
+	set_color(Color.red, 255)
+	set_color(.green, 0)
 }

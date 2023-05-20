@@ -123,25 +123,24 @@ fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
 		if not def.is_pub and node.pkg != c.pkg {
 			c.error('function ${def.name} is private', node.pos)
 		}
-		arg_count_matches := node.args.length == def.params.length
-		if not arg_count_matches {
-			c.error('expected ${def.params.length} arguments but got ${node.args.length}', node.pos)
-		}
-		if node.name == 'println' {
-			// TODO check arg can be printed
-			for arg in node.args {
-				arg.typ = c.expr(arg.expr)
+		if node.args.length == def.params.length {
+			if node.name == 'println' {
+				// TODO check arg can be printed
+				for arg in node.args {
+					arg.typ = c.expr(arg.expr)
+				}
+				return ast.VOID_TYPE
 			}
-			return ast.VOID_TYPE
-		}
-		for i, arg in node.args {
-			arg.typ = c.expr(arg.expr)
-			if arg_count_matches {
+			for i, arg in node.args {
 				param_type := def.params[i].typ
+				c.expected_type = param_type
+				arg.typ = c.expr(arg.expr)
 				if not c.check_types(arg.typ, param_type) {
 					c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
 				}
 			}
+		} else {
+			c.error('expected ${def.params.length} arguments but got ${node.args.length}', node.pos)
 		}
 		node.return_type = def.return_type
 		c.check_attributes_on_call(node, def)
@@ -162,18 +161,17 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 	if not def.is_pub and left_sym.pkg != c.pkg {
 		c.error('method ${def.name} is private', node.pos)
 	}
-	arg_count_matches := node.args.length + 1 == def.params.length
-	if not arg_count_matches {
-		c.error('expected ${def.params.length - 1} arguments but got ${node.args.length}', node.pos)
-	}
-	for i, arg in node.args {
-		arg.typ = c.expr(arg.expr)
-		if arg_count_matches {
+	if node.args.length + 1 == def.params.length {
+		for i, arg in node.args {
 			param_type := def.params[i + 1].typ
+			c.expected_type = param_type
+			arg.typ = c.expr(arg.expr)
 			if not c.check_types(arg.typ, param_type) {
 				c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
 			}
 		}
+	} else {
+		c.error('expected ${def.params.length - 1} arguments but got ${node.args.length}', node.pos)
 	}
 	node.left_type = def.params[0].typ
 	node.return_type = def.return_type
