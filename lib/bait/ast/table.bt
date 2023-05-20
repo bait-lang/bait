@@ -28,6 +28,10 @@ pub fun (t Table) get_sym(idx Type) TypeSymbol {
 	return t.type_symbols[idx]
 }
 
+pub fun (t Table) type_name(idx Type) string {
+	return t.get_sym(idx).name
+}
+
 pub fun (t Table) register_sym(sym TypeSymbol) Type {
 	idx := t.get_idx(sym.name)
 	if idx > 0 as Type {

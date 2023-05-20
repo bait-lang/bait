@@ -139,7 +139,7 @@ fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
 			if arg_count_matches {
 				param_type := def.params[i].typ
 				if not c.check_types(arg.typ, param_type) {
-					c.error('type ${arg.typ} not matches ${param_type} in argument ${i + 1}', node.pos)
+					c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
 				}
 			}
 		}
@@ -171,7 +171,7 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 		if arg_count_matches {
 			param_type := def.params[i + 1].typ
 			if not c.check_types(arg.typ, param_type) {
-				c.error('type ${arg.typ} not matches ${param_type} in argument ${i + 1}', node.pos)
+				c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
 			}
 		}
 	}
@@ -361,7 +361,7 @@ fun (c Checker) match_expr(node ast.MatchExpr) ast.Type {
 				expr_type := c.expr(e)
 				if not c.check_types(expr_type, node.cond_type) {
 					expr := e as ast.EmptyExpr
-					c.error('cannot match ${expr_type} to ${node.cond_type}', expr.pos)
+					c.error('cannot match ${c.table.type_name(expr_type)} to ${sym.name}', expr.pos)
 				}
 				branch.expr_types.push(expr_type)
 			}
@@ -440,7 +440,7 @@ fun (c Checker) struct_init(node ast.StructInit) ast.Type {
 		c.expected_type = def.typ
 		expr_type := c.expr(field.expr)
 		if not c.check_types(expr_type, def.typ) {
-			c.error('cannot assign to field ${field.name}: expected ${def.typ}, got ${expr_type} ', node.pos)
+			c.error('cannot assign to field ${field.name}: expected ${c.table.type_name(def.typ)}, got ${c.table.type_name(expr_type)} ', node.pos)
 		}
 	}
 	return node.typ
