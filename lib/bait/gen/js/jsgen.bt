@@ -142,6 +142,8 @@ fun (g Gen) write_default_value(typ i32) {
 				})
 			} else if sym.kind == ast.TypeKind.struct_ {
 				g.write('new ${js_name(sym.name)}({})')
+			} else if sym.kind == ast.TypeKind.alias_type {
+				g.write_default_value(sym.parent)
 			} else {
 				g.write('undefined')
 			}

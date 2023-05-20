@@ -398,6 +398,8 @@ fun (p Parser) type_decl() ast.TypeDecl {
 	is_fun_type := p.tok.kind == token.TokenKind.key_fun
 	mut variants := []i32
 	variants.push(p.parse_type())
+
+	// Function type
 	if is_fun_type {
 		sym := p.table.get_sym(variants[0])
 		typ := p.table.register_sym(ast.TypeSymbol{
@@ -410,18 +412,33 @@ fun (p Parser) type_decl() ast.TypeDecl {
 		return ast.TypeDecl{
 			name: name
 			typ: typ
-			variants: variants
 			pos: pos
 		}
 	}
-	mut kind := ast.TypeKind.alias_type
+
+	// Alias type
+	if p.tok.kind != token.TokenKind.pipe {
+		typ := p.table.register_sym(ast.TypeSymbol{
+			kind: ast.TypeKind.alias_type
+			name: name
+			parent: variants[0]
+			is_pub: is_pub
+			pkg: p.pkg_name
+		})
+		return ast.TypeDecl{
+			name: name
+			typ: typ
+			pos: pos
+		}
+	}
+
+	// Sum type
 	for p.tok.kind == token.TokenKind.pipe {
 		p.next()
 		variants.push(p.parse_type())
-		kind = ast.TypeKind.sum_type
 	}
 	typ := p.table.register_sym(ast.TypeSymbol{
-		kind: kind
+		kind: ast.TypeKind.sum_type
 		name: name
 		is_pub: is_pub
 		pkg: p.pkg_name
@@ -432,7 +449,6 @@ fun (p Parser) type_decl() ast.TypeDecl {
 	return ast.TypeDecl{
 		name: name
 		typ: typ
-		variants: variants
 		pos: pos
 	}
 }

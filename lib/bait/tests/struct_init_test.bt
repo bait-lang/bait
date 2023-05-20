@@ -1,0 +1,15 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+type Int := i32
+
+struct Foo{
+	m i32
+	n Int
+}
+
+fun test_alias_default_value(){
+	f := Foo{}
+	assert f.m == 0
+	assert f.n == 0 as Int
+}

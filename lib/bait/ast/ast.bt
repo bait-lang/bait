@@ -118,7 +118,6 @@ pub struct StructField{
 pub struct TypeDecl {
 	name string
 	typ i32
-	variants []i32
 	pos token.Pos
 }
 

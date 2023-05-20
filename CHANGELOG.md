@@ -21,17 +21,18 @@ _unreleased_
 - Add `--verbose` option and verbose output for launching tools
 - Script mode is enabled implicitly but will cause a warning
 
-### Type and Error Checking
+### Type System and Error Checking
 - Infix types must match
 - Match branch exprs must be of the same type as the condition
 - Prevent redefinition of functions and methods
+- Improve type resolving of constants
+- Infer struct init default value of type alias from parent type
 
 ### Compiler
 - Implement short enum access without specifying the name if the type is already known
 - Colorize error messages
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`
-- Infer more constant types in parser
 - Fix escaping of
   - Double quotes in strings
   - Backticks in interpolated strings
