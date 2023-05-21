@@ -1,0 +1,11 @@
+fun value_missing() i32 {
+	return
+}
+
+fun void_function() {
+	return 'some value'
+}
+
+fun type_mismatch() i32 {
+	return 'not i32'
+}

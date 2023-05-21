@@ -5,7 +5,7 @@ package checker
 import bait.ast
 import bait.token
 
-fun (c Checker) infix_expr(node ast.InfixExpr) TYPE {
+fun (c Checker) infix_expr(node ast.InfixExpr) ast.Type {
 	node.left_type = c.expr(node.left)
 	if node.op == token.TokenKind.key_is {
 		return c.is_sumtype_variant_infix(node)
@@ -22,7 +22,7 @@ fun (c Checker) infix_expr(node ast.InfixExpr) TYPE {
 }
 
 // x is Variant
-fun (c Checker) is_sumtype_variant_infix(node ast.InfixExpr) TYPE {
+fun (c Checker) is_sumtype_variant_infix(node ast.InfixExpr) ast.Type {
 	if node.left is ast.Ident {
 		mut right := node.right as ast.Ident
 		if not right.name.contains('.') {

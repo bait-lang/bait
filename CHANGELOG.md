@@ -24,6 +24,7 @@ _unreleased_
 ### Type System and Error Checking
 - Infix types must match
 - Match branch exprs must be of the same type as the condition
+- Check types of return values
 - Prevent redefinition of functions and methods
 - Improve type resolving of constants
 - Infer struct init default value of type alias from parent type

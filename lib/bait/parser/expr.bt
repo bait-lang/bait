@@ -109,9 +109,11 @@ fun (p Parser) anon_fun()ast.AnonFun{
 	typ := p.table.find_or_register_fun(param_types, return_type)
 	stmts := p.parse_block()
 	return ast.AnonFun{
-		params: params
-		return_type: return_type
-		stmts: stmts
+		decl: ast.FunDecl{
+			params: params
+			return_type: return_type
+			stmts: stmts
+		}
 		typ: typ
 		pos: pos
 	}

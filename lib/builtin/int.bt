@@ -3,33 +3,33 @@
 package builtin
 
 pub fun (n i8) str() string {
-	return #JS.'n.toString()'
+	return #JS.'n.toString()' as string
 }
 
 pub fun (n i16) str() string {
-	return #JS.'n.toString()'
+	return #JS.'n.toString()' as string
 }
 
 pub fun (n i32) str() string {
-	return #JS.'n.toString()'
+	return #JS.'n.toString()' as string
 }
 
 pub fun (n i64) str() string {
-	return #JS.'n.toString()'
+	return #JS.'n.toString()' as string
 }
 
 pub fun (n u8) str() string {
-	return #JS.'n.val.toString()'
+	return #JS.'n.val.toString()' as string
 }
 
 pub fun (n u16) str() string {
-	return #JS.'n.toString()'
+	return #JS.'n.toString()' as string
 }
 
 pub fun (n u32) str() string {
-	return #JS.'n.toString()'
+	return #JS.'n.toString()' as string
 }
 
 pub fun (n u64) str() string {
-	return #JS.'n.toString()'
+	return #JS.'n.toString()' as string
 }

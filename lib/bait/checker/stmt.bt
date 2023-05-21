@@ -142,13 +142,6 @@ fun (c Checker) global_decl(node ast.GlobalDecl){
 
 fun (c Checker) control_stmt(node ast.LoopControlStmt) {}
 
-fun (c Checker) return_stmt(node ast.ReturnStmt) {
-	if not node.expr is ast.EmptyExpr {
-		c.expected_type = c.cur_fun.return_type
-		c.expr(node.expr)
-	}
-}
-
 fun (c Checker) struct_decl(node ast.StructDecl) {
 }
 

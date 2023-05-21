@@ -4,7 +4,7 @@ package checker
 
 import bait.ast
 
-fun (c Checker) check_types(got ast.Type, expected ast.Type, ) {
+fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 	if got == expected {
 		return true
 	}

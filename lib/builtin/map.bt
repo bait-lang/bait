@@ -26,7 +26,7 @@ fun (m map) get_set(key string, zero any) any {
 }
 
 pub fun (m map) contains(key string) bool {
-	return #JS.'m.data.has(key.str)'
+	return #JS.'m.data.has(key.str)' as bool
 }
 
 pub fun (m map) keys() []string {

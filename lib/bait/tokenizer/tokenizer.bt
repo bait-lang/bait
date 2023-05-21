@@ -302,14 +302,14 @@ fun (t Tokenizer) error_with_line(msg string, line i32){
 	exit(1)
 }
 
-fun is_name_start_char(c u8) {
+fun is_name_start_char(c u8) bool {
 	return c >= `a` and c <= `z` or c >= `A` and c <= `Z` or c == `_`
 }
 
-fun is_name_char(c u8) {
+fun is_name_char(c u8) bool {
 	return is_name_start_char(c) or is_digit(c)
 }
 
-fun is_digit(c u8) {
+fun is_digit(c u8) bool {
 	return c >= `0` and c <= `9`
 }
