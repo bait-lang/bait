@@ -25,7 +25,7 @@ pub fun tokenize(text string, path string) []token.Token {
 	}
 	mut tokens := []token.Token
 	mut tok := token.Token{}
-	for tok.kind != token.TokenKind.eof {
+	for tok.kind != .eof {
 		tok = t.next_token()
 		tokens.push(tok)
 	}
@@ -48,161 +48,161 @@ fun (t Tokenizer) next_token() token.Token {
 		t.pos += 1
 		t.skip_whitespace()
 		if t.pos >= t.text.length {
-			return t.new_token(token.TokenKind.eof, '')
+			return t.new_token(.eof, '')
 		}
 		c := t.text[t.pos]
 		if is_name_start_char(c) {
 			return t.name_or_keyword()
 		} else if is_digit(c) {
 			num := t.number_val()
-			return t.new_token(token.TokenKind.number, num)
+			return t.new_token(.number, num)
 		}
 		nextc := t.text[t.pos + 1]
 		match c {
 			`'`, `\"` {
 				str := t.string_val(c)
-				return t.new_token(token.TokenKind.string, str)
+				return t.new_token(.string, str)
 
 			}
 			`\`` {
 				val := t.char_val()
-				return t.new_token(token.TokenKind.char, val)
+				return t.new_token(.char, val)
 			}
 			`.` {
-				return t.new_token(token.TokenKind.dot, "")
+				return t.new_token(.dot, "")
 			}
 			`,` {
-				return t.new_token(token.TokenKind.comma, "")
+				return t.new_token(.comma, "")
 			}
 			`+` {
 				if nextc == `=`{
 					t.pos += 1
-					return t.new_token(token.TokenKind.plus_assign, "")
+					return t.new_token(.plus_assign, "")
 				}
-				return t.new_token(token.TokenKind.plus, "")
+				return t.new_token(.plus, "")
 			}
 			`-` {
 				if nextc == `=`{
 					t.pos += 1
-					return t.new_token(token.TokenKind.minus_assign, "")
+					return t.new_token(.minus_assign, "")
 				}
-				return t.new_token(token.TokenKind.minus, "")
+				return t.new_token(.minus, "")
 			}
 			`*` {
 				if nextc == `=`{
 					t.pos += 1
-					return t.new_token(token.TokenKind.mul_assign, "")
+					return t.new_token(.mul_assign, "")
 				}
-				return t.new_token(token.TokenKind.mul, "")
+				return t.new_token(.mul, "")
 			}
 			`/` {
 				if nextc == `=`{
 					t.pos += 1
-					return t.new_token(token.TokenKind.div_assign, "")
+					return t.new_token(.div_assign, "")
 				}
 				if nextc == `/`{
 					t.ignore_line()
 					continue
 				}
-				return t.new_token(token.TokenKind.div, "")
+				return t.new_token(.div, "")
 			}
 			`%` {
 				if nextc == `=`{
 					t.pos += 1
-					return t.new_token(token.TokenKind.mod_assign, "")
+					return t.new_token(.mod_assign, "")
 				}
-				return t.new_token(token.TokenKind.mod, "")
+				return t.new_token(.mod, "")
 			}
 			`=` {
 				if nextc == `=`{
 					t.pos += 1
-					return t.new_token(token.TokenKind.eq, "")
+					return t.new_token(.eq, "")
 				}
-				return t.new_token(token.TokenKind.assign, "")
+				return t.new_token(.assign, "")
 			}
 			`:` {
 				if nextc == `=`{
 					t.pos += 1
-					return t.new_token(token.TokenKind.decl_assign, "")
+					return t.new_token(.decl_assign, "")
 				}
-				return t.new_token(token.TokenKind.colon, "")
+				return t.new_token(.colon, "")
 			}
 			`;` {
-				return t.new_token(token.TokenKind.semicolon, "")
+				return t.new_token(.semicolon, "")
 			}
 			`!` {
 				if nextc == `=`{
 					t.pos += 1
-					return t.new_token(token.TokenKind.ne, "")
+					return t.new_token(.ne, "")
 				}
 			}
 			`<` {
 				if nextc == `=`{
 					t.pos += 1
-					return t.new_token(token.TokenKind.le, "")
+					return t.new_token(.le, "")
 				}
-				return t.new_token(token.TokenKind.lt, "")
+				return t.new_token(.lt, "")
 			}
 			`>` {
 				if nextc == `=`{
 					t.pos += 1
-					return t.new_token(token.TokenKind.ge, "")
+					return t.new_token(.ge, "")
 				}
-				return t.new_token(token.TokenKind.gt, "")
+				return t.new_token(.gt, "")
 			}
 			`(` {
-				return t.new_token(token.TokenKind.lpar, "")
+				return t.new_token(.lpar, "")
 			}
 			`)` {
-				return t.new_token(token.TokenKind.rpar, "")
+				return t.new_token(.rpar, "")
 			}
 			`[` {
-				return t.new_token(token.TokenKind.lbr, "")
+				return t.new_token(.lbr, "")
 			}
 			`]` {
-				return t.new_token(token.TokenKind.rbr, "")
+				return t.new_token(.rbr, "")
 			}
 			`{` {
-				return t.new_token(token.TokenKind.lcur, "")
+				return t.new_token(.lcur, "")
 			}
 			`}` {
 				if t.is_string_inter {
 					t.is_string_inter = false
 					str := t.string_val(t.str_quote)
-					return t.new_token(token.TokenKind.string, str)
+					return t.new_token(.string, str)
 				}
-				return t.new_token(token.TokenKind.rcur, "")
+				return t.new_token(.rcur, "")
 			}
 			`|` {
-				return t.new_token(token.TokenKind.pipe, "")
+				return t.new_token(.pipe, "")
 			}
 			`$` {
-				return t.new_token(token.TokenKind.dollar, "")
+				return t.new_token(.dollar, "")
 			}
 			`#` {
 				t.pos += 1
 				name := t.name_val()
-				return t.new_token(token.TokenKind.hash, name)
+				return t.new_token(.hash, name)
 			}
 			`@` {
 				t.pos += 1
 				name := t.name_val()
-				return t.new_token(token.TokenKind.attr, name)
+				return t.new_token(.attr, name)
 			}
 			else {}
 		}
 		t.error('unknown char `${c.ascii()}`')
 	}
-	return t.new_token(token.TokenKind.eof, "")
+	return t.new_token(.eof, "")
 }
 
 fun (t Tokenizer) name_or_keyword() token.Token {
 	name := t.name_val()
 	kind := token.keyword_to_kind(name)
-	if kind != token.TokenKind.name {
+	if kind != .name {
 		return t.new_token(kind, '')
 	}
-	return t.new_token(token.TokenKind.name, name)
+	return t.new_token(.name, name)
 }
 
 fun (t Tokenizer) name_val() string{

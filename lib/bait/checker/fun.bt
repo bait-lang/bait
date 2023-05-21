@@ -18,10 +18,10 @@ fun (c Checker) fun_decl(node ast.FunDecl) {
 fun (c Checker) fun_params(params []ast.Param){
 	for p in params {
 		sym := c.table.get_sym(p.typ)
-		if sym.kind == ast.TypeKind.fun_ {
+		if sym.kind == .fun_ {
 			c.scope.register(p.name, ast.ScopeObject{
 				typ: p.typ
-				kind: ast.ObjectKind.function
+				kind: .function
 			})
 		} else {
 			c.scope.register(p.name, ast.ScopeObject{typ: p.typ})

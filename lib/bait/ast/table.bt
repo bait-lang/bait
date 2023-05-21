@@ -36,7 +36,7 @@ pub fun (t Table) register_sym(sym TypeSymbol) Type {
 	idx := t.get_idx(sym.name)
 	if idx > 0 as Type {
 		cur_sym := t.get_sym(idx)
-		if cur_sym.kind == TypeKind.placeholder {
+		if cur_sym.kind == .placeholder {
 			sym.methods = cur_sym.methods
 			t.type_symbols[idx] = sym
 			return idx
@@ -63,7 +63,7 @@ pub fun (t Table) find_or_register_array(elem_type Type) Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
-		kind: TypeKind.array
+		kind: .array
 		name: name
 		parent: ARRAY_TYPE
 		info: ArrayInfo{
@@ -81,7 +81,7 @@ pub fun (t Table) find_or_register_map(key_type Type, val_type Type) Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
-		kind: TypeKind.map
+		kind: .map
 		name: name
 		parent: MAP_TYPE
 		info: MapInfo{
@@ -98,7 +98,7 @@ pub fun (t Table) find_or_register_fun(param_types []Type, return_type Type) Typ
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
-		kind: TypeKind.fun_
+		kind: .fun_
 		name: name
 		info: FunInfo{
 			param_types: param_types
@@ -122,7 +122,7 @@ pub fun (t Table) find_type_or_add_placeholder(name string) Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
-		kind: TypeKind.placeholder
+		kind: .placeholder
 		name: name
 	})
 }

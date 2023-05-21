@@ -54,7 +54,7 @@ fun (c Checker) assert_stmt(node ast.AssertStmt){
 }
 
 fun (c Checker) assign_stmt(node ast.AssignStmt) {
-	if node.op == token.TokenKind.decl_assign {
+	if node.op == .decl_assign {
 		typ := c.expr(node.right)
 		left := node.left as ast.Ident
 		if c.scope.is_known(left.name) {
@@ -114,14 +114,14 @@ fun (c Checker) for_in_loop(node ast.ForInLoop) {
 	sym := c.table.get_sym(node.expr_type)
 	mut idx_type := ast.PLACEHOLDER_TYPE
 	mut val_type := ast.PLACEHOLDER_TYPE
-	if sym.kind == ast.TypeKind.array {
+	if sym.kind == .array {
 		idx_type = ast.I32_TYPE
 		val_type = (sym.info as ast.ArrayInfo).elem_type
-	} else if sym.kind == ast.TypeKind.map {
+	} else if sym.kind == .map {
 		info := sym.info as ast.MapInfo
 		idx_type = info.key_type
 		val_type = info.val_type
-	} else if sym.kind == ast.TypeKind.string {
+	} else if sym.kind == .string {
 		idx_type = ast.I32_TYPE
 		val_type = ast.U8_TYPE
 	} else {

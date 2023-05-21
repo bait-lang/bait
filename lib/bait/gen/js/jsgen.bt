@@ -132,17 +132,17 @@ fun (g Gen) write_default_value(typ ast.Type) {
 		}
 		else {
 			sym := g.table.get_sym(typ)
-			if sym.kind == ast.TypeKind.array {
+			if sym.kind == .array {
 				g.array_init(ast.ArrayInit{
 					exprs: []ast.Expr
 				})
-			} else if sym.kind == ast.TypeKind.map {
+			} else if sym.kind == .map {
 				g.map_init(ast.MapInit{
 					keys: []ast.Expr
 				})
-			} else if sym.kind == ast.TypeKind.struct_ {
+			} else if sym.kind == .struct_ {
 				g.write('new ${js_name(sym.name)}({})')
-			} else if sym.kind == ast.TypeKind.alias_type {
+			} else if sym.kind == .alias_type {
 				g.write_default_value(sym.parent)
 			} else {
 				g.write('undefined')

@@ -13,8 +13,8 @@ enum AttrValue {
 
 fun build_known_attrs() map[string]AttrValue {
 	mut attrs := map[string]AttrValue
-	attrs['deprecated'] = AttrValue.optional
-	attrs['deprecated_after'] = AttrValue.required
+	attrs['deprecated'] = .optional
+	attrs['deprecated_after'] = .required
 	return attrs
 }
 
@@ -27,11 +27,11 @@ fun (c Checker) check_attributes(attrs []ast.Attribute){
 			continue
 		}
 		val_req := KNOWN_ATTRS[attr.name]
-		if val_req == AttrValue.none and attr.value.length > 0 {
+		if val_req == .none and attr.value.length > 0 {
 			c.error('attribute "${attr.name}" does not take a value', attr.pos)
 			continue
 		}
-		if val_req == AttrValue.required and attr.value.length == 0 {
+		if val_req == .required and attr.value.length == 0 {
 			c.error('attribute "${attr.name}" requires a value', attr.pos)
 			continue
 		}

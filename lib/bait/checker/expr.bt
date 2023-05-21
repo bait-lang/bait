@@ -117,7 +117,7 @@ fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
 	}
 	if not found {
 		obj := c.scope.get(node.name)
-		if obj.kind == ast.ObjectKind.function {
+		if obj.kind == .function {
 			found = true
 		}
 	}
@@ -239,7 +239,7 @@ fun (c Checker) enum_val(node ast.EnumVal) ast.Type {
 		node.typ = c.table.get_idx(node.name)
 	}
 	sym := c.table.get_sym(node.typ)
-	if sym.kind == ast.TypeKind.placeholder {
+	if sym.kind == .placeholder {
 		c.error('undefined enum ${node.name}', node.pos)
 		return ast.VOID_TYPE
 	}
@@ -275,7 +275,7 @@ fun (c Checker) ident(node ast.Ident) ast.Type {
 	if obj.typ == ast.VOID_TYPE {
 		obj.typ = c.expr(obj.expr)
 	}
-	if obj.kind == ast.ObjectKind.constant and not obj.is_pub and node.pkg != c.pkg {
+	if obj.kind == .constant and not obj.is_pub and node.pkg != c.pkg {
 		c.error('const ${node.name} is private', node.pos)
 	}
 	return obj.typ
@@ -298,15 +298,15 @@ fun (c Checker) index_expr(node ast.IndexExpr) ast.Type {
 	node.left_type = c.expr(node.left)
 	c.expr(node.index)
 	sym := c.table.get_sym(node.left_type)
-	if sym.kind == ast.TypeKind.array {
+	if sym.kind == .array {
 		info := sym.info as ast.ArrayInfo
 		return info.elem_type
 	}
-	if sym.kind == ast.TypeKind.map {
+	if sym.kind == .map {
 		info := sym.info as ast.MapInfo
 		return info.val_type
 	}
-	if sym.kind == ast.TypeKind.string {
+	if sym.kind == .string {
 		if c.is_lhs_assign{
 			c.error('cannot assign to string index', node.pos)
 			return ast.VOID_TYPE
@@ -343,7 +343,7 @@ fun (c Checker) match_expr(node ast.MatchExpr) ast.Type {
 		return ast.VOID_TYPE
 	}
 	sym := c.table.get_sym(node.cond_type)
-	node.is_sumtype = sym.kind == ast.TypeKind.sum_type
+	node.is_sumtype = sym.kind == .sum_type
 	for branch in node.branches {
 		c.open_scope()
 		for e in branch.exprs {
@@ -390,7 +390,7 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 	}
 	typ := c.expr(node.expr)
 	sym := c.table.get_sym(typ)
-	if [ast.TypeKind.struct_, ast.TypeKind.array, ast.TypeKind.string, ast.TypeKind.map].contains(sym.kind) {
+	if [ast.TypeKind.struct_, .array, .string, .map].contains(sym.kind) {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
 			c.error('${sym.name} has no field ${node.field_name}', node.pos)
@@ -398,7 +398,7 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 		}
 		return field.typ
 	}
-	if sym.kind == ast.TypeKind.sum_type {
+	if sym.kind == .sum_type {
 		// TODO check if field is present on all variants (with same type)
 		c.error('cast to the variant before accessing field of sumtype ${sym.name}', node.pos)
 		return ast.VOID_TYPE
@@ -424,7 +424,7 @@ fun (c Checker) string_inter_literal(node ast.StringInterLiteral) ast.Type {
 
 fun (c Checker) struct_init(node ast.StructInit) ast.Type {
 	sym := c.table.get_sym(node.typ)
-	if sym.kind == ast.TypeKind.placeholder {
+	if sym.kind == .placeholder {
 		c.error('undefined struct ${node.name}', node.pos)
 		return ast.VOID_TYPE
 	}

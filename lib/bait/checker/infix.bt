@@ -7,7 +7,7 @@ import bait.token
 
 fun (c Checker) infix_expr(node ast.InfixExpr) ast.Type {
 	node.left_type = c.expr(node.left)
-	if node.op == token.TokenKind.key_is {
+	if node.op == .key_is {
 		return c.is_sumtype_variant_infix(node)
 	}
 	c.expected_type = node.left_type

@@ -12,19 +12,19 @@ enum Kind {
 }
 
 pub fun notice(title string, path string, pos token.Pos, msg string) {
-	message(Kind.notice, title, path, pos, msg)
+	message(.notice, title, path, pos, msg)
 }
 
 pub fun warn(path string, pos token.Pos, msg string) {
-	message(Kind.warning, 'warning', path, pos, msg)
+	message(.warning, 'warning', path, pos, msg)
 }
 
 pub fun error(path string, pos token.Pos, msg string) {
-	message(Kind.error, 'error', path, pos, msg)
+	message(.error, 'error', path, pos, msg)
 }
 
 pub fun generic_error(msg string) {
-	title := format_title(Kind.error, "error")
+	title := format_title(.error, "error")
 	eprintln('${title}: ${msg}')
 }
 
@@ -47,8 +47,8 @@ fun format_title(k Kind, title string) string {
 		return title
 	}
 	match k {
-		Kind.notice { return '\033[0;35m' + title + '\033[0m' }
-		Kind.warning { return '\033[0;33m' + title + '\033[0m' }
-		Kind.error { return '\033[0;31m' + title + '\033[0m' }
+		.notice { return '\033[0;35m' + title + '\033[0m' }
+		.warning { return '\033[0;33m' + title + '\033[0m' }
+		.error { return '\033[0;31m' + title + '\033[0m' }
 	}
 }

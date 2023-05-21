@@ -6,20 +6,20 @@ import bait.ast
 import bait.token
 
 fun (p Parser) parse_type() ast.Type {
-	if p.tok.kind == token.TokenKind.lbr{
+	if p.tok.kind == .lbr{
 		p.next()
-		p.check(token.TokenKind.rbr)
+		p.check(.rbr)
 		elem_type := p.parse_type()
 		return p.table.find_or_register_array(elem_type)
 	}
-	if p.tok.kind == token.TokenKind.key_fun {
+	if p.tok.kind == .key_fun {
 		return p.parse_fun_type()
 	}
 	mut name := p.check_name()
 	if name == 'map' {
 		return p.parse_map_type()
 	}
-	if p.tok.kind == token.TokenKind.dot {
+	if p.tok.kind == .dot {
 		pkg := p.import_aliases[name]
 		p.next()
 		name = pkg + '.' + p.check_name()
@@ -48,16 +48,16 @@ fun (p Parser) parse_type() ast.Type {
 
 fun (p Parser) parse_fun_type() ast.Type {
 	p.next()
-	p.check(token.TokenKind.lpar)
+	p.check(.lpar)
 	mut param_types := []ast.Type
-	for p.tok.kind != token.TokenKind.rpar{
+	for p.tok.kind != .rpar{
 		typ := p.parse_type()
 		param_types.push(typ)
-		if p.tok.kind != token.TokenKind.rpar{
-			p.check(token.TokenKind.comma)
+		if p.tok.kind != .rpar{
+			p.check(.comma)
 		}
 	}
-	p.check(token.TokenKind.rpar)
+	p.check(.rpar)
 	mut return_type := ast.VOID_TYPE
 	if p.tok.pos.line == p.prev_tok.pos.line {
 		return_type = p.parse_type()
@@ -66,15 +66,15 @@ fun (p Parser) parse_fun_type() ast.Type {
 }
 
 fun (p Parser) parse_map_type() ast.Type {
-	if p.tok.kind == token.TokenKind.rpar and p.pkg_name == 'builtin' {
+	if p.tok.kind == .rpar and p.pkg_name == 'builtin' {
 		return ast.MAP_TYPE
 	}
-	p.check(token.TokenKind.lbr)
+	p.check(.lbr)
 	key_type := p.parse_type()
 	if key_type != ast.STRING_TYPE {
 		p.error('map key type must be string')
 	}
-	p.check(token.TokenKind.rbr)
+	p.check(.rbr)
 	val_type := p.parse_type()
 	return p.table.find_or_register_map(key_type, val_type)
 }

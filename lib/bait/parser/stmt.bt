@@ -7,28 +7,28 @@ import bait.token
 
 fun (p Parser) toplevel_stmt() ast.Stmt {
 	match p.tok.kind {
-		token.TokenKind.key_pub{
+		.key_pub{
 			return p.pub_stmt()
 		}
-		token.TokenKind.hash {
+		.hash {
 			return p.expr_stmt()
 		}
-		token.TokenKind.key_const{
+		.key_const{
 			return p.const_decl()
 		}
-		token.TokenKind.key_enum{
+		.key_enum{
 			return p.enum_decl()
 		}
-		token.TokenKind.key_fun{
+		.key_fun{
 			return p.fun_decl()
 		}
-		token.TokenKind.key_global{
+		.key_global{
 			return p.global_decl()
 		}
-		token.TokenKind.key_struct{
+		.key_struct{
 			return p.struct_decl()
 		}
-		token.TokenKind.key_type{
+		.key_type{
 			return p.type_decl()
 		}
 		else{
@@ -39,19 +39,19 @@ fun (p Parser) toplevel_stmt() ast.Stmt {
 
 fun (p Parser) pub_stmt() ast.Stmt {
 	match p.next_tok.kind {
-		token.TokenKind.key_const{
+		.key_const{
 			return p.const_decl()
 		}
-		token.TokenKind.key_enum{
+		.key_enum{
 			return p.enum_decl()
 		}
-		token.TokenKind.key_fun{
+		.key_fun{
 			return p.fun_decl()
 		}
-		token.TokenKind.key_struct{
+		.key_struct{
 			return p.struct_decl()
 		}
-		token.TokenKind.key_type{
+		.key_type{
 			return p.type_decl()
 		}
 		else{
@@ -65,7 +65,7 @@ fun (p Parser) script_mode_main() ast.FunDecl {
 		p.warn('declare the main function or use the --script option')
 	}
 	mut stmts := []ast.Stmt
-	for p.tok.kind != token.TokenKind.eof {
+	for p.tok.kind != .eof {
 		stmts.push(p.stmt())
 	}
 	mut node := ast.FunDecl{
@@ -78,19 +78,19 @@ fun (p Parser) script_mode_main() ast.FunDecl {
 
 fun (p Parser) stmt() ast.Stmt {
 	match p.tok.kind {
-		token.TokenKind.key_assert {
+		.key_assert {
 			return p.assert_stmt()
 		}
-		token.TokenKind.key_mut, token.TokenKind.name {
+		.key_mut, .name {
 			return p.assign_or_expr_stmt()
 		}
-		token.TokenKind.key_break, token.TokenKind.key_continue {
+		.key_break, .key_continue {
 			return p.control_stmt()
 		}
-		token.TokenKind.key_for {
+		.key_for {
 			return p.for_loop()
 		}
-		token.TokenKind.key_return {
+		.key_return {
 			return p.return_stmt()
 		}
 		else{
@@ -135,12 +135,12 @@ fun (p Parser) const_decl()ast.ConstDecl{
 	is_pub := p.check_pub()
 	p.next()
 	name := p.prepend_pkg(p.check_name())
-	p.check(token.TokenKind.decl_assign)
+	p.check(.decl_assign)
 	expr := p.expr(0)
 	typ := p.infer_expr_type(expr)
 	p.table.global_scope.register(name, ast.ScopeObject{
 		typ: typ
-		kind: ast.ObjectKind.constant
+		kind: .constant
 		is_pub: is_pub
 		expr: expr
 	})
@@ -172,18 +172,18 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 	is_pub := p.check_pub()
 	p.next()
 	name := p.prepend_pkg(p.check_name())
-	p.check(token.TokenKind.lcur)
+	p.check(.lcur)
 	mut variants := []string
-	for p.tok.kind != token.TokenKind.rcur {
+	for p.tok.kind != .rcur {
 		vname := p.check_name()
 		variants.push(vname)
 	}
-	p.check(token.TokenKind.rcur)
+	p.check(.rcur)
 	p.table.register_sym(ast.TypeSymbol{
 		name: name
 		is_pub: is_pub
 		pkg: p.pkg_name
-		kind: ast.TypeKind.enum_
+		kind: .enum_
 		info: ast.EnumInfo{
 			vals: variants
 		}
@@ -198,13 +198,13 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 fun (p Parser) for_loop()ast.Stmt{
 	pos := p.tok.pos
 	p.next()
-	if p.next_tok.kind == token.TokenKind.decl_assign {
+	if p.next_tok.kind == .decl_assign {
 		p.is_for_init = true
 		init := p.assign_or_expr_stmt()
 		p.is_for_init = false
-		p.check(token.TokenKind.semicolon)
+		p.check(.semicolon)
 		cond := p.expr(0)
-		p.check(token.TokenKind.semicolon)
+		p.check(.semicolon)
 		inc := p.stmt()
 		stmts := p.parse_block()
 		return ast.ForClassicLoop{
@@ -215,14 +215,14 @@ fun (p Parser) for_loop()ast.Stmt{
 			pos: pos
 		}
 	}
-	if p.next_tok.kind == token.TokenKind.key_in or p.next_tok.kind == token.TokenKind.comma {
+	if p.next_tok.kind == .key_in or p.next_tok.kind == .comma {
 		mut idxvar := ''
-		if p.next_tok.kind == token.TokenKind.comma {
+		if p.next_tok.kind == .comma {
 			idxvar = p.check_name()
 			p.next()
 		}
 		valvar := p.check_name()
-		p.check(token.TokenKind.key_in)
+		p.check(.key_in)
 		p.is_struct_possible = false
 		expr := p.expr(0)
 		p.is_struct_possible = true
@@ -247,10 +247,10 @@ fun (p Parser) for_loop()ast.Stmt{
 fun (p Parser) fun_decl()ast.FunDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
-	p.check(token.TokenKind.key_fun)
+	p.check(.key_fun)
 	mut is_method := false
 	mut params := []ast.Param
-	if p.tok.kind == token.TokenKind.lpar {
+	if p.tok.kind == .lpar {
 		is_method = true
 		p.next()
 		rec_name := p.check_name()
@@ -259,17 +259,17 @@ fun (p Parser) fun_decl()ast.FunDecl{
 			name:rec_name
 			typ:rec_type
 		})
-		p.check(token.TokenKind.rpar)
+		p.check(.rpar)
 	}
 	mut name := p.check_name()
 	if not is_method {
 		name = p.prepend_pkg(name)
 	}
-	p.check(token.TokenKind.lpar)
+	p.check(.lpar)
 	params = params.concat(p.fun_params())
-	p.check(token.TokenKind.rpar)
+	p.check(.rpar)
 	mut return_type := ast.VOID_TYPE
-	if p.tok.kind != token.TokenKind.lcur {
+	if p.tok.kind != .lcur {
 		return_type = p.parse_type()
 	}
 	mut node := ast.FunDecl{
@@ -308,14 +308,14 @@ fun (p Parser) fun_decl()ast.FunDecl{
 
 fun (p Parser) fun_params() []ast.Param{
 	mut params := []ast.Param
-	for p.tok.kind != token.TokenKind.rpar{
+	for p.tok.kind != .rpar{
 		param := ast.Param{
 			name: p.check_name()
 			typ: p.parse_type()
 		}
 		params.push(param)
-		if p.tok.kind != token.TokenKind.rpar{
-			p.check(token.TokenKind.comma)
+		if p.tok.kind != .rpar{
+			p.check(.comma)
 		}
 	}
 	return params
@@ -323,14 +323,14 @@ fun (p Parser) fun_params() []ast.Param{
 
 fun (p Parser) global_decl()ast.GlobalDecl{
 	pos := p.tok.pos
-	p.check(token.TokenKind.key_global)
+	p.check(.key_global)
 	name := p.prepend_pkg(p.check_name())
-	p.check(token.TokenKind.decl_assign)
+	p.check(.decl_assign)
 	expr := p.expr(0)
 	typ := p.infer_expr_type(expr)
 	p.table.global_scope.register(name, ast.ScopeObject{
 		typ: typ
-		kind: ast.ObjectKind.global_
+		kind: .global_
 	})
 	return ast.GlobalDecl{
 		name: name
@@ -341,7 +341,7 @@ fun (p Parser) global_decl()ast.GlobalDecl{
 
 fun (p Parser) return_stmt()ast.ReturnStmt{
 	pos := p.tok.pos
-	p.check(token.TokenKind.key_return)
+	p.check(.key_return)
 	mut expr := ast.EmptyExpr{} as ast.Expr
 	if p.tok.pos.line == pos.line {
 		expr = p.expr(0)
@@ -355,19 +355,19 @@ fun (p Parser) return_stmt()ast.ReturnStmt{
 fun (p Parser) struct_decl()ast.StructDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
-	p.check(token.TokenKind.key_struct)
+	p.check(.key_struct)
 	name := p.prepend_pkg(p.check_name())
-	p.check(token.TokenKind.lcur)
+	p.check(.lcur)
 	mut fields := []ast.StructField
-	for p.tok.kind != token.TokenKind.rcur {
+	for p.tok.kind != .rcur {
 		fname := p.check_name()
 		ftyp := p.parse_type()
 		field := ast.StructField{name: fname typ: ftyp}
 		fields.push(field)
 	}
-	p.check(token.TokenKind.rcur)
+	p.check(.rcur)
 	tsym := ast.TypeSymbol{
-		kind: ast.TypeKind.struct_
+		kind: .struct_
 		name: name
 		is_pub: is_pub
 		pkg: p.pkg_name
@@ -389,8 +389,8 @@ fun (p Parser) type_decl() ast.TypeDecl {
 	is_pub := p.check_pub()
 	p.next()
 	name := p.prepend_pkg(p.check_name())
-	p.check(token.TokenKind.decl_assign)
-	is_fun_type := p.tok.kind == token.TokenKind.key_fun
+	p.check(.decl_assign)
+	is_fun_type := p.tok.kind == .key_fun
 	mut variants := []ast.Type
 	variants.push(p.parse_type())
 
@@ -398,7 +398,7 @@ fun (p Parser) type_decl() ast.TypeDecl {
 	if is_fun_type {
 		sym := p.table.get_sym(variants[0])
 		typ := p.table.register_sym(ast.TypeSymbol{
-			kind: ast.TypeKind.fun_
+			kind: .fun_
 			name: name
 			is_pub: is_pub
 			pkg: p.pkg_name
@@ -412,9 +412,9 @@ fun (p Parser) type_decl() ast.TypeDecl {
 	}
 
 	// Alias type
-	if p.tok.kind != token.TokenKind.pipe {
+	if p.tok.kind != .pipe {
 		typ := p.table.register_sym(ast.TypeSymbol{
-			kind: ast.TypeKind.alias_type
+			kind: .alias_type
 			name: name
 			parent: variants[0]
 			is_pub: is_pub
@@ -428,12 +428,12 @@ fun (p Parser) type_decl() ast.TypeDecl {
 	}
 
 	// Sum type
-	for p.tok.kind == token.TokenKind.pipe {
+	for p.tok.kind == .pipe {
 		p.next()
 		variants.push(p.parse_type())
 	}
 	typ := p.table.register_sym(ast.TypeSymbol{
-		kind: ast.TypeKind.sum_type
+		kind: .sum_type
 		name: name
 		is_pub: is_pub
 		pkg: p.pkg_name

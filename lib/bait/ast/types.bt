@@ -87,7 +87,7 @@ pub fun (t Table) register_builtins(){
 	// IMPORTANT: Order of registration must match the order of the constants above
 	t.register_sym(TypeSymbol{
 		name: 'placeholder'
-		kind: TypeKind.placeholder
+		kind: .placeholder
 	})
 	t.register_sym(TypeSymbol{name: 'void'})
 	t.register_sym(TypeSymbol{name: 'i8'})
@@ -103,15 +103,15 @@ pub fun (t Table) register_builtins(){
 	t.register_sym(TypeSymbol{name: 'bool'})
 	t.register_sym(TypeSymbol{
 		name: 'string'
-		kind: TypeKind.string
+		kind: .string
 	})
 	t.register_sym(TypeSymbol{
 		name: 'array'
-		kind: TypeKind.array
+		kind: .array
 	})
 	t.register_sym(TypeSymbol{
 		name: 'map'
-		kind: TypeKind.map
+		kind: .map
 	})
 	t.register_sym(TypeSymbol{name: 'any'})
 }

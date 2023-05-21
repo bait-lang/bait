@@ -113,7 +113,7 @@ fun (g Gen) assert_side_expr(node ast.Expr) {
 }
 
 fun (g Gen) assign_stmt(node ast.AssignStmt){
-	if node.op == token.TokenKind.decl_assign {
+	if node.op == .decl_assign {
 		left := node.left as ast.Ident
 		if left.is_mut {
 			g.write('let ')
@@ -122,7 +122,7 @@ fun (g Gen) assign_stmt(node ast.AssignStmt){
 		}
 	}
 	if node.left_type == ast.STRING_TYPE {
-		if node.op == token.TokenKind.plus_assign {
+		if node.op == .plus_assign {
 			g.expr(node.left)
 			g.write(' = ')
 			g.write('string_add(')
@@ -203,15 +203,15 @@ fun (g Gen) for_in_loop(node ast.ForInLoop){
 		i = g.new_temp_var()
 	}
 	sym := g.table.get_sym(node.expr_type)
-	if sym.kind == ast.TypeKind.map {
+	if sym.kind == .map {
 		g.for_in_map(node)
 		return
 	}
 	container := g.expr_string(node.expr)
 	g.writeln('for (let ${i} = 0; ${i} < ${container}.length; ${i}++) {')
-	if sym.kind == ast.TypeKind.array {
+	if sym.kind == .array {
 		g.writeln('\tconst ${node.valvar} = array_get(${container}, ${i})')
-	} else if sym.kind == ast.TypeKind.string {
+	} else if sym.kind == .string {
 		g.writeln('\tconst ${node.valvar} = string_get(${container}, ${i})')
 	} else {
 		g.writeln('\tconst ${node.valvar} = ${container}[${i}]')

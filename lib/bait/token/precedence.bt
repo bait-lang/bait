@@ -2,7 +2,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package token
 
-enum Precedence {
+pub enum Precedence {
 	lowest
 	cond
 	compare
@@ -14,34 +14,34 @@ enum Precedence {
 	index
 }
 
-pub fun (t Token) precedence() i32 {
+pub fun (t Token) precedence() Precedence {
 	match t.kind {
 		TokenKind.lbr {
-			return Precedence.index as i32
+			return .index
 		}
 		TokenKind.dot {
-			return Precedence.call as i32
+			return .call
 		}
 		TokenKind.key_not {
-			return Precedence.prefix as i32
+			return .prefix
 		}
 		TokenKind.mul, TokenKind.div, TokenKind.mod {
-			return Precedence.product as i32
+			return .product
 		}
 		TokenKind.plus, TokenKind.minus {
-			return Precedence.sum as i32
+			return .sum
 		}
 		TokenKind.eq, TokenKind.ne, TokenKind.lt, TokenKind.gt, TokenKind.le, TokenKind.ge {
-			return Precedence.compare as i32
+			return .compare
 		}
 		TokenKind.key_as, TokenKind.key_is {
-			return Precedence.as_is as i32
+			return .as_is
 		}
 		TokenKind.key_and, TokenKind.key_or {
-			return Precedence.cond as i32
+			return .cond
 		}
 		else {
-			return Precedence.lowest as i32
+			return .lowest
 		}
 	}
 }

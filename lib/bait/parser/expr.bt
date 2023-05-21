@@ -8,52 +8,52 @@ import bait.token
 fun (p Parser) expr(precedence i32) ast.Expr {
 	mut node := ast.EmptyExpr{} as ast.Expr
 	match p.tok.kind {
-		token.TokenKind.hash {
+		.hash {
 			node = p.hash_expr()
 		}
-		token.TokenKind.char {
+		.char {
 			node = p.char_literal()
 		}
-		token.TokenKind.dollar {
+		.dollar {
 			node = p.comp_time_var()
 		}
-		token.TokenKind.dot {
+		.dot {
 			node = p.enum_val(false)
 		}
-		token.TokenKind.lbr {
+		.lbr {
 			node = p.array_init()
 		}
-		token.TokenKind.lpar {
+		.lpar {
 			node = p.par_expr()
 		}
-		token.TokenKind.name {
+		.name {
 			node = p.name_expr('bait')
 		}
-		token.TokenKind.number {
+		.number {
 			node = p.number_literal()
 		}
-		token.TokenKind.string {
+		.string {
 			node = p.string_literal("bait")
 		}
-		token.TokenKind.key_fun {
+		.key_fun {
 			node = p.anon_fun()
 		}
-		token.TokenKind.key_false, token.TokenKind.key_true {
+		.key_false, .key_true {
 			node = p.bool_literal()
 		}
-		token.TokenKind.key_if {
+		.key_if {
 			node = p.if_expr()
 		}
-		token.TokenKind.key_match {
+		.key_match {
 			node = p.match_expr()
 		}
-		token.TokenKind.key_mut {
+		.key_mut {
 			node = p.ident('bait')
 		}
-		token.TokenKind.key_not, token.TokenKind.minus {
+		.key_not, .minus {
 			node = p.prefix_expr()
 		}
-		token.TokenKind.key_typeof {
+		.key_typeof {
 			node = p.typeof_expr()
 		}
 		else {
@@ -64,12 +64,12 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 }
 
 fun (p Parser) expr_with_left(left any, precedence i32) ast.Expr {
-	for precedence < p.tok.precedence() {
-		if p.tok.kind == token.TokenKind.dot {
+	for precedence < p.tok.precedence() as i32 {
+		if p.tok.kind == .dot {
 			left = p.dot_expr(left)
-		} else if p.tok.kind == token.TokenKind.lbr {
+		} else if p.tok.kind == .lbr {
 			left = p.index_expr(left)
-		} else if p.tok.kind == token.TokenKind.key_as {
+		} else if p.tok.kind == .key_as {
 			left = p.as_cast(left)
 		} else if p.tok.kind.is_infix() {
 			left = p.infix_expr(left)
@@ -84,22 +84,22 @@ fun (p Parser) expr_list() []ast.Expr{
 	mut exprs := []ast.Expr
 	for true {
 		exprs.push(p.expr(0))
-		if p.tok.kind != token.TokenKind.comma {
+		if p.tok.kind != .comma {
 			break
 		}
-		p.check(token.TokenKind.comma)
+		p.check(.comma)
 	}
 	return exprs
 }
 
 fun (p Parser) anon_fun()ast.AnonFun{
 	pos := p.tok.pos
-	p.check(token.TokenKind.key_fun)
-	p.check(token.TokenKind.lpar)
+	p.check(.key_fun)
+	p.check(.lpar)
 	params := p.fun_params()
-	p.check(token.TokenKind.rpar)
+	p.check(.rpar)
 	mut return_type := ast.VOID_TYPE
-	if p.tok.kind != token.TokenKind.lcur {
+	if p.tok.kind != .lcur {
 		return_type = p.parse_type()
 	}
 	mut param_types := []ast.Type
@@ -124,19 +124,19 @@ fun (p Parser) array_init()ast.ArrayInit{
 	mut elem_type := ast.PLACEHOLDER_TYPE
 	mut typ := ast.ARRAY_TYPE
 	pos := p.tok.pos
-	p.check(token.TokenKind.lbr)
-	if p.tok.kind == token.TokenKind.rbr {
+	p.check(.lbr)
+	if p.tok.kind == .rbr {
 		p.next()
 		elem_type = p.parse_type()
 		typ = p.table.find_or_register_array(elem_type)
 	} else {
-		for p.tok.kind != token.TokenKind.rbr {
+		for p.tok.kind != .rbr {
 			exprs.push(p.expr(0))
-			if p.tok.kind == token.TokenKind.comma {
+			if p.tok.kind == .comma {
 				p.next()
 			}
 		}
-		p.check(token.TokenKind.rbr)
+		p.check(.rbr)
 	}
 	return ast.ArrayInit{
 		exprs: exprs
@@ -148,7 +148,7 @@ fun (p Parser) array_init()ast.ArrayInit{
 
 fun (p Parser) as_cast(left ast.Expr) ast.AsCast {
 	pos := p.tok.pos
-	p.check(token.TokenKind.key_as)
+	p.check(.key_as)
 	target := p.parse_type()
 	return ast.AsCast{
 		target: target
@@ -159,7 +159,7 @@ fun (p Parser) as_cast(left ast.Expr) ast.AsCast {
 
 fun (p Parser) bool_literal()ast.BoolLiteral{
 	pos := p.tok.pos
-	val := p.tok.kind == token.TokenKind.key_true
+	val := p.tok.kind == .key_true
 	p.next()
 	return ast.BoolLiteral{
 		val: val
@@ -188,8 +188,8 @@ fun (p Parser) comp_time_var() ast.CompTimeVar{
 
 fun (p Parser) dot_expr(left ast.Expr) ast.Expr {
 	pos := p.tok.pos
-	p.check(token.TokenKind.dot)
-	if p.next_tok.kind == token.TokenKind.lpar {
+	p.check(.dot)
+	if p.next_tok.kind == .lpar {
 		return p.method_call(left)
 	}
 	name := p.check_name()
@@ -203,9 +203,9 @@ fun (p Parser) dot_expr(left ast.Expr) ast.Expr {
 fun (p Parser) fun_call(lang string)ast.CallExpr{
 	pos := p.tok.pos
 	name := p.prepend_expr_pkg(p.check_name())
-	p.check(token.TokenKind.lpar)
+	p.check(.lpar)
 	args := p.call_args()
-	p.check(token.TokenKind.rpar)
+	p.check(.rpar)
 	return ast.CallExpr{
 		name: name
 		args: args
@@ -218,9 +218,9 @@ fun (p Parser) fun_call(lang string)ast.CallExpr{
 fun (p Parser) method_call(left ast.Expr) ast.CallExpr {
 	pos := p.tok.pos
 	name := p.check_name()
-	p.check(token.TokenKind.lpar)
+	p.check(.lpar)
 	args := p.call_args()
-	p.check(token.TokenKind.rpar)
+	p.check(.rpar)
 	return ast.CallExpr{
 		is_method: true
 		left: left
@@ -233,12 +233,12 @@ fun (p Parser) method_call(left ast.Expr) ast.CallExpr {
 
 fun (p Parser) call_args() []ast.CallArg {
 	mut args := []ast.CallArg
-	for p.tok.kind != token.TokenKind.rpar {
+	for p.tok.kind != .rpar {
 		args.push(ast.CallArg{
 			expr: p.expr(0)
 		})
-		if p.tok.kind != token.TokenKind.rpar {
-			p.check(token.TokenKind.comma)
+		if p.tok.kind != .rpar {
+			p.check(.comma)
 		}
 	}
 	return args
@@ -256,7 +256,7 @@ fun (p Parser) enum_val(has_name bool) ast.EnumVal{
 		}
 	}
 	// typ := p.table.find_type_or_add_placeholder(name)
-	p.check(token.TokenKind.dot)
+	p.check(.dot)
 	val := p.check_name()
 	return ast.EnumVal{
 		name: name
@@ -267,9 +267,9 @@ fun (p Parser) enum_val(has_name bool) ast.EnumVal{
 }
 
 fun (p Parser) hash_expr()ast.Expr{
-	p.check(token.TokenKind.hash)
-	p.check(token.TokenKind.dot)
-	if p.tok.kind == token.TokenKind.string {
+	p.check(.hash)
+	p.check(.dot)
+	if p.tok.kind == .string {
 		return p.string_literal('js')
 	}
 	return p.name_expr('js')
@@ -277,7 +277,7 @@ fun (p Parser) hash_expr()ast.Expr{
 
 fun (p Parser) ident(lang string)ast.Ident{
 	pos := p.tok.pos
-	mut is_mut := p.tok.kind == token.TokenKind.key_mut
+	mut is_mut := p.tok.kind == .key_mut
 	if is_mut {
 		p.next()
 	}
@@ -300,9 +300,9 @@ fun (p Parser) if_expr()ast.IfExpr{
 	mut has_else := false
 	for true {
 		bpos := p.tok.pos
-		if p.tok.kind == token.TokenKind.key_else{
+		if p.tok.kind == .key_else{
 			p.next()
-			if p.tok.kind == token.TokenKind.lcur{
+			if p.tok.kind == .lcur{
 				has_else = true
 				stmts := p.parse_block()
 				branches.push(ast.IfBranch{
@@ -313,13 +313,13 @@ fun (p Parser) if_expr()ast.IfExpr{
 				break
 			}
 		}
-		p.check(token.TokenKind.key_if)
+		p.check(.key_if)
 		p.is_struct_possible = false
 		cond := p.expr(0)
 		p.is_struct_possible = true
 		stmts := p.parse_block()
 		branches.push(ast.IfBranch{cond: cond stmts: stmts})
-		if p.tok.kind != token.TokenKind.key_else{
+		if p.tok.kind != .key_else{
 			break
 		}
 	}
@@ -332,9 +332,9 @@ fun (p Parser) if_expr()ast.IfExpr{
 
 fun (p Parser) index_expr(left ast.Expr)ast.IndexExpr {
 	pos := p.tok.pos
-	p.check(token.TokenKind.lbr)
+	p.check(.lbr)
 	index := p.expr(0)
-	p.check(token.TokenKind.rbr)
+	p.check(.rbr)
 	return ast.IndexExpr{
 		left:left
 		index: index
@@ -346,7 +346,7 @@ fun (p Parser) infix_expr(left ast.Expr)ast.InfixExpr{
 	pos := p.tok.pos
 	op_tok := p.tok
 	p.next()
-	right := p.expr(op_tok.precedence())
+	right := p.expr(op_tok.precedence() as i32)
 	return ast.InfixExpr{
 		left:left
 		right: right
@@ -358,7 +358,7 @@ fun (p Parser) infix_expr(left ast.Expr)ast.InfixExpr{
 fun (p Parser) map_init() ast.MapInit{
 	pos := p.tok.pos
 	p.next()
-	if p.tok.kind == token.TokenKind.lbr{
+	if p.tok.kind == .lbr{
 		map_type := p.parse_map_type()
 		return ast.MapInit{
 			typ: map_type
@@ -367,10 +367,10 @@ fun (p Parser) map_init() ast.MapInit{
 	}
 	mut keys := []ast.Expr
 	mut vals := []ast.Expr
-	p.check(token.TokenKind.lcur)
-	for p.tok.kind != token.TokenKind.rcur {
+	p.check(.lcur)
+	for p.tok.kind != .rcur {
 		keys.push(p.expr(0))
-		p.check(token.TokenKind.colon)
+		p.check(.colon)
 		vals.push(p.expr(0))
 	}
 	p.next()
@@ -384,15 +384,15 @@ fun (p Parser) map_init() ast.MapInit{
 fun (p Parser) match_expr()ast.MatchExpr{
 	pos := p.tok.pos
 	mut branches := []ast.MatchBranch
-	p.check(token.TokenKind.key_match)
+	p.check(.key_match)
 	p.is_struct_possible = false
 	cond := p.expr(0)
 	p.is_struct_possible = true
-	p.check(token.TokenKind.lcur)
-	for p.tok.kind != token.TokenKind.rcur {
+	p.check(.lcur)
+	for p.tok.kind != .rcur {
 		bpos := p.tok.pos
 		mut exprs := []ast.Expr
-		if p.tok.kind == token.TokenKind.key_else {
+		if p.tok.kind == .key_else {
 			p.next()
 		} else {
 			p.is_struct_possible = false
@@ -406,7 +406,7 @@ fun (p Parser) match_expr()ast.MatchExpr{
 			pos: pos
 		})
 	}
-	p.check(token.TokenKind.rcur)
+	p.check(.rcur)
 	return ast.MatchExpr{
 		cond:cond
 		branches: branches
@@ -415,7 +415,7 @@ fun (p Parser) match_expr()ast.MatchExpr{
 }
 
 fun (p Parser) name_expr(lang string)ast.Expr{
-	if p.next_tok.kind == token.TokenKind.dot and p.import_aliases.contains(p.tok.val) {
+	if p.next_tok.kind == .dot and p.import_aliases.contains(p.tok.val) {
 		p.expr_pkg = p.import_aliases[p.tok.val]
 		p.next()
 		p.next()
@@ -423,13 +423,13 @@ fun (p Parser) name_expr(lang string)ast.Expr{
 	if p.tok.val == 'map' {
 		return p.map_init()
 	}
-	if p.next_tok.kind == token.TokenKind.lpar {
+	if p.next_tok.kind == .lpar {
 		return p.fun_call(lang)
 	}
-	if p.is_struct_possible and p.next_tok.kind == token.TokenKind.lcur {
+	if p.is_struct_possible and p.next_tok.kind == .lcur {
 		return p.struct_init()
 	}
-	if p.next_tok.kind == token.TokenKind.dot and p.tok.val[0].is_capital() and not p.tok.val.is_upper() {
+	if p.next_tok.kind == .dot and p.tok.val[0].is_capital() and not p.tok.val.is_upper() {
 		return p.enum_val(true)
 	}
 	return p.ident(lang)
@@ -448,7 +448,7 @@ fun (p Parser) par_expr() ast.ParExpr {
 	pos := p.tok.pos
 	p.next()
 	expr := p.expr(0)
-	p.check(token.TokenKind.rpar)
+	p.check(.rpar)
 	return ast.ParExpr{
 		expr: expr
 		pos: pos
@@ -469,7 +469,7 @@ fun (p Parser) prefix_expr()ast.PrefixExpr{
 
 fun (p Parser) string_literal(lang string)ast.Expr{
 	pos := p.tok.pos
-	if p.next_tok.kind != token.TokenKind.dollar {
+	if p.next_tok.kind != .dollar {
 		p.next()
 		return ast.StringLiteral{
 			val:p.prev_tok.val
@@ -479,14 +479,14 @@ fun (p Parser) string_literal(lang string)ast.Expr{
 	}
 	mut vals := []string
 	mut exprs := []ast.Expr
-	for p.tok.kind == token.TokenKind.string {
+	for p.tok.kind == .string {
 		vals.push(p.tok.val)
 		p.next()
-		if p.tok.kind != token.TokenKind.dollar {
+		if p.tok.kind != .dollar {
 			break
 		}
 		p.next()
-		p.check(token.TokenKind.lcur)
+		p.check(.lcur)
 		exprs.push(p.expr(0))
 	}
 	return ast.StringInterLiteral{
@@ -500,12 +500,12 @@ fun (p Parser) struct_init()ast.StructInit{
 	pos := p.tok.pos
 	typ := p.parse_type()
 	name := p.prev_tok.val
-	p.check(token.TokenKind.lcur)
+	p.check(.lcur)
 	mut fields := []ast.StructInitField
-	for p.tok.kind != token.TokenKind.rcur {
+	for p.tok.kind != .rcur {
 		fpos := p.tok.pos
 		fname := p.check_name()
-		p.check(token.TokenKind.colon)
+		p.check(.colon)
 		expr := p.expr(0)
 		fields.push(ast.StructInitField{
 			name: fname
@@ -513,7 +513,7 @@ fun (p Parser) struct_init()ast.StructInit{
 			pos: fpos
 		})
 	}
-	p.check(token.TokenKind.rcur)
+	p.check(.rcur)
 	return ast.StructInit{
 		name: name
 		typ: typ
@@ -524,10 +524,10 @@ fun (p Parser) struct_init()ast.StructInit{
 
 fun (p Parser) typeof_expr() ast.TypeOf {
 	pos := p.tok.pos
-	p.check(token.TokenKind.key_typeof)
-	p.check(token.TokenKind.lpar)
+	p.check(.key_typeof)
+	p.check(.lpar)
 	expr := p.expr(0)
-	p.check(token.TokenKind.rpar)
+	p.check(.rpar)
 	return ast.TypeOf{
 		expr: expr
 		pos: pos
