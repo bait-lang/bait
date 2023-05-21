@@ -299,11 +299,6 @@ fun (p Parser) fun_decl()ast.FunDecl{
 			param_types.push(param.typ)
 		}
 		typ := p.table.find_or_register_fun(param_types, return_type)
-		p.table.global_scope.register(name, ast.ScopeObject{
-			typ: typ
-			kind: ast.ObjectKind.function
-			is_pub: is_pub
-		})
 	}
 	f_stmts := p.parse_block()
 	node.stmts = f_stmts

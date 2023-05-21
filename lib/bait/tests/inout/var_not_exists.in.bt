@@ -1,0 +1,5 @@
+fun my_var_name() {}
+
+if my_var_name {
+	my_var_name()
+}

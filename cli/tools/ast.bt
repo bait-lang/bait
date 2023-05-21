@@ -9,9 +9,17 @@ import bait.tokenizer
 import bait.parser
 
 fun main() {
-	path := os.ARGS[2]
-	text := os.read_file(path)
-	tokens := tokenizer.tokenize(text, path)
-	ast := parser.parse(tokens, path, ast.new_table(), preference.Prefs{})
+	if os.ARGS.length <= 2 {
+		eprintln('error: please specify a file to print the ast')
+		exit(1)
+	}
+	file := os.ARGS[2]
+	if not file.ends_with('.bt') {
+		eprintln('error: file must have ".bt" extension')
+		exit(1)
+	}
+	text := os.read_file(file)
+	tokens := tokenizer.tokenize(text, file)
+	ast := parser.parse(tokens, file, ast.new_table(), preference.Prefs{})
 	println(ast)
 }

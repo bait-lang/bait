@@ -16,6 +16,10 @@ fun main() {
 		exit(1)
 	}
 	file := os.ARGS[2]
+	if not file.ends_with('.md') {
+		eprintln('error: file must be a markdown file')
+		exit(1)
+	}
 	println('Checking code blocks in ${file}...')
 	blocks := collect_code_blocks(file)
 	mut has_errors := false
