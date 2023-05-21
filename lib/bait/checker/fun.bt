@@ -29,6 +29,18 @@ fun (c Checker) fun_params(params []ast.Param){
 	}
 }
 
+
+fun (c Checker) return_stmt(node ast.ReturnStmt) {
+	if node.expr is ast.EmptyExpr {
+		if c.cur_fun.return_type != ast.VOID_TYPE {
+			c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}', node.pos)
+		}
+	} else {
+		c.expected_type = c.cur_fun.return_type
+		c.expr(node.expr)
+	}
+}
+
 fun (c Checker) fun_signature(node ast.FunDecl) string {
 	mut sig := 'fun ${node.name}('
 	for i, p in node.params {
