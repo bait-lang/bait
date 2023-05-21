@@ -67,14 +67,14 @@ fun (g Gen) expr_string(expr ast.Expr) string {
 
 fun (g Gen) anon_fun(node ast.AnonFun) {
 	g.write('function (')
-	for i, param in node.params {
+	for i, param in node.decl.params {
 		g.write(param.name)
-		if i < node.params.length - 1 {
+		if i < node.decl.params.length - 1 {
 			g.write(', ')
 		}
 	}
 	g.writeln(') {')
-	g.stmts(node.stmts)
+	g.stmts(node.decl.stmts)
 	g.write('}')
 }
 

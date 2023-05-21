@@ -62,10 +62,7 @@ pub struct ForInLoop{
 }
 
 pub struct AnonFun{
-	params []Param
-	stmts []Stmt
-	return_type Type
-	name string
+	decl FunDecl
 	typ Type
 	pos token.Pos
 }
