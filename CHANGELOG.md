@@ -31,6 +31,7 @@ _unreleased_
 
 ### Compiler
 - Implement short enum access without specifying the name if the type is already known
+- Require JS code to be in `.js.bt` files
 - Colorize error messages
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`

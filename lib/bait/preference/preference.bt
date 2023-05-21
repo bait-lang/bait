@@ -4,6 +4,11 @@ package preference
 
 import os
 
+pub enum Backend {
+	js
+	c
+}
+
 pub struct Prefs {
 	command string
 	args []string
@@ -12,6 +17,7 @@ pub struct Prefs {
 	is_verbose bool
 	is_test bool
 	is_script bool
+	backend Backend
 	// Values for compile time pseudo variables
 	baitexe string
 	baitdir string
@@ -19,7 +25,9 @@ pub struct Prefs {
 }
 
 pub fun parse_args(args []string) Prefs {
-	p := Prefs{}
+	p := Prefs{
+		backend: .js
+	}
 	// Default action in case of no arguments: help
 	if args.length == 0 {
 		p.command = 'help'
@@ -30,6 +38,10 @@ pub fun parse_args(args []string) Prefs {
 	for i := 0; i < args.length; i += 1{
 		arg := args[i]
 		match arg {
+			'-b', '--backend' {
+				i += 1
+				p.backend = backend_from_string(args[i])
+			}
 			"-o", '--out' {
 				i += 1
 				p.out_name = args[i]
@@ -77,4 +89,13 @@ pub fun (p Prefs) set_comptime_vars() {
 	p.baitexe = os.executable()
 	p.baitdir = os.dir(p.baitexe)
 	p.baithash = os.exec('git rev-parse --short HEAD').stdout.trim_space()
+}
+
+fun backend_from_string(s string) Backend {
+	match s {
+		'js' { return .js }
+		'c' { return .c }
+	}
+	// TODO error
+	return .js
 }

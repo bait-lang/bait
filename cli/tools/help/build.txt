@@ -2,6 +2,13 @@ Usage:
   bait ["build"] [options] <file.bt|directory>
 
 Options:
-  -o, --out <file>   Output file name (default: "out.js").
-  --nocolor          Prevent the use of colors in error messages.
-  --script           Enable script mode, which does not require the main function.
+  -o, --out <file>  Output file name (default: "out.js").
+
+  -b, --backend <backend>
+    Specifies the backend for compiling the executable.
+    Supported are:
+    * js  Output JS source code that can be run with NodeJS.
+    * c   [EXPERIMENTAL] Output C source code, which is passed to a C compiler.
+
+  --nocolor  Prevent the use of colors in error messages.
+  --script   Enable script mode, which does not require the main function.

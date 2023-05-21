@@ -78,6 +78,7 @@ fun (p Parser) package_decl() ast.PackageDecl {
 fun (p Parser) import_stmts() [] ast.Import{
 	mut imports := []ast.Import
 	for p.tok.kind == .key_import {
+		pos := p.tok.pos
 		p.next()
 		mut lang := ast.Language.bait
 		if p.tok.kind == .hash {
@@ -102,6 +103,7 @@ fun (p Parser) import_stmts() [] ast.Import{
 			name:name
 			alias: alias
 			lang: lang
+			pos: pos
 		})
 	}
 	return imports

@@ -12,6 +12,7 @@ struct Checker{
 	scope ast.Scope
 	path string
 	pkg string
+	is_js_file bool
 	had_error bool
 	cur_fun ast.FunDecl
 	expected_type ast.Type
@@ -36,8 +37,18 @@ pub fun check_files(files []ast.File, table ast.Table) bool {
 
 fun (c Checker) check(file ast.File) {
 	c.path = file.path
+	c.is_js_file = c.path.ends_with('.js.bt')
 	c.pkg = file.pkg_decl.full_name
+	c.check_imports(file.imports)
 	c.stmts(file.stmts)
+}
+
+fun (c Checker) check_imports(imports []ast.Import) {
+	for imp in imports {
+		if not c.is_js_file and imp.lang == .js {
+			c.warn('JS imports have to be in .js.bt files', imp.pos)
+		}
+	}
 }
 
 fun (c Checker) open_scope(){
