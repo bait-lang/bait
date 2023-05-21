@@ -5,7 +5,7 @@ package ast
 pub struct Table {
 	global_scope Scope
 	fun_decls map[string]FunDecl
-	type_idxs map[string]i32
+	type_idxs map[string]Type
 	type_symbols []TypeSymbol
 	redefined_funs []string
 }
@@ -51,7 +51,7 @@ pub fun (t Table) register_sym(sym TypeSymbol) Type {
 	}
 	new_idx := t.type_symbols.length
 	t.type_symbols.push(sym)
-	t.type_idxs[sym.name] = new_idx
+	t.type_idxs[sym.name] = new_idx as Type
 	return new_idx
 }
 

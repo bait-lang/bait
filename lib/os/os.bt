@@ -32,7 +32,7 @@ pub fun cp(src string, dest string) {
 }
 
 pub fun exists(path string) bool {
-	return #JS.fs.existsSync(#JS.'path.str')
+	return #JS.fs.existsSync(#JS.'path.str') as bool
 }
 
 pub fun file_name(path string) string {
@@ -40,7 +40,7 @@ pub fun file_name(path string) string {
 }
 
 pub fun file_mod_time(path string) i64 {
-	return #JS.'js_fs.lstatSync(path.str).mtimeMs'
+	return #JS.'js_fs.lstatSync(path.str).mtimeMs' as i64
 }
 
 pub fun symlink(src string, dest string) {
@@ -61,7 +61,7 @@ pub fun dir(path string) string {
 }
 
 pub fun is_dir(path string) bool {
-	return #JS.'js_fs.lstatSync(path.str).isDirectory()'
+	return #JS.'js_fs.lstatSync(path.str).isDirectory()' as bool
 }
 
 pub fun mkdir(dir string) {

@@ -17,31 +17,31 @@ enum Precedence {
 pub fun (t Token) precedence() i32 {
 	match t.kind {
 		TokenKind.lbr {
-			return Precedence.index
+			return Precedence.index as i32
 		}
 		TokenKind.dot {
-			return Precedence.call
+			return Precedence.call as i32
 		}
 		TokenKind.key_not {
-			return Precedence.prefix
+			return Precedence.prefix as i32
 		}
 		TokenKind.mul, TokenKind.div, TokenKind.mod {
-			return Precedence.product
+			return Precedence.product as i32
 		}
 		TokenKind.plus, TokenKind.minus {
-			return Precedence.sum
+			return Precedence.sum as i32
 		}
 		TokenKind.eq, TokenKind.ne, TokenKind.lt, TokenKind.gt, TokenKind.le, TokenKind.ge {
-			return Precedence.compare
+			return Precedence.compare as i32
 		}
 		TokenKind.key_as, TokenKind.key_is {
-			return Precedence.as_is
+			return Precedence.as_is as i32
 		}
 		TokenKind.key_and, TokenKind.key_or {
-			return Precedence.cond
+			return Precedence.cond as i32
 		}
 		else {
-			return Precedence.lowest
+			return Precedence.lowest as i32
 		}
 	}
 }

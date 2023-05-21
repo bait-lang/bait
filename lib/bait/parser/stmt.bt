@@ -117,7 +117,7 @@ fun (p Parser) assert_stmt() ast.AssertStmt{
 	}
 }
 
-fun (p Parser) assign_stmt(left ast.Expr){
+fun (p Parser) assign_stmt(left ast.Expr) ast.AssignStmt {
 	pos := p.tok.pos
 	op := p.tok.kind
 	p.next()

@@ -21,5 +21,5 @@ pub fun (c u8) ascii() string {
 }
 
 fun (a u8) add (b u8) u8 {
-	return #JS.'new u8(a.val + b.val)'
+	return #JS.'new u8(a.val + b.val)' as u8
 }

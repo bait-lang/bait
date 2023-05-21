@@ -23,7 +23,7 @@ pub fun (a array) push(el any) {
 // TODO remove requirement for functions like index, last_index, contains, ... to be duplicated for types that are objects in JS
 
 pub fun (a array) index(el any) i32 {
-	return #JS.'a.data.indexOf(el)'
+	return #JS.'a.data.indexOf(el)' as i32
 }
 
 pub fun (a []u8) index(c u8) i32 {
@@ -45,7 +45,7 @@ pub fun (a []string) index(s string) i32 {
 }
 
 pub fun (a array) last_index(el any) i32 {
-	return #JS.'a.data.lastIndexOf(el)'
+	return #JS.'a.data.lastIndexOf(el)' as i32
 }
 
 pub fun (a []u8) last_index(c u8) i32 {

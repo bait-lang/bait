@@ -14,7 +14,7 @@ struct string {
 }'
 
 fun (s string) get(i i32) u8 {
-	return #JS.'new u8(s.str.charCodeAt(i))'
+	return #JS.'new u8(s.str.charCodeAt(i))' as u8
 }
 
 pub fun (s string) get_str(i i32) string {
@@ -22,7 +22,7 @@ pub fun (s string) get_str(i i32) string {
 }
 
 pub fun (s string) get_code() i32 {
-	return #JS.'s.str.charCodeAt(0)'
+	return #JS.'s.str.charCodeAt(0)' as i32
 }
 
 pub fun (s string) replace(val string, rep string) string {
@@ -34,11 +34,11 @@ pub fun (s string) substr(start i32, end i32) string {
 }
 
 pub fun (s string) index(search string) i32 {
-	return #JS.'s.str.indexOf(search.str)'
+	return #JS.'s.str.indexOf(search.str)' as i32
 }
 
 pub fun (s string) last_index(search string) i32 {
-	return #JS.'s.str.lastIndexOf(search.str)'
+	return #JS.'s.str.lastIndexOf(search.str)' as i32
 }
 
 pub fun (s string) all_before(search string) string {
@@ -82,19 +82,19 @@ pub fun (s string) trim_space() string {
 }
 
 pub fun (s string) starts_with(prefix string) bool {
-	return #JS.'s.str.startsWith(prefix.str)'
+	return #JS.'s.str.startsWith(prefix.str)' as bool
 }
 
 pub fun (s string) ends_with(suffix string) bool {
-	return #JS.'s.str.endsWith(suffix.str)'
+	return #JS.'s.str.endsWith(suffix.str)' as bool
 }
 
 pub fun (s string) contains(substr string) bool {
-	return #JS.'s.str.includes(substr.str)'
+	return #JS.'s.str.includes(substr.str)' as bool
 }
 
 pub fun (s string) is_upper() bool {
-	return #JS.'s.str == s.str.toUpperCase() && s.str != s.str.toLowerCase()'
+	return #JS.'s.str == s.str.toUpperCase() && s.str != s.str.toLowerCase()' as bool
 }
 
 pub fun (s string) split_lines() []string {
@@ -110,7 +110,7 @@ fun (a string) add (b string) string {
 }
 
 fun (a string) eq (b string) bool {
-	return #JS.'a.str === b.str'
+	return #JS.'a.str === b.str' as bool
 }
 
 pub fun (arr []string) join(sep string) string {
