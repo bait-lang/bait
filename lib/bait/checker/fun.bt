@@ -36,6 +36,10 @@ fun (c Checker) return_stmt(node ast.ReturnStmt) {
 			c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}', node.pos)
 		}
 	} else {
+		if c.cur_fun.return_type == ast.VOID_TYPE {
+			c.error('function ${c.cur_fun.name} does not return a value', node.pos)
+			return
+		}
 		c.expected_type = c.cur_fun.return_type
 		c.expr(node.expr)
 	}
