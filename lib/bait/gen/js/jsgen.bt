@@ -74,7 +74,7 @@ fun (g Gen) writeln (s string){
 
 fun (g Gen) process_imports(imports []ast.Import) {
 	for imp in imports {
-		if imp.lang == 'bait' or g.import_names.contains(imp.name) {
+		if imp.lang == .bait or g.import_names.contains(imp.name) {
 			continue
 		}
 		g.import_names.push(imp.name)

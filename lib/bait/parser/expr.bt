@@ -27,13 +27,13 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 			node = p.par_expr()
 		}
 		.name {
-			node = p.name_expr('bait')
+			node = p.name_expr(.bait)
 		}
 		.number {
 			node = p.number_literal()
 		}
 		.string {
-			node = p.string_literal("bait")
+			node = p.string_literal(.bait)
 		}
 		.key_fun {
 			node = p.anon_fun()
@@ -48,7 +48,7 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 			node = p.match_expr()
 		}
 		.key_mut {
-			node = p.ident('bait')
+			node = p.ident(.bait)
 		}
 		.key_not, .minus {
 			node = p.prefix_expr()
@@ -200,7 +200,7 @@ fun (p Parser) dot_expr(left ast.Expr) ast.Expr {
 	}
 }
 
-fun (p Parser) fun_call(lang string)ast.CallExpr{
+fun (p Parser) fun_call(lang ast.Language)ast.CallExpr{
 	pos := p.tok.pos
 	name := p.prepend_expr_pkg(p.check_name())
 	p.check(.lpar)
@@ -226,7 +226,7 @@ fun (p Parser) method_call(left ast.Expr) ast.CallExpr {
 		left: left
 		name: name
 		args: args
-		lang: 'bait'
+		lang: .bait
 		pos: pos
 	}
 }
@@ -270,12 +270,12 @@ fun (p Parser) hash_expr()ast.Expr{
 	p.check(.hash)
 	p.check(.dot)
 	if p.tok.kind == .string {
-		return p.string_literal('js')
+		return p.string_literal(.js)
 	}
-	return p.name_expr('js')
+	return p.name_expr(.js)
 }
 
-fun (p Parser) ident(lang string)ast.Ident{
+fun (p Parser) ident(lang ast.Language)ast.Ident{
 	pos := p.tok.pos
 	mut is_mut := p.tok.kind == .key_mut
 	if is_mut {
@@ -414,7 +414,7 @@ fun (p Parser) match_expr()ast.MatchExpr{
 	}
 }
 
-fun (p Parser) name_expr(lang string)ast.Expr{
+fun (p Parser) name_expr(lang ast.Language)ast.Expr{
 	if p.next_tok.kind == .dot and p.import_aliases.contains(p.tok.val) {
 		p.expr_pkg = p.import_aliases[p.tok.val]
 		p.next()
@@ -467,7 +467,7 @@ fun (p Parser) prefix_expr()ast.PrefixExpr{
 	}
 }
 
-fun (p Parser) string_literal(lang string)ast.Expr{
+fun (p Parser) string_literal(lang ast.Language)ast.Expr{
 	pos := p.tok.pos
 	if p.next_tok.kind != .dollar {
 		p.next()

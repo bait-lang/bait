@@ -98,7 +98,7 @@ fun (g Gen) bool_literal(node ast.BoolLiteral){
 }
 
 fun (g Gen) call_expr(node ast.CallExpr) {
-	if node.lang == 'bait' {
+	if node.lang == .bait {
 		if node.is_method {
 			sym := g.table.get_sym(node.left_type)
 			g.write(js_name(sym.name + '_' + node.name))
@@ -161,7 +161,7 @@ fun (g Gen) enum_val(node ast.EnumVal) {
 }
 
 fun (g Gen) ident(node ast.Ident) {
-	if node.lang == 'bait' {
+	if node.lang == .bait {
 		g.write(js_name(node.name))
 	} else {
 		g.write('js_${node.name}')
@@ -393,7 +393,7 @@ fun (g Gen) selector_expr(node ast.SelectorExpr) {
 }
 
 fun (g Gen) string_literal(node ast.StringLiteral) {
-	if node.lang != 'bait' {
+	if node.lang != .bait {
 		g.write(node.val)
 		return
 	}

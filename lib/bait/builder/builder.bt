@@ -44,7 +44,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 		f := files[i]
 		for imp in f.imports {
 			// Extern imports do not have to be parsed
-			if imp.lang != 'bait' {
+			if imp.lang != .bait {
 				continue
 			}
 
@@ -77,7 +77,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 		}
 
 		for imp in f.imports {
-			if imp.lang != 'bait' {
+			if imp.lang != .bait {
 				continue
 			}
 			deps[pkg_name].push(imp.name)

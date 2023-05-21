@@ -140,7 +140,7 @@ pub struct BoolLiteral{
 pub struct CallExpr{
 	name string
 	args []CallArg
-	lang string
+	lang Language
 	return_type Type
 	is_method bool
 	left Expr
@@ -175,7 +175,7 @@ pub struct Ident{
 	name string
 	is_mut bool
 	pkg string
-	lang string
+	lang Language
 	pos token.Pos
 }
 
@@ -256,7 +256,7 @@ pub struct SelectorExpr{
 
 pub struct StringLiteral{
 	val string
-	lang string
+	lang Language
 	pos token.Pos
 }
 
@@ -304,7 +304,7 @@ pub struct PackageDecl{
 pub struct Import{
 	name string
 	alias string
-	lang string
+	lang Language
 }
 
 pub struct File{
