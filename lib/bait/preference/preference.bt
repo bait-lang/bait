@@ -25,7 +25,9 @@ pub struct Prefs {
 }
 
 pub fun parse_args(args []string) Prefs {
-	p := Prefs{}
+	p := Prefs{
+		backend: .js
+	}
 	// Default action in case of no arguments: help
 	if args.length == 0 {
 		p.command = 'help'

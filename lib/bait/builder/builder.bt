@@ -4,6 +4,7 @@ package builder
 
 import os
 import bait.ast
+import bait.errors
 import bait.parser
 import bait.checker
 import bait.gen.js as jsgen
@@ -98,6 +99,12 @@ pub fun compile(prefs preference.Prefs) i32 {
 
 	// Run the type resolver and checker
 	if not checker.check_files(sorted_files, b.table) {
+		return 1
+	}
+
+	// TODO properly select backend
+	if b.prefs.backend != .js {
+		errors.generic_error('Only the JS backend is supported right now.')
 		return 1
 	}
 
