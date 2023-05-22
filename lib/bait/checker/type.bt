@@ -3,6 +3,7 @@
 package checker
 
 import bait.ast
+import bait.token
 
 fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 	if got == expected {

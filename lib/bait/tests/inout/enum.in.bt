@@ -1,0 +1,7 @@
+enum Color{
+	red
+	blue
+}
+
+mut c := 123
+c = .red

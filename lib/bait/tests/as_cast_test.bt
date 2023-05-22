@@ -1,0 +1,8 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+fun test_no_smartcast(){
+	mut x := 5 as i16
+	if x as i32 == 7 {}
+	assert x == 5 as i16
+}

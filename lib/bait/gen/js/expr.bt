@@ -205,7 +205,7 @@ fun (g Gen) index_expr(node ast.IndexExpr){
 			g.write(', ')
 			g.expr(node.index)
 			g.write(', ')
-			info := sym.info as MapType
+			info := sym.info as ast.MapInfo
 			g.write_default_value(info.val_type)
 			g.write(')')
 		}
