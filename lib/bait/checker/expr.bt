@@ -106,13 +106,6 @@ fun (c Checker) as_cast(node ast.AsCast) ast.Type {
 }
 
 fun (c Checker) call_expr(node ast.CallExpr) ast.Type {
-	if node.lang == .js {
-		for arg in node.args {
-			arg.typ = c.expr(arg.expr)
-		}
-		// TODO require JS function declarations and use declared return type here
-		return ast.VOID_TYPE
-	}
 	if node.is_method{
 		return c.method_call(node)
 	}
@@ -274,9 +267,6 @@ fun (c Checker) enum_val(node ast.EnumVal) ast.Type {
 }
 
 fun (c Checker) ident(node ast.Ident) ast.Type {
-	if node.lang == .js {
-		return ast.VOID_TYPE
-	}
 	mut obj := c.scope.get(node.name)
 	if obj.typ != ast.PLACEHOLDER_TYPE {
 		return obj.typ

@@ -27,7 +27,7 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 			node = p.par_expr()
 		}
 		.name {
-			node = p.name_expr(.bait)
+			node = p.name_expr()
 		}
 		.number {
 			node = p.number_literal()
@@ -48,7 +48,7 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 			node = p.match_expr()
 		}
 		.key_mut {
-			node = p.ident(.bait)
+			node = p.ident()
 		}
 		.key_not, .minus {
 			node = p.prefix_expr()
@@ -200,7 +200,7 @@ fun (p Parser) dot_expr(left ast.Expr) ast.Expr {
 	}
 }
 
-fun (p Parser) fun_call(lang ast.Language)ast.CallExpr{
+fun (p Parser) fun_call()ast.CallExpr{
 	pos := p.tok.pos
 	name := p.prepend_expr_pkg(p.check_name())
 	p.check(.lpar)
@@ -209,7 +209,6 @@ fun (p Parser) fun_call(lang ast.Language)ast.CallExpr{
 	return ast.CallExpr{
 		name: name
 		args: args
-		lang: lang
 		pkg: p.pkg_name
 		pos: pos
 	}
@@ -226,7 +225,6 @@ fun (p Parser) method_call(left ast.Expr) ast.CallExpr {
 		left: left
 		name: name
 		args: args
-		lang: .bait
 		pos: pos
 	}
 }
@@ -269,13 +267,10 @@ fun (p Parser) enum_val(has_name bool) ast.EnumVal{
 fun (p Parser) hash_expr()ast.Expr{
 	p.check(.hash)
 	p.check(.dot)
-	if p.tok.kind == .string {
-		return p.string_literal(.js)
-	}
-	return p.name_expr(.js)
+	return p.string_literal(.js)
 }
 
-fun (p Parser) ident(lang ast.Language)ast.Ident{
+fun (p Parser) ident()ast.Ident{
 	pos := p.tok.pos
 	mut is_mut := p.tok.kind == .key_mut
 	if is_mut {
@@ -289,7 +284,6 @@ fun (p Parser) ident(lang ast.Language)ast.Ident{
 		name: name
 		is_mut: is_mut
 		pkg: p.pkg_name
-		lang: lang
 		pos: pos
 	}
 }
@@ -414,7 +408,7 @@ fun (p Parser) match_expr()ast.MatchExpr{
 	}
 }
 
-fun (p Parser) name_expr(lang ast.Language)ast.Expr{
+fun (p Parser) name_expr()ast.Expr{
 	if p.next_tok.kind == .dot and p.import_aliases.contains(p.tok.val) {
 		p.expr_pkg = p.import_aliases[p.tok.val]
 		p.next()
@@ -424,7 +418,7 @@ fun (p Parser) name_expr(lang ast.Language)ast.Expr{
 		return p.map_init()
 	}
 	if p.next_tok.kind == .lpar {
-		return p.fun_call(lang)
+		return p.fun_call()
 	}
 	if p.is_struct_possible and p.next_tok.kind == .lcur {
 		return p.struct_init()
@@ -432,7 +426,7 @@ fun (p Parser) name_expr(lang ast.Language)ast.Expr{
 	if p.next_tok.kind == .dot and p.tok.val[0].is_capital() and not p.tok.val.is_upper() {
 		return p.enum_val(true)
 	}
-	return p.ident(lang)
+	return p.ident()
 }
 
 fun (p Parser) number_literal()ast.IntegerLiteral{

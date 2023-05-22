@@ -1,3 +1,1 @@
-import #JS.'os' as os
-
 #JS.'console.log(1)'

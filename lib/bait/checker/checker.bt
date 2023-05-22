@@ -44,11 +44,6 @@ fun (c Checker) check(file ast.File) {
 }
 
 fun (c Checker) check_imports(imports []ast.Import) {
-	for imp in imports {
-		if not c.is_js_file and imp.lang == .js {
-			c.warn('JS imports have to be in .js.bt files', imp.pos)
-		}
-	}
 }
 
 fun (c Checker) open_scope(){

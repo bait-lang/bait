@@ -310,26 +310,4 @@ global my_global := 123
 ```
 
 ## JavaScript Interoperability
-Interoperability with JavaScript is possible by using the `#JS.` prefix and is only possible in `.js.bt` files.
-
-### Using JS Functions and Objects
-> :construction: functions and objects will have to be declared in the future.
-
-```bait
-// Imports have to be specified as string and with a alias because JS naming conventions are different.
-import #JS.'fs' as fs
-
-// Call a JS function
-// Note: Until the declaration of function and object signatures is implemented, you have to use type casting or converter functions.
-text := from_js_string(#JS.fs.readFileSync('myfile.txt'))
-```
-
-### Embedding JS Code
-It's also possible to embed JS code directly, however this is highly unsafe and should be avoided.
-```bait
-#JS.'try {
-    console.log("Hello World")
-} catch (e) {
-    return e.status
-}'
-```
+JS code can be embeded using the `#JS.` prefix and is only allowed in `.js.bt` files.

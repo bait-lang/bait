@@ -19,7 +19,6 @@ struct Gen {
 	out string
 	indent i32
 	empty_line bool
-	import_names []string
 	tmp_counter i32
 	cur_fun ast.FunDecl
 	is_for_loop_head bool
@@ -38,7 +37,6 @@ fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	for file in files {
 		g.path = file.path
 		g.pkg = file.pkg_decl.full_name
-		g.process_imports(file.imports)
 		g.stmts(file.stmts)
 		g.out += "\n"
 	}
@@ -72,20 +70,8 @@ fun (g Gen) writeln (s string){
 	g.empty_line = true
 }
 
-fun (g Gen) process_imports(imports []ast.Import) {
-	for imp in imports {
-		if imp.lang == .bait or g.import_names.contains(imp.name) {
-			continue
-		}
-		g.import_names.push(imp.name)
-	}
-}
-
 fun (g Gen) headers() string {
 	mut headers := ''
-	for imp in g.import_names {
-		headers += 'const js_${imp} = require("${imp}")\n'
-	}
 	return headers + '\n'
 }
 
