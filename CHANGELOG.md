@@ -26,6 +26,7 @@ _unreleased_
 - Infix types must match
 - Match branch exprs must be of the same type as the condition
 - Check types of return values
+- `as` cast: check the target type exists
 - Improve type resolving of constants
 - Implement enum access without specifying the name if the type is already known
 - Infer struct init default value of type alias from parent type
