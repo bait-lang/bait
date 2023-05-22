@@ -5,15 +5,6 @@ package checker
 import bait.ast
 import bait.token
 
-fun (c Checker) type_exists(typ ast.Type, pos token.Pos) bool {
-	sym := c.table.get_sym(typ)
-	if sym.kind != .placeholder {
-		return true
-	}
-	c.error('unknown type ${sym.name}', pos)
-	return false
-}
-
 fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 	if got == expected {
 		return true

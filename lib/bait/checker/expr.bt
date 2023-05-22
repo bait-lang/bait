@@ -82,18 +82,26 @@ fun (c Checker) array_init(node ast.ArrayInit) ast.Type {
 }
 
 fun (c Checker) as_cast(node ast.AsCast) ast.Type {
-	// TODO check if expr is part of target
 	expr_type := c.expr(node.expr)
 	node.expr_type = expr_type
+	expr_sym := c.table.get_sym(expr_type)
 
-	if not c.type_exists(node.target, node.pos) {
-		return node.expr_type
+	// Check the target exists
+	target_sym := c.table.get_sym(node.target)
+	if target_sym.kind == .placeholder {
+		c.error('unknown type ${target_sym.name}', node.pos)
+		return expr_type
 	}
 
-	if node.expr is ast.Ident {
+	// TODO check cast is possible (e.g. prevent string to i32, ...)
+
+	// Smartcast sumtypes
+	// TODO check if expr is part of target
+	if expr_sym.kind == .sum_type and node.expr is ast.Ident {
 		expr := node.expr as ast.Ident
 		c.scope.update_type(expr.name, node.target)
 	}
+
 	return node.target
 }
 

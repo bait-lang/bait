@@ -49,9 +49,9 @@ pub fun (t Table) register_sym(sym TypeSymbol) Type {
 		}
 
 	}
-	new_idx := t.type_symbols.length
+	new_idx := t.type_symbols.length as Type
 	t.type_symbols.push(sym)
-	t.type_idxs[sym.name] = new_idx as Type
+	t.type_idxs[sym.name] = new_idx
 	return new_idx
 }
 
