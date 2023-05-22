@@ -10,6 +10,7 @@ _unreleased_
 ### Breaking
 - Remove `type(var)` cast syntax in favor of `as` casting: `var as Type`
 - `$FILE` comptime var now gives the relative path. Use `$ABS_FILE` for the old behaviour
+- JS imports using `import #JS.name` are no longer supported
 
 ### CLI and Tooling
 - Add `symlink` command that will link a helper bash script which executes bait with NodeJS
@@ -21,20 +22,23 @@ _unreleased_
 - Add `--verbose` option and verbose output for launching tools
 - Script mode is enabled implicitly but will cause a warning
 
-### Type System and Error Checking
+### Type System
 - Infix types must match
 - Match branch exprs must be of the same type as the condition
 - Check types of return values
-- Prevent redefinition of functions and methods
 - Improve type resolving of constants
+- Implement enum access without specifying the name if the type is already known
 - Infer struct init default value of type alias from parent type
+
+### Error Checking
+- Prevent redefinition of functions and methods
+- Prevent shadowing of imports
 
 ### JS Interoperability
 - Require JS code to be in `.js.bt` files
 - Imports must have the `import #JS.'name' as alias` format
 
 ### Compiler
-- Implement short enum access without specifying the name if the type is already known
 - Colorize error messages
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`

@@ -25,7 +25,7 @@ pub fun check_files(files []ast.File, table ast.Table) bool {
 		table: table
 		scope: ast.Scope{
 			// TODO how to handle recursive sturct inits?
-			parent: 0 as any
+			parent: table.global_scope
 		}
 	}
 	for f in c.parsed_files {
