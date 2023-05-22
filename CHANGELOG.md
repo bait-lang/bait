@@ -29,9 +29,12 @@ _unreleased_
 - Improve type resolving of constants
 - Infer struct init default value of type alias from parent type
 
+### JS Interoperability
+- Require JS code to be in `.js.bt` files
+- Imports must have the `import #JS.'name' as alias` format
+
 ### Compiler
 - Implement short enum access without specifying the name if the type is already known
-- Require JS code to be in `.js.bt` files
 - Colorize error messages
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`

@@ -32,7 +32,10 @@ fun (p Parser) toplevel_stmt() ast.Stmt {
 			return p.type_decl()
 		}
 		else{
-			return p.script_mode_main()
+			if p.pkg_name == 'main' {
+				return p.script_mode_main()
+			}
+			p.error('bad toplevel token: kind: ${p.tok.kind}, val: ${p.tok.val}')
 		}
 	}
 }

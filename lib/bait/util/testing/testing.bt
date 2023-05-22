@@ -44,7 +44,11 @@ pub fun in_out_runner(dir string) {
 		name := name_ext.all_before('.in.bt')
 
 		out_file := '${dir}/${name}.out'
-		assert os.exists(out_file)
+		if not os.exists(out_file) {
+			eprintln('out file ${out_file} does not exist')
+			assert false
+			continue
+		}
 
 		mut cmd := 'build'
 		is_test := name_ext.contains('_test.in.bt')
