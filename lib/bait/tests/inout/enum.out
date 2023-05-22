@@ -1,0 +1,2 @@
+lib/bait/tests/inout/enum.in.bt:7:5 error: cannot infer enum type, got i32
+lib/bait/tests/inout/enum.in.bt:7:3 error: cannot assign type void to i32
