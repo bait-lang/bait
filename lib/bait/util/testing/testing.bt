@@ -4,6 +4,20 @@ package testing
 
 import os
 
+pub fun build_file(dir string, file string) i32 {
+	cmd := 'node ${$BAITEXE} ${dir}/${file}'
+	res := os.exec(cmd)
+
+	if res.code == 0 {
+		println('OK ${file}')
+		return 0
+	}
+
+	eprintln('FAIL ${file}')
+	eprintln(res.stderr)
+	return 1
+}
+
 pub fun build_files_in_dir(dir string) {
 	mut fails := 0
 	files := os.ls(dir)
@@ -13,16 +27,7 @@ pub fun build_files_in_dir(dir string) {
 			continue
 		}
 
-		cmd := 'node ${$BAITEXE} ${dir}/${file}'
-		res := os.exec(cmd)
-
-		if res.code == 0 {
-			println('OK ${file}')
-		} else {
-			eprintln('FAIL ${file}')
-			eprintln(res.stderr)
-			fails += 1
-		}
+		fails += build_file(dir, file)
 	}
 
 	if fails > 0 {

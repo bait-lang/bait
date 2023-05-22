@@ -157,6 +157,9 @@ pub fun compile(prefs preference.Prefs) i32 {
 fun resolve_import(pkg string) string {
 	// Usually the exe and lib have the same root dir
 	dir := os.resource_abs_path(os.join_path("lib", [pkg]))
+	if os.exists(dir) {
+		return dir
+	}
 
 	// When running make, lib is in the working dir
 	return os.join_path(os.getwd(), ["lib", pkg])

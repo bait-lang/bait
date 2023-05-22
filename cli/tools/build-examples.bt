@@ -8,4 +8,10 @@ import bait.util.testing
 fun main() {
 	examples_dir := os.join_path($BAITDIR, ['examples'])
 	testing.build_files_in_dir(examples_dir)
+
+	// Building hello_world.bt from a different directory
+	os.chdir(os.home_dir())
+	if testing.build_file(examples_dir, 'hello_world.bt') == 1 {
+		exit(1)
+	}
 }
