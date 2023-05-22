@@ -25,6 +25,9 @@ fun (p Parser) toplevel_stmt() ast.Stmt {
 		.key_global{
 			return p.global_decl()
 		}
+		.key_interface{
+			return p.interface_decl()
+		}
 		.key_struct{
 			return p.struct_decl()
 		}
@@ -50,6 +53,9 @@ fun (p Parser) pub_stmt() ast.Stmt {
 		}
 		.key_fun{
 			return p.fun_decl()
+		}
+		.key_interface{
+			return p.interface_decl()
 		}
 		.key_struct{
 			return p.struct_decl()
@@ -340,6 +346,78 @@ fun (p Parser) global_decl()ast.GlobalDecl{
 	return ast.GlobalDecl{
 		name: name
 		expr: expr
+		pos: pos
+	}
+}
+
+fun (p Parser) interface_decl()ast.InterfaceDecl{
+	pos := p.tok.pos
+	is_pub := p.check_pub()
+	p.check(.key_interface)
+	lang := p.parse_lang()
+	name := p.prepend_lang(lang, p.check_name())
+
+	// TODO investigate why adding methods here does not work
+	tsym := ast.TypeSymbol{
+		kind: .interface_
+		name: name
+		is_pub: is_pub
+		pkg: p.pkg_name
+		// methods: methods
+		// info: ast.StructInfo {
+		// 	fields: fields
+		// }
+	}
+	typ := p.table.register_sym(tsym)
+
+	mut methods := []ast.FunDecl
+	mut fields := []ast.StructField
+	p.check(.lcur)
+	for p.tok.kind != .rcur {
+		if p.tok.kind == .key_fun {
+			p.next()
+			fun_name := p.check_name()
+			p.check(.lpar)
+			params := p.fun_params()
+			p.check(.rpar)
+			mut return_type := ast.VOID_TYPE
+			if p.tok.pos.line == p.prev_tok.pos.line {
+				return_type = p.parse_type()
+			}
+			m := ast.FunDecl{
+				name: fun_name
+				params: params
+				return_type: return_type
+				is_pub: true
+				is_method: true
+			}
+			methods.push(m)
+			tsym.methods.push(m)
+			continue
+		}
+
+		if p.tok.kind == .name {
+			fields.push(ast.StructField{
+				name: p.check_name()
+				typ: p.parse_type()
+			})
+			continue
+		}
+
+		// TODO error
+	}
+	p.next()
+
+	tsym.info = ast.StructInfo {
+		fields: fields
+	}
+
+	return ast.InterfaceDecl{
+		lang: lang
+		name: name
+		typ: typ
+		methods: methods
+		fields: fields
 		pos: pos
 	}
 }

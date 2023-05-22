@@ -15,7 +15,8 @@ fun (p Parser) parse_type() ast.Type {
 	if p.tok.kind == .key_fun {
 		return p.parse_fun_type()
 	}
-	mut name := p.check_name()
+	lang := p.parse_lang()
+	mut name := p.prepend_lang(lang, p.check_name())
 	if name == 'map' {
 		return p.parse_map_type()
 	}

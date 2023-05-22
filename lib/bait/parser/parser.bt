@@ -125,6 +125,22 @@ fun (p Parser) check_pub() bool {
 	return false
 }
 
+fun (p Parser) parse_lang() ast.Language {
+	if p.tok.kind != .hash {
+		return .bait
+	}
+	p.next()
+	p.check(.dot)
+	return .js
+}
+
+fun (p Parser) prepend_lang(lang ast.Language, val string) string {
+	if lang == .bait {
+		return val
+	}
+	return '#JS.' + val
+}
+
 fun (p Parser) prepend_pkg(val string) string {
 	if p.pkg_name == 'builtin' or p.pkg_name == 'main' or p.pkg_name.length == 0{
 		return val

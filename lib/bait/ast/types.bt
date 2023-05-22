@@ -43,6 +43,7 @@ pub enum TypeKind {
 	string
 	array
 	map
+	interface_
 	struct_
 	enum_
 	alias_type

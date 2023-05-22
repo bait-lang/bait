@@ -37,6 +37,8 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 		g.fun_decl(stmt)
 	} else if stmt is ast.GlobalDecl {
 		g.global_decl(stmt)
+	} else if stmt is ast.InterfaceDecl {
+		g.interface_decl(stmt)
 	} else if stmt is ast.LoopControlStmt {
 		g.control_stmt(stmt)
 	} else if stmt is ast.ReturnStmt {
@@ -259,6 +261,12 @@ fun (g Gen) global_decl(node ast.GlobalDecl){
 	name := js_name(node.name)
 	expr := g.expr_string(node.expr)
 	g.global_out += 'var ${name} = ${expr}\n'
+}
+
+fun (g Gen) interface_decl(node ast.InterfaceDecl){
+	if node.lang != .bait {
+		return
+	}
 }
 
 fun (g Gen) return_stmt(node ast.ReturnStmt){
