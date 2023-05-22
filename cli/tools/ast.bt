@@ -20,6 +20,6 @@ fun main() {
 	}
 	text := os.read_file(file)
 	tokens := tokenizer.tokenize(text, file)
-	ast := parser.parse(tokens, file, ast.new_table(), preference.Prefs{})
-	println(ast)
+	tree := parser.parse(tokens, file, ast.new_table(), preference.Prefs{})
+	println(tree)
 }

@@ -35,6 +35,9 @@ fun (p Parser) import_stmts() [] ast.Import{
 		}
 
 		p.import_aliases[alias] = name
+		p.table.global_scope.register(alias, ast.ScopeObject{
+			kind: .package_
+		})
 		imports.push(ast.Import{
 			name:name
 			alias: alias

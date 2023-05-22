@@ -8,17 +8,19 @@ pub struct Scope {
 }
 
 pub struct ScopeObject{
-	typ Type
 	kind ObjectKind
+	typ Type
 	is_pub bool
 	expr Expr // Only for constants. Allows resolving their type early
 }
 
 pub enum ObjectKind {
+	unknown
 	variable
 	constant
 	function
 	global_
+	package_
 }
 
 pub fun (s Scope) register(name string, obj ScopeObject) {
@@ -36,7 +38,7 @@ pub fun (s Scope) get(name string) ScopeObject {
 		return s.parent.get(name)
 	}
 	return ScopeObject{
-		typ: PLACEHOLDER_TYPE
+		kind: .unknown
 	}
 }
 
@@ -46,5 +48,5 @@ pub fun (s Scope) update_type(name string, typ Type) {
 
 pub fun (s Scope) is_known(name string) bool {
 	obj := s.get(name)
-	return obj.typ != PLACEHOLDER_TYPE
+	return obj.kind != .unknown
 }

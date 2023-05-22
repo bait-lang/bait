@@ -58,7 +58,7 @@ fun (c Checker) assign_stmt(node ast.AssignStmt) {
 		typ := c.expr(node.right)
 		left := node.left as ast.Ident
 		if c.scope.is_known(left.name) {
-			c.error('redeclaration of ${left.name}', node.pos)
+			c.error('redefinition of ${left.name}', node.pos)
 			return
 		}
 		c.scope.register(left.name, ast.ScopeObject{typ: typ})
