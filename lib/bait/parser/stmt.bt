@@ -357,16 +357,12 @@ fun (p Parser) interface_decl()ast.InterfaceDecl{
 	lang := p.parse_lang()
 	name := p.prepend_lang(lang, p.check_name())
 
-	// TODO investigate why adding methods here does not work
+	// TODO investigate why registration of the sym after loop with methods as struct field does not work
 	tsym := ast.TypeSymbol{
 		kind: .interface_
 		name: name
 		is_pub: is_pub
 		pkg: p.pkg_name
-		// methods: methods
-		// info: ast.StructInfo {
-		// 	fields: fields
-		// }
 	}
 	typ := p.table.register_sym(tsym)
 
@@ -378,13 +374,19 @@ fun (p Parser) interface_decl()ast.InterfaceDecl{
 			p.next()
 			fun_name := p.check_name()
 			p.check(.lpar)
-			params := p.fun_params()
+			// The first param is a fictional receiver in this case
+			mut params := [ast.Param{
+				name: '_'
+				typ: typ
+			}]
+			params = params.concat(p.fun_params())
 			p.check(.rpar)
 			mut return_type := ast.VOID_TYPE
 			if p.tok.pos.line == p.prev_tok.pos.line {
 				return_type = p.parse_type()
 			}
 			m := ast.FunDecl{
+				lang: .js
 				name: fun_name
 				params: params
 				return_type: return_type

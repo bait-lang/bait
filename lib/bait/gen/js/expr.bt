@@ -98,6 +98,14 @@ fun (g Gen) bool_literal(node ast.BoolLiteral){
 }
 
 fun (g Gen) call_expr(node ast.CallExpr) {
+	if node.is_method and node.lang != .bait {
+		g.expr(node.left)
+		g.write('.' + node.name + '(')
+		g.call_args(node.args)
+		g.write(')')
+		return
+	}
+
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
 		g.write(js_name(sym.name + '_' + node.name))

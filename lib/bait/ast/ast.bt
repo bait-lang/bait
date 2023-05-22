@@ -69,6 +69,7 @@ pub struct AnonFun{
 
 pub struct FunDecl{
 	is_pub bool
+	lang Language
 	name string
 	params []Param
 	stmts []Stmt
@@ -148,6 +149,7 @@ pub struct BoolLiteral{
 }
 
 pub struct CallExpr{
+	lang Language
 	name string
 	args []CallArg
 	return_type Type
