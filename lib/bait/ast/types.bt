@@ -39,7 +39,6 @@ const BUILTIN_STRUCT_TYPES := [
 pub enum TypeKind {
 	other
 	placeholder
-	other
 	string
 	array
 	map
