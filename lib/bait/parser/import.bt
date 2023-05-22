@@ -48,12 +48,25 @@ fun (p Parser) import_stmts() [] ast.Import{
 fun (p Parser) js_import() ast.Import{
 	p.next() // #JS
 	p.check(.dot)
-	name := p.check_name()
 
-	p.import_aliases[name] = name
+	if p.tok.kind != .string {
+		p.warn('external imports must have the format `#JS."name" as alias`')
+	}
+	name := p.tok.val
+	p.next()
+
+	mut alias := name
+	if p.tok.kind != .key_as {
+		p.warn('external imports must have the format `#JS."name" as alias`')
+	} else {
+		p.next()
+		alias = p.check_name()
+	}
+
+	p.import_aliases[alias] = name
 	return ast.Import{
 		name: name
-		alias: name
+		alias: alias
 		lang: ast.Language.js
 	}
 }
