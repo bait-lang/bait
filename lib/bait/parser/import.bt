@@ -1,0 +1,72 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package parser
+
+import bait.ast
+import bait.errors
+import bait.token
+
+
+fun (p Parser) import_stmts() [] ast.Import{
+	mut imports := []ast.Import
+	for p.tok.kind == .key_import {
+		pos := p.tok.pos
+		p.next()
+
+		if p.tok.kind == .hash {
+			mut imp := p.js_import()
+			imp.pos = pos
+			imports.push(imp)
+			continue
+		}
+
+		mut name_parts := []string
+		name_parts.push(p.check_name())
+		for p.tok.kind == .dot {
+			p.next()
+			name_parts.push(p.check_name())
+		}
+		name := name_parts.join('.')
+
+		mut alias := name_parts[name_parts.length - 1]
+		if p.tok.kind == .key_as {
+			p.next()
+			alias = p.check_name()
+		}
+
+		p.import_aliases[alias] = name
+		imports.push(ast.Import{
+			name:name
+			alias: alias
+			lang: ast.Language.bait
+			pos: pos
+		})
+	}
+	return imports
+}
+
+fun (p Parser) js_import() ast.Import{
+	p.next() // #JS
+	p.check(.dot)
+
+	if p.tok.kind != .string {
+		// TODO error
+		p.warn('external imports must have the format `#JS."name" as alias`')
+	}
+	name := p.tok.val
+	p.next()
+
+	mut alias := name
+	if p.tok.kind == .key_as {
+		// TODO move this out of if block
+		p.check(.key_as)
+		alias = p.check_name()
+	}
+
+	p.import_aliases[alias] = name
+	return ast.Import{
+		name: name
+		alias: alias
+		lang: ast.Language.js
+	}
+}

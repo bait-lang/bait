@@ -16,28 +16,28 @@ pub enum Precedence {
 
 pub fun (t Token) precedence() Precedence {
 	match t.kind {
-		TokenKind.lbr {
+		.lbr {
 			return .index
 		}
-		TokenKind.dot {
+		.dot {
 			return .call
 		}
-		TokenKind.key_not {
+		.key_not {
 			return .prefix
 		}
-		TokenKind.mul, TokenKind.div, TokenKind.mod {
+		.mul, .div, .mod {
 			return .product
 		}
-		TokenKind.plus, TokenKind.minus {
+		.plus, .minus {
 			return .sum
 		}
-		TokenKind.eq, TokenKind.ne, TokenKind.lt, TokenKind.gt, TokenKind.le, TokenKind.ge {
+		.eq, .ne, .lt, .gt, .le, .ge {
 			return .compare
 		}
-		TokenKind.key_as, TokenKind.key_is {
+		.key_as, .key_is {
 			return .as_is
 		}
-		TokenKind.key_and, TokenKind.key_or {
+		.key_and, .key_or {
 			return .cond
 		}
 		else {

@@ -75,40 +75,6 @@ fun (p Parser) package_decl() ast.PackageDecl {
 	}
 }
 
-fun (p Parser) import_stmts() [] ast.Import{
-	mut imports := []ast.Import
-	for p.tok.kind == .key_import {
-		pos := p.tok.pos
-		p.next()
-		mut lang := ast.Language.bait
-		if p.tok.kind == .hash {
-			p.next()
-			p.check(.dot)
-			lang = .js
-		}
-		mut name_parts := []string
-		name_parts.push(p.check_name())
-		for p.tok.kind == .dot {
-			p.next()
-			name_parts.push(p.check_name())
-		}
-		name := name_parts.join('.')
-		mut alias := name_parts[name_parts.length - 1]
-		if p.tok.kind == .key_as {
-			p.next()
-			alias = p.check_name()
-		}
-		p.import_aliases[alias] = name
-		imports.push(ast.Import{
-			name:name
-			alias: alias
-			lang: lang
-			pos: pos
-		})
-	}
-	return imports
-}
-
 // Parses one or more attributes
 fun (p Parser) parse_attributes() {
 	for p.tok.kind == .attr {

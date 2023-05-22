@@ -61,6 +61,7 @@ pub enum TokenKind {
 	key_if
 	key_import
 	key_in
+	key_interface
 	key_is
 	key_match
 	key_mut
@@ -77,40 +78,41 @@ pub enum TokenKind {
 
 pub fun keyword_to_kind(name string) TokenKind {
 	match name {
-		'and' { return TokenKind.key_and }
-		'as' { return TokenKind.key_as }
-		'assert' { return TokenKind.key_assert }
-		'break' { return TokenKind.key_break }
-		'const' { return TokenKind.key_const }
-		'continue' { return TokenKind.key_continue }
-		'else' { return TokenKind.key_else }
-		'enum' { return TokenKind.key_enum }
-		'false' { return TokenKind.key_false }
-		'for' { return TokenKind.key_for }
-		'fun' { return TokenKind.key_fun }
-		'global' { return TokenKind.key_global }
-		'if' { return TokenKind.key_if }
-		'import' { return TokenKind.key_import }
-		'in' { return TokenKind.key_in }
-		'is' { return TokenKind.key_is }
-		'match' { return TokenKind.key_match }
-		'mut' { return TokenKind.key_mut }
-		'not' { return TokenKind.key_not }
-		'or' { return TokenKind.key_or }
-		'package' { return TokenKind.key_package }
-		'pub' { return TokenKind.key_pub }
-		'return' { return TokenKind.key_return }
-		'struct' { return TokenKind.key_struct }
-		'true' { return TokenKind.key_true }
-		'type' { return TokenKind.key_type }
-		'typeof' { return TokenKind.key_typeof }
-		else { return TokenKind.name }
+		'and' { return .key_and }
+		'as' { return .key_as }
+		'assert' { return .key_assert }
+		'break' { return .key_break }
+		'const' { return .key_const }
+		'continue' { return .key_continue }
+		'else' { return .key_else }
+		'enum' { return .key_enum }
+		'false' { return .key_false }
+		'for' { return .key_for }
+		'fun' { return .key_fun }
+		'global' { return .key_global }
+		'if' { return .key_if }
+		'import' { return .key_import }
+		'in' { return .key_in }
+		'interface' { return .key_interface }
+		'is' { return .key_is }
+		'match' { return .key_match }
+		'mut' { return .key_mut }
+		'not' { return .key_not }
+		'or' { return .key_or }
+		'package' { return .key_package }
+		'pub' { return .key_pub }
+		'return' { return .key_return }
+		'struct' { return .key_struct }
+		'true' { return .key_true }
+		'type' { return .key_type }
+		'typeof' { return .key_typeof }
+		else { return .name }
 	}
 }
 
-const COMPARE_KINDS := [TokenKind.eq, TokenKind.ne, TokenKind.lt, TokenKind.gt, TokenKind.le, TokenKind.ge, TokenKind.key_is]
-const MATH_KINDS := [TokenKind.plus, TokenKind.minus, TokenKind.mul, TokenKind.div, TokenKind.mod]
-const OTHER_INFIXES := [TokenKind.key_and, TokenKind.key_or]
+const COMPARE_KINDS := [TokenKind.eq, .ne, .lt, .gt, .le, .ge, .key_is]
+const MATH_KINDS := [TokenKind.plus, .minus, .mul, .div, .mod]
+const OTHER_INFIXES := [TokenKind.key_and, .key_or]
 
 pub fun (kind TokenKind) is_compare() bool {
 	return COMPARE_KINDS.contains(kind)
@@ -120,7 +122,7 @@ pub fun (kind TokenKind) is_infix() bool {
 	return kind.is_compare() or MATH_KINDS.contains(kind) or OTHER_INFIXES.contains(kind)
 }
 
-const ASSIGN_KINDS := [TokenKind.decl_assign, TokenKind.assign, TokenKind.plus_assign, TokenKind.minus_assign, TokenKind.mul_assign, TokenKind.div_assign, TokenKind.mod_assign]
+const ASSIGN_KINDS := [TokenKind.decl_assign, .assign, .plus_assign, .minus_assign, .mul_assign, .div_assign, .mod_assign]
 
 pub fun (kind TokenKind) is_assign() bool {
 	return ASSIGN_KINDS.contains(kind)
@@ -128,73 +130,73 @@ pub fun (kind TokenKind) is_assign() bool {
 
 pub fun (kind TokenKind) js_repr() string {
 	match kind {
-		TokenKind.key_break {
+		.key_break {
 			return "break"
 		}
-		TokenKind.key_continue {
+		.key_continue {
 			return "continue"
 		}
-		TokenKind.key_is {
+		.key_is {
 			return "instanceof"
 		}
-		TokenKind.mul {
+		.mul {
 			return "*"
 		}
-		TokenKind.div {
+		.div {
 			return "/"
 		}
-		TokenKind.mod {
+		.mod {
 			return "%"
 		}
-		TokenKind.plus {
+		.plus {
 			return "+"
 		}
-		TokenKind.minus {
+		.minus {
 			return "-"
 		}
-		TokenKind.mul_assign {
+		.mul_assign {
 			return "*="
 		}
-		TokenKind.div_assign {
+		.div_assign {
 			return "/="
 		}
-		TokenKind.mod_assign {
+		.mod_assign {
 			return "%="
 		}
-		TokenKind.plus_assign {
+		.plus_assign {
 			return "+="
 		}
-		TokenKind.minus_assign {
+		.minus_assign {
 			return "-="
 		}
-		TokenKind.decl_assign, TokenKind.assign {
+		.decl_assign, .assign {
 			return "="
 		}
-		TokenKind.eq {
+		.eq {
 			return "=="
 		}
-		TokenKind.ne {
+		.ne {
 			return "!="
 		}
-		TokenKind.lt {
+		.lt {
 			return "<"
 		}
-		TokenKind.gt {
+		.gt {
 			return ">"
 		}
-		TokenKind.le {
+		.le {
 			return "<="
 		}
-		TokenKind.ge {
+		.ge {
 			return ">="
 		}
-		TokenKind.key_and {
+		.key_and {
 			return "&&"
 		}
-		TokenKind.key_not {
+		.key_not {
 			return "!"
 		}
-		TokenKind.key_or {
+		.key_or {
 			return "||"
 		}
 	}
@@ -202,69 +204,70 @@ pub fun (kind TokenKind) js_repr() string {
 
 pub fun (kind TokenKind) str() string {
 	match kind {
-		TokenKind.eof { return 'eof' }
-		TokenKind.attr { return 'attr' }
-		TokenKind.name { return 'name' }
-		TokenKind.string { return 'string' }
-		TokenKind.char { return 'char' }
-		TokenKind.number { return 'number' }
-		TokenKind.dot { return 'dot' }
-		TokenKind.colon { return 'colon' }
-		TokenKind.comma { return 'comma' }
-		TokenKind.semicolon { return 'semicolon' }
-		TokenKind.plus { return 'plus' }
-		TokenKind.minus { return 'minus' }
-		TokenKind.mul { return 'mul' }
-		TokenKind.div { return 'div' }
-		TokenKind.mod { return 'mod' }
-		TokenKind.assign { return 'assign' }
-		TokenKind.decl_assign { return 'decl_assign' }
-		TokenKind.plus_assign { return 'plus_assign' }
-		TokenKind.minus_assign { return 'minus_assign' }
-		TokenKind.mul_assign { return 'mul_assign' }
-		TokenKind.div_assign { return 'div_assign' }
-		TokenKind.mod_assign { return 'mod_assign' }
-		TokenKind.eq { return 'eq' }
-		TokenKind.ne { return 'ne' }
-		TokenKind.lt { return 'lt' }
-		TokenKind.gt { return 'gt' }
-		TokenKind.le { return 'le' }
-		TokenKind.ge { return 'ge' }
-		TokenKind.lpar { return 'lpar' }
-		TokenKind.rpar { return 'rpar' }
-		TokenKind.lbr { return 'lbr' }
-		TokenKind.rbr { return 'rbr' }
-		TokenKind.lcur { return 'lcur' }
-		TokenKind.rcur { return 'rcur' }
-		TokenKind.pipe { return 'pipe' }
-		TokenKind.dollar { return 'dollar' }
-		TokenKind.hash { return 'hash' }
-		TokenKind.key_and { return 'key_and' }
-		TokenKind.key_as { return 'key_as' }
-		TokenKind.key_assert { return 'key_assert' }
-		TokenKind.key_break { return 'key_break' }
-		TokenKind.key_const { return 'key_const' }
-		TokenKind.key_continue { return 'key_continue' }
-		TokenKind.key_else { return 'key_else' }
-		TokenKind.key_enum { return 'key_enum' }
-		TokenKind.key_false { return 'key_false' }
-		TokenKind.key_for { return 'key_for' }
-		TokenKind.key_fun { return 'key_fun' }
-		TokenKind.key_global { return 'key_global' }
-		TokenKind.key_if { return 'key_if' }
-		TokenKind.key_import { return 'key_import' }
-		TokenKind.key_in { return 'key_in' }
-		TokenKind.key_is { return 'key_is' }
-		TokenKind.key_match { return 'key_match' }
-		TokenKind.key_mut { return 'key_mut' }
-		TokenKind.key_not { return 'key_not' }
-		TokenKind.key_or { return 'key_or' }
-		TokenKind.key_package { return 'key_package' }
-		TokenKind.key_pub { return 'key_pub' }
-		TokenKind.key_return { return 'key_return' }
-		TokenKind.key_struct { return 'key_struct' }
-		TokenKind.key_true { return 'key_true' }
-		TokenKind.key_type { return 'key_type' }
-		TokenKind.key_typeof { return 'key_typeof' }
+		.eof { return 'eof' }
+		.attr { return 'attr' }
+		.name { return 'name' }
+		.string { return 'string' }
+		.char { return 'char' }
+		.number { return 'number' }
+		.dot { return 'dot' }
+		.colon { return 'colon' }
+		.comma { return 'comma' }
+		.semicolon { return 'semicolon' }
+		.plus { return 'plus' }
+		.minus { return 'minus' }
+		.mul { return 'mul' }
+		.div { return 'div' }
+		.mod { return 'mod' }
+		.assign { return 'assign' }
+		.decl_assign { return 'decl_assign' }
+		.plus_assign { return 'plus_assign' }
+		.minus_assign { return 'minus_assign' }
+		.mul_assign { return 'mul_assign' }
+		.div_assign { return 'div_assign' }
+		.mod_assign { return 'mod_assign' }
+		.eq { return 'eq' }
+		.ne { return 'ne' }
+		.lt { return 'lt' }
+		.gt { return 'gt' }
+		.le { return 'le' }
+		.ge { return 'ge' }
+		.lpar { return 'lpar' }
+		.rpar { return 'rpar' }
+		.lbr { return 'lbr' }
+		.rbr { return 'rbr' }
+		.lcur { return 'lcur' }
+		.rcur { return 'rcur' }
+		.pipe { return 'pipe' }
+		.dollar { return 'dollar' }
+		.hash { return 'hash' }
+		.key_and { return 'key_and' }
+		.key_as { return 'key_as' }
+		.key_assert { return 'key_assert' }
+		.key_break { return 'key_break' }
+		.key_const { return 'key_const' }
+		.key_continue { return 'key_continue' }
+		.key_else { return 'key_else' }
+		.key_enum { return 'key_enum' }
+		.key_false { return 'key_false' }
+		.key_for { return 'key_for' }
+		.key_fun { return 'key_fun' }
+		.key_global { return 'key_global' }
+		.key_if { return 'key_if' }
+		.key_import { return 'key_import' }
+		.key_in { return 'key_in' }
+		.key_interface { return 'key_interface' }
+		.key_is { return 'key_is' }
+		.key_match { return 'key_match' }
+		.key_mut { return 'key_mut' }
+		.key_not { return 'key_not' }
+		.key_or { return 'key_or' }
+		.key_package { return 'key_package' }
+		.key_pub { return 'key_pub' }
+		.key_return { return 'key_return' }
+		.key_struct { return 'key_struct' }
+		.key_true { return 'key_true' }
+		.key_type { return 'key_type' }
+		.key_typeof { return 'key_typeof' }
 	}
 }
