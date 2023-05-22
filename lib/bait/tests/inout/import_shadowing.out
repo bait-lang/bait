@@ -1,1 +1,2 @@
-lib/bait/tests/inout/import_shadowing.in.bt:3:5 error: redefinition of os
+lib/bait/tests/inout/import_shadowing.in.bt:3:10 error: cannot shadow import "os"
+lib/bait/tests/inout/import_shadowing.in.bt:5:5 error: redefinition of os

@@ -312,9 +312,11 @@ fun (p Parser) fun_decl()ast.FunDecl{
 fun (p Parser) fun_params() []ast.Param{
 	mut params := []ast.Param
 	for p.tok.kind != .rpar{
+		pos := p.tok.pos
 		param := ast.Param{
 			name: p.check_name()
 			typ: p.parse_type()
+			pos: pos
 		}
 		params.push(param)
 		if p.tok.kind != .rpar{
