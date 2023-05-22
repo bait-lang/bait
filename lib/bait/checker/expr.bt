@@ -85,6 +85,11 @@ fun (c Checker) as_cast(node ast.AsCast) ast.Type {
 	// TODO check if expr is part of target
 	expr_type := c.expr(node.expr)
 	node.expr_type = expr_type
+
+	if not c.type_exists(node.target, node.pos) {
+		return node.expr_type
+	}
+
 	if node.expr is ast.Ident {
 		expr := node.expr as ast.Ident
 		c.scope.update_type(expr.name, node.target)
