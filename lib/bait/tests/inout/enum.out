@@ -1,2 +1,1 @@
-lib/bait/tests/inout/enum.in.bt:7:5 error: cannot use enum value, expecting i32
-lib/bait/tests/inout/enum.in.bt:7:3 error: cannot assign type void to i32
+lib/bait/tests/inout/enum.in.bt:7:5 error: expected type is not an enum, got i32

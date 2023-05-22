@@ -33,7 +33,8 @@ _unreleased_
 
 ### Error Checking
 - Prevent redefinition of functions and methods
-- Prevent shadowing of imports
+- Prevent shadowing of imports with variables or function parameters
+- Hide noise assign errors after an error for one of the expressions was raised
 
 ### JS Interoperability
 - Require JS code to be in `.js.bt` files
