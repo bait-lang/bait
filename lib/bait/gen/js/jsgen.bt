@@ -44,8 +44,7 @@ fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.gen_test_main()
 	}
 	g.main_call()
-	headers := g.headers()
-	return headers + g.type_defs_out + g.global_out + '\n' + g.out
+	return g.type_defs_out + g.global_out + '\n' + g.out
 }
 
 
@@ -68,11 +67,6 @@ fun (g Gen) writeln (s string){
 	}
 	g.out += s + "\n"
 	g.empty_line = true
-}
-
-fun (g Gen) headers() string {
-	mut headers := ''
-	return headers + '\n'
 }
 
 fun (g Gen) gen_test_main() {

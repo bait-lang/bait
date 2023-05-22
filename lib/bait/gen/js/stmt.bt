@@ -160,15 +160,13 @@ fun (g Gen) const_decl(node ast.ConstDecl){
 }
 
 fun (g Gen) enum_decl(node ast.EnumDecl){
-	g.type_defs_out += 'const ' + js_name(node.name) + ' = {\n'
+	g.writeln('const ' + js_name(node.name) + ' = {')
+	g.indent += 1
 	for i, variant in node.variants {
-		g.type_defs_out += '\t${variant}: ${i}'
-		if i < node.variants.length - 1 {
-			g.type_defs_out += ','
-		}
-		g.type_defs_out += '\n'
+		g.writeln('${variant}: ${i},')
 	}
-	g.type_defs_out += '}\n'
+	g.indent -= 1
+	g.writeln('}')
 }
 
 fun (g Gen) control_stmt(node ast.LoopControlStmt){
