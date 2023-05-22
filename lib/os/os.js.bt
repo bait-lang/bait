@@ -2,10 +2,10 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package os
 
-import #JS.os
-import #JS.fs
-import #JS.path
-import #JS.child_process
+import #JS.'os' as os
+import #JS.'fs' as fs
+import #JS.'path' as path
+import #JS.'child_process' as child_process
 
 pub const ARGS := from_js_string_arr(#JS.'process.argv')
 

@@ -50,18 +50,13 @@ fun (p Parser) js_import() ast.Import{
 	p.check(.dot)
 
 	if p.tok.kind != .string {
-		// TODO error
-		p.warn('external imports must have the format `#JS."name" as alias`')
+		p.error('external imports must have the format `#JS."name" as alias`')
 	}
 	name := p.tok.val
 	p.next()
 
-	mut alias := name
-	if p.tok.kind == .key_as {
-		// TODO move this out of if block
-		p.check(.key_as)
-		alias = p.check_name()
-	}
+	p.check(.key_as)
+	alias := p.check_name()
 
 	p.import_aliases[alias] = name
 	return ast.Import{

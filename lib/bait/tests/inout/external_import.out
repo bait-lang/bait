@@ -1,0 +1,1 @@
+lib/bait/tests/inout/external_import.in.bt:1:13 error: external imports must have the format `#JS."name" as alias`

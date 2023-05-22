@@ -2,7 +2,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
-import #JS.process
+import #JS.'process' as process
 
 pub fun println(msg string) {
 	#JS.'console.log(msg)'
