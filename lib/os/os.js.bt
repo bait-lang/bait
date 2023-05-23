@@ -111,7 +111,8 @@ pub fun executable() string {
 }
 
 pub fun abs_path(path string) string {
-	return from_js_string(#JS.'js_path.resolve(getwd().str, path.str)')
+	wd := getwd()
+	return from_js_string(#JS.'js_path.resolve(wd.str, path.str)')
 }
 
 pub fun resource_abs_path(path string) string {
