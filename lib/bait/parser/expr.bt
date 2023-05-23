@@ -264,10 +264,14 @@ fun (p Parser) enum_val(has_name bool) ast.EnumVal{
 	}
 }
 
-fun (p Parser) hash_expr()ast.Expr{
+fun (p Parser) hash_expr()ast.HashExpr{
 	p.check(.hash)
 	p.check(.dot)
-	return p.string_literal(.js)
+	str_node := p.string_literal(.js) as ast.StringLiteral
+	return ast.HashExpr{
+		val: str_node.val
+		pos: str_node.pos
+	}
 }
 
 fun (p Parser) ident()ast.Ident{

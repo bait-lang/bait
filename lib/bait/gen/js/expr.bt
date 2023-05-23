@@ -24,6 +24,8 @@ fun (g Gen) expr(expr ast.Expr) {
 		g.comp_time_var(expr)
 	} else if expr is ast.EnumVal {
 		g.enum_val(expr)
+	} else if expr is ast.HashExpr {
+		g.hash_expr(expr)
 	} else if expr is ast.Ident {
 		g.ident(expr)
 	} else if expr is ast.IfExpr {
@@ -162,6 +164,10 @@ fun (g Gen) comp_time_var(node ast.CompTimeVar){
 
 fun (g Gen) enum_val(node ast.EnumVal) {
 	g.write(js_name(node.name) + '.' + node.val)
+}
+
+fun (g Gen) hash_expr(node ast.HashExpr) {
+	g.write(node.val)
 }
 
 fun (g Gen) ident(node ast.Ident) {

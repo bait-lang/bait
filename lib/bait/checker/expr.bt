@@ -23,6 +23,8 @@ fun (c Checker) expr(expr ast.Expr) ast.Type {
 		return c.comp_time_var(expr)
 	} else if expr is ast.EnumVal {
 		return c.enum_val(expr)
+	} else if expr is ast.HashExpr {
+		return c.hash_expr(expr)
 	} else if expr is ast.Ident {
 		return c.ident(expr)
 	} else if expr is ast.IfExpr {
@@ -268,6 +270,13 @@ fun (c Checker) enum_val(node ast.EnumVal) ast.Type {
 	}
 	node.name = sym.name
 	return node.typ
+}
+
+fun (c Checker) hash_expr(node ast.HashExpr) ast.Type {
+	if not c.is_js_file {
+		c.warn('JS code can only be used in .js.bt files', node.pos)
+	}
+	return ast.VOID_TYPE
 }
 
 fun (c Checker) ident(node ast.Ident) ast.Type {
