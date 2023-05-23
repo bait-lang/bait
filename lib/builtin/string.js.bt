@@ -3,7 +3,7 @@
 package builtin
 
 struct string {
-	str any // Js.String
+	str #JS.String
 	length i32
 }
 
@@ -18,27 +18,27 @@ fun (s string) get(i i32) u8 {
 }
 
 pub fun (s string) get_str(i i32) string {
-	return from_js_string(#JS.'s.str.charAt(i)')
+	return from_js_string(s.str.charAt(i as #JS.Number))
 }
 
 pub fun (s string) get_code() i32 {
-	return #JS.'s.str.charCodeAt(0)' as i32
+	return s.str.charCodeAt(0 as #JS.Number) as i32
 }
 
 pub fun (s string) replace(val string, rep string) string {
-	return from_js_string(#JS.'s.str.replaceAll(val.str, rep.str)')
+	return from_js_string(s.str.replaceAll(val.str, rep.str))
 }
 
 pub fun (s string) substr(start i32, end i32) string {
-	return from_js_string(#JS.'s.str.slice(start, end)')
+	return from_js_string(s.str.slice(start as #JS.Number, end as #JS.Number))
 }
 
 pub fun (s string) index(search string) i32 {
-	return #JS.'s.str.indexOf(search.str)' as i32
+	return s.str.indexOf(search.str) as i32
 }
 
 pub fun (s string) last_index(search string) i32 {
-	return #JS.'s.str.lastIndexOf(search.str)' as i32
+	return s.str.lastIndexOf(search.str) as i32
 }
 
 pub fun (s string) all_before(search string) string {
@@ -74,31 +74,31 @@ pub fun (s string) all_after_last(search string) string {
 }
 
 pub fun (s string) repeat(count i32) string {
-	return from_js_string(#JS.'s.str.repeat(count)')
+	return from_js_string(s.str.repeat(count as #JS.Number))
 }
 
 pub fun (s string) trim_space() string {
-	return from_js_string(#JS.'s.str.trim()')
+	return from_js_string(s.str.trim())
 }
 
 pub fun (s string) starts_with(prefix string) bool {
-	return #JS.'s.str.startsWith(prefix.str)' as bool
+	return s.str.startsWith(prefix.str) as bool
 }
 
 pub fun (s string) ends_with(suffix string) bool {
-	return #JS.'s.str.endsWith(suffix.str)' as bool
+	return s.str.endsWith(suffix.str) as bool
 }
 
 pub fun (s string) contains(substr string) bool {
-	return #JS.'s.str.includes(substr.str)' as bool
+	return s.str.includes(substr.str) as bool
 }
 
 pub fun (s string) is_upper() bool {
-	return #JS.'s.str == s.str.toUpperCase() && s.str != s.str.toLowerCase()' as bool
+	return s.str == s.str.toUpperCase() and s.str != s.str.toLowerCase()
 }
 
 pub fun (s string) split_lines() []string {
-	res := from_js_string_arr(#JS.'s.str.split("\n")')
+	res := from_js_string_arr(s.str.split(#JS.'"\n"' as #JS.String))
 	if res[res.length - 1].length == 0 {
 		return res.slice(0, res.length - 1)
 	}
@@ -106,37 +106,37 @@ pub fun (s string) split_lines() []string {
 }
 
 fun (a string) add (b string) string {
-	return from_js_string(#JS.'a.str + b.str')
+	return from_js_string(a.str + b.str)
 }
 
 fun (a string) eq (b string) bool {
-	return #JS.'a.str === b.str' as bool
+	return a.str == b.str
 }
 
 pub fun (arr []string) join(sep string) string {
 	js_arr := arr.to_js_arr()
-	return from_js_string(#JS.'js_arr.join(sep.str)')
+	return from_js_string(js_arr.join(sep.str))
 }
 
-pub fun from_js_string(js_s any) string {
+pub fun from_js_string(js_s #JS.String) string {
 	return string{
 		str: js_s
-		length: #JS.'js_s.length' as i32
+		length: js_s.length as i32
 	}
 }
 
-pub fun from_js_string_arr(js_arr any) []string {
+pub fun from_js_string_arr(js_arr #JS.Array) []string {
 	mut a := []string
-	for i := 0; i < #JS.'js_arr.length' as i32; i += 1 {
-		a.push(from_js_string(#JS.'js_arr[i]'))
+	for i := 0; i < js_arr.length as i32; i += 1 {
+		a.push(from_js_string(#JS.'js_arr[i]' as #JS.String))
 	}
 	return a
 }
 
-pub fun (arr []string) to_js_arr() any {
-	js_arr := #JS.'[]'
+pub fun (arr []string) to_js_arr() #JS.Array {
+	js_arr := #JS.'[]' as #JS.Array
 	for s in arr {
-		#JS.'js_arr.push(s.str)'
+		js_arr.push(s.str as #JS.Any)
 	}
 	return js_arr
 }

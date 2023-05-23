@@ -1,0 +1,52 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package builtin
+
+pub interface #JS.Any {}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+pub interface #JS.Boolean {}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
+pub interface #JS.Number {}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
+pub interface #JS.String {
+	length #JS.Number
+	fun charAt(pos #JS.Number) #JS.String
+	fun charCodeAt(pos #JS.Number) #JS.Number
+	fun indexOf(search #JS.String) #JS.Number
+	fun lastIndexOf(search #JS.String) #JS.Number
+	fun startsWith(search #JS.String) #JS.Boolean
+	fun endsWith(search #JS.String) #JS.Boolean
+	fun includes(search #JS.String) #JS.Boolean
+	fun repeat(count #JS.Number) #JS.String
+	fun replaceAll(pattern #JS.String, rep #JS.String) #JS.String
+	fun slice(start #JS.Number, end #JS.Number) #JS.String
+	fun split(sep #JS.String) #JS.Array
+	fun trim() #JS.String
+	fun toLowerCase() #JS.String
+	fun toUpperCase() #JS.String
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+pub interface #JS.Array{
+	length #JS.Number
+	fun at(index #JS.Number) #JS.Any
+	fun push(element #JS.Any)
+	fun indexOf(element #JS.Any) #JS.Number
+	fun lastIndexOf(element #JS.Any) #JS.Number
+	fun concat(array2 #JS.Array) #JS.Array
+	fun slice(start #JS.Number, end #JS.Number) #JS.Array
+	fun join(separator #JS.String) #JS.String
+	fun reverse()
+	fun filter(callback #JS.Any) #JS.Array
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+pub interface #JS.Map{
+	size #JS.Number
+	fun get(key #JS.String) #JS.Any
+	fun set(key #JS.String, value #JS.Any)
+	fun has(key #JS.String) #JS.Boolean
+}

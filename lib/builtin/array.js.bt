@@ -3,12 +3,12 @@
 package builtin
 
 struct array {
-	data any // JS array
+	data #JS.Array
 	length i32
 }
 
 pub fun (a array) get(i i32) any {
-	return #JS.'a.data[i]'
+	return a.data.at(i as #JS.Number)
 }
 
 pub fun (a array) set(i i32, val any) {
@@ -16,14 +16,14 @@ pub fun (a array) set(i i32, val any) {
 }
 
 pub fun (a array) push(el any) {
-	#JS.'a.data.push(el)'
+	a.data.push(el)
 	a.length += 1
 }
 
 // TODO remove requirement for functions like index, last_index, contains, ... to be duplicated for types that are objects in JS
 
 pub fun (a array) index(el any) i32 {
-	return #JS.'a.data.indexOf(el)' as i32
+	return a.data.indexOf(el) as i32
 }
 
 pub fun (a []u8) index(c u8) i32 {
@@ -45,7 +45,7 @@ pub fun (a []string) index(s string) i32 {
 }
 
 pub fun (a array) last_index(el any) i32 {
-	return #JS.'a.data.lastIndexOf(el)' as i32
+	return a.data.lastIndexOf(el) as i32
 }
 
 pub fun (a []u8) last_index(c u8) i32 {
@@ -80,21 +80,21 @@ pub fun (a []string) contains(s string) bool {
 
 pub fun (a array) slice(start i32, end i32) array {
 	return array{
-		data: #JS.'a.data.slice(start, end)'
+		data: a.data.slice(start as #JS.Number, end as #JS.Number)
 		length: end - start
 	}
 }
 
 pub fun (a array) concat(b array) array {
 	return array{
-		data: #JS.'a.data.concat(b.data)'
+		data: a.data.concat(b.data)
 		length: a.length + b.length
 	}
 }
 
 pub fun (a array) copy() array {
 	return array{
-		data: #JS.'[...a.data]'
+		data: #JS.'[...a.data]' as #JS.Array
 		length: a.length
 	}
 }
@@ -107,14 +107,14 @@ pub fun (a array) reverse() array {
 }
 
 pub fun (a array) reverse_in_place() {
-	a.data = #JS.'a.data.reverse()'
+	a.data.reverse()
 }
 
 pub fun (a array) filter(fn fun (any) bool) array {
-	return from_js_arr(#JS.'a.data.filter(fn)')
+	return from_js_arr(a.data.filter(fn as #JS.Any))
 }
 
-fun from_js_arr(a any) array {
+fun from_js_arr(a #JS.Array) array {
 	return array{
 		data: a
 		length: a.length

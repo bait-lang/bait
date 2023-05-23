@@ -7,7 +7,7 @@ import os
 
 fun main(){
 	println('Version: Bait ${util.VERSION}')
-	os_type := from_js_string(#JS.'process.platform')
+	os_type := from_js_string(#JS.'process.platform' as #JS.String)
 	println('OS: ${os_type}/${os.arch()}')
 	git_version := os.exec('git --version').stdout.trim_space()
 	println('Git: ${git_version}')

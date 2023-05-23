@@ -3,19 +3,19 @@
 package builtin
 
 struct map{
-	data any // JS.Map
+	data #JS.Map
 	length i32
 }
 
 fun (m map) get(key string) any {
-	return #JS.'m.data.get(key.str)'
+	return m.data.get(key.str)
 }
 
 fun (m map) set(key string, val any) {
 	if not m.contains(key) {
 		m.length += 1
 	}
-	#JS.'m.data.set(key.str, val)'
+	m.data.set(key.str, val)
 }
 
 fun (m map) get_set(key string, zero any) any {
@@ -26,9 +26,9 @@ fun (m map) get_set(key string, zero any) any {
 }
 
 pub fun (m map) contains(key string) bool {
-	return #JS.'m.data.has(key.str)' as bool
+	return m.data.has(key.str) as bool
 }
 
 pub fun (m map) keys() []string {
-	return from_js_string_arr(#JS.'Array.from(m.data.keys())')
+	return from_js_string_arr(#JS.'Array.from(m.data.keys())' as #JS.Array)
 }

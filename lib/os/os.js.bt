@@ -8,10 +8,10 @@ var js_path = require("path")
 var child_process = require("child_process")
 '
 
-pub const ARGS := from_js_string_arr(#JS.'process.argv')
+pub const ARGS := from_js_string_arr(#JS.'process.argv' as #JS.Array)
 
 pub fun ls(dir string) []string {
-	return from_js_string_arr(#JS.'fs.readdirSync(dir.str)')
+	return from_js_string_arr(#JS.'fs.readdirSync(dir.str)' as #JS.Array)
 }
 
 pub fun walk_ext(dir string, ext string) []string {
@@ -37,7 +37,7 @@ pub fun exists(path string) bool {
 }
 
 pub fun file_name(path string) string {
-	return from_js_string(#JS.'js_path.basename(path.str)')
+	return from_js_string(#JS.'js_path.basename(path.str)' as #JS.String)
 }
 
 pub fun file_mod_time(path string) i64 {
@@ -53,11 +53,11 @@ pub fun chdir(dir string) {
 }
 
 pub fun home_dir() string {
-	return from_js_string(#JS.'os.homedir()')
+	return from_js_string(#JS.'os.homedir()' as #JS.String)
 }
 
 pub fun dir(path string) string {
-	return from_js_string(#JS.'js_path.dirname(path.str)')
+	return from_js_string(#JS.'js_path.dirname(path.str)' as #JS.String)
 }
 
 pub fun is_dir(path string) bool {
@@ -85,7 +85,7 @@ pub fun rmdir_all(dir string) {
 }
 
 pub fun read_file(path string) string {
-	return from_js_string(#JS.'fs.readFileSync(path.str).toString()')
+	return from_js_string(#JS.'fs.readFileSync(path.str).toString()' as #JS.String)
 }
 
 pub fun read_lines(path string) []string {
@@ -98,30 +98,30 @@ pub fun write_file(path string, text string) {
 }
 
 pub fun getwd() string {
-	return from_js_string(#JS.'process.cwd()')
+	return from_js_string(#JS.'process.cwd()' as #JS.String)
 }
 
 pub fun join_path(base string, dirs []string) string {
 	js_dirs := dirs.to_js_arr()
-	return from_js_string(#JS.'js_path.join(base.str, ...js_dirs)')
+	return from_js_string(#JS.'js_path.join(base.str, ...js_dirs)' as #JS.String)
 }
 
 pub fun executable() string {
-	return from_js_string(#JS.'__filename')
+	return from_js_string(#JS.'__filename' as #JS.String)
 }
 
 pub fun abs_path(path string) string {
 	wd := getwd()
-	return from_js_string(#JS.'js_path.resolve(wd.str, path.str)')
+	return from_js_string(#JS.'js_path.resolve(wd.str, path.str)' as #JS.String)
 }
 
 pub fun resource_abs_path(path string) string {
-	return join_path(from_js_string(#JS.'__dirname'), [path])
+	return join_path(from_js_string(#JS.'__dirname' as #JS.String), [path])
 }
 
 pub fun getenv(key string) string {
 	if #JS.'process.env[key.str]' {
-		return from_js_string(#JS.'process.env[key.str]')
+		return from_js_string(#JS.'process.env[key.str]' as #JS.String)
 	}
 	return ''
 }
@@ -131,7 +131,7 @@ pub fun setenv(key string, value string) {
 }
 
 pub fun arch() string {
-	return from_js_string(#JS.'os.arch()')
+	return from_js_string(#JS.'os.arch()' as #JS.String)
 }
 
 struct Result {

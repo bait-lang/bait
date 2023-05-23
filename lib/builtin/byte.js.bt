@@ -17,7 +17,7 @@ pub fun (c u8) is_capital() bool {
 }
 
 pub fun (c u8) ascii() string {
-	return from_js_string(#JS.'String.fromCharCode(c.val)')
+	return from_js_string(#JS.'String.fromCharCode(c.val)' as #JS.String)
 }
 
 fun (a u8) add (b u8) u8 {
