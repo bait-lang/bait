@@ -38,11 +38,13 @@ _unreleased_
 
 ### JS Interoperability
 - Require JS code to be in `.js.bt` files
+- Implement JS interfaces to define JS types and methods
 
 ### Compiler
 - Colorize error messages
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`
+- Fix enum type struct fields not being initialized with 0
 - Fix escaping of
   - Double quotes in strings
   - Backticks in interpolated strings
