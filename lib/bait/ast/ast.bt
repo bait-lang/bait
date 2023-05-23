@@ -271,7 +271,6 @@ pub struct SelectorExpr{
 
 pub struct StringLiteral{
 	val string
-	lang Language
 	pos token.Pos
 }
 

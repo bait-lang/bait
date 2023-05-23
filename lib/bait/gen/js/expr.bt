@@ -399,10 +399,6 @@ fun (g Gen) selector_expr(node ast.SelectorExpr) {
 }
 
 fun (g Gen) string_literal(node ast.StringLiteral) {
-	if node.lang != .bait {
-		g.write(node.val)
-		return
-	}
 	val := util.escape_char(node.val.replace('\n', '\\n'), `\"`)
 	g.write('from_js_string("')
 	g.write(val)

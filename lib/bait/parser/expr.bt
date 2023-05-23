@@ -33,7 +33,7 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 			node = p.number_literal()
 		}
 		.string {
-			node = p.string_literal(.bait)
+			node = p.string_literal()
 		}
 		.key_fun {
 			node = p.anon_fun()
@@ -267,7 +267,7 @@ fun (p Parser) enum_val(has_name bool) ast.EnumVal{
 fun (p Parser) hash_expr()ast.HashExpr{
 	p.check(.hash)
 	p.check(.dot)
-	str_node := p.string_literal(.js) as ast.StringLiteral
+	str_node := p.string_literal() as ast.StringLiteral
 	return ast.HashExpr{
 		val: str_node.val
 		pos: str_node.pos
@@ -465,13 +465,12 @@ fun (p Parser) prefix_expr()ast.PrefixExpr{
 	}
 }
 
-fun (p Parser) string_literal(lang ast.Language)ast.Expr{
+fun (p Parser) string_literal()ast.Expr{
 	pos := p.tok.pos
 	if p.next_tok.kind != .dollar {
 		p.next()
 		return ast.StringLiteral{
 			val:p.prev_tok.val
-			lang:lang
 			pos: pos
 		}
 	}

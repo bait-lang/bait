@@ -90,7 +90,7 @@ fun (c Checker) const_decl(node ast.ConstDecl) {
 fun (c Checker) expr_stmt(node ast.ExprStmt) {
 	expr := node.expr
 	c.expr(expr)
-	if expr is ast.CallExpr or expr is ast.IfExpr or expr is ast.MatchExpr or expr is ast.HashExpr or (expr is ast.StringLiteral and expr.lang == .js) {
+	if expr is ast.CallExpr or expr is ast.IfExpr or expr is ast.MatchExpr or expr is ast.HashExpr {
 		return
 	}
 	c.error('expression evaluated but not used', expr.pos)

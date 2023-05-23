@@ -428,12 +428,6 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 }
 
 fun (c Checker) string_literal(node ast.StringLiteral) ast.Type {
-	if node.lang != .bait {
-		if not c.is_js_file {
-			c.warn('JS code can only be used in .js.bt files', node.pos)
-		}
-		return ast.VOID_TYPE
-	}
 	return ast.STRING_TYPE
 }
 
