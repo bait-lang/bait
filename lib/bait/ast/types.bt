@@ -37,11 +37,12 @@ const BUILTIN_STRUCT_TYPES := [
 ]
 
 pub enum TypeKind {
-	placeholder
 	other
+	placeholder
 	string
 	array
 	map
+	interface_
 	struct_
 	enum_
 	alias_type

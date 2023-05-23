@@ -2,22 +2,23 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package os
 
-import #JS.'os' as os
-import #JS.'fs' as fs
-import #JS.'path' as path
-import #JS.'child_process' as child_process
+#JS.'var os = require("os")
+var fs = require("fs")
+var js_path = require("path")
+var child_process = require("child_process")
+'
 
 pub const ARGS := from_js_string_arr(#JS.'process.argv')
 
 pub fun ls(dir string) []string {
-	return from_js_string_arr(#JS.fs.readdirSync(dir.str))
+	return from_js_string_arr(#JS.'fs.readdirSync(dir.str)')
 }
 
 pub fun walk_ext(dir string, ext string) []string {
 	mut ext_files := []string
 	all_files := ls(dir)
 	for file in all_files {
-		fpath := os.join_path(dir, [file])
+		fpath := join_path(dir, [file])
 		if is_dir(fpath) {
 			ext_files = ext_files.concat(walk_ext(fpath, ext))
 		} else if fpath.ends_with(ext) {
@@ -28,23 +29,23 @@ pub fun walk_ext(dir string, ext string) []string {
 }
 
 pub fun cp(src string, dest string) {
-	#JS.fs.copyFileSync(src.str, dest.str)
+	#JS.'fs.copyFileSync(src.str, dest.str)'
 }
 
 pub fun exists(path string) bool {
-	return #JS.fs.existsSync(#JS.'path.str') as bool
+	return #JS.'fs.existsSync(path.str)' as bool
 }
 
 pub fun file_name(path string) string {
-	return from_js_string(#JS.path.basename(#JS.'path.str'))
+	return from_js_string(#JS.'js_path.basename(path.str)')
 }
 
 pub fun file_mod_time(path string) i64 {
-	return #JS.'js_fs.lstatSync(path.str).mtimeMs' as i64
+	return #JS.'fs.lstatSync(path.str).mtimeMs' as i64
 }
 
 pub fun symlink(src string, dest string) {
-	#JS.fs.symlinkSync(src.str, dest.str)
+	#JS.'fs.symlinkSync(src.str, dest.str)'
 }
 
 pub fun chdir(dir string) {
@@ -52,40 +53,39 @@ pub fun chdir(dir string) {
 }
 
 pub fun home_dir() string {
-	// TODO fix JS import and package name conflict e.g. #JS.os and package os
-	return from_js_string(#JS.'js_os.homedir()')
+	return from_js_string(#JS.'os.homedir()')
 }
 
 pub fun dir(path string) string {
-	return from_js_string(#JS.path.dirname(#JS.'path.str'))
+	return from_js_string(#JS.'js_path.dirname(path.str)')
 }
 
 pub fun is_dir(path string) bool {
-	return #JS.'js_fs.lstatSync(path.str).isDirectory()' as bool
+	return #JS.'fs.lstatSync(path.str).isDirectory()' as bool
 }
 
 pub fun mkdir(dir string) {
-	#JS.fs.mkdirSync(dir.str)
+	#JS.'fs.mkdirSync(dir.str)'
 }
 
 pub fun mkdir_all(dir string) {
-	#JS.fs.mkdirSync(dir.str, #JS.'{ recursive: true }')
+	#JS.'fs.mkdirSync(dir.str, { recursive: true })'
 }
 
 pub fun rm(path string) {
-	#JS.fs.rmSync(#JS.'path.str')
+	#JS.'fs.rmSync(path.str)'
 }
 
 pub fun rmdir(dir string) {
-	#JS.fs.rmdirSync(dir.str)
+	#JS.'fs.rmdirSync(dir.str)'
 }
 
 pub fun rmdir_all(dir string) {
-	#JS.fs.rmdirSync(dir.str, #JS.'{ recursive: true }')
+	#JS.'fs.rmdirSync(dir.str, { recursive: true })'
 }
 
 pub fun read_file(path string) string {
-	return from_js_string(#JS.'js_fs.readFileSync(path.str).toString()')
+	return from_js_string(#JS.'fs.readFileSync(path.str).toString()')
 }
 
 pub fun read_lines(path string) []string {
@@ -94,7 +94,7 @@ pub fun read_lines(path string) []string {
 }
 
 pub fun write_file(path string, text string) {
-	#JS.fs.writeFileSync(#JS.'path.str', text.str)
+	#JS.'fs.writeFileSync(path.str, text.str)'
 }
 
 pub fun getwd() string {
@@ -103,7 +103,7 @@ pub fun getwd() string {
 
 pub fun join_path(base string, dirs []string) string {
 	js_dirs := dirs.to_js_arr()
-	return from_js_string(#JS.path.join(base.str, #JS.'...js_dirs'))
+	return from_js_string(#JS.'js_path.join(base.str, ...js_dirs)')
 }
 
 pub fun executable() string {
@@ -111,7 +111,8 @@ pub fun executable() string {
 }
 
 pub fun abs_path(path string) string {
-	return from_js_string(#JS.path.resolve(getwd().str, #JS.'path.str'))
+	wd := getwd()
+	return from_js_string(#JS.'js_path.resolve(wd.str, path.str)')
 }
 
 pub fun resource_abs_path(path string) string {
@@ -130,7 +131,7 @@ pub fun setenv(key string, value string) {
 }
 
 pub fun arch() string {
-	return from_js_string(#JS.'js_os.arch()')
+	return from_js_string(#JS.'os.arch()')
 }
 
 struct Result {
@@ -142,7 +143,7 @@ struct Result {
 pub fun exec(cmd string) Result {
 	mut res := Result{}
 	#JS.'const commands = cmd.str.split(" ")
-	const out = js_child_process.spawnSync(commands[0], commands.slice(1))
+	const out = child_process.spawnSync(commands[0], commands.slice(1))
 	res.code = out.status
 	res.stdout = from_js_string(out.stdout.toString())
 	res.stderr = from_js_string(out.stderr.toString())'
@@ -151,7 +152,7 @@ pub fun exec(cmd string) Result {
 
 pub fun system(cmd string) i32 {
 	#JS.'try {
-		js_child_process.execSync(cmd.str, { stdio: "inherit" })
+		child_process.execSync(cmd.str, { stdio: "inherit" })
 	} catch (e) {
 		return e.status
 	}'

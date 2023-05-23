@@ -32,6 +32,8 @@ fun (c Checker) stmt(stmt ast.Stmt){
 		c.fun_decl(stmt)
 	} else if stmt is ast.GlobalDecl {
 		c.global_decl(stmt)
+	} else if stmt is ast.InterfaceDecl {
+		c.interface_decl(stmt)
 	} else if stmt is ast.LoopControlStmt {
 		c.control_stmt(stmt)
 	} else if stmt is ast.ReturnStmt {
@@ -144,6 +146,8 @@ fun (c Checker) global_decl(node ast.GlobalDecl){
 	typ := c.expr(node.expr)
 	c.table.global_scope.update_type(node.name, typ)
 }
+
+fun (c Checker) interface_decl(node ast.InterfaceDecl){}
 
 fun (c Checker) control_stmt(node ast.LoopControlStmt) {}
 

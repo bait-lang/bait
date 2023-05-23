@@ -76,11 +76,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 	for i:=0; i<files.length; i+=1 {
 		f := files[i]
 		for imp in f.imports {
-			// Extern imports do not have to be parsed
-			if imp.lang != .bait {
-				continue
-			}
-
 			// Get all imported files and filter out already parsed ones
 			// TODO possible perf improvement: prefilter against list of parsed packages before file collection
 			import_dir := resolve_import(imp.name.replace('.', '/'))
@@ -110,9 +105,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 		}
 
 		for imp in f.imports {
-			if imp.lang != .bait {
-				continue
-			}
 			deps[pkg_name].push(imp.name)
 		}
 	}

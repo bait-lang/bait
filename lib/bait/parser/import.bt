@@ -13,13 +13,6 @@ fun (p Parser) import_stmts() [] ast.Import{
 		pos := p.tok.pos
 		p.next()
 
-		if p.tok.kind == .hash {
-			mut imp := p.js_import()
-			imp.pos = pos
-			imports.push(imp)
-			continue
-		}
-
 		mut name_parts := []string
 		name_parts.push(p.check_name())
 		for p.tok.kind == .dot {
@@ -41,30 +34,8 @@ fun (p Parser) import_stmts() [] ast.Import{
 		imports.push(ast.Import{
 			name:name
 			alias: alias
-			lang: ast.Language.bait
 			pos: pos
 		})
 	}
 	return imports
-}
-
-fun (p Parser) js_import() ast.Import{
-	p.next() // #JS
-	p.check(.dot)
-
-	if p.tok.kind != .string {
-		p.error('external imports must have the format `#JS."name" as alias`')
-	}
-	name := p.tok.val
-	p.next()
-
-	p.check(.key_as)
-	alias := p.check_name()
-
-	p.import_aliases[alias] = name
-	return ast.Import{
-		name: name
-		alias: alias
-		lang: ast.Language.js
-	}
 }

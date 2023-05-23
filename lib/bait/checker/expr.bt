@@ -106,13 +106,6 @@ fun (c Checker) as_cast(node ast.AsCast) ast.Type {
 }
 
 fun (c Checker) call_expr(node ast.CallExpr) ast.Type {
-	if node.lang == .js {
-		for arg in node.args {
-			arg.typ = c.expr(arg.expr)
-		}
-		// TODO require JS function declarations and use declared return type here
-		return ast.VOID_TYPE
-	}
 	if node.is_method{
 		return c.method_call(node)
 	}
@@ -177,6 +170,8 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 	if not def.is_pub and left_sym.pkg != c.pkg {
 		c.error('method ${def.name} is private', node.pos)
 	}
+
+	// Check argument count and types
 	if node.args.length + 1 == def.params.length {
 		for i, arg in node.args {
 			param_type := def.params[i + 1].typ
@@ -189,6 +184,8 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 	} else {
 		c.error('expected ${def.params.length - 1} arguments but got ${node.args.length}', node.pos)
 	}
+
+	node.lang = def.lang
 	node.left_type = def.params[0].typ
 	node.return_type = def.return_type
 	c.check_attributes_on_call(node, def)
@@ -274,9 +271,6 @@ fun (c Checker) enum_val(node ast.EnumVal) ast.Type {
 }
 
 fun (c Checker) ident(node ast.Ident) ast.Type {
-	if node.lang == .js {
-		return ast.VOID_TYPE
-	}
 	mut obj := c.scope.get(node.name)
 	if obj.typ != ast.PLACEHOLDER_TYPE {
 		return obj.typ

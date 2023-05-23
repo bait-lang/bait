@@ -98,15 +98,19 @@ fun (g Gen) bool_literal(node ast.BoolLiteral){
 }
 
 fun (g Gen) call_expr(node ast.CallExpr) {
-	if node.lang == .bait {
-		if node.is_method {
-			sym := g.table.get_sym(node.left_type)
-			g.write(js_name(sym.name + '_' + node.name))
-		} else {
-			g.write(js_name(node.name))
-		}
+	if node.is_method and node.lang != .bait {
+		g.expr(node.left)
+		g.write('.' + node.name + '(')
+		g.call_args(node.args)
+		g.write(')')
+		return
+	}
+
+	if node.is_method {
+		sym := g.table.get_sym(node.left_type)
+		g.write(js_name(sym.name + '_' + node.name))
 	} else {
-		g.write('js_${node.name}')
+		g.write(js_name(node.name))
 	}
 	if ['println', 'eprintln'].contains(node.name) {
 		g.write('(')
@@ -161,11 +165,7 @@ fun (g Gen) enum_val(node ast.EnumVal) {
 }
 
 fun (g Gen) ident(node ast.Ident) {
-	if node.lang == .bait {
-		g.write(js_name(node.name))
-	} else {
-		g.write('js_${node.name}')
-	}
+	g.write(js_name(node.name))
 }
 
 fun (g Gen) if_expr(node ast.IfExpr){

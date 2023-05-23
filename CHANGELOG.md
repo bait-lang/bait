@@ -10,7 +10,7 @@ _unreleased_
 ### Breaking
 - Remove `type(var)` cast syntax in favor of `as` casting: `var as Type`
 - `$FILE` comptime var now gives the relative path. Use `$ABS_FILE` for the old behaviour
-- JS imports using `import #JS.name` are no longer supported
+- JS imports are no longer supported
 
 ### CLI and Tooling
 - Add `symlink` command that will link a helper bash script which executes bait with NodeJS
@@ -38,12 +38,13 @@ _unreleased_
 
 ### JS Interoperability
 - Require JS code to be in `.js.bt` files
-- Imports must have the `import #JS.'name' as alias` format
+- Implement JS interfaces to define JS types and methods
 
 ### Compiler
 - Colorize error messages
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`
+- Fix enum type struct fields not being initialized with 0
 - Fix escaping of
   - Double quotes in strings
   - Backticks in interpolated strings

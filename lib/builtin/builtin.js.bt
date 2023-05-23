@@ -2,7 +2,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
-import #JS.'process' as process
+#JS.'var process = require("process")'
 
 pub fun println(msg string) {
 	#JS.'console.log(msg)'
@@ -13,7 +13,7 @@ pub fun eprintln(msg string) {
 }
 
 pub fun exit(code i32) {
-	#JS.process.exit(code)
+	#JS.'process.exit(code)'
 }
 
 pub fun panic(msg string) {

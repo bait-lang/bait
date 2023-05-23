@@ -37,6 +37,8 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 		g.fun_decl(stmt)
 	} else if stmt is ast.GlobalDecl {
 		g.global_decl(stmt)
+	} else if stmt is ast.InterfaceDecl {
+		g.interface_decl(stmt)
 	} else if stmt is ast.LoopControlStmt {
 		g.control_stmt(stmt)
 	} else if stmt is ast.ReturnStmt {
@@ -160,15 +162,13 @@ fun (g Gen) const_decl(node ast.ConstDecl){
 }
 
 fun (g Gen) enum_decl(node ast.EnumDecl){
-	g.type_defs_out += 'const ' + js_name(node.name) + ' = {\n'
+	g.writeln('const ' + js_name(node.name) + ' = {')
+	g.indent += 1
 	for i, variant in node.variants {
-		g.type_defs_out += '\t${variant}: ${i}'
-		if i < node.variants.length - 1 {
-			g.type_defs_out += ','
-		}
-		g.type_defs_out += '\n'
+		g.writeln('${variant}: ${i},')
 	}
-	g.type_defs_out += '}\n'
+	g.indent -= 1
+	g.writeln('}')
 }
 
 fun (g Gen) control_stmt(node ast.LoopControlStmt){
@@ -261,6 +261,12 @@ fun (g Gen) global_decl(node ast.GlobalDecl){
 	name := js_name(node.name)
 	expr := g.expr_string(node.expr)
 	g.global_out += 'var ${name} = ${expr}\n'
+}
+
+fun (g Gen) interface_decl(node ast.InterfaceDecl){
+	if node.lang != .bait {
+		return
+	}
 }
 
 fun (g Gen) return_stmt(node ast.ReturnStmt){
