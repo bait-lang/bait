@@ -9,6 +9,7 @@ pub struct Token {
 }
 
 pub enum TokenKind {
+	unknown
 	eof
 	attr
 	name

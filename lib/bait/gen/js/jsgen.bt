@@ -144,6 +144,8 @@ fun (g Gen) write_default_value(typ ast.Type) {
 				g.write('new ${js_name(sym.name)}({})')
 			} else if sym.kind == .alias_type {
 				g.write_default_value(sym.parent)
+			} else if sym.kind == .enum_ {
+				g.write('0')
 			} else {
 				g.write('undefined')
 			}
