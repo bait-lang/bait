@@ -27,35 +27,44 @@ fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
 			found = true
 		}
 	}
-	if found {
-		def := c.table.fun_decls[node.name]
-		if not def.is_pub and node.pkg != c.pkg {
-			c.error('function ${def.name} is private', node.pos)
-		}
-		if node.args.length == def.params.length {
-			if node.name == 'println' or node.name == 'eprintln' {
-				// TODO check arg can be printed
-				for arg in node.args {
-					arg.typ = c.expr(arg.expr)
-				}
-				return ast.VOID_TYPE
-			}
-			for i, arg in node.args {
-				param_type := def.params[i].typ
-				c.expected_type = param_type
-				arg.typ = c.expr(arg.expr)
-				if not c.check_types(arg.typ, param_type) {
-					c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
-				}
-			}
-		} else {
-			c.error('expected ${def.params.length} arguments but got ${node.args.length}', node.pos)
-		}
-		node.return_type = def.return_type
-		c.check_attributes_on_call(node, def)
-	} else {
+	if not found {
 		c.error('unknown function ${node.name}', node.pos)
+		return ast.VOID_TYPE
+
 	}
+
+	def := c.table.fun_decls[node.name]
+	if not def.is_pub and node.pkg != c.pkg {
+		c.error('function ${def.name} is private', node.pos)
+	}
+	node.return_type = def.return_type
+	c.check_attributes_on_call(node, def)
+
+	// Check argument count
+	if node.args.length != def.params.length {
+		c.error('expected ${def.params.length} arguments but got ${node.args.length}', node.pos)
+		return node.return_type
+	}
+
+	// Handle special builtin functions
+	if node.name == 'println' or node.name == 'eprintln' {
+		// TODO check arg can be printed
+		for arg in node.args {
+			arg.typ = c.expr(arg.expr)
+		}
+		return ast.VOID_TYPE
+	}
+
+	// Check argument types
+	for i, arg in node.args {
+		param_type := def.params[i].typ
+		c.expected_type = param_type
+		arg.typ = c.expr(arg.expr)
+		if not c.check_types(arg.typ, param_type) {
+			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
+		}
+	}
+
 	return node.return_type
 }
 
@@ -71,24 +80,32 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 		c.error('method ${def.name} is private', node.pos)
 	}
 
-	// Check argument count and types
-	if node.args.length + 1 == def.params.length {
-		for i, arg in node.args {
-			param_type := def.params[i + 1].typ
-			c.expected_type = param_type
-			arg.typ = c.expr(arg.expr)
-			if not c.check_types(arg.typ, param_type) {
-				c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
-			}
-		}
-	} else {
-		c.error('expected ${def.params.length - 1} arguments but got ${node.args.length}', node.pos)
-	}
-
 	node.lang = def.lang
 	node.left_type = def.params[0].typ
 	node.return_type = def.return_type
 	c.check_attributes_on_call(node, def)
+
+	// Check argument count
+	if node.args.length + 1 != def.params.length {
+		c.error('expected ${def.params.length - 1} arguments but got ${node.args.length}', node.pos)
+		return node.return_type
+	}
+
+	// Handle special builtin methods
+	// if left_sym.kind == .array and [].contains(node.name) {
+	// 	return node.return_type
+	// }
+
+	// Check argument types
+	for i, arg in node.args {
+		param_type := def.params[i + 1].typ
+		c.expected_type = param_type
+		arg.typ = c.expr(arg.expr)
+		if not c.check_types(arg.typ, param_type) {
+			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
+		}
+	}
+
 	return node.return_type
 }
 
