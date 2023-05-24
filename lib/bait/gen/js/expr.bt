@@ -449,7 +449,7 @@ fun (g Gen) struct_init(node ast.StructInit) {
 
 fun (g Gen) type_of(node ast.TypeOf) {
 	sym := g.table.get_sym(node.typ)
-	g.write('"' + sym.name + '"')
+	g.write('from_js_string("' + sym.name + '")')
 }
 
 fun (g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
