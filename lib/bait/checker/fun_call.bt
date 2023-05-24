@@ -91,7 +91,7 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 		return node.return_type
 	}
 
-	// Handle special builtin methods
+	// Handle special array methods with argument of `any` type
 	if left_sym.kind == .array and ['push', 'index', 'last_index', 'contains'].contains(node.name) {
 		arg := node.args[0]
 		info := left_sym.info as ast.ArrayInfo
@@ -102,7 +102,16 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 		}
 		return node.return_type
 	}
-	// TODO array.concat
+	// Handle other special methods
+	if left_sym.kind == .array and node.name == 'concat' {
+		arg := node.args[0]
+		c.expected_type = left_expr_type
+		arg.typ = c.expr(arg.expr)
+		if not c.check_types(arg.typ, left_expr_type) {
+			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(left_expr_type)} in argument 1', node.pos)
+		}
+		return node.return_type
+	}
 	// TODO map: set, contains
 
 	// Check argument types
