@@ -92,9 +92,19 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 	}
 
 	// Handle special builtin methods
-	// if left_sym.kind == .array and [].contains(node.name) {
-	// 	return node.return_type
-	// }
+	// TODO add contains
+	if left_sym.kind == .array and ['push', 'index', 'last_index'].contains(node.name) {
+		arg := node.args[0]
+		info := left_sym.info as ast.ArrayInfo
+		c.expected_type = info.elem_type
+		arg.typ = c.expr(arg.expr)
+		if not c.check_types(arg.typ, info.elem_type) {
+			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(info.elem_type)} in argument 1', node.pos)
+		}
+		return node.return_type
+	}
+	// TODO array.concat
+	// TODO map: set, contains
 
 	// Check argument types
 	for i, arg in node.args {

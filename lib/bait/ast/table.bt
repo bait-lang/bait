@@ -41,6 +41,7 @@ pub fun (t Table) register_sym(sym TypeSymbol) Type {
 			t.type_symbols[idx] = sym
 			return idx
 		}
+		// TODO fix type bait.ast.Type not matches placeholder in argument 1
 		if BUILTIN_STRUCT_TYPES.contains(idx) {
 			mut new_sym := sym
 			new_sym.kind = cur_sym.kind
