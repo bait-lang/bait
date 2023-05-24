@@ -92,8 +92,7 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 	}
 
 	// Handle special builtin methods
-	// TODO add contains
-	if left_sym.kind == .array and ['push', 'index', 'last_index'].contains(node.name) {
+	if left_sym.kind == .array and ['push', 'index', 'last_index', 'contains'].contains(node.name) {
 		arg := node.args[0]
 		info := left_sym.info as ast.ArrayInfo
 		c.expected_type = info.elem_type

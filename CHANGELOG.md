@@ -32,6 +32,7 @@ _unreleased_
 - Implement enum access without specifying the name if the type is already known
 - Infer struct init default value of type alias from parent type
 - Fix `typeof()`
+- Type check arguments of calls to special builtin array and map methods
 
 ### Error Checking
 - Prevent redefinition of functions and methods
