@@ -1,3 +1,7 @@
 fun main() {
+	mut a := [1, 2, 3]
+	println(typeof(a))
+	// a.push(true)
+	// #JS.'console.log(a)'
 	println('hello world')
 }

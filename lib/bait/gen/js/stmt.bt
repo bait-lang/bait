@@ -3,6 +3,7 @@
 package js
 
 import bait.ast
+import bait.errors
 import bait.token
 
 fun (g Gen) stmts(stmts []ast.Stmt) {
@@ -46,7 +47,7 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 	} else if stmt is ast.StructDecl {
 		g.struct_decl(stmt)
 	} else if stmt is ast.TypeDecl {
-		// Nothing to do here
+		g.type_decl(stmt)
 	} else {}
 }
 
@@ -267,6 +268,8 @@ fun (g Gen) interface_decl(node ast.InterfaceDecl){
 	if node.lang != .bait {
 		return
 	}
+	errors.error(g.path, node.pos, 'only JS interfaces are supported right now')
+	exit(1)
 }
 
 fun (g Gen) return_stmt(node ast.ReturnStmt){
@@ -316,4 +319,15 @@ fun (g Gen) struct_decl(node ast.StructDecl){
 	g.writeln('}\`}')
 	g.indent -= 1
 	g.writeln('}')
+}
+
+fun (g Gen) type_decl(node ast.TypeDecl){
+	sym := g.table.get_sym(node.typ)
+	if sym.kind != .alias_type {
+		return
+	}
+
+	g.write('function ')
+	g.write(js_name(node.name))
+	g.writeln('(val) { return val }')
 }

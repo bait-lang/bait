@@ -13,7 +13,7 @@ fun (g Gen) expr(expr ast.Expr) {
 	} else if expr is ast.ArrayInit {
 		g.array_init(expr)
 	} else if expr is ast.AsCast {
-		g.expr(expr.expr)
+		g.as_cast(expr)
 	} else if expr is ast.BoolLiteral {
 		g.bool_literal(expr)
 	} else if expr is ast.CallExpr {
@@ -89,6 +89,18 @@ fun (g Gen) array_init(node ast.ArrayInit) {
 		}
 	}
 	g.write('], length: ${node.exprs.length} })')
+}
+
+fun (g Gen) as_cast(node ast.AsCast) {
+	target_sym := g.table.get_sym(node.target)
+	if target_sym.kind == .alias_type {
+		// g.write('new ${js_name(target_sym.name)}(')
+		g.expr(node.expr)
+		// g.write(')')
+		return
+	}
+
+	g.expr(node.expr)
 }
 
 fun (g Gen) bool_literal(node ast.BoolLiteral){
@@ -437,7 +449,7 @@ fun (g Gen) struct_init(node ast.StructInit) {
 
 fun (g Gen) type_of(node ast.TypeOf) {
 	sym := g.table.get_sym(node.typ)
-	g.write('"' + sym.name + '"')
+	g.write('from_js_string("' + sym.name + '")')
 }
 
 fun (g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {

@@ -4,10 +4,11 @@ package builtin
 
 #JS.'var process = require("process")'
 
-pub fun println(msg string) {
+pub fun println(msg #JS.String) {
 	#JS.'console.log(msg)'
 }
 
+// TODO change into js string
 pub fun eprintln(msg string) {
 	#JS.'console.error(msg)'
 }
