@@ -102,7 +102,7 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 		}
 		return node.return_type
 	}
-	// Handle other special methods
+	// Handle array.concat
 	if left_sym.kind == .array and node.name == 'concat' {
 		arg := node.args[0]
 		c.expected_type = left_expr_type
@@ -112,7 +112,6 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 		}
 		return node.return_type
 	}
-	// TODO map: set, contains
 
 	// Check argument types
 	for i, arg in node.args {
