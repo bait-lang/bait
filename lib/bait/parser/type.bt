@@ -87,7 +87,6 @@ fun (p Parser) infer_expr_type(expr ast.Expr) ast.Type {
 		ast.IntegerLiteral{ return ast.I32_TYPE }
 		ast.StringLiteral{ return ast.STRING_TYPE }
 		ast.StructInit{ return expr.typ }
-		ast.ArrayInit{ return expr.typ }
 		ast.MapInit{ return expr.typ }
 	}
 	return ast.VOID_TYPE
