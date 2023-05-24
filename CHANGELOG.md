@@ -31,6 +31,7 @@ _unreleased_
 - Improve type resolving of constants
 - Implement enum access without specifying the name if the type is already known
 - Infer struct init default value of type alias from parent type
+- Fix `typeof()`
 
 ### Error Checking
 - Prevent redefinition of functions and methods
