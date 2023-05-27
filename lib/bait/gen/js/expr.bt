@@ -261,6 +261,7 @@ fun (g Gen) index_expr(node ast.IndexExpr){
 }
 
 fun (g Gen) infix_expr(node ast.InfixExpr){
+	// TODO should overloading be recursive like methods too?
 	lsym := g.table.get_sym(node.left_type)
 	if lsym.overloads.contains(node.op.js_repr()) {
 		overload := lsym.overloads[node.op.js_repr()]
