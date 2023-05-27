@@ -1,0 +1,20 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package ast
+
+import bait.token
+
+pub struct Attribute{
+	name string
+	value string
+	pos token.Pos
+}
+
+pub fun (attrs []Attribute) find_attr(name string) Attribute {
+	for attr in attrs {
+		if attr.name == name {
+			return attr
+		}
+	}
+	return Attribute{}
+}

@@ -8,7 +8,7 @@ import bait.token
 
 fun (c Checker) fun_decl(node ast.FunDecl) {
 	c.cur_fun = node
-	c.check_attributes(node.attrs)
+	c.check_attributes(node)
 	c.open_scope()
 	c.fun_params(node.params)
 	c.stmts(node.stmts)
