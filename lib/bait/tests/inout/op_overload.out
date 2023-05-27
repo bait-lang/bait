@@ -1,4 +1,4 @@
-lib/bait/checker/tests/op_overload.in.bt:1:9 warning: operator overloading can only be used on methods
-lib/bait/checker/tests/op_overload.in.bt:9:9 error: "+" was overloaded twice for type "Foo"
-lib/bait/checker/tests/op_overload.in.bt:12:9 error: cannot overload "!=", ">", "<=" and ">=" as they are generated from "==" and "<"
-lib/bait/checker/tests/op_overload.in.bt:15:9 error: cannot overload "+="
+lib/bait/tests/inout/op_overload.in.bt:1:9 warning: operator overloading can only be used on methods
+lib/bait/tests/inout/op_overload.in.bt:9:9 error: "+" was overloaded twice for type "Foo"
+lib/bait/tests/inout/op_overload.in.bt:12:9 error: cannot overload "!=", ">", "<=" and ">=" as they are generated from "==" and "<"
+lib/bait/tests/inout/op_overload.in.bt:15:9 error: cannot overload "+="
