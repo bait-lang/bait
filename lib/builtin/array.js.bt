@@ -7,11 +7,11 @@ struct array {
 	length i32
 }
 
-pub fun (a array) get(i i32) any {
+fun (a array) get(i i32) any {
 	return a.data.at(i as #JS.Number)
 }
 
-pub fun (a array) set(i i32, val any) {
+fun (a array) set(i i32, val any) {
 	#JS.'a.data[i] = val'
 }
 
