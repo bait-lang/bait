@@ -297,7 +297,7 @@ fun (p Parser) fun_decl()ast.FunDecl{
 	p.check(.rpar)
 
 	mut return_type := ast.VOID_TYPE
-	if p.tok.kind != .lcur {
+	if p.tok.kind != .lcur and pos.line == p.tok.pos.line {
 		return_type = p.parse_type()
 	}
 
