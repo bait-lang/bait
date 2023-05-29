@@ -2,8 +2,11 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
-#JS.'var process = require("process")'
+import 'process' as #JS.process
 
+fun #JS.process.exit(code #JS.Number)
+
+// Paramterers will be converted to JS strings during codegen
 pub fun println(msg #JS.String) {
 	#JS.'console.log(msg)'
 }
@@ -14,7 +17,7 @@ pub fun eprintln(msg string) {
 }
 
 pub fun exit(code i32) {
-	#JS.'process.exit(code)'
+	#JS.process.exit(code as #JS.Number)
 }
 
 pub fun panic(msg string) {

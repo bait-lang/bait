@@ -2,18 +2,48 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package os
 
-// import 'os' as #JS.os2
+// import 'os' as #JS.os
+import 'fs' as #JS.fs
+// import 'path' as #JS.path
+// import 'process' as #JS.process
+// import 'child_process' as #JS.child_process
 
 #JS.'var os = require("os")
-var fs = require("fs")
 var js_path = require("path")
 var child_process = require("child_process")
 '
 
+// JS Declarations
+fun #JS.fs.readdirSync(dir #JS.String) #JS.Array
+
+fun #JS.fs.copyFileSync(src #JS.String, dest #JS.String)
+
+fun #JS.fs.existsSync(path #JS.String) #JS.Boolean
+
+// TODO JS structs
+// fun #JS.fs.lstatSync(path #JS.String) #JS.Any
+
+fun #JS.fs.symlinkSync(src #JS.String, dest #JS.String)
+
+// TODO second param
+fun #JS.fs.mkdirSync(dir #JS.String)
+
+fun #JS.fs.rmSync(path #JS.String)
+
+// TODO second param
+fun #JS.fs.rmdirSync(dir #JS.String)
+
+// TODO .toString()
+// fun #JS.fs.readFileSync(dir #JS.String)
+
+fun #JS.fs.writeFileSync(path #JS.String, text #JS.String)
+
+
+// Bait Code
 pub const ARGS := from_js_string_arr(#JS.'process.argv' as #JS.Array)
 
 pub fun ls(dir string) []string {
-	return from_js_string_arr(#JS.'fs.readdirSync(dir.str)' as #JS.Array)
+	return from_js_string_arr(#JS.fs.readdirSync(dir.str))
 }
 
 pub fun walk_ext(dir string, ext string) []string {
@@ -31,11 +61,11 @@ pub fun walk_ext(dir string, ext string) []string {
 }
 
 pub fun cp(src string, dest string) {
-	#JS.'fs.copyFileSync(src.str, dest.str)'
+	#JS.fs.copyFileSync(src.str, dest.str)
 }
 
 pub fun exists(path string) bool {
-	return #JS.'fs.existsSync(path.str)' as bool
+	return #JS.fs.existsSync(path.str) as bool
 }
 
 pub fun file_name(path string) string {
@@ -43,11 +73,11 @@ pub fun file_name(path string) string {
 }
 
 pub fun file_mod_time(path string) i64 {
-	return #JS.'fs.lstatSync(path.str).mtimeMs' as i64
+	return #JS.'JS__fs.lstatSync(path.str).mtimeMs' as i64
 }
 
 pub fun symlink(src string, dest string) {
-	#JS.'fs.symlinkSync(src.str, dest.str)'
+	#JS.fs.symlinkSync(src.str, dest.str)
 }
 
 pub fun chdir(dir string) {
@@ -63,31 +93,31 @@ pub fun dir(path string) string {
 }
 
 pub fun is_dir(path string) bool {
-	return #JS.'fs.lstatSync(path.str).isDirectory()' as bool
+	return #JS.'JS__fs.lstatSync(path.str).isDirectory()' as bool
 }
 
 pub fun mkdir(dir string) {
-	#JS.'fs.mkdirSync(dir.str)'
+	#JS.fs.mkdirSync(dir.str)
 }
 
 pub fun mkdir_all(dir string) {
-	#JS.'fs.mkdirSync(dir.str, { recursive: true })'
+	#JS.'JS__fs.mkdirSync(dir.str, { recursive: true })'
 }
 
 pub fun rm(path string) {
-	#JS.'fs.rmSync(path.str)'
+	#JS.fs.rmSync(path.str)
 }
 
 pub fun rmdir(dir string) {
-	#JS.'fs.rmdirSync(dir.str)'
+	#JS.fs.rmdirSync(dir.str)
 }
 
 pub fun rmdir_all(dir string) {
-	#JS.'fs.rmdirSync(dir.str, { recursive: true })'
+	#JS.'JS__fs.rmdirSync(dir.str, { recursive: true })'
 }
 
 pub fun read_file(path string) string {
-	return from_js_string(#JS.'fs.readFileSync(path.str).toString()' as #JS.String)
+	return from_js_string(#JS.'JS__fs.readFileSync(path.str).toString()' as #JS.String)
 }
 
 pub fun read_lines(path string) []string {
@@ -96,7 +126,7 @@ pub fun read_lines(path string) []string {
 }
 
 pub fun write_file(path string, text string) {
-	#JS.'fs.writeFileSync(path.str, text.str)'
+	#JS.fs.writeFileSync(path.str, text.str)
 }
 
 pub fun getwd() string {
