@@ -257,6 +257,8 @@ fun (p Parser) fun_decl()ast.FunDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.check(.key_fun)
+
+	mut lang := ast.Language.bait
 	mut is_method := false
 	mut params := []ast.Param
 	if p.tok.kind == .lpar {
@@ -270,17 +272,35 @@ fun (p Parser) fun_decl()ast.FunDecl{
 		})
 		p.check(.rpar)
 	}
-	mut name := p.check_name()
+
+	mut name := ''
+	if p.tok.kind == .hash {
+		// language
+		lang = .js
+		name += p.tok.val
+		p.next()
+		p.check(.dot)
+
+		// foreign package
+		name += p.check_name()
+		p.check(.dot)
+	}
+
+	// normal function name
+	name += p.check_name()
 	if not is_method {
 		name = p.prepend_pkg(name)
 	}
+
 	p.check(.lpar)
 	params = params.concat(p.fun_params())
 	p.check(.rpar)
+
 	mut return_type := ast.VOID_TYPE
 	if p.tok.kind != .lcur {
 		return_type = p.parse_type()
 	}
+
 	mut node := ast.FunDecl{
 		is_test: p.is_test_file and name.starts_with('test_')
 		is_pub: is_pub
@@ -288,9 +308,11 @@ fun (p Parser) fun_decl()ast.FunDecl{
 		params: params
 		return_type: return_type
 		attrs: p.attributes
+		lang: lang
 		pos: pos
 	}
 	p.attributes = []ast.Attribute
+
 	if is_method {
 		sym := p.table.get_sym(params[0].typ)
 		// TODO move this error into checker
@@ -309,8 +331,11 @@ fun (p Parser) fun_decl()ast.FunDecl{
 		}
 		typ := p.table.find_or_register_fun(param_types, return_type)
 	}
-	f_stmts := p.parse_block()
-	node.stmts = f_stmts
+
+	if lang == .bait {
+		node.stmts = p.parse_block()
+	}
+
 	node.is_method = is_method
 	return node
 }
