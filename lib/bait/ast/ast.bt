@@ -314,6 +314,7 @@ pub struct Import{
 	name string
 	alias string
 	pos token.Pos
+	lang Language
 }
 
 pub struct File{

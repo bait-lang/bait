@@ -10,7 +10,6 @@ _unreleased_
 ### Breaking
 - Remove `type(var)` cast syntax in favor of `as` casting: `var as Type`
 - `$FILE` comptime var now gives the relative path. Use `$ABS_FILE` for the old behaviour
-- JS imports are no longer supported
 
 ### CLI and Tooling
 - Add `symlink` command that will link a helper bash script which executes bait with NodeJS
@@ -42,6 +41,8 @@ _unreleased_
 ### JS Interoperability
 - Require JS code to be in `.js.bt` files
 - Implement JS interfaces to define JS types and methods
+- Imports have to follow the scheme `import 'package' as #JS.alias`
+- JS functions have to be declared with their type signature
 
 ### Compiler
 - Colorize error messages
