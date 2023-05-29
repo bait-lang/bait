@@ -1,0 +1,6 @@
+import 'fs' as #JS.fs
+
+fun #JS.fs.existsSync(path #JS.String) #JS.Boolean
+
+mut a := #JS.fs.existsSync('bait string')
+a = false
