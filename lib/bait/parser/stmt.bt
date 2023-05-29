@@ -277,18 +277,18 @@ fun (p Parser) fun_decl()ast.FunDecl{
 	if p.tok.kind == .hash {
 		// language
 		lang = .js
-		name += p.tok.val
+		name += p.tok.val + '__'
 		p.next()
 		p.check(.dot)
 
 		// foreign package
-		name += p.check_name()
+		name += p.check_name() + '.'
 		p.check(.dot)
 	}
 
 	// normal function name
 	name += p.check_name()
-	if not is_method {
+	if not is_method and lang == .bait {
 		name = p.prepend_pkg(name)
 	}
 

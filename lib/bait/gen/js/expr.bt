@@ -123,8 +123,10 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
 		g.write(js_name(sym.name + '_' + node.name))
-	} else {
+	} else if node.lang == .bait{
 		g.write(js_name(node.name))
+	} else {
+		g.write(node.name)
 	}
 	if ['println', 'eprintln'].contains(node.name) {
 		g.write('(')

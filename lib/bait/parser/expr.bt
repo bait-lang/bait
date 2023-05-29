@@ -200,7 +200,7 @@ fun (p Parser) dot_expr(left ast.Expr) ast.Expr {
 	}
 }
 
-fun (p Parser) fun_call()ast.CallExpr{
+fun (p Parser) fun_call(lang ast.Language)ast.CallExpr{
 	pos := p.tok.pos
 	name := p.prepend_expr_pkg(p.check_name())
 	p.check(.lpar)
@@ -211,6 +211,7 @@ fun (p Parser) fun_call()ast.CallExpr{
 		args: args
 		pkg: p.pkg_name
 		pos: pos
+		lang: lang
 	}
 }
 
@@ -264,9 +265,16 @@ fun (p Parser) enum_val(has_name bool) ast.EnumVal{
 	}
 }
 
-fun (p Parser) hash_expr()ast.HashExpr{
+fun (p Parser) hash_expr()ast.Expr{
 	p.check(.hash)
 	p.check(.dot)
+	if p.tok.kind != .string {
+		p.expr_pkg = 'JS__'
+		p.expr_pkg += p.check_name()
+		p.check(.dot)
+		return p.fun_call(.js)
+	}
+
 	str_node := p.string_literal() as ast.StringLiteral
 	return ast.HashExpr{
 		val: str_node.val
@@ -422,7 +430,7 @@ fun (p Parser) name_expr()ast.Expr{
 		return p.map_init()
 	}
 	if p.next_tok.kind == .lpar {
-		return p.fun_call()
+		return p.fun_call(.bait)
 	}
 	if p.is_struct_possible and p.next_tok.kind == .lcur {
 		return p.struct_init()
