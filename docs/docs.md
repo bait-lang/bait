@@ -310,4 +310,19 @@ global my_global := 123
 ```
 
 ## JavaScript Interoperability
+### JS Imports and Declarations
+It's possible to import JavaScript packages and call JS code from Bait.
+
+```bait
+import 'fs' as #JS.fs
+
+fun #JS.fs.existsSync(path #JS.String) #JS.Boolean
+
+fun main() {
+    x := #JS.fs.existsSync('hello_world.bt'.str) as bool
+    println(x)
+}
+```
+
+### Embed Raw Code
 JS code can be embeded using the `#JS.` prefix and is only allowed in `.js.bt` files.
