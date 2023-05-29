@@ -47,6 +47,7 @@ _unreleased_
 - Colorize error messages
 - Create a system for annotating functions with attributes
   - Add `@deprecated` and `@deprecated_after`
+- Implement limited method overloading using `@overload: '<operator>'`
 - Fix enum type struct fields not being initialized with 0
 - Fix escaping of
   - Double quotes in strings

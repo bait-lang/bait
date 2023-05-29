@@ -294,14 +294,6 @@ fun (g Gen) infix_expr(node ast.InfixExpr){
 	// U8 special cases
 	// TODO replace with overloading
 	if node.left_type == ast.U8_TYPE {
-		if node.op == .plus {
-			g.write('u8_add(')
-			g.expr(node.left)
-			g.write(', ')
-			g.expr(node.right)
-			g.write(')')
-			return
-		}
 		g.expr(node.left)
 		g.write('.val ')
 		g.write(node.op.js_repr())

@@ -20,6 +20,7 @@ pub fun (c u8) ascii() string {
 	return from_js_string(#JS.'String.fromCharCode(c.val)' as #JS.String)
 }
 
+@overload: '+'
 fun (a u8) add (b u8) u8 {
 	return #JS.'new u8(a.val + b.val)' as u8
 }
