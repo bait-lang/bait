@@ -292,7 +292,6 @@ fun (g Gen) infix_expr(node ast.InfixExpr){
 	}
 
 	// U8 special cases
-	// TODO replace with overloading
 	if node.left_type == ast.U8_TYPE {
 		g.expr(node.left)
 		g.write('.val ')

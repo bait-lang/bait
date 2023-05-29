@@ -181,7 +181,7 @@ fun (t Tokenizer) next_token() token.Token {
 			}
 			`#` {
 				t.pos += 1
-				name := t.name_val()
+				name := '#' + t.name_val()
 				return t.new_token(.hash, name)
 			}
 			`@` {

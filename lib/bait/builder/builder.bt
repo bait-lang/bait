@@ -76,6 +76,10 @@ pub fun compile(prefs preference.Prefs) i32 {
 	for i:=0; i<files.length; i+=1 {
 		f := files[i]
 		for imp in f.imports {
+			if imp.lang != .bait {
+				continue
+			}
+
 			// Get all imported files and filter out already parsed ones
 			// TODO possible perf improvement: prefilter against list of parsed packages before file collection
 			import_dir := resolve_import(imp.name.replace('.', '/'))
@@ -99,12 +103,16 @@ pub fun compile(prefs preference.Prefs) i32 {
 	mut deps := map[string][]string
 	for f in files {
 		pkg_name := f.pkg_decl.full_name
+
 		// Everything implicitly imports builtin
 		if pkg_name != 'builtin' {
 			deps[pkg_name].push('builtin')
 		}
 
 		for imp in f.imports {
+			if imp.lang != .bait {
+				continue
+			}
 			deps[pkg_name].push(imp.name)
 		}
 	}

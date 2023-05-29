@@ -6,6 +6,43 @@ import bait.ast
 import bait.errors
 import bait.token
 
+fun (p Parser) js_import() ast.Import {
+	name := p.tok.val
+	p.next()
+	p.check(.key_as)
+
+	mut alias := p.tok.val + '.'
+	p.check(.hash)
+	p.check(.dot)
+	alias += p.check_name()
+
+	return ast.Import{
+		name: name
+		alias: alias
+		lang: .js
+	}
+}
+
+fun (p Parser) bait_import() ast.Import {
+	mut name_parts := []string
+	name_parts.push(p.check_name())
+	for p.tok.kind == .dot {
+		p.next()
+		name_parts.push(p.check_name())
+	}
+	name := name_parts.join('.')
+
+	mut alias := name_parts[name_parts.length - 1]
+	if p.tok.kind == .key_as {
+		p.next()
+		alias = p.check_name()
+	}
+
+	return ast.Import{
+		name: name
+		alias: alias
+	}
+}
 
 fun (p Parser) import_stmts() [] ast.Import{
 	mut imports := []ast.Import
@@ -13,29 +50,20 @@ fun (p Parser) import_stmts() [] ast.Import{
 		pos := p.tok.pos
 		p.next()
 
-		mut name_parts := []string
-		name_parts.push(p.check_name())
-		for p.tok.kind == .dot {
-			p.next()
-			name_parts.push(p.check_name())
-		}
-		name := name_parts.join('.')
-
-		mut alias := name_parts[name_parts.length - 1]
-		if p.tok.kind == .key_as {
-			p.next()
-			alias = p.check_name()
+		mut imp := ast.Import{}
+		if p.tok.kind == .string {
+			imp = p.js_import()
+		} else {
+			imp = p.bait_import()
 		}
 
-		p.import_aliases[alias] = name
-		p.table.global_scope.register(alias, ast.ScopeObject{
+		p.import_aliases[imp.alias] = imp.name
+		p.table.global_scope.register(imp.alias, ast.ScopeObject{
 			kind: .package_
 		})
-		imports.push(ast.Import{
-			name:name
-			alias: alias
-			pos: pos
-		})
+
+		imp.pos = pos
+		imports.push(imp)
 	}
 	return imports
 }
