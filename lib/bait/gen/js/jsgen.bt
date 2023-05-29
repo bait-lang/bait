@@ -21,6 +21,7 @@ struct Gen {
 	out string
 	indent i32
 	empty_line bool
+	foreign_imports map[string]string // alias: name
 	tmp_counter i32
 	cur_fun ast.FunDecl
 	is_for_loop_head bool
@@ -39,6 +40,7 @@ fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	for file in files {
 		g.path = file.path
 		g.pkg = file.pkg_decl.full_name
+		g.process_imports(file.imports)
 		g.stmts(file.stmts)
 		g.out += "\n"
 	}
@@ -46,9 +48,28 @@ fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.gen_test_main()
 	}
 	g.main_call()
-	return g.type_defs_out + g.global_out + '\n' + g.out
+	headers := g.headers()
+	return headers + g.type_defs_out + g.global_out + '\n' + g.out
 }
 
+fun (g Gen) process_imports(imports []ast.Import) {
+	for imp in imports {
+		// TODO handle alias clash
+		if imp.lang == .bait or g.foreign_imports.contains(imp.alias) {
+			continue
+		}
+		g.foreign_imports[imp.alias] = imp.name
+	}
+}
+
+fun (g Gen) headers() string {
+	mut headers := ''
+	for alias, name in g.foreign_imports {
+		js_alias := js_name(alias)
+		headers += 'const ${js_alias} = require("${name}")\n'
+	}
+	return headers + '\n'
+}
 
 fun (g Gen) new_temp_var() string {
 	g.tmp_counter += 1
@@ -98,7 +119,6 @@ fun (g Gen) gen_test_main() {
 fun (g Gen) main_call() {
 	g.out += "main()"
 }
-
 
 fun (g Gen) write_default_value(typ ast.Type) {
 	match typ {

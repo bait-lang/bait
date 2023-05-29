@@ -2,6 +2,8 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package os
 
+// import 'os' as #JS.os2
+
 #JS.'var os = require("os")
 var fs = require("fs")
 var js_path = require("path")
