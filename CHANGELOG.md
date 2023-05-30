@@ -5,7 +5,7 @@ All notable changes will be documented in this file.
 
 
 ## 0.0.3
-_unreleased_
+_30 May 2023_
 
 ### Breaking
 - Remove `type(var)` cast syntax in favor of `as` casting: `var as Type`
@@ -86,7 +86,7 @@ _unreleased_
 
 
 ## 0.0.2
-_10 Mai 2023_
+_10 May 2023_
 
 ### Breaking Changes
 - Remove `testing` package
