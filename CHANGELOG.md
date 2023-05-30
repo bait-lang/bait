@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 > Right now Bait is in an Alpha State (`0.0.x`). Breaking changes might occur anytime.
 
 
+## 0.0.4
+_unreleased_
+
+
 ## 0.0.3
 _30 May 2023_
 
