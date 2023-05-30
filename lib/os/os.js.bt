@@ -2,46 +2,6 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package os
 
-import 'os' as #JS.os
-import 'fs' as #JS.fs
-// import 'path' as #JS.path
-// import 'process' as #JS.process
-// import 'child_process' as #JS.child_process
-
-#JS.'var js_path = require("path")
-var child_process = require("child_process")
-'
-
-// JS Declarations
-fun #JS.fs.readdirSync(dir #JS.String) #JS.Array
-
-fun #JS.fs.copyFileSync(src #JS.String, dest #JS.String)
-
-fun #JS.fs.existsSync(path #JS.String) #JS.Boolean
-
-// TODO JS structs
-// fun #JS.fs.lstatSync(path #JS.String) #JS.Any
-
-fun #JS.fs.symlinkSync(src #JS.String, dest #JS.String)
-
-// TODO second param
-fun #JS.fs.mkdirSync(dir #JS.String)
-
-fun #JS.fs.rmSync(path #JS.String)
-
-// TODO second param
-fun #JS.fs.rmdirSync(dir #JS.String)
-
-// TODO .toString()
-// fun #JS.fs.readFileSync(dir #JS.String)
-
-fun #JS.fs.writeFileSync(path #JS.String, text #JS.String)
-
-fun #JS.os.homedir() #JS.String
-
-fun #JS.os.arch() #JS.String
-
-// Bait Code
 pub const ARGS := from_js_string_arr(#JS.'process.argv' as #JS.Array)
 
 pub fun ls(dir string) []string {
@@ -71,7 +31,7 @@ pub fun exists(path string) bool {
 }
 
 pub fun file_name(path string) string {
-	return from_js_string(#JS.'js_path.basename(path.str)' as #JS.String)
+	return from_js_string(#JS.path.basename(path.str))
 }
 
 pub fun file_mod_time(path string) i64 {
@@ -91,7 +51,7 @@ pub fun home_dir() string {
 }
 
 pub fun dir(path string) string {
-	return from_js_string(#JS.'js_path.dirname(path.str)' as #JS.String)
+	return from_js_string(#JS.path.dirname(path.str))
 }
 
 pub fun is_dir(path string) bool {
@@ -137,7 +97,7 @@ pub fun getwd() string {
 
 pub fun join_path(base string, dirs []string) string {
 	js_dirs := dirs.to_js_arr()
-	return from_js_string(#JS.'js_path.join(base.str, ...js_dirs)' as #JS.String)
+	return from_js_string(#JS.'JS__path.join(base.str, ...js_dirs)' as #JS.String)
 }
 
 pub fun executable() string {
@@ -146,7 +106,7 @@ pub fun executable() string {
 
 pub fun abs_path(path string) string {
 	wd := getwd()
-	return from_js_string(#JS.'js_path.resolve(wd.str, path.str)' as #JS.String)
+	return from_js_string(#JS.path.resolve(wd.str, path.str))
 }
 
 pub fun resource_abs_path(path string) string {
