@@ -38,10 +38,18 @@ pub fun check_files(files []ast.File, table ast.Table, pref preference.Prefs) bo
 		c.check(f)
 	}
 
-	if c.has_main_pkg_files and not c.has_main_fun {
+	c.check_redefined_functions()
+
+	// no main function needed for libraries, tests and script mode
+	if c.pref.is_library or c.pref.is_test or c.pref.is_script {
+		return not c.had_error
+	}
+
+	if not c.has_main_pkg_files {
+		c.generic_error('project must have a main package or be compiled as a library')
+	} else if not c.has_main_fun {
 		c.generic_error('main package has no main function')
 	}
-	c.check_redefined_functions()
 
 	return not c.had_error
 }
@@ -51,7 +59,7 @@ fun (c Checker) check(file ast.File) {
 	c.is_js_file = c.path.ends_with('.js.bt')
 	c.pkg = file.pkg_decl.full_name
 
-	if c.pkg == 'main' and not c.pref.is_test and not c.pref.is_script {
+	if c.pkg == 'main' {
 		c.has_main_pkg_files = true
 		c.check_main_fun(file.stmts)
 	}
