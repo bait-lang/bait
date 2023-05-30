@@ -1,0 +1,56 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package os
+
+import 'os' as #JS.os
+import 'fs' as #JS.fs
+import 'path' as #JS.path
+import 'process' as #JS.process
+import 'child_process' as #JS.child_process
+
+fun #JS.fs.readdirSync(dir #JS.String) #JS.Array
+
+fun #JS.fs.copyFileSync(src #JS.String, dest #JS.String)
+
+fun #JS.fs.existsSync(path #JS.String) #JS.Boolean
+
+// TODO JS objects
+// fun #JS.fs.lstatSync(path #JS.String) #JS.Any
+
+fun #JS.fs.symlinkSync(src #JS.String, dest #JS.String)
+
+// TODO second param
+fun #JS.fs.mkdirSync(dir #JS.String)
+
+fun #JS.fs.rmSync(path #JS.String)
+
+// TODO second param
+fun #JS.fs.rmdirSync(dir #JS.String)
+
+// TODO .toString()
+// fun #JS.fs.readFileSync(dir #JS.String)
+
+fun #JS.fs.writeFileSync(path #JS.String, text #JS.String)
+
+fun #JS.os.homedir() #JS.String
+
+fun #JS.os.arch() #JS.String
+
+fun #JS.path.basename(path #JS.String) #JS.String
+
+fun #JS.path.dirname(path #JS.String) #JS.String
+
+// TODO JS varargs
+// fun #JS.path.join(base #JS.String, ...dirs #JS.Array) #JS.String
+
+fun #JS.path.resolve(base #JS.String, path #JS.String) #JS.String
+
+fun #JS.process.cwd() #JS.String
+
+fun #JS.process.chdir(dir #JS.String)
+
+// TODO JS objects
+// fun #JS.child_process.spawnSync(command #JS.String, args #JS.Array, options #JS.Any) #JS.Any
+
+// TODO JS objects
+// fun #JS.child_process.execSync(command #JS.String, options #JS.Any)
