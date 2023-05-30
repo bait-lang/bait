@@ -50,6 +50,14 @@ fun (c Checker) fun_signature(node ast.FunDecl) string {
 	return sig
 }
 
+fun (c Checker) check_main_fun(stmts []ast.Stmt) {
+	for stmt in stmts {
+		if stmt is ast.FunDecl and stmt.name == 'main' {
+			c.has_main_fun = true
+		}
+	}
+}
+
 struct FunRedefinition {
 	path string
 	pos token.Pos

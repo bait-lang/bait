@@ -130,7 +130,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	}
 
 	// Run the type resolver and checker
-	if not checker.check_files(sorted_files, b.table) {
+	if not checker.check_files(sorted_files, b.table, b.prefs) {
 		return 1
 	}
 
