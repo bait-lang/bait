@@ -17,6 +17,7 @@ pub struct Prefs {
 	is_verbose bool
 	is_test bool
 	is_script bool
+	is_library bool
 	backend Backend
 	// Values for compile time pseudo variables
 	baitexe string
@@ -49,6 +50,9 @@ pub fun parse_args(args []string) Prefs {
 			'-v', '--verbose' {
 				p.is_verbose = true
 				p.args.push(arg) // keep option for tools
+			}
+			'--library' {
+				p.is_library = true
 			}
 			'--nocolor' {
 				os.setenv('BAITCOLOR', '0')
