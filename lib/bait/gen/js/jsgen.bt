@@ -47,7 +47,9 @@ fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	if pref.is_test {
 		g.gen_test_main()
 	}
-	g.main_call()
+	if not pref.is_library {
+		g.main_call()
+	}
 	headers := g.headers()
 	return headers + g.type_defs_out + g.global_out + '\n' + g.out
 }

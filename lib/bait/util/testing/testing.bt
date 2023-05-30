@@ -35,7 +35,7 @@ pub fun build_files_in_dir(dir string) {
 	}
 }
 
-pub fun in_out_runner(dir string) {
+pub fun in_out_runner(dir string, options string) {
 	in_files := os.walk_ext(dir, '.in.bt')
 
 	for file in in_files {
@@ -59,7 +59,7 @@ pub fun in_out_runner(dir string) {
 		}
 
 		expected := os.read_file(out_file)
-		res := os.exec('node ${$BAITEXE} --nocolor --script ${cmd} ${in_path}')
+		res := os.exec('node ${$BAITEXE} --nocolor ${options} ${cmd} ${in_path}')
 		assert expected == res.stderr
 
 		if is_test {

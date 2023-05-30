@@ -34,10 +34,13 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 		is_test_file: path.ends_with('_test.bt')
 		is_struct_possible: true
 	}
+
 	p.next()
 	p.next()
+
 	pkg_decl := p.package_decl()
 	imports := p.import_stmts()
+
 	mut stmts := []ast.Stmt
 	for p.tok.kind != .eof {
 		if p.tok.kind == .attr {
@@ -45,6 +48,7 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 		}
 		stmts.push(p.toplevel_stmt())
 	}
+
 	return ast.File{
 		path: path
 		pkg_decl: pkg_decl

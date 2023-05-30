@@ -10,5 +10,7 @@ Options:
     * js  Output JS source code that can be run with NodeJS.
     * c   [EXPERIMENTAL] Output C source code, which is passed to a C compiler.
 
+  --library  Generate as a library, that does not have the main function.
+
   --nocolor  Prevent the use of colors in error messages.
   --script   Enable script mode, which does not require the main function.
