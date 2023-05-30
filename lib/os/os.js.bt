@@ -2,14 +2,13 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package os
 
-// import 'os' as #JS.os
+import 'os' as #JS.os
 import 'fs' as #JS.fs
 // import 'path' as #JS.path
 // import 'process' as #JS.process
 // import 'child_process' as #JS.child_process
 
-#JS.'var os = require("os")
-var js_path = require("path")
+#JS.'var js_path = require("path")
 var child_process = require("child_process")
 '
 
@@ -38,6 +37,9 @@ fun #JS.fs.rmdirSync(dir #JS.String)
 
 fun #JS.fs.writeFileSync(path #JS.String, text #JS.String)
 
+fun #JS.os.homedir() #JS.String
+
+fun #JS.os.arch() #JS.String
 
 // Bait Code
 pub const ARGS := from_js_string_arr(#JS.'process.argv' as #JS.Array)
@@ -85,7 +87,7 @@ pub fun chdir(dir string) {
 }
 
 pub fun home_dir() string {
-	return from_js_string(#JS.'os.homedir()' as #JS.String)
+	return from_js_string(#JS.os.homedir())
 }
 
 pub fun dir(path string) string {
@@ -163,7 +165,7 @@ pub fun setenv(key string, value string) {
 }
 
 pub fun arch() string {
-	return from_js_string(#JS.'os.arch()' as #JS.String)
+	return from_js_string(#JS.os.arch())
 }
 
 struct Result {
