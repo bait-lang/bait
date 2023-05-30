@@ -2,7 +2,8 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package os
 
-pub const ARGS := from_js_string_arr(#JS.'process.argv' as #JS.Array)
+// TODO JS constants
+pub const ARGS := from_js_string_arr(#JS.'JS__process.argv' as #JS.Array)
 
 pub fun ls(dir string) []string {
 	return from_js_string_arr(#JS.fs.readdirSync(dir.str))
@@ -43,7 +44,7 @@ pub fun symlink(src string, dest string) {
 }
 
 pub fun chdir(dir string) {
-	#JS.'process.chdir(dir.str)'
+	#JS.process.chdir(dir.str)
 }
 
 pub fun home_dir() string {
@@ -92,7 +93,7 @@ pub fun write_file(path string, text string) {
 }
 
 pub fun getwd() string {
-	return from_js_string(#JS.'process.cwd()' as #JS.String)
+	return from_js_string(#JS.process.cwd())
 }
 
 pub fun join_path(base string, dirs []string) string {
@@ -101,6 +102,7 @@ pub fun join_path(base string, dirs []string) string {
 }
 
 pub fun executable() string {
+	// TODO JS __filename constant
 	return from_js_string(#JS.'__filename' as #JS.String)
 }
 
@@ -110,18 +112,19 @@ pub fun abs_path(path string) string {
 }
 
 pub fun resource_abs_path(path string) string {
+	// TODO JS __dirname constant
 	return join_path(from_js_string(#JS.'__dirname' as #JS.String), [path])
 }
 
 pub fun getenv(key string) string {
-	if #JS.'process.env[key.str]' {
-		return from_js_string(#JS.'process.env[key.str]' as #JS.String)
+	if #JS.'JS__process.env[key.str]' {
+		return from_js_string(#JS.'JS__process.env[key.str]' as #JS.String)
 	}
 	return ''
 }
 
 pub fun setenv(key string, value string) {
-	#JS.'process.env[key.str] = value.str'
+	#JS.'JS__process.env[key.str] = value.str'
 }
 
 pub fun arch() string {
@@ -137,7 +140,7 @@ struct Result {
 pub fun exec(cmd string) Result {
 	mut res := Result{}
 	#JS.'const commands = cmd.str.split(" ")
-	const out = child_process.spawnSync(commands[0], commands.slice(1))
+	const out = JS__child_process.spawnSync(commands[0], commands.slice(1))
 	res.code = out.status
 	res.stdout = from_js_string(out.stdout.toString())
 	res.stderr = from_js_string(out.stderr.toString())'
@@ -146,7 +149,7 @@ pub fun exec(cmd string) Result {
 
 pub fun system(cmd string) i32 {
 	#JS.'try {
-		child_process.execSync(cmd.str, { stdio: "inherit" })
+		JS__child_process.execSync(cmd.str, { stdio: "inherit" })
 	} catch (e) {
 		return e.status
 	}'
