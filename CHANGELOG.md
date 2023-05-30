@@ -7,6 +7,13 @@ All notable changes will be documented in this file.
 ## 0.0.4
 _unreleased_
 
+### CLI and Tooling
+- Add `--library` option to build as shared library that not requires a main function
+
+### Error Checking
+- Compiling normal projects must include a main package
+- Main package must contain a main function
+
 
 ## 0.0.3
 _30 May 2023_
