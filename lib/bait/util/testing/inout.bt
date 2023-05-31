@@ -12,13 +12,6 @@ pub fun in_out_file_runner(dir string, options string) {
 		name_ext := os.file_name(file)
 		name := name_ext.all_before('.in.bt')
 
-		out_file := '${dir}/${name}.out'
-		if not os.exists(out_file) {
-			eprintln('out file ${out_file} does not exist')
-			assert false
-			continue
-		}
-
 		mut cmd := 'build'
 		is_test := name_ext.contains('_test.in.bt')
 		if is_test {
@@ -27,7 +20,8 @@ pub fun in_out_file_runner(dir string, options string) {
 			os.cp(file, in_path)
 		}
 
-		expected := os.read_file(out_file)
+		expected := read_out_file(dir, name)
+
 		res := os.exec('node ${$BAITEXE} --nocolor ${options} ${cmd} ${in_path}')
 		assert expected == res.stderr
 
@@ -45,16 +39,21 @@ pub fun in_out_dir_runner(root string, options string) {
 			continue
 		}
 
-		out_file := '${in_dir}/expected.out'
-		if not os.exists(out_file) {
-			eprintln('out file ${out_file} does not exist')
-			assert false
-			continue
-		}
+		expected := read_out_file(in_dir, 'expected')
 
-		expected := os.read_file(out_file)
 		res := os.exec('node ${$BAITEXE} --nocolor ${options} run ${in_dir}')
 		assert expected == res.stdout
 		assert res.stderr.length == 0
 	}
+}
+
+fun read_out_file(dir string, name string) string {
+	out_file := '${dir}/${name}.out'
+	if not os.exists(out_file) {
+		eprintln('out file ${out_file} does not exist')
+		assert false
+		return ''
+	}
+
+	return os.read_file(out_file)
 }
