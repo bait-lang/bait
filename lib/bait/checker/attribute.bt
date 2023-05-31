@@ -15,6 +15,7 @@ fun build_known_attrs() map[string]AttrValue {
 	mut attrs := map[string]AttrValue
 	attrs['deprecated'] = .optional
 	attrs['deprecated_after'] = .required
+	attrs['export'] = .required
 	attrs['overload'] = .required
 	return attrs
 }

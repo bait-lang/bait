@@ -273,10 +273,12 @@ warning: function "foo" will be deprecated after 2023-06-12; Use bar() instead.
 ```
 
 ### List of Attributes
-| Name                | Description                              | Value                       |
-| ------------------- | ---------------------------------------- | --------------------------- |
-| `@deprecated`       | Marks a function as deprecated.          | Custom message _(optional)_ |
-| `@deprecated_after` | Mark as deprecated after a certain date. | Date _(required)_           |
+| Name                | Description                                  | Value                  |
+| ------------------- | -------------------------------------------- | ---------------------- |
+| `@deprecated`       | Marks a function as deprecated.              | Custom message _(opt)_ |
+| `@deprecated_after` | Mark as deprecated after a certain date.     | Date _(req)_           |
+| `@export`           | Export a function under a different name.    | Name _(req)_           |
+| `@overload`         | Use a method to overload the given operator. | Operator _(req)_       |
 
 ## Conditional Compilation
 ### Compile Time Pseudo Variables
