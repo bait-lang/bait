@@ -14,6 +14,12 @@ _unreleased_
 - Compiling normal projects must include a main package
 - Main package must contain a main function
 
+### Compiler
+- Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
+
+### Testing
+- `bait.util.testing`: Add inout runner for project directories
+
 
 ## 0.0.3
 _30 May 2023_

@@ -273,10 +273,12 @@ warning: function "foo" will be deprecated after 2023-06-12; Use bar() instead.
 ```
 
 ### List of Attributes
-| Name                | Description                              | Value                       |
-| ------------------- | ---------------------------------------- | --------------------------- |
-| `@deprecated`       | Marks a function as deprecated.          | Custom message _(optional)_ |
-| `@deprecated_after` | Mark as deprecated after a certain date. | Date _(required)_           |
+| Name                | Description                                  | Value                  |
+| ------------------- | -------------------------------------------- | ---------------------- |
+| `@deprecated`       | Marks a function as deprecated.              | Custom message _(opt)_ |
+| `@deprecated_after` | Mark as deprecated after a certain date.     | Date _(req)_           |
+| `@export`           | Export a function under a different name.    | Name _(req)_           |
+| `@overload`         | Use a method to overload the given operator. | Operator _(req)_       |
 
 ## Conditional Compilation
 ### Compile Time Pseudo Variables
@@ -309,7 +311,7 @@ While the use of global variables is discouraged, they are important in some cas
 global my_global := 123
 ```
 
-## JavaScript Interoperability
+## Calling JavaScript from Bait
 ### JS Imports and Declarations
 It's possible to import JavaScript packages and call JS code from Bait.
 
@@ -326,3 +328,14 @@ fun main() {
 
 ### Embed Raw Code
 JS code can be embeded using the `#JS.` prefix and is only allowed in `.js.bt` files.
+
+## Calling Bait from JavaScript
+Bait functions can be exported to JS using the export attribute:
+```bait
+package lib
+
+@export: 'func'
+fun some_func() {}
+```
+
+In the generated code, this won't change the function name but add the line `module.exports.func = lib__some_func`.

@@ -259,7 +259,14 @@ fun (g Gen) fun_decl(node ast.FunDecl) {
 	g.fun_params(node.params)
 	g.writeln(') {')
 	g.stmts(node.stmts)
-	g.writeln('}\n')
+	g.writeln('}')
+
+	export_attr := node.attrs.find_attr('export')
+	if export_attr.name != '' {
+		g.writeln('module.exports.${export_attr.value} = ${js_name(node.name)}')
+	}
+
+	g.writeln('')
 }
 
 fun (g Gen) fun_params(params []ast.Param){

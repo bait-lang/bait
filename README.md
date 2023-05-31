@@ -18,6 +18,7 @@ fun main() {
 
 ## Documentation
 - [Language Overview](docs/docs.md)
+- [Examples](examples) and [Rosetta Code](https://github.com/tiabeast/rosetta-bait)
 
 ## Building from Source
 > Required dependencies: `git` and `NodeJS >= 16`
