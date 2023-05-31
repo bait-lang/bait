@@ -1,0 +1,7 @@
+package mypkg
+
+@export: 'spameggs'
+fun spam() {}
+
+@export: 'spameggs'
+fun eggs() {}

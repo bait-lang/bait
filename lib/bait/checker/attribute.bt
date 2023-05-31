@@ -43,6 +43,8 @@ fun (c Checker) check_attributes(node ast.FunDecl){
 
 		if attr.name == 'overload' {
 			c.attr_overload(node, attr)
+		} else if attr.name == 'export' {
+			c.attr_export(attr)
 		}
 	}
 }
@@ -73,4 +75,13 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 
 	// Register overload method
 	rec_sym.overloads[attr.value] = node
+}
+
+fun (c Checker) attr_export(attr ast.Attribute) {
+	// TODO handle this error like fun redefinition and show all places where the name is used
+	if c.export_names.contains(attr.value) {
+		c.error('@export name "${attr.value}" is already used', attr.pos)
+		return
+	}
+	c.export_names.push(attr.value)
 }

@@ -21,6 +21,7 @@ struct Checker{
 	cur_fun ast.FunDecl
 	expected_type ast.Type
 	is_lhs_assign bool
+	export_names []string
 }
 
 pub fun check_files(files []ast.File, table ast.Table, pref preference.Prefs) bool {
