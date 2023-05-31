@@ -2,18 +2,13 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
-import 'process' as #JS.process
-
-fun #JS.process.exit(code #JS.Number)
-
 // Paramterers will be converted to JS strings during codegen
 pub fun println(msg #JS.String) {
-	#JS.'console.log(msg)'
+	#JS.console.log(msg as #JS.Any)
 }
 
-// TODO change into js string
-pub fun eprintln(msg string) {
-	#JS.'console.error(msg)'
+pub fun eprintln(msg #JS.String) {
+	#JS.console.error(msg as #JS.Any)
 }
 
 pub fun exit(code i32) {
