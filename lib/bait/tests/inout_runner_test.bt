@@ -7,11 +7,11 @@ import bait.util.testing
 fun test_error_in_outs() {
 	tests_dir := os.dir($FILE)
 	in_out_dir := '${tests_dir}/inout'
-	testing.in_out_runner(in_out_dir, '--script')
+	testing.in_out_file_runner(in_out_dir, '--script')
 }
 
 fun test_errors_no_script_mode() {
 	tests_dir := os.dir($FILE)
 	in_out_dir := '${tests_dir}/inout_no_script'
-	testing.in_out_runner(in_out_dir, '')
+	testing.in_out_file_runner(in_out_dir, '')
 }

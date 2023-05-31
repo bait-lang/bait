@@ -4,38 +4,7 @@ package testing
 
 import os
 
-pub fun build_file(dir string, file string) i32 {
-	cmd := 'node ${$BAITEXE} ${dir}/${file}'
-	res := os.exec(cmd)
-
-	if res.code == 0 {
-		println('OK ${file}')
-		return 0
-	}
-
-	eprintln('FAIL ${file}')
-	eprintln(res.stderr)
-	return 1
-}
-
-pub fun build_files_in_dir(dir string) {
-	mut fails := 0
-	files := os.ls(dir)
-
-	for file in files {
-		if not file.ends_with('.bt') {
-			continue
-		}
-
-		fails += build_file(dir, file)
-	}
-
-	if fails > 0 {
-		exit(1)
-	}
-}
-
-pub fun in_out_runner(dir string, options string) {
+pub fun in_out_file_runner(dir string, options string) {
 	in_files := os.walk_ext(dir, '.in.bt')
 
 	for file in in_files {
@@ -65,5 +34,27 @@ pub fun in_out_runner(dir string, options string) {
 		if is_test {
 			os.rm(in_path)
 		}
+	}
+}
+
+pub fun in_out_dir_runner(root string, options string) {
+	dirs := os.ls(root)
+	for dir in dirs {
+		in_dir := os.join_path(root, [dir])
+		if not os.is_dir(in_dir) {
+			continue
+		}
+
+		out_file := '${in_dir}/expected.out'
+		if not os.exists(out_file) {
+			eprintln('out file ${out_file} does not exist')
+			assert false
+			continue
+		}
+
+		expected := os.read_file(out_file)
+		res := os.exec('node ${$BAITEXE} --nocolor ${options} run ${in_dir}')
+		assert expected == res.stdout
+		assert res.stderr.length == 0
 	}
 }
