@@ -1,0 +1,15 @@
+type Int := i32
+
+type SInt := i32
+
+fun (i SInt) str() string {
+	return 'always 7'
+}
+
+fun main() {
+	a := 2 as Int
+	println(a)
+
+	b := 3 as SInt
+	println(b)
+}

@@ -4,17 +4,24 @@
 import os
 import bait.util.testing
 
-fun test_error_in_outs() {
-	tests_dir := os.dir($FILE)
+const DIR := os.dir($FILE)
+
+fun test_in_outs() {
 	testing.in_out_runner(testing.InOutRunner{
-		root: '${tests_dir}/inout'
+		root: '${DIR}/inout'
+		check_stdout: true
+	})
+}
+
+fun test_error_in_outs() {
+	testing.in_out_runner(testing.InOutRunner{
+		root: '${DIR}/inout_error'
 		cmd_options: '--script'
 	})
 }
 
 fun test_errors_no_script_mode() {
-	tests_dir := os.dir($FILE)
 	testing.in_out_runner(testing.InOutRunner{
-		root: '${tests_dir}/inout_no_script'
+		root: '${DIR}/inout_no_script'
 	})
 }
