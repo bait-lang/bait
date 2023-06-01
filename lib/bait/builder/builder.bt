@@ -22,18 +22,23 @@ fun (b Builder) collect_bait_files(dir string) []string {
 	all_files := os.ls(dir)
 	mut files := []string
 	for f in all_files {
-		if f.ends_with('_test.bt') {
-			continue
-		}
 		if not f.ends_with('.bt') {
 			continue
 		}
-		if b.prefs.backend == .js and f.ends_with('.c.bt') {
+
+		// Exclude test files from compilation
+		if f.contains('_test.') {
 			continue
 		}
-		if b.prefs.backend == .c and f.ends_with('.js.bt') {
+
+		// Exclude files from a different backend
+		if b.prefs.backend == .js and f.contains('.c.') {
 			continue
 		}
+		if b.prefs.backend == .c and f.contains('.js.') {
+			continue
+		}
+
 		files.push(os.join_path(dir, [f]))
 	}
 	return files
