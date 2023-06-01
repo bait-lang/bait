@@ -2,6 +2,9 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
+import 'console' as #JS.console
+import 'process' as #JS.process
+
 pub interface #JS.Any {}
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean
@@ -50,3 +53,9 @@ pub interface #JS.Map{
 	fun set(key #JS.String, value #JS.Any)
 	fun has(key #JS.String) #JS.Boolean
 }
+
+// https://developer.mozilla.org/en-US/docs/Web/API/console
+fun #JS.console.log(message #JS.Any)
+fun #JS.console.error(message #JS.Any)
+
+fun #JS.process.exit(code #JS.Number)

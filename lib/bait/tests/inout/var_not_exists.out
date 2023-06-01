@@ -1,1 +1,0 @@
-lib/bait/tests/inout/var_not_exists.in.bt:3:14 error: undefined variable my_var_name

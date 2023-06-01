@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/enum.in.bt:7:5 error: expected type is not an enum, got i32

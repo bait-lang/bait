@@ -1,4 +1,0 @@
-lib/bait/tests/inout/return.in.bt:2:7 error: expected return value of type i32
-lib/bait/tests/inout/return.in.bt:6:7 error: function void_function does not return a value
-lib/bait/tests/inout/return.in.bt:6:7 error: expected return value of type void, got string
-lib/bait/tests/inout/return.in.bt:10:7 error: expected return value of type i32, got string
