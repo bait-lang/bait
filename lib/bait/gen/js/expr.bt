@@ -130,7 +130,7 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 	}
 	if ['println', 'eprintln'].contains(node.name) {
 		g.write('(')
-		g.expr_to_string(node.args[0].expr, node.args[0].typ)
+		g.expr_to_jsstring(node.args[0].expr, node.args[0].typ)
 		g.write(')')
 		return
 	}
@@ -316,7 +316,7 @@ fun (g Gen) map_init(node ast.MapInit) {
 	g.write('new map({ data: new Map([')
 	for i, key in node.keys {
 		g.write('[')
-		g.expr_to_string(key, node.key_type)
+		g.expr_to_jsstring(key, node.key_type)
 		g.write(', ')
 		g.expr(node.vals[i])
 		g.write(']')
@@ -348,7 +348,7 @@ fun (g Gen) match_expr(node ast.MatchExpr){
 			for i, e in b.exprs {
 				g.write("case ")
 				if node.cond_type == ast.STRING_TYPE {
-					g.expr_to_string(e, b.expr_types[i])
+					g.expr_to_jsstring(e, b.expr_types[i])
 				} else if node.cond_type == ast.U8_TYPE {
 					g.expr(e)
 					g.write('.val')
@@ -429,7 +429,7 @@ fun (g Gen) string_inter_literal(node ast.StringInterLiteral) {
 		g.write(util.escape_char(val, `\``))
 		if i < node.exprs.length {
 			g.write('\${')
-			g.expr_to_string(node.exprs[i], node.expr_types[i])
+			g.expr_to_jsstring(node.exprs[i], node.expr_types[i])
 			g.write('}')
 		}
 	}
@@ -458,21 +458,24 @@ fun (g Gen) type_of(node ast.TypeOf) {
 	g.write('from_js_string("' + sym.name + '")')
 }
 
-fun (g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
+fun (g Gen) expr_to_jsstring(expr ast.Expr, typ ast.Type) {
 	sym := g.table.get_sym(typ)
 	if sym.kind == .string {
 		g.expr(expr)
 		g.write('.str')
-	} else if g.table.get_method(sym, 'str').name.length > 0 {
-		mut name := js_name(sym.name)
-		if sym.kind == .array {
-			name = 'array'
-		}
+		return
+	}
+
+	str_def := g.table.get_method(sym, 'str')
+	if str_def.name.length > 0 {
+		final_sym := g.table.get_sym(str_def.params[0].typ)
+		mut name := js_name(final_sym.name)
 		g.write('${name}_str(')
 		g.expr(expr)
-		g.write(')')
-	} else {
-		g.expr(expr)
-		g.write('.toString()')
+		g.write(').str')
+		return
 	}
+
+	g.expr(expr)
+	g.write('.toString()')
 }

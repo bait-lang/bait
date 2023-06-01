@@ -3,9 +3,9 @@
 package builtin
 
 pub fun (n f32) str() string {
-	return #JS.'n.toString()' as string
+	return from_js_string(#JS.'n.toString()' as #JS.String)
 }
 
 pub fun (n f64) str() string {
-	return #JS.'n.toString()' as string
+	return from_js_string(#JS.'n.toString()' as #JS.String)
 }
