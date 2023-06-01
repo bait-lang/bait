@@ -84,7 +84,7 @@ pub fun parse_args(args []string) Prefs {
 		p.is_test = true
 	}
 	if p.out_name.length == 0 {
-		p.out_name = p.command.all_before('.bt') + '.js'
+		p.out_name = p.command.replace('.bt', '.js')
 	}
 	return p
 }

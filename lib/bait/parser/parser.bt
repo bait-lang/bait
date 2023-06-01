@@ -20,7 +20,6 @@ pub struct Parser {
 	import_aliases map[string]string
 	attributes []ast.Attribute
 	expr_pkg string
-	is_test_file bool
 	is_for_init bool
 	is_struct_possible bool
 }
@@ -31,7 +30,6 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 		path: path
 		table: table
 		tokens: tokens
-		is_test_file: path.ends_with('_test.bt')
 		is_struct_possible: true
 	}
 
