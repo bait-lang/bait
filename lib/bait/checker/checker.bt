@@ -57,7 +57,7 @@ pub fun check_files(files []ast.File, table ast.Table, pref preference.Prefs) bo
 
 fun (c Checker) check(file ast.File) {
 	c.path = file.path
-	c.is_js_file = c.path.ends_with('.js.bt')
+	c.is_js_file = c.path.contains('.js.')
 	c.pkg = file.pkg_decl.full_name
 
 	if c.pkg == 'main' {

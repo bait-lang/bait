@@ -22,7 +22,7 @@ pub fun in_out_runner(runner InOutRunner) {
 	in_files := os.walk_ext(runner.root, '.in.bt')
 
 	for file in in_files {
-		mut in_path := file
+		in_path := file
 		name_ext := os.file_name(file)
 		name := name_ext.all_before('.in.bt')
 
@@ -30,20 +30,13 @@ pub fun in_out_runner(runner InOutRunner) {
 		if runner.check_stdout {
 			cmd = 'run'
 		}
-		is_test := name_ext.contains('_test.in.bt')
-		if is_test {
+		if name_ext.contains('_test.') {
 			cmd = 'test'
-			in_path = file.replace('.in', '')
-			os.cp(file, in_path)
 		}
 
 		expected := read_out_file(runner.root, name)
 		res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} ${cmd} ${in_path}')
 		runner.check_result(res, expected)
-
-		if is_test {
-			os.rm(in_path)
-		}
 	}
 }
 
