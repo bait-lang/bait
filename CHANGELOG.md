@@ -16,9 +16,12 @@ _unreleased_
 
 ### Compiler
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
+- Fix printing type aliased values
 
 ### Testing
-- `bait.util.testing`: Add inout runner for project directories
+- `bait.util.testing`
+  - Add inout runner for project directories
+  - Add inout runner to check stdout
 
 
 ## 0.0.3
