@@ -27,6 +27,9 @@ pub fun in_out_runner(runner InOutRunner) {
 		name := name_ext.all_before('.in.bt')
 
 		mut cmd := 'build'
+		if runner.check_stdout {
+			cmd = 'run'
+		}
 		is_test := name_ext.contains('_test.in.bt')
 		if is_test {
 			cmd = 'test'

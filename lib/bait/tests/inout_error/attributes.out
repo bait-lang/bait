@@ -1,2 +1,2 @@
-lib/bait/tests/inout/attributes.in.bt:1:9 warning: unknown attribute "xyz_attr"
-lib/bait/tests/inout/attributes.in.bt:6:17 error: attribute "deprecated_after" requires a value
+lib/bait/tests/inout_error/attributes.in.bt:1:9 warning: unknown attribute "xyz_attr"
+lib/bait/tests/inout_error/attributes.in.bt:6:17 error: attribute "deprecated_after" requires a value

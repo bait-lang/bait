@@ -1,4 +1,4 @@
-lib/bait/tests/inout/deprecation.in.bt:10:4 note: function "foo" is deprecated
-lib/bait/tests/inout/deprecation.in.bt:14:4 note: function "baz" is deprecated; custom message 2
-lib/bait/tests/inout/deprecation.in.bt:15:4 note: function "foo" is deprecated
-lib/bait/tests/inout/deprecation.in.bt:16:4 note: function "bar" will be deprecated after 2345-12-31; custom message
+lib/bait/tests/inout_error/deprecation.in.bt:10:4 note: function "foo" is deprecated
+lib/bait/tests/inout_error/deprecation.in.bt:14:4 note: function "baz" is deprecated; custom message 2
+lib/bait/tests/inout_error/deprecation.in.bt:15:4 note: function "foo" is deprecated
+lib/bait/tests/inout_error/deprecation.in.bt:16:4 note: function "bar" will be deprecated after 2345-12-31; custom message

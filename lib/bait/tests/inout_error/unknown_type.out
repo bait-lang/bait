@@ -1,1 +1,1 @@
-lib/bait/tests/inout/unknown_type.in.bt:1:9 error: unknown type u7
+lib/bait/tests/inout_error/unknown_type.in.bt:1:9 error: unknown type u7

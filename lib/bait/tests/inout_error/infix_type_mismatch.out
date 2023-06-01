@@ -1,1 +1,1 @@
-lib/bait/tests/inout/infix_type_mismatch.in.bt:1:13 error: infix expr: types string and i32 do not match
+lib/bait/tests/inout_error/infix_type_mismatch.in.bt:1:13 error: infix expr: types string and i32 do not match

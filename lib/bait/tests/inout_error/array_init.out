@@ -1,2 +1,2 @@
-lib/bait/tests/inout/array_init.in.bt:1:8 error: expected element type string, got i32
-lib/bait/tests/inout/array_init.in.bt:1:8 error: expected element type string, got bool
+lib/bait/tests/inout_error/array_init.in.bt:1:8 error: expected element type string, got i32
+lib/bait/tests/inout_error/array_init.in.bt:1:8 error: expected element type string, got bool

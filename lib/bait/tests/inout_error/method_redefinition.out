@@ -1,1 +1,1 @@
-lib/bait/tests/inout/method_redefinition.in.bt:5:30 error: Method "mymethod" already exists on type "Foo"
+lib/bait/tests/inout_error/method_redefinition.in.bt:5:30 error: Method "mymethod" already exists on type "Foo"

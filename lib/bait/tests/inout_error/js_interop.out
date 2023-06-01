@@ -1,3 +1,3 @@
-lib/bait/tests/inout/js_interop.in.bt:1:6 warning: JS imports have to be in .js.bt files
-lib/bait/tests/inout/js_interop.in.bt:5:26 error: type string not matches #JS.String in argument 1
-lib/bait/tests/inout/js_interop.in.bt:6:3 error: cannot assign type bool to #JS.Boolean
+lib/bait/tests/inout_error/js_interop.in.bt:1:6 warning: JS imports have to be in .js.bt files
+lib/bait/tests/inout_error/js_interop.in.bt:5:26 error: type string not matches #JS.String in argument 1
+lib/bait/tests/inout_error/js_interop.in.bt:6:3 error: cannot assign type bool to #JS.Boolean

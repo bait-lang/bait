@@ -1,1 +1,1 @@
-lib/bait/tests/inout/assert.in.bt:1:16 error: assert must be of type bool
+lib/bait/tests/inout_error/assert.in.bt:1:16 error: assert must be of type bool
