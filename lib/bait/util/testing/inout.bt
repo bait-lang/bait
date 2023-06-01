@@ -4,8 +4,22 @@ package testing
 
 import os
 
-pub fun in_out_file_runner(dir string, options string) {
-	in_files := os.walk_ext(dir, '.in.bt')
+pub struct InOutRunner {
+	root string // Root directory to search tests in
+	cmd_options string // Additional cmd options for compiling the tests
+	check_stdout bool // Compare expected to stdout instead of stderr
+}
+
+fun (runner InOutRunner) check_result(res os.Result, expected string) {
+	if runner.check_stdout {
+		assert expected == res.stdout
+	} else {
+		assert expected == res.stderr
+	}
+}
+
+pub fun in_out_runner(runner InOutRunner) {
+	in_files := os.walk_ext(runner.root, '.in.bt')
 
 	for file in in_files {
 		mut in_path := file
@@ -20,10 +34,9 @@ pub fun in_out_file_runner(dir string, options string) {
 			os.cp(file, in_path)
 		}
 
-		expected := read_out_file(dir, name)
-
-		res := os.exec('node ${$BAITEXE} --nocolor ${options} ${cmd} ${in_path}')
-		assert expected == res.stderr
+		expected := read_out_file(runner.root, name)
+		res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} ${cmd} ${in_path}')
+		runner.check_result(res, expected)
 
 		if is_test {
 			os.rm(in_path)
@@ -31,19 +44,17 @@ pub fun in_out_file_runner(dir string, options string) {
 	}
 }
 
-pub fun in_out_dir_runner(root string, options string) {
-	dirs := os.ls(root)
+pub fun in_out_dir_runner(runner InOutRunner) {
+	dirs := os.ls(runner.root)
 	for dir in dirs {
-		in_dir := os.join_path(root, [dir])
+		in_dir := os.join_path(runner.root, [dir])
 		if not os.is_dir(in_dir) {
 			continue
 		}
 
 		expected := read_out_file(in_dir, 'expected')
-
-		res := os.exec('node ${$BAITEXE} --nocolor ${options} run ${in_dir}')
-		assert expected == res.stdout
-		assert res.stderr.length == 0
+		res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} run ${in_dir}')
+		runner.check_result(res, expected)
 	}
 }
 

@@ -131,7 +131,7 @@ pub fun arch() string {
 	return from_js_string(#JS.os.arch())
 }
 
-struct Result {
+pub struct Result {
 	code i32
 	stdout string
 	stderr string
