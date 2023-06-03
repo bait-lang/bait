@@ -16,6 +16,7 @@ struct Builder {
 	prefs preference.Prefs
 	table ast.Table
 	parsed_files []ast.File
+	checker checker.Checker
 }
 
 // Returns the absolute paths to all bait files in a directory that should be compiled
@@ -106,7 +107,8 @@ pub fun compile(prefs preference.Prefs) i32 {
 		}
 	}
 
-	b.print_errors_and_warnings(files)
+	b.parsed_files = files
+	b.print_errors_and_warnings()
 
 	// TODO move whole depgraph build and resolve into pkg
 	// TODO catch cyclic deps
@@ -142,13 +144,12 @@ pub fun compile(prefs preference.Prefs) i32 {
 	}
 
 	// Run the type resolver and checker
-	if not checker.check_files(sorted_files, b.table, b.prefs) {
-		return 1
-	}
-
 	b.parsed_files = sorted_files
+	b.checker = checker.new_checker(b.table, b.prefs)
+	b.checker.check_files(sorted_files)
 
 	b.check_redefined_functions()
+	b.print_errors_and_warnings()
 
 	// TODO properly select backend
 	if b.prefs.backend != .js {
@@ -170,15 +171,19 @@ pub fun compile(prefs preference.Prefs) i32 {
 	return 0
 }
 
-fun (b Builder) print_errors_and_warnings(files []ast.File) {
+fun (b Builder) print_errors_and_warnings() {
 	mut nr_warns := 0
 	mut nr_errors := 0
 
-	for f in files {
+	for f in b.parsed_files {
 		nr_warns += f.warnings.length
 		nr_errors += f.errors.length
 
 		if not b.prefs.hide_warnings {
+			for info in f.infos {
+				info.print()
+			}
+
 			for warn in f.warnings {
 				warn.print()
 			}
@@ -187,6 +192,11 @@ fun (b Builder) print_errors_and_warnings(files []ast.File) {
 		for err in f.errors {
 			err.print()
 		}
+	}
+
+	nr_errors += b.checker.errors.length
+	for err in b.checker.errors {
+		err.print()
 	}
 
 	if nr_errors > 0 or (b.prefs.warn_is_error and nr_warns > 0) {

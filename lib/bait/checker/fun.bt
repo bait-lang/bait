@@ -3,7 +3,6 @@
 package checker
 
 import bait.ast
-import bait.errors
 import bait.token
 
 fun (c Checker) fun_decl(node ast.FunDecl) {
@@ -192,7 +191,7 @@ fun (c Checker) check_attributes_on_call(call ast.CallExpr, def ast.FunDecl) {
 		if depr_attr.value.length > 0 {
 			depr_message += '; ${depr_attr.value}'
 		}
-		errors.info('note', c.path, call.pos, depr_message)
+		c.info(depr_message, call.pos)
 		// TODO check deprecation date and warn if passed
 	}
 }

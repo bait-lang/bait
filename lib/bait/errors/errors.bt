@@ -20,6 +20,10 @@ pub struct Message{
 }
 
 pub fun (msg Message) print() {
+	if msg.path.length == 0 {
+		generic_error(msg.msg)
+		return
+	}
 	message(msg.kind, msg.title, msg.path, msg.pos, msg.msg)
 }
 
