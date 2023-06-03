@@ -436,23 +436,6 @@ fun (g Gen) string_inter_literal(node ast.StringInterLiteral) {
 	g.write('`)')
 }
 
-fun (g Gen) struct_init(node ast.StructInit) {
-	g.write('new ' + js_name(node.name) + '({')
-	if node.fields.length == 0 {
-		g.write('})')
-		return
-	}
-	g.write(' ')
-	for i, field in node.fields {
-		g.write('${field.name}: ')
-		g.expr(field.expr)
-		if i < node.fields.length - 1 {
-			g.write(', ')
-		}
-	}
-	g.write(' })')
-}
-
 fun (g Gen) type_of(node ast.TypeOf) {
 	sym := g.table.get_sym(node.typ)
 	g.write('from_js_string("' + sym.name + '")')

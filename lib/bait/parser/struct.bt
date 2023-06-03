@@ -1,0 +1,82 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package parser
+
+import bait.ast
+import bait.token
+
+fun (p Parser) struct_decl()ast.StructDecl{
+	pos := p.tok.pos
+
+	is_pub := p.check_pub()
+	p.check(.key_struct)
+	name := p.prepend_pkg(p.check_name())
+
+	p.check(.lcur)
+	mut fields := []ast.StructField
+	for p.tok.kind != .rcur {
+		fname := p.check_name()
+		ftyp := p.parse_type()
+		field := ast.StructField{name: fname typ: ftyp}
+		fields.push(field)
+	}
+	p.check(.rcur)
+
+	tsym := ast.TypeSymbol{
+		kind: .struct_
+		name: name
+		is_pub: is_pub
+		pkg: p.pkg_name
+		info: ast.StructInfo{
+			fields: fields
+		}
+	}
+	typ := p.table.register_sym(tsym)
+
+	return ast.StructDecl{
+		name: name
+		typ: typ
+		fields: fields
+		pos: pos
+	}
+}
+
+fun (p Parser) struct_init()ast.StructInit{
+	pos := p.tok.pos
+
+	typ := p.parse_type()
+	name := p.prev_tok.val
+
+	p.check(.lcur)
+	mut fields := []ast.StructInitField
+	for p.tok.kind != .rcur {
+		fields.push(p.struct_init_field())
+	}
+	p.check(.rcur)
+
+	return ast.StructInit{
+		name: name
+		typ: typ
+		fields: fields
+		pos: pos
+	}
+}
+
+fun (p Parser) struct_init_field() ast.StructInitField{
+	pos := p.tok.pos
+
+	name := p.check_name()
+	if p.tok.kind == .colon {
+		p.warn('use `field = "value"` instead')
+		p.next()
+	} else {
+		p.check(.eq)
+	}
+	expr := p.expr(0)
+
+	return ast.StructInitField{
+		name: name
+		expr: expr
+		pos: pos
+	}
+}

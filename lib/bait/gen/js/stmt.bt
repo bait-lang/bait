@@ -301,46 +301,6 @@ fun (g Gen) return_stmt(node ast.ReturnStmt){
 	g.writeln('')
 }
 
-fun (g Gen) struct_decl(node ast.StructDecl){
-	g.write('function ')
-	jsname := js_name(node.name)
-	g.write(jsname)
-	g.write('({ ')
-	for i, field in node.fields {
-		g.write('${field.name} = ')
-		if node.typ == field.typ {
-			g.write('this')
-		} else {
-			g.write_default_value(field.typ)
-		}
-		if i < node.fields.length - 1 {
-			g.write(', ')
-		}
-	}
-	if node.fields.length > 0 {
-		g.write(' ')
-	}
-	g.writeln('}) {')
-	g.indent += 1
-	for field in node.fields {
-		g.writeln('this.${field.name} = ${field.name}')
-	}
-	g.indent -= 1
-	g.writeln('}')
-	g.writeln('${jsname}.prototype = {')
-	g.indent += 1
-	// TODO fix indent of nested structs
-	g.writeln('toString() {')
-	g.write('\treturn \`${jsname}{\n')
-	for field in node.fields {
-		g.write('    ${field.name}: \$')
-		g.write('{this.${field.name}.toString()}\n')
-	}
-	g.writeln('}\`}')
-	g.indent -= 1
-	g.writeln('}')
-}
-
 fun (g Gen) type_decl(node ast.TypeDecl){
 	sym := g.table.get_sym(node.typ)
 	if sym.kind != .alias_type {
