@@ -3,6 +3,7 @@
 package preference
 
 import os
+import bait.errors
 
 pub enum Backend {
 	js
@@ -62,11 +63,9 @@ pub fun parse_args(args []string) Prefs {
 				p.is_library = true
 			}
 			'-w' {
-				// TODO fail if warn_is_error
 				p.hide_warnings = true
 			}
 			'-W' {
-				// TODO fail if hide_warnings
 				p.warn_is_error = true
 			}
 			'--nocolor' {
@@ -83,6 +82,11 @@ pub fun parse_args(args []string) Prefs {
 				}
 			}
 		}
+	}
+
+	if p.hide_warnings and p.warn_is_error {
+		errors.generic_error('Cannot use -w and -W together.')
+		exit(1)
 	}
 
 	// `build` is just an optional alias and replaced with the filepath
