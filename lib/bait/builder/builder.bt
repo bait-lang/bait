@@ -179,11 +179,18 @@ fun (b Builder) print_errors_and_warnings() {
 		nr_warns += f.warnings.length
 		nr_errors += f.errors.length
 
+		// -w hides info messages too
 		if not b.prefs.hide_warnings {
 			for info in f.infos {
 				info.print()
 			}
+		}
 
+		if b.prefs.warn_is_error {
+			for warn in f.warnings {
+				errors.error(warn.path, warn.pos, warn.msg)
+			}
+		} else if not b.prefs.hide_warnings {
 			for warn in f.warnings {
 				warn.print()
 			}

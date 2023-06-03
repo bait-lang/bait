@@ -20,8 +20,20 @@ fun test_error_in_outs() {
 	})
 }
 
-fun test_errors_no_script_mode() {
+fun test_in_outs_with_options() {
+	root := '${DIR}/inout_opts'
+
 	testing.in_out_runner(testing.InOutRunner{
-		root: '${DIR}/inout_no_script'
+		root: '${root}/no_script'
+	})
+
+	testing.in_out_runner(testing.InOutRunner{
+		root: '${root}/warn_error'
+		cmd_options: '--script -W'
+	})
+
+	testing.in_out_runner(testing.InOutRunner{
+		root: '${root}/no_warn'
+		cmd_options: '--script -w'
 	})
 }
