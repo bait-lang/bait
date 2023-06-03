@@ -7,9 +7,11 @@ import bait.token
 
 fun (p Parser) struct_decl()ast.StructDecl{
 	pos := p.tok.pos
+
 	is_pub := p.check_pub()
 	p.check(.key_struct)
 	name := p.prepend_pkg(p.check_name())
+
 	p.check(.lcur)
 	mut fields := []ast.StructField
 	for p.tok.kind != .rcur {
@@ -19,6 +21,7 @@ fun (p Parser) struct_decl()ast.StructDecl{
 		fields.push(field)
 	}
 	p.check(.rcur)
+
 	tsym := ast.TypeSymbol{
 		kind: .struct_
 		name: name
@@ -29,6 +32,7 @@ fun (p Parser) struct_decl()ast.StructDecl{
 		}
 	}
 	typ := p.table.register_sym(tsym)
+
 	return ast.StructDecl{
 		name: name
 		typ: typ
@@ -39,26 +43,40 @@ fun (p Parser) struct_decl()ast.StructDecl{
 
 fun (p Parser) struct_init()ast.StructInit{
 	pos := p.tok.pos
+
 	typ := p.parse_type()
 	name := p.prev_tok.val
+
 	p.check(.lcur)
 	mut fields := []ast.StructInitField
 	for p.tok.kind != .rcur {
-		fpos := p.tok.pos
-		fname := p.check_name()
-		p.check(.colon)
-		expr := p.expr(0)
-		fields.push(ast.StructInitField{
-			name: fname
-			expr: expr
-			pos: fpos
-		})
+		fields.push(p.struct_init_field())
 	}
 	p.check(.rcur)
+
 	return ast.StructInit{
 		name: name
 		typ: typ
 		fields: fields
+		pos: pos
+	}
+}
+
+fun (p Parser) struct_init_field() ast.StructInitField{
+	pos := p.tok.pos
+
+	name := p.check_name()
+	if p.tok.kind == .colon {
+		p.warn('use `field = "value"` instead')
+		p.next()
+	} else {
+		p.check(.eq)
+	}
+	expr := p.expr(0)
+
+	return ast.StructInitField{
+		name: name
+		expr: expr
 		pos: pos
 	}
 }

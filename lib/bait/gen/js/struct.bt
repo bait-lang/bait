@@ -36,7 +36,7 @@ fun (g Gen) struct_decl(node ast.StructDecl){
 	g.writeln('toString() {')
 	g.write('\treturn \`${jsname}{\n')
 	for field in node.fields {
-		g.write('    ${field.name}: \$')
+		g.write('    ${field.name} = \$')
 		g.write('{this.${field.name}.toString()}\n')
 	}
 	g.writeln('}\`}')
