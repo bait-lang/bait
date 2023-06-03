@@ -50,8 +50,8 @@ fun test_array_init() {
 
 fun test_struct_init() {
 	mycar := Car{
-		name: 'Reliant Robin'
-		color: .red
+		name = 'Reliant Robin'
+		color = .red
 	}
 }
 

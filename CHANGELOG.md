@@ -7,6 +7,9 @@ All notable changes will be documented in this file.
 ## 0.0.4
 _unreleased_
 
+### Breaking
+- Replace struct init syntax `Struct{ field: value }` with `Struct{ field = value }`
+
 ### CLI and Tooling
 - Add `--library` option to build as shared library that not requires a main function
 - Add `-w` and `-W` to hide warnings or turn them into errors

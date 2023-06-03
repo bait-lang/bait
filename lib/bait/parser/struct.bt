@@ -69,12 +69,7 @@ fun (p Parser) struct_init_field() ast.StructInitField{
 	pos := p.tok.pos
 
 	name := p.check_name()
-	if p.tok.kind == .colon {
-		p.warn('use `field = "value"` instead')
-		p.next()
-	} else {
-		p.check(.assign)
-	}
+	p.check(.assign)
 	expr := p.expr(0)
 
 	return ast.StructInitField{

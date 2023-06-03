@@ -48,9 +48,9 @@ fun collect_code_blocks(path string) []CodeBlock{
 		} else if inside_block and line.starts_with("```") {
 			inside_block = false
 			blocks.push(CodeBlock {
-				start_idx: start
-				end_idx: i
-				text: text
+				start_idx = start
+				end_idx = i
+				text = text
 			})
 		} else if inside_block {
 			text += line + '\n'
