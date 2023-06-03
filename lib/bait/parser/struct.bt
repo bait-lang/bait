@@ -70,7 +70,7 @@ fun (p Parser) struct_init_field() ast.StructInitField{
 		p.warn('use `field = "value"` instead')
 		p.next()
 	} else {
-		p.check(.eq)
+		p.check(.assign)
 	}
 	expr := p.expr(0)
 
