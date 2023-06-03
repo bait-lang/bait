@@ -12,5 +12,8 @@ Options:
 
   --library  Generate as a library, that does not have the main function.
 
+  -w         Hide all warnings.
+  -W         Treat warnings as errors.
+
   --nocolor  Prevent the use of colors in error messages.
   --script   Enable script mode, which does not require the main function.
