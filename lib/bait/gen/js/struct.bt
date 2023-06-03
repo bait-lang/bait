@@ -1,0 +1,63 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package js
+
+import bait.ast
+
+fun (g Gen) struct_decl(node ast.StructDecl){
+	g.write('function ')
+	jsname := js_name(node.name)
+	g.write(jsname)
+	g.write('({ ')
+	for i, field in node.fields {
+		g.write('${field.name} = ')
+		if node.typ == field.typ {
+			g.write('this')
+		} else {
+			g.write_default_value(field.typ)
+		}
+		if i < node.fields.length - 1 {
+			g.write(', ')
+		}
+	}
+	if node.fields.length > 0 {
+		g.write(' ')
+	}
+	g.writeln('}) {')
+	g.indent += 1
+	for field in node.fields {
+		g.writeln('this.${field.name} = ${field.name}')
+	}
+	g.indent -= 1
+	g.writeln('}')
+	g.writeln('${jsname}.prototype = {')
+	g.indent += 1
+	// TODO fix indent of nested structs
+	g.writeln('toString() {')
+	g.write('\treturn \`${jsname}{\n')
+	for field in node.fields {
+		g.write('    ${field.name}: \$')
+		g.write('{this.${field.name}.toString()}\n')
+	}
+	g.writeln('}\`}')
+	g.indent -= 1
+	g.writeln('}')
+}
+
+
+fun (g Gen) struct_init(node ast.StructInit) {
+	g.write('new ' + js_name(node.name) + '({')
+	if node.fields.length == 0 {
+		g.write('})')
+		return
+	}
+	g.write(' ')
+	for i, field in node.fields {
+		g.write('${field.name}: ')
+		g.expr(field.expr)
+		if i < node.fields.length - 1 {
+			g.write(', ')
+		}
+	}
+	g.write(' })')
+}
