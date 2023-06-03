@@ -27,11 +27,11 @@ fun (c Checker) fun_params(params []ast.Param){
 		}
 		if sym.kind == .fun_ {
 			c.scope.register(p.name, ast.ScopeObject{
-				typ: p.typ
-				kind: .function
+				typ = p.typ
+				kind = .function
 			})
 		} else {
-			c.scope.register(p.name, ast.ScopeObject{typ: p.typ})
+			c.scope.register(p.name, ast.ScopeObject{typ = p.typ})
 		}
 	}
 }

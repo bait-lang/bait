@@ -16,9 +16,9 @@ fun (p Parser) js_import() ast.Import {
 	alias += p.check_name()
 
 	return ast.Import{
-		name: name
-		alias: alias
-		lang: .js
+		name = name
+		alias = alias
+		lang = .js
 	}
 }
 
@@ -38,8 +38,8 @@ fun (p Parser) bait_import() ast.Import {
 	}
 
 	return ast.Import{
-		name: name
-		alias: alias
+		name = name
+		alias = alias
 	}
 }
 
@@ -58,7 +58,7 @@ fun (p Parser) import_stmts() [] ast.Import{
 
 		p.import_aliases[imp.alias] = imp.name
 		p.table.global_scope.register(imp.alias, ast.ScopeObject{
-			kind: .package_
+			kind = .package_
 		})
 
 		imp.pos = pos

@@ -22,11 +22,11 @@ struct Tokenizer {
 //   - field required attribute
 pub fun new_tokenizer(text string, path string) Tokenizer {
 	return Tokenizer{
-		path: path
-		text: text
-		pos: -1
-		line: 1
-		last_nl_pos: -1
+		path = path
+		text = text
+		pos = -1
+		line = 1
+		last_nl_pos = -1
 	}
 }
 
@@ -40,11 +40,11 @@ pub fun (t Tokenizer) tokenize() []token.Token {
 
 fun (t Tokenizer) new_token(kind token.TokenKind, val string) token.Token {
 	return token.Token{
-		kind: kind
-		val: val
-		pos: token.Pos{
-			line: t.line
-			col: t.pos - t.last_nl_pos
+		kind = kind
+		val = val
+		pos = token.Pos{
+			line = t.line
+			col = t.pos - t.last_nl_pos
 		}
 	}
 }
@@ -308,14 +308,14 @@ fun (t Tokenizer) error(msg string){
 
 fun (t Tokenizer) error_with_line(msg string, line i32){
 	t.errors.push(errors.Message{
-		kind: .error
-		path: t.path
-		pos: token.Pos{
-			line: line
-			col: t.pos - t.last_nl_pos
+		kind = .error
+		path = t.path
+		pos = token.Pos{
+			line = line
+			col = t.pos - t.last_nl_pos
 		}
-		title: 'error'
-		msg: msg
+		title = 'error'
+		msg = msg
 	})
 
 	t.should_abort = true

@@ -38,7 +38,7 @@ pub fun (s Scope) get(name string) ScopeObject {
 		return s.parent.get(name)
 	}
 	return ScopeObject{
-		kind: .unknown
+		kind = .unknown
 	}
 }
 

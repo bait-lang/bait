@@ -31,11 +31,11 @@ struct Gen {
 
 fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	mut g := Gen{
-		pref: pref
-		table: table
-		indent: -1
-		empty_line: true
-		tmp_counter: -1
+		pref = pref
+		table = table
+		indent = -1
+		empty_line = true
+		tmp_counter = -1
 	}
 	for file in files {
 		g.path = file.path
@@ -141,11 +141,11 @@ fun (g Gen) write_default_value(typ ast.Type) {
 			sym := g.table.get_sym(typ)
 			if sym.kind == .array {
 				g.array_init(ast.ArrayInit{
-					exprs: []ast.Expr
+					exprs = []ast.Expr
 				})
 			} else if sym.kind == .map {
 				g.map_init(ast.MapInit{
-					keys: []ast.Expr
+					keys = []ast.Expr
 				})
 			} else if sym.kind == .struct_ {
 				g.write('new ${js_name(sym.name)}({})')

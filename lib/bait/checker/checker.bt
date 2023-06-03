@@ -27,11 +27,11 @@ struct Checker{
 
 pub fun new_checker(table ast.Table, pref preference.Prefs) Checker {
 	return Checker{
-		pref: pref
-		table: table
-		scope: ast.Scope{
+		pref = pref
+		table = table
+		scope = ast.Scope{
 			// TODO how to handle recursive sturct inits?
-			parent: table.global_scope
+			parent = table.global_scope
 		}
 	}
 }
@@ -85,7 +85,7 @@ fun (c Checker) check_imports(imports []ast.Import) {
 
 fun (c Checker) open_scope(){
 	c.scope = ast.Scope{
-		parent: c.scope
+		parent = c.scope
 	}
 }
 
@@ -95,37 +95,37 @@ fun (c Checker) close_scope(){
 
 fun (c Checker) info(msg string, pos token.Pos){
 	c.infos.push(errors.Message{
-		kind: .info
-		path: c.path
-		pos: pos
-		title: 'note'
-		msg: msg
+		kind = .info
+		path = c.path
+		pos = pos
+		title = 'note'
+		msg = msg
 	})
 }
 
 fun (c Checker) warn(msg string, pos token.Pos){
 	c.warnings.push(errors.Message{
-		kind: .warning
-		path: c.path
-		pos: pos
-		title: 'warning'
-		msg: msg
+		kind = .warning
+		path = c.path
+		pos = pos
+		title = 'warning'
+		msg = msg
 	})
 }
 
 fun (c Checker) error(msg string, pos token.Pos){
 	c.errors.push(errors.Message{
-		kind: .error
-		path: c.path
-		pos: pos
-		title: 'error'
-		msg: msg
+		kind = .error
+		path = c.path
+		pos = pos
+		title = 'error'
+		msg = msg
 	})
 }
 
 fun (c Checker) generic_error(msg string){
 	c.errors.push(errors.Message{
-		kind: .error
-		msg: msg
+		kind = .error
+		msg = msg
 	})
 }

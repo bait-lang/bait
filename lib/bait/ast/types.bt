@@ -89,32 +89,32 @@ pub fun (sym TypeSymbol) has_method(name string) bool {
 pub fun (t Table) register_builtins(){
 	// IMPORTANT: Order of registration must match the order of the constants above
 	t.register_sym(TypeSymbol{
-		name: 'placeholder'
-		kind: .placeholder
+		name = 'placeholder'
+		kind = .placeholder
 	})
-	t.register_sym(TypeSymbol{ name: 'void' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'i8' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'i16' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'i32' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'i64' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'u8' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'u16' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'u32' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'u64' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'f32' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'f64' kind: .other })
-	t.register_sym(TypeSymbol{ name: 'bool' kind: .other })
+	t.register_sym(TypeSymbol{ name = 'void' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'i8' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'i16' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'i32' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'i64' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'u8' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'u16' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'u32' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'u64' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'f32' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'f64' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'bool' kind = .other })
 	t.register_sym(TypeSymbol{
-		name: 'string'
-		kind: .string
-	})
-	t.register_sym(TypeSymbol{
-		name: 'array'
-		kind: .array
+		name = 'string'
+		kind = .string
 	})
 	t.register_sym(TypeSymbol{
-		name: 'map'
-		kind: .map
+		name = 'array'
+		kind = .array
 	})
-	t.register_sym(TypeSymbol{ name: 'any' kind: .other })
+	t.register_sym(TypeSymbol{
+		name = 'map'
+		kind = .map
+	})
+	t.register_sym(TypeSymbol{ name = 'any' kind = .other })
 }

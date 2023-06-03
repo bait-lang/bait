@@ -85,22 +85,22 @@ pub fun (a []string) contains(s string) bool {
 
 pub fun (a array) slice(start i32, end i32) array {
 	return array{
-		data: a.data.slice(start as #JS.Number, end as #JS.Number)
-		length: end - start
+		data = a.data.slice(start as #JS.Number, end as #JS.Number)
+		length = end - start
 	}
 }
 
 pub fun (a array) concat(b array) array {
 	return array{
-		data: a.data.concat(b.data)
-		length: a.length + b.length
+		data = a.data.concat(b.data)
+		length = a.length + b.length
 	}
 }
 
 pub fun (a array) copy() array {
 	return array{
-		data: #JS.'[...a.data]' as #JS.Array
-		length: a.length
+		data = #JS.'[...a.data]' as #JS.Array
+		length = a.length
 	}
 }
 
@@ -121,7 +121,7 @@ pub fun (a array) filter(fn fun (any) bool) array {
 
 fun from_js_arr(a #JS.Array) array {
 	return array{
-		data: a
-		length: a.length
+		data = a
+		length = a.length
 	}
 }

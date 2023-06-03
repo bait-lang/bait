@@ -32,10 +32,10 @@ fun (b Builder) check_redefined_functions() {
 			for stmt in file.stmts {
 				if stmt is ast.FunDecl and stmt.name == name {
 					redefinitions.push(FunRedefinition{
-						path: file.path
-						pos: stmt.pos
-						name: name
-						signature: b.fun_signature(stmt)
+						path = file.path
+						pos = stmt.pos
+						name = name
+						signature = b.fun_signature(stmt)
 					})
 				}
 			}

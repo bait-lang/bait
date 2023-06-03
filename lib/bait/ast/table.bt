@@ -12,8 +12,8 @@ pub struct Table {
 
 pub fun new_table() Table {
 	mut t := Table{
-		global_scope: Scope{
-			parent: 0 as any
+		global_scope = Scope{
+			parent = 0 as any
 		}
 	}
 	t.register_builtins()
@@ -63,11 +63,11 @@ pub fun (t Table) find_or_register_array(elem_type Type) Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
-		kind: .array
-		name: name
-		parent: ARRAY_TYPE
-		info: ArrayInfo{
-			elem_type: elem_type
+		kind = .array
+		name = name
+		parent = ARRAY_TYPE
+		info = ArrayInfo{
+			elem_type = elem_type
 		}
 	})
 }
@@ -81,12 +81,12 @@ pub fun (t Table) find_or_register_map(key_type Type, val_type Type) Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
-		kind: .map
-		name: name
-		parent: MAP_TYPE
-		info: MapInfo{
-			key_type: key_type
-			val_type: val_type
+		kind = .map
+		name = name
+		parent = MAP_TYPE
+		info = MapInfo{
+			key_type = key_type
+			val_type = val_type
 		}
 	})
 }
@@ -98,11 +98,11 @@ pub fun (t Table) find_or_register_fun(param_types []Type, return_type Type) Typ
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
-		kind: .fun_
-		name: name
-		info: FunInfo{
-			param_types: param_types
-			return_type: return_type
+		kind = .fun_
+		name = name
+		info = FunInfo{
+			param_types = param_types
+			return_type = return_type
 		}
 	})
 }
@@ -122,8 +122,8 @@ pub fun (t Table) find_type_or_add_placeholder(name string) Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
-		kind: .placeholder
-		name: name
+		kind = .placeholder
+		name = name
 	})
 }
 

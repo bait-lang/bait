@@ -38,7 +38,7 @@ fun (p Parser) toplevel_stmt() ast.Stmt {
 			if p.pkg_name == 'main' {
 				return p.script_mode_main()
 			}
-			p.error('bad toplevel token: kind: ${p.tok.kind}, val: ${p.tok.val}')
+			p.error('bad toplevel token: kind = ${p.tok.kind}, val = ${p.tok.val}')
 		}
 	}
 }
@@ -78,7 +78,7 @@ fun (p Parser) script_mode_main() ast.FunDecl {
 		stmts.push(p.stmt())
 	}
 	mut node := ast.FunDecl{
-		name: 'main'
+		name = 'main'
 	}
 	p.table.fun_decls['main'] = node
 	node.stmts = stmts
@@ -113,7 +113,7 @@ fun (p Parser) assign_or_expr_stmt()ast.Stmt{
 	if p.tok.kind.is_assign() {
 		return p.assign_stmt(left)
 	}
-	return ast.ExprStmt{expr: left}
+	return ast.ExprStmt{expr = left}
 }
 
 fun (p Parser) assert_stmt() ast.AssertStmt{
@@ -121,8 +121,8 @@ fun (p Parser) assert_stmt() ast.AssertStmt{
 	pos := p.tok.pos
 	expr := p.expr(0)
 	return ast.AssertStmt{
-		expr: expr
-		pos: pos
+		expr = expr
+		pos = pos
 	}
 }
 
@@ -132,10 +132,10 @@ fun (p Parser) assign_stmt(left ast.Expr) ast.AssignStmt {
 	p.next()
 	right := p.expr(0)
 	return ast.AssignStmt{
-		op:op
-		left: left
-		right: right
-		pos: pos
+		op = op
+		left = left
+		right = right
+		pos = pos
 	}
 }
 
@@ -148,15 +148,15 @@ fun (p Parser) const_decl()ast.ConstDecl{
 	expr := p.expr(0)
 	typ := p.infer_expr_type(expr)
 	p.table.global_scope.register(name, ast.ScopeObject{
-		typ: typ
-		kind: .constant
-		is_pub: is_pub
-		expr: expr
+		typ = typ
+		kind = .constant
+		is_pub = is_pub
+		expr = expr
 	})
 	return ast.ConstDecl{
-		name: name
-		expr: expr
-		pos: pos
+		name = name
+		expr = expr
+		pos = pos
 	}
 }
 
@@ -164,15 +164,15 @@ fun (p Parser) control_stmt()ast.LoopControlStmt{
 	pos := p.tok.pos
 	p.next()
 	return ast.LoopControlStmt{
-		kind:p.prev_tok.kind
-		pos: pos
+		kind = p.prev_tok.kind
+		pos = pos
 	}
 }
 
 fun (p Parser) expr_stmt()ast.ExprStmt{
 	expr := p.expr(0)
 	return ast.ExprStmt{
-		expr: expr
+		expr = expr
 	}
 }
 
@@ -189,18 +189,18 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 	}
 	p.check(.rcur)
 	p.table.register_sym(ast.TypeSymbol{
-		name: name
-		is_pub: is_pub
-		pkg: p.pkg_name
-		kind: .enum_
-		info: ast.EnumInfo{
-			vals: variants
+		name = name
+		is_pub = is_pub
+		pkg = p.pkg_name
+		kind = .enum_
+		info = ast.EnumInfo{
+			vals = variants
 		}
 	})
 	return ast.EnumDecl{
-		name: name
-		variants: variants
-		pos: pos
+		name = name
+		variants = variants
+		pos = pos
 	}
 }
 
@@ -217,11 +217,11 @@ fun (p Parser) for_loop()ast.Stmt{
 		inc := p.stmt()
 		stmts := p.parse_block()
 		return ast.ForClassicLoop{
-			init:init
-			cond:cond
-			inc:inc
-			stmts: stmts
-			pos: pos
+			init = init
+			cond = cond
+			inc = inc
+			stmts = stmts
+			pos = pos
 		}
 	}
 	if p.next_tok.kind == .key_in or p.next_tok.kind == .comma {
@@ -237,19 +237,19 @@ fun (p Parser) for_loop()ast.Stmt{
 		p.is_struct_possible = true
 		stmts := p.parse_block()
 		return ast.ForInLoop{
-			idxvar:idxvar
-			valvar: valvar
-			expr: expr
-			stmts: stmts
-			pos: pos
+			idxvar = idxvar
+			valvar = valvar
+			expr = expr
+			stmts = stmts
+			pos = pos
 		}
 	}
 	cond := p.expr(0)
 	stmts := p.parse_block()
 	return ast.ForLoop{
-		cond:cond
-		stmts: stmts
-		pos: pos
+		cond = cond
+		stmts = stmts
+		pos = pos
 	}
 }
 
@@ -267,8 +267,8 @@ fun (p Parser) fun_decl()ast.FunDecl{
 		rec_name := p.check_name()
 		rec_type := p.parse_type()
 		params.push(ast.Param{
-			name:rec_name
-			typ:rec_type
+			name = rec_name
+			typ = rec_type
 		})
 		p.check(.rpar)
 	}
@@ -302,14 +302,14 @@ fun (p Parser) fun_decl()ast.FunDecl{
 	}
 
 	mut node := ast.FunDecl{
-		is_test: name.starts_with('test_')
-		is_pub: is_pub
-		name: name
-		params: params
-		return_type: return_type
-		attrs: p.attributes
-		lang: lang
-		pos: pos
+		is_test = name.starts_with('test_')
+		is_pub = is_pub
+		name = name
+		params = params
+		return_type = return_type
+		attrs = p.attributes
+		lang = lang
+		pos = pos
 	}
 	p.attributes = []ast.Attribute
 
@@ -345,9 +345,9 @@ fun (p Parser) fun_params() []ast.Param{
 	for p.tok.kind != .rpar{
 		pos := p.tok.pos
 		param := ast.Param{
-			name: p.check_name()
-			typ: p.parse_type()
-			pos: pos
+			name = p.check_name()
+			typ = p.parse_type()
+			pos = pos
 		}
 		params.push(param)
 		if p.tok.kind != .rpar{
@@ -365,13 +365,13 @@ fun (p Parser) global_decl()ast.GlobalDecl{
 	expr := p.expr(0)
 	typ := p.infer_expr_type(expr)
 	p.table.global_scope.register(name, ast.ScopeObject{
-		typ: typ
-		kind: .global_
+		typ = typ
+		kind = .global_
 	})
 	return ast.GlobalDecl{
-		name: name
-		expr: expr
-		pos: pos
+		name = name
+		expr = expr
+		pos = pos
 	}
 }
 
@@ -384,10 +384,10 @@ fun (p Parser) interface_decl()ast.InterfaceDecl{
 
 	// TODO investigate why registration of the sym after loop with methods as struct field does not work
 	tsym := ast.TypeSymbol{
-		kind: .interface_
-		name: name
-		is_pub: is_pub
-		pkg: p.pkg_name
+		kind = .interface_
+		name = name
+		is_pub = is_pub
+		pkg = p.pkg_name
 	}
 	typ := p.table.register_sym(tsym)
 
@@ -401,8 +401,8 @@ fun (p Parser) interface_decl()ast.InterfaceDecl{
 			p.check(.lpar)
 			// The first param is a fictional receiver in this case
 			mut params := [ast.Param{
-				name: '_'
-				typ: typ
+				name = '_'
+				typ = typ
 			}]
 			params = params.concat(p.fun_params())
 			p.check(.rpar)
@@ -411,12 +411,12 @@ fun (p Parser) interface_decl()ast.InterfaceDecl{
 				return_type = p.parse_type()
 			}
 			m := ast.FunDecl{
-				lang: .js
-				name: fun_name
-				params: params
-				return_type: return_type
-				is_pub: true
-				is_method: true
+				lang = .js
+				name = fun_name
+				params = params
+				return_type = return_type
+				is_pub = true
+				is_method = true
 			}
 			methods.push(m)
 			tsym.methods.push(m)
@@ -425,8 +425,8 @@ fun (p Parser) interface_decl()ast.InterfaceDecl{
 
 		if p.tok.kind == .name {
 			fields.push(ast.StructField{
-				name: p.check_name()
-				typ: p.parse_type()
+				name = p.check_name()
+				typ = p.parse_type()
 			})
 			continue
 		}
@@ -436,16 +436,16 @@ fun (p Parser) interface_decl()ast.InterfaceDecl{
 	p.next()
 
 	tsym.info = ast.StructInfo {
-		fields: fields
+		fields = fields
 	}
 
 	return ast.InterfaceDecl{
-		lang: lang
-		name: name
-		typ: typ
-		methods: methods
-		fields: fields
-		pos: pos
+		lang = lang
+		name = name
+		typ = typ
+		methods = methods
+		fields = fields
+		pos = pos
 	}
 }
 
@@ -457,8 +457,8 @@ fun (p Parser) return_stmt()ast.ReturnStmt{
 		expr = p.expr(0)
 	}
 	return ast.ReturnStmt{
-		expr:expr
-		pos: pos
+		expr = expr
+		pos = pos
 	}
 }
 
@@ -476,32 +476,32 @@ fun (p Parser) type_decl() ast.TypeDecl {
 	if is_fun_type {
 		sym := p.table.get_sym(variants[0])
 		typ := p.table.register_sym(ast.TypeSymbol{
-			kind: .fun_
-			name: name
-			is_pub: is_pub
-			pkg: p.pkg_name
-			info: sym.info
+			kind = .fun_
+			name = name
+			is_pub = is_pub
+			pkg = p.pkg_name
+			info = sym.info
 		})
 		return ast.TypeDecl{
-			name: name
-			typ: typ
-			pos: pos
+			name = name
+			typ = typ
+			pos = pos
 		}
 	}
 
 	// Alias type
 	if p.tok.kind != .pipe {
 		typ := p.table.register_sym(ast.TypeSymbol{
-			kind: .alias_type
-			name: name
-			parent: variants[0]
-			is_pub: is_pub
-			pkg: p.pkg_name
+			kind = .alias_type
+			name = name
+			parent = variants[0]
+			is_pub = is_pub
+			pkg = p.pkg_name
 		})
 		return ast.TypeDecl{
-			name: name
-			typ: typ
-			pos: pos
+			name = name
+			typ = typ
+			pos = pos
 		}
 	}
 
@@ -511,17 +511,17 @@ fun (p Parser) type_decl() ast.TypeDecl {
 		variants.push(p.parse_type())
 	}
 	typ := p.table.register_sym(ast.TypeSymbol{
-		kind: .sum_type
-		name: name
-		is_pub: is_pub
-		pkg: p.pkg_name
-		info: ast.SumTypeInfo{
-			variants: variants
+		kind = .sum_type
+		name = name
+		is_pub = is_pub
+		pkg = p.pkg_name
+		info = ast.SumTypeInfo{
+			variants = variants
 		}
 	})
 	return ast.TypeDecl{
-		name: name
-		typ: typ
-		pos: pos
+		name = name
+		typ = typ
+		pos = pos
 	}
 }

@@ -174,8 +174,8 @@ struct Rect{
 }
 
 r := Rect{
-    width: 5
-    height: 10
+    width = 5
+    height = 10
 }
 ```
 

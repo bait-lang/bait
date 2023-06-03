@@ -29,11 +29,11 @@ pub struct Parser {
 
 pub fun parse(tokens []token.Token, path string, table ast.Table, pref preference.Prefs) ast.File {
 	mut p := Parser{
-		pref: pref
-		path: path
-		table: table
-		tokens: tokens
-		is_struct_possible: true
+		pref = pref
+		path = path
+		table = table
+		tokens = tokens
+		is_struct_possible = true
 	}
 
 	p.next()
@@ -54,12 +54,12 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 	}
 
 	return ast.File{
-		path: path
-		pkg_decl: pkg_decl
-		imports: imports
-		stmts: stmts
-		warnings: p.warnings
-		errors: p.errors
+		path = path
+		pkg_decl = pkg_decl
+		imports = imports
+		stmts = stmts
+		warnings = p.warnings
+		errors = p.errors
 	}
 }
 
@@ -67,8 +67,8 @@ fun (p Parser) package_decl() ast.PackageDecl {
 	if p.tok.kind != .key_package {
 		p.pkg_name = "main"
 		return ast.PackageDecl{
-			name: "main"
-			full_name: "main"
+			name = "main"
+			full_name = "main"
 		}
 	}
 	p.next()
@@ -80,8 +80,8 @@ fun (p Parser) package_decl() ast.PackageDecl {
 	}
 	p.pkg_name = full_name
 	return ast.PackageDecl{
-		name:name
-		full_name:full_name
+		name = name
+		full_name = full_name
 	}
 }
 
@@ -98,9 +98,9 @@ fun (p Parser) parse_attributes() {
 			value = p.prev_tok.val
 		}
 		p.attributes.push(ast.Attribute{
-			name: name
-			value: value
-			pos: pos
+			name = name
+			value = value
+			pos = pos
 		})
 	}
 }
@@ -176,21 +176,21 @@ fun (p Parser) next() {
 
 fun (p Parser) warn(msg string) {
 	p.warnings.push(errors.Message{
-		kind: .warning
-		path: p.path
-		pos: p.tok.pos
-		title: 'warning'
-		msg: msg
+		kind = .warning
+		path = p.path
+		pos = p.tok.pos
+		title = 'warning'
+		msg = msg
 	})
 }
 
 fun (p Parser) error(msg string){
 	p.errors.push(errors.Message{
-		kind: .error
-		path: p.path
-		pos: p.tok.pos
-		title: 'error'
-		msg: msg
+		kind = .error
+		path = p.path
+		pos = p.tok.pos
+		title = 'error'
+		msg = msg
 	})
 	p.should_abort = true
 }

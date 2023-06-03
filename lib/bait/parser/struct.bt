@@ -17,27 +17,30 @@ fun (p Parser) struct_decl()ast.StructDecl{
 	for p.tok.kind != .rcur {
 		fname := p.check_name()
 		ftyp := p.parse_type()
-		field := ast.StructField{name: fname typ: ftyp}
+		field := ast.StructField{
+			name = fname
+			typ = ftyp
+		}
 		fields.push(field)
 	}
 	p.check(.rcur)
 
 	tsym := ast.TypeSymbol{
-		kind: .struct_
-		name: name
-		is_pub: is_pub
-		pkg: p.pkg_name
-		info: ast.StructInfo{
-			fields: fields
+		kind = .struct_
+		name = name
+		is_pub = is_pub
+		pkg = p.pkg_name
+		info = ast.StructInfo{
+			fields = fields
 		}
 	}
 	typ := p.table.register_sym(tsym)
 
 	return ast.StructDecl{
-		name: name
-		typ: typ
-		fields: fields
-		pos: pos
+		name = name
+		typ = typ
+		fields = fields
+		pos = pos
 	}
 }
 
@@ -55,10 +58,10 @@ fun (p Parser) struct_init()ast.StructInit{
 	p.check(.rcur)
 
 	return ast.StructInit{
-		name: name
-		typ: typ
-		fields: fields
-		pos: pos
+		name = name
+		typ = typ
+		fields = fields
+		pos = pos
 	}
 }
 
@@ -75,8 +78,8 @@ fun (p Parser) struct_init_field() ast.StructInitField{
 	expr := p.expr(0)
 
 	return ast.StructInitField{
-		name: name
-		expr: expr
-		pos: pos
+		name = name
+		expr = expr
+		pos = pos
 	}
 }

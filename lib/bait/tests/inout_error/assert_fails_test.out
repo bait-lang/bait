@@ -15,12 +15,12 @@ assert s.length < 1
 lib/bait/tests/inout_error/assert_fails_test.in.bt:10 test_all
 assert arr == [4, 5]
   left:  array{
-    data: 1,2,3
-    length: 3
+    data = 1,2,3
+    length = 3
 }
   right: array{
-    data: 4,5
-    length: 2
+    data = 4,5
+    length = 2
 }
 lib/bait/tests/inout_error/assert_fails_test.in.bt:11 test_all
 assert arr[0] > 7

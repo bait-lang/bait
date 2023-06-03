@@ -68,8 +68,8 @@ fun (b Builder) parse_source_file(path string) ast.File {
 
 pub fun compile(prefs preference.Prefs) i32 {
 	mut b := Builder{
-		prefs: prefs
-		table: ast.new_table()
+		prefs = prefs
+		table = ast.new_table()
 	}
 
 	mut paths := b.collect_bait_files(resolve_import('builtin'))

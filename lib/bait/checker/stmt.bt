@@ -63,7 +63,7 @@ fun (c Checker) assign_stmt(node ast.AssignStmt) {
 			c.error('redefinition of ${left.name}', node.pos)
 			return
 		}
-		c.scope.register(left.name, ast.ScopeObject{typ: typ})
+		c.scope.register(left.name, ast.ScopeObject{typ = typ})
 		c.expr(node.left)
 		return
 	}
@@ -135,9 +135,9 @@ fun (c Checker) for_in_loop(node ast.ForInLoop) {
 		c.error('cannot iterate over ${sym.name}', node.pos)
 	}
 	if node.idxvar.length > 0 {
-		c.scope.register(node.idxvar, ast.ScopeObject{typ: idx_type})
+		c.scope.register(node.idxvar, ast.ScopeObject{typ = idx_type})
 	}
-	c.scope.register(node.valvar, ast.ScopeObject{typ: val_type})
+	c.scope.register(node.valvar, ast.ScopeObject{typ = val_type})
 	c.stmts(node.stmts)
 	c.close_scope()
 }
