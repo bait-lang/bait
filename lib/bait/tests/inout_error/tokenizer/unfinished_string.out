@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/tokenizer/unfinished_string.in.bt:1:1 error: unfinished string literal

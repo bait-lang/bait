@@ -244,7 +244,7 @@ fun (t Tokenizer) string_val(quote u8) string {
 	is_js := t.text[t.pos - 1] == `.`
 	start_line := t.line
 	start := t.pos + 1
-	for true {
+	for not t.should_abort {
 		t.pos += 1
 		if t.pos >= t.text.length {
 			t.error_with_line('unfinished string literal', start_line)
