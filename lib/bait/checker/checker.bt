@@ -9,7 +9,6 @@ import bait.token
 
 struct Checker{
 	pref preference.Prefs
-	parsed_files []ast.File
 	table ast.Table
 	scope ast.Scope
 	path string
@@ -17,33 +16,42 @@ struct Checker{
 	has_main_pkg_files bool
 	has_main_fun bool
 	is_js_file bool
-	had_error bool
 	cur_fun ast.FunDecl
 	expected_type ast.Type
 	is_lhs_assign bool
 	export_names []string
+	infos []errors.Message
+	warnings []errors.Message
+	errors []errors.Message
 }
 
-pub fun check_files(files []ast.File, table ast.Table, pref preference.Prefs) bool {
-	mut c := Checker{
+pub fun new_checker(table ast.Table, pref preference.Prefs) Checker {
+	return Checker{
 		pref: pref
-		parsed_files: files
 		table: table
 		scope: ast.Scope{
 			// TODO how to handle recursive sturct inits?
 			parent: table.global_scope
 		}
 	}
+}
 
-	for f in c.parsed_files {
+pub fun (c Checker) check_files(files []ast.File) {
+	for f in files {
 		c.check(f)
-	}
 
-	c.check_redefined_functions()
+		f.infos = c.infos
+		f.warnings = c.warnings
+		f.errors = c.errors
+
+		c.infos = []errors.Message
+		c.warnings = []errors.Message
+		c.errors = []errors.Message
+	}
 
 	// no main function needed for libraries, tests and script mode
 	if c.pref.is_library or c.pref.is_test or c.pref.is_script {
-		return not c.had_error
+		return
 	}
 
 	if not c.has_main_pkg_files {
@@ -51,8 +59,6 @@ pub fun check_files(files []ast.File, table ast.Table, pref preference.Prefs) bo
 	} else if not c.has_main_fun {
 		c.generic_error('main package has no main function')
 	}
-
-	return not c.had_error
 }
 
 fun (c Checker) check(file ast.File) {
@@ -87,16 +93,39 @@ fun (c Checker) close_scope(){
 	c.scope = c.scope.parent
 }
 
+fun (c Checker) info(msg string, pos token.Pos){
+	c.infos.push(errors.Message{
+		kind: .info
+		path: c.path
+		pos: pos
+		title: 'note'
+		msg: msg
+	})
+}
+
 fun (c Checker) warn(msg string, pos token.Pos){
-	errors.warn(c.path, pos, msg)
+	c.warnings.push(errors.Message{
+		kind: .warning
+		path: c.path
+		pos: pos
+		title: 'warning'
+		msg: msg
+	})
 }
 
 fun (c Checker) error(msg string, pos token.Pos){
-	errors.error(c.path, pos, msg)
-	c.had_error = true
+	c.errors.push(errors.Message{
+		kind: .error
+		path: c.path
+		pos: pos
+		title: 'error'
+		msg: msg
+	})
 }
 
 fun (c Checker) generic_error(msg string){
-	errors.generic_error(msg)
-	c.had_error = true
+	c.errors.push(errors.Message{
+		kind: .error
+		msg: msg
+	})
 }

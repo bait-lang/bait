@@ -3,6 +3,7 @@
 package ast
 
 import bait.token
+import bait.errors
 
 pub type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt
 
@@ -322,4 +323,7 @@ pub struct File{
 	pkg_decl PackageDecl
 	imports []Import
 	stmts []Stmt
+	infos []errors.Message
+	warnings []errors.Message
+	errors []errors.Message
 }

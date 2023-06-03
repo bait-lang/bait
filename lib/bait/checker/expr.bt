@@ -3,7 +3,6 @@
 package checker
 
 import bait.ast
-import bait.errors
 import bait.token
 
 fun (c Checker) expr(expr ast.Expr) ast.Type {

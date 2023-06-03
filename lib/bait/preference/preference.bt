@@ -3,6 +3,7 @@
 package preference
 
 import os
+import bait.errors
 
 pub enum Backend {
 	js
@@ -15,10 +16,17 @@ pub struct Prefs {
 	out_name string
 	should_run bool
 	is_verbose bool
+	backend Backend
+
+	// Compile mode
 	is_test bool
 	is_script bool
 	is_library bool
-	backend Backend
+
+	// Error related
+	hide_warnings bool
+	warn_is_error bool
+
 	// Values for compile time pseudo variables
 	baitexe string
 	baitdir string
@@ -54,6 +62,12 @@ pub fun parse_args(args []string) Prefs {
 			'--library' {
 				p.is_library = true
 			}
+			'-w' {
+				p.hide_warnings = true
+			}
+			'-W' {
+				p.warn_is_error = true
+			}
 			'--nocolor' {
 				os.setenv('BAITCOLOR', '0')
 			}
@@ -68,6 +82,11 @@ pub fun parse_args(args []string) Prefs {
 				}
 			}
 		}
+	}
+
+	if p.hide_warnings and p.warn_is_error {
+		errors.generic_error('Cannot use -w and -W together.')
+		exit(1)
 	}
 
 	// `build` is just an optional alias and replaced with the filepath

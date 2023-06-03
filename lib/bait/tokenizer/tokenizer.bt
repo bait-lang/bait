@@ -13,21 +13,27 @@ struct Tokenizer {
 	last_nl_pos i32
 	is_string_inter bool
 	str_quote u8
+	should_abort bool
+	errors []errors.Message
 }
 
-pub fun tokenize(text string, path string) []token.Token {
-	mut t := Tokenizer{
+// TODO remove once these things are implemented
+//   - default struct values
+//   - field required attribute
+pub fun new_tokenizer(text string, path string) Tokenizer {
+	return Tokenizer{
 		path: path
 		text: text
 		pos: -1
 		line: 1
 		last_nl_pos: -1
 	}
+}
+
+pub fun (t Tokenizer) tokenize() []token.Token {
 	mut tokens := []token.Token
-	mut tok := token.Token{}
-	for tok.kind != .eof {
-		tok = t.next_token()
-		tokens.push(tok)
+	for not t.should_abort {
+		tokens.push(t.next_token())
 	}
 	return tokens
 }
@@ -43,13 +49,19 @@ fun (t Tokenizer) new_token(kind token.TokenKind, val string) token.Token {
 	}
 }
 
+fun (t Tokenizer) eof_token() token.Token {
+	t.should_abort = true
+	return t.new_token(.eof, "")
+}
+
 fun (t Tokenizer) next_token() token.Token {
 	for true {
 		t.pos += 1
 		t.skip_whitespace()
 		if t.pos >= t.text.length {
-			return t.new_token(.eof, '')
+			return t.eof_token()
 		}
+
 		c := t.text[t.pos]
 		if is_name_start_char(c) {
 			return t.name_or_keyword()
@@ -193,7 +205,8 @@ fun (t Tokenizer) next_token() token.Token {
 		}
 		t.error('unknown char `${c.ascii()}`')
 	}
-	return t.new_token(.eof, "")
+
+	return t.eof_token()
 }
 
 fun (t Tokenizer) name_or_keyword() token.Token {
@@ -231,7 +244,7 @@ fun (t Tokenizer) string_val(quote u8) string {
 	is_js := t.text[t.pos - 1] == `.`
 	start_line := t.line
 	start := t.pos + 1
-	for true {
+	for not t.should_abort {
 		t.pos += 1
 		if t.pos >= t.text.length {
 			t.error_with_line('unfinished string literal', start_line)
@@ -294,12 +307,18 @@ fun (t Tokenizer) error(msg string){
 }
 
 fun (t Tokenizer) error_with_line(msg string, line i32){
-	pos := token.Pos{
-		line: line
-		col: t.pos - t.last_nl_pos
-	}
-	errors.error(t.path, pos, msg)
-	exit(1)
+	t.errors.push(errors.Message{
+		kind: .error
+		path: t.path
+		pos: token.Pos{
+			line: line
+			col: t.pos - t.last_nl_pos
+		}
+		title: 'error'
+		msg: msg
+	})
+
+	t.should_abort = true
 }
 
 fun is_name_start_char(c u8) bool {

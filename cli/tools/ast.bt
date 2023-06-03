@@ -18,8 +18,14 @@ fun main() {
 		eprintln('error: file must have ".bt" extension')
 		exit(1)
 	}
+
 	text := os.read_file(file)
-	tokens := tokenizer.tokenize(text, file)
-	tree := parser.parse(tokens, file, ast.new_table(), preference.Prefs{})
-	println(tree)
+	t := tokenizer.new_tokenizer(text, file)
+	tokens := t.tokenize()
+	t.errors.print_and_exit()
+
+	file_ast := parser.parse(tokens, file, ast.new_table(), preference.Prefs{})
+	// TODO handle parser errors, warnings
+
+	println(file_ast)
 }
