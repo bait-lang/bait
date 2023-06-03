@@ -9,7 +9,6 @@ import bait.token
 
 struct Checker{
 	pref preference.Prefs
-	parsed_files []ast.File
 	table ast.Table
 	scope ast.Scope
 	path string
@@ -27,7 +26,6 @@ struct Checker{
 pub fun check_files(files []ast.File, table ast.Table, pref preference.Prefs) bool {
 	mut c := Checker{
 		pref: pref
-		parsed_files: files
 		table: table
 		scope: ast.Scope{
 			// TODO how to handle recursive sturct inits?
@@ -35,11 +33,9 @@ pub fun check_files(files []ast.File, table ast.Table, pref preference.Prefs) bo
 		}
 	}
 
-	for f in c.parsed_files {
+	for f in files {
 		c.check(f)
 	}
-
-	c.check_redefined_functions()
 
 	// no main function needed for libraries, tests and script mode
 	if c.pref.is_library or c.pref.is_test or c.pref.is_script {

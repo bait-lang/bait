@@ -15,6 +15,7 @@ import bait.tokenizer
 struct Builder {
 	prefs preference.Prefs
 	table ast.Table
+	parsed_files []ast.File
 }
 
 // Returns the absolute paths to all bait files in a directory that should be compiled
@@ -144,6 +145,10 @@ pub fun compile(prefs preference.Prefs) i32 {
 	if not checker.check_files(sorted_files, b.table, b.prefs) {
 		return 1
 	}
+
+	b.parsed_files = sorted_files
+
+	b.check_redefined_functions()
 
 	// TODO properly select backend
 	if b.prefs.backend != .js {
