@@ -9,7 +9,8 @@ pub fun run_tests(prefs preference.Prefs) i32 {
 	// Collect test files
 	mut files_to_test := []string
 	for a in prefs.args {
-		if os.exists(a) and a.ends_with('_test.bt') {
+		// Note the difference in handling file extensions, which is used by bait.util.testing
+		if os.exists(a) and a.ends_with('.bt') and a.contains('_test.') {
 			files_to_test.push(a)
 		} else if os.is_dir(a){
 			files_to_test = files_to_test.concat(os.walk_ext(a, '_test.bt'))
@@ -20,7 +21,6 @@ pub fun run_tests(prefs preference.Prefs) i32 {
 	}
 
 	mut test_prefs := prefs
-	test_prefs.should_run = true
 	mut has_fails := false
 
 	// Compile and run all tests

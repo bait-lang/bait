@@ -302,7 +302,7 @@ fun (p Parser) fun_decl()ast.FunDecl{
 	}
 
 	mut node := ast.FunDecl{
-		is_test: p.is_test_file and name.starts_with('test_')
+		is_test: name.starts_with('test_')
 		is_pub: is_pub
 		name: name
 		params: params

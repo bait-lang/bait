@@ -81,11 +81,15 @@ pub fun parse_args(args []string) Prefs {
 	}
 
 	if p.command == 'test' {
+		p.should_run = true
 		p.is_test = true
 	}
+
+	// Set default out name if empty
 	if p.out_name.length == 0 {
-		p.out_name = p.command.all_before('.bt') + '.js'
+		p.out_name = p.command.replace('.bt', '.js')
 	}
+
 	return p
 }
 
