@@ -24,7 +24,7 @@ pub fun walk_ext(dir string, ext string) []string {
 }
 
 pub fun cp(src string, dest string) {
-	#JS.fs.copyFileSync(src.str, dest.str)
+	#JS.'JS__fs.cpSync(src.str, dest.str, { recursive: true })'
 }
 
 pub fun exists(path string) bool {

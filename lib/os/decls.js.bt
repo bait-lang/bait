@@ -10,6 +10,9 @@ import 'child_process' as #JS.child_process
 
 fun #JS.fs.readdirSync(dir #JS.String) #JS.Array
 
+// TODO options param
+// fun #JS.fs.cpSync(src #JS.String, dest #JS.String)
+
 fun #JS.fs.copyFileSync(src #JS.String, dest #JS.String)
 
 fun #JS.fs.existsSync(path #JS.String) #JS.Boolean
@@ -19,12 +22,12 @@ fun #JS.fs.existsSync(path #JS.String) #JS.Boolean
 
 fun #JS.fs.symlinkSync(src #JS.String, dest #JS.String)
 
-// TODO second param
+// TODO options param
 fun #JS.fs.mkdirSync(dir #JS.String)
 
 fun #JS.fs.rmSync(path #JS.String)
 
-// TODO second param
+// TODO options param
 fun #JS.fs.rmdirSync(dir #JS.String)
 
 // TODO .toString()

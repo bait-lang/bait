@@ -23,6 +23,9 @@ _unreleased_
   - Add inout runner for project directories
   - Add inout runner to check stdout
 
+### Standard Library
+- `os`: fix `cp()` for directories
+
 
 ## 0.0.3
 _30 May 2023_
