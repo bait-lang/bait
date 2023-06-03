@@ -56,7 +56,11 @@ fun (b Builder) get_user_files(path string) []string {
 
 fun (b Builder) parse_source_file(path string) ast.File {
 	text := os.read_file(path)
-	tokens := tokenizer.tokenize(text, path)
+	t := tokenizer.new_tokenizer(text, path)
+	tokens := t.tokenize()
+	// TODO first tokenize all files, then print errors and possibly exit
+	t.errors.print_and_exit()
+
 	return parser.parse(tokens, path, b.table, b.prefs)
 }
 

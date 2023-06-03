@@ -5,14 +5,31 @@ package errors
 import os
 import bait.token
 
-enum Kind {
-	notice
+pub enum Kind {
+	info
 	warning
 	error
 }
 
-pub fun notice(title string, path string, pos token.Pos, msg string) {
-	message(.notice, title, path, pos, msg)
+pub struct Message{
+	kind Kind
+	path string
+	pos token.Pos
+	title string
+	msg string
+}
+
+pub fun (msgs []Message) print_and_exit() {
+	for msg in msgs {
+		message(msg.kind, msg.title, msg.path, msg.pos, msg.msg)
+	}
+	if msgs.length > 0 {
+		exit(1)
+	}
+}
+
+pub fun info(title string, path string, pos token.Pos, msg string) {
+	message(.info, title, path, pos, msg)
 }
 
 pub fun warn(path string, pos token.Pos, msg string) {
@@ -47,7 +64,7 @@ fun format_title(k Kind, title string) string {
 		return title
 	}
 	match k {
-		.notice { return '\033[0;35m' + title + '\033[0m' }
+		.info { return '\033[0;35m' + title + '\033[0m' }
 		.warning { return '\033[0;33m' + title + '\033[0m' }
 		.error { return '\033[0;31m' + title + '\033[0m' }
 	}

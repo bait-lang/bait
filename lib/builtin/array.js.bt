@@ -20,6 +20,11 @@ pub fun (a array) push(el any) {
 	a.length += 1
 }
 
+pub fun (a array) push_many(b array) {
+	a.data = a.data.concat(b.data)
+	a.length += b.length
+}
+
 // TODO remove requirement for functions like index, last_index, contains, ... to be duplicated for types that are objects in JS
 
 pub fun (a array) index(el any) i32 {

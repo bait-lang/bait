@@ -96,7 +96,7 @@ fun (c Checker) check_redefined_functions() {
 		// Raise the error and show where redefinitions happened
 		c.generic_error('redfinition of function "${name}"', )
 		for redef in redefinitions {
-			errors.notice('conflict', redef.path, redef.pos, redef.signature)
+			errors.info('conflict', redef.path, redef.pos, redef.signature)
 		}
 	}
 }
