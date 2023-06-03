@@ -19,9 +19,13 @@ pub struct Message{
 	msg string
 }
 
+pub fun (msg Message) print() {
+	message(msg.kind, msg.title, msg.path, msg.pos, msg.msg)
+}
+
 pub fun (msgs []Message) print_and_exit() {
 	for msg in msgs {
-		message(msg.kind, msg.title, msg.path, msg.pos, msg.msg)
+		msg.print()
 	}
 	if msgs.length > 0 {
 		exit(1)

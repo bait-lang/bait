@@ -22,6 +22,7 @@ pub struct Parser {
 	expr_pkg string
 	is_for_init bool
 	is_struct_possible bool
+	should_abort bool
 	warnings []errors.Message
 	errors []errors.Message
 }
@@ -47,6 +48,9 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 			p.parse_attributes()
 		}
 		stmts.push(p.toplevel_stmt())
+		if p.should_abort {
+			break
+		}
 	}
 
 	return ast.File{
@@ -175,6 +179,7 @@ fun (p Parser) warn(msg string) {
 		kind: .warning
 		path: p.path
 		pos: p.tok.pos
+		title: 'warning'
 		msg: msg
 	})
 }
@@ -184,6 +189,8 @@ fun (p Parser) error(msg string){
 		kind: .error
 		path: p.path
 		pos: p.tok.pos
+		title: 'error'
 		msg: msg
 	})
+	p.should_abort = true
 }

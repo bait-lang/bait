@@ -3,7 +3,6 @@
 package checker
 
 import bait.ast
-import bait.errors
 
 enum AttrValue {
 	none
