@@ -462,38 +462,6 @@ fun (p Parser) return_stmt()ast.ReturnStmt{
 	}
 }
 
-fun (p Parser) struct_decl()ast.StructDecl{
-	pos := p.tok.pos
-	is_pub := p.check_pub()
-	p.check(.key_struct)
-	name := p.prepend_pkg(p.check_name())
-	p.check(.lcur)
-	mut fields := []ast.StructField
-	for p.tok.kind != .rcur {
-		fname := p.check_name()
-		ftyp := p.parse_type()
-		field := ast.StructField{name: fname typ: ftyp}
-		fields.push(field)
-	}
-	p.check(.rcur)
-	tsym := ast.TypeSymbol{
-		kind: .struct_
-		name: name
-		is_pub: is_pub
-		pkg: p.pkg_name
-		info: ast.StructInfo{
-			fields: fields
-		}
-	}
-	typ := p.table.register_sym(tsym)
-	return ast.StructDecl{
-		name: name
-		typ: typ
-		fields: fields
-		pos: pos
-	}
-}
-
 fun (p Parser) type_decl() ast.TypeDecl {
 	pos := p.tok.pos
 	is_pub := p.check_pub()

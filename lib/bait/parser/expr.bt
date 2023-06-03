@@ -501,32 +501,6 @@ fun (p Parser) string_literal()ast.Expr{
 	}
 }
 
-fun (p Parser) struct_init()ast.StructInit{
-	pos := p.tok.pos
-	typ := p.parse_type()
-	name := p.prev_tok.val
-	p.check(.lcur)
-	mut fields := []ast.StructInitField
-	for p.tok.kind != .rcur {
-		fpos := p.tok.pos
-		fname := p.check_name()
-		p.check(.colon)
-		expr := p.expr(0)
-		fields.push(ast.StructInitField{
-			name: fname
-			expr: expr
-			pos: fpos
-		})
-	}
-	p.check(.rcur)
-	return ast.StructInit{
-		name: name
-		typ: typ
-		fields: fields
-		pos: pos
-	}
-}
-
 fun (p Parser) typeof_expr() ast.TypeOf {
 	pos := p.tok.pos
 	p.check(.key_typeof)
