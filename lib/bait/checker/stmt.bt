@@ -63,7 +63,10 @@ fun (c Checker) assign_stmt(node ast.AssignStmt) {
 			c.error('redefinition of ${left.name}', node.pos)
 			return
 		}
-		c.scope.register(left.name, ast.ScopeObject{typ = typ})
+		c.scope.register(left.name, ast.ScopeObject{
+			kind = .variable
+			typ = typ
+		})
 		c.expr(node.left)
 		return
 	}

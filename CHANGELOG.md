@@ -18,6 +18,7 @@ _unreleased_
 - Compiling normal projects must include a main package
 - Main package must contain a main function
 - Fix false-positive error with variable names matching an import of an import
+- Fix variable redefinition error not being thrown
 
 ### Compiler
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
