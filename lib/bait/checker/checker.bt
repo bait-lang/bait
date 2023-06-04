@@ -29,10 +29,6 @@ pub fun new_checker(table ast.Table, pref preference.Prefs) Checker {
 	return Checker{
 		pref = pref
 		table = table
-		scope = ast.Scope{
-			// TODO how to handle recursive sturct inits?
-			parent = table.global_scope
-		}
 	}
 }
 
@@ -66,6 +62,11 @@ fun (c Checker) check(file ast.File) {
 	c.is_js_file = c.path.contains('.js.')
 	c.pkg = file.pkg_decl.full_name
 
+	c.scope = ast.Scope{
+		// TODO how to handle recursive sturct inits?
+		parent = c.table.global_scope
+	}
+
 	if c.pkg == 'main' {
 		c.has_main_pkg_files = true
 		c.check_main_fun(file.stmts)
@@ -77,10 +78,16 @@ fun (c Checker) check(file ast.File) {
 
 fun (c Checker) check_imports(imports []ast.Import) {
 	for imp in imports {
+		// Register import to prevent shadowing them
+		c.scope.register(imp.alias, ast.ScopeObject{
+			kind = .package_
+		})
+
 		if not c.is_js_file and imp.lang == .js {
 			c.warn('JS imports have to be in .js.bt files', imp.pos)
 		}
 	}
+
 }
 
 fun (c Checker) open_scope(){

@@ -57,9 +57,6 @@ fun (p Parser) import_stmts() [] ast.Import{
 		}
 
 		p.import_aliases[imp.alias] = imp.name
-		p.table.global_scope.register(imp.alias, ast.ScopeObject{
-			kind = .package_
-		})
 
 		imp.pos = pos
 		imports.push(imp)

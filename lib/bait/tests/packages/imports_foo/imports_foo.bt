@@ -1,0 +1,3 @@
+package imports_foo
+
+import bait.tests.packages.foo
