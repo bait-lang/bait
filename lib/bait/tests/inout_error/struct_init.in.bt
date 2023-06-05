@@ -1,5 +1,7 @@
-struct Empty{}
+struct FooBar{
+	foo i32 := false
+}
 
-e := Empty{
-	bad_field = 123
+fb := FooBar{
+	spam_eggs = 123
 }

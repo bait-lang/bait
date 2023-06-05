@@ -13,7 +13,7 @@ fun (g Gen) struct_decl(node ast.StructDecl){
 		g.write('${field.name} = ')
 		if node.typ == field.typ {
 			g.write('this')
-		} if not field.expr is ast.EmptyExpr {
+		} else if not field.expr is ast.EmptyExpr {
 			g.expr(field.expr)
 		} else {
 			g.write_default_value(field.typ)
