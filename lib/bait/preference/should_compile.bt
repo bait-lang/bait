@@ -12,7 +12,10 @@ pub fun (prefs Prefs) should_compile_file(file string) bool {
 		return false
 	}
 
-	// Exclude files from a different backend
+	return prefs.matches_backend(file)
+}
+
+pub fun (prefs Prefs) matches_backend(file string) bool {
 	if prefs.backend == .js and file.contains('.c.') {
 		return false
 	}

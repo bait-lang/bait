@@ -5,7 +5,9 @@ package main
 import os
 
 fun main() {
-	test_files := os.walk_ext('lib', '_test.bt')
+	test_files := os.walk_ext('lib', '.bt').filter(fun (f string) bool {
+		return f.contains('_test.') and not f.contains('.in.')
+	}) as []string
 	mut fails := 0
 
 	for file in test_files {
