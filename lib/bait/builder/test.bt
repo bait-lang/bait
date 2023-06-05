@@ -13,7 +13,7 @@ pub fun run_tests(prefs preference.Prefs) i32 {
 		if os.exists(a) and a.ends_with('.bt') and a.contains('_test.') {
 			files_to_test.push(a)
 		} else if os.is_dir(a){
-			files_to_test = files_to_test.concat(os.walk_ext(a, '_test.bt'))
+			files_to_test.push_many(os.walk_ext(a, '_test.bt'))
 		} else {
 			eprintln('Unrecognized file or directory: "${a}"')
 			exit(1)

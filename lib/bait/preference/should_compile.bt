@@ -1,0 +1,24 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package preference
+
+pub fun (prefs Prefs) should_compile_file(file string) bool {
+	if not file.ends_with('.bt') {
+		return false
+	}
+
+	// Exclude test files from compilation
+	if file.contains('_test.') {
+		return false
+	}
+
+	// Exclude files from a different backend
+	if prefs.backend == .js and file.contains('.c.') {
+		return false
+	}
+	if prefs.backend == .c and file.contains('.js.') {
+		return false
+	}
+
+	return true
+}
