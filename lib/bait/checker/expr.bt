@@ -307,7 +307,7 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 		c.error('cast to the variant before accessing field of sumtype ${sym.name}', node.pos)
 		return ast.VOID_TYPE
 	}
-	// TODO other variants of selector expr
+	// TODO other variants of selector expr; should this even be reachable?
 	return ast.ANY_TYPE
 }
 

@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/struct/no_field.in.bt:6:6 error: Foo has no field whatever

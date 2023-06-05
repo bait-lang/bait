@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/struct/decl.in.bt:3:4 error: duplicate field name foo

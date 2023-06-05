@@ -1,0 +1,6 @@
+struct Foo {}
+
+fun bar(arg string){}
+
+f := Foo{}
+bar(f.whatever)

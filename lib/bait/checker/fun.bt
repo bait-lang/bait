@@ -99,6 +99,10 @@ fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
 		param_type := def.params[i].typ
 		c.expected_type = param_type
 		arg.typ = c.expr(arg.expr)
+		if arg.typ == ast.VOID_TYPE and not arg.expr is ast.CallExpr {
+			// Another error was already raised
+			continue
+		}
 		if not c.check_types(arg.typ, param_type) {
 			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
 		}
