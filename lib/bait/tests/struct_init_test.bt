@@ -1,6 +1,15 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 
+struct Account{
+	balance i32 := 50
+}
+
+fun test_default_field_value() {
+	a := Account{}
+	assert a.balance == 50
+}
+
 type Int := i32
 
 struct Foo{

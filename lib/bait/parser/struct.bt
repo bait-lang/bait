@@ -15,13 +15,7 @@ fun (p Parser) struct_decl()ast.StructDecl{
 	p.check(.lcur)
 	mut fields := []ast.StructField
 	for p.tok.kind != .rcur {
-		fname := p.check_name()
-		ftyp := p.parse_type()
-		field := ast.StructField{
-			name = fname
-			typ = ftyp
-		}
-		fields.push(field)
+		fields.push(p.struct_decl_field())
 	}
 	p.check(.rcur)
 
@@ -41,6 +35,21 @@ fun (p Parser) struct_decl()ast.StructDecl{
 		typ = typ
 		fields = fields
 		pos = pos
+	}
+}
+
+fun (p Parser) struct_decl_field() ast.StructField {
+	fname := p.check_name()
+	ftyp := p.parse_type()
+	mut expr := ast.EmptyExpr{} as ast.Expr
+	if p.tok.kind == .decl_assign {
+		p.next()
+		expr = p.expr(0)
+	}
+	return ast.StructField{
+		name = fname
+		typ = ftyp
+		expr = expr
 	}
 }
 
