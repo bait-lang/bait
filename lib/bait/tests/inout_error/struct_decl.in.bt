@@ -1,4 +1,4 @@
 struct MyStruct{
 	foo i32
-	foo bool
+	foo bool := 123
 }
