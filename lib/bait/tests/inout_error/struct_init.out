@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/struct_init.in.bt:3:10 error: struct Empty has no field bad_field

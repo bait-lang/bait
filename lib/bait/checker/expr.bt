@@ -341,6 +341,10 @@ fun (c Checker) struct_init(node ast.StructInit) ast.Type {
 		}
 		c.expected_type = def.typ
 		expr_type := c.expr(field.expr)
+		if def.typ == ast.PLACEHOLDER_TYPE {
+			// Another error was already raised
+			continue
+		}
 		if not c.check_types(expr_type, def.typ) {
 			c.error('cannot assign to field ${field.name}: expected ${c.table.type_name(def.typ)}, got ${c.table.type_name(expr_type)} ', node.pos)
 		}

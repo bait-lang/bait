@@ -1,0 +1,5 @@
+struct Empty{}
+
+e := Empty{
+	bad_field = 123
+}
