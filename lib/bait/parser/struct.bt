@@ -39,6 +39,7 @@ fun (p Parser) struct_decl()ast.StructDecl{
 }
 
 fun (p Parser) struct_decl_field() ast.StructField {
+	pos := p.tok.pos
 	fname := p.check_name()
 	ftyp := p.parse_type()
 	mut expr := ast.EmptyExpr{} as ast.Expr
@@ -50,6 +51,7 @@ fun (p Parser) struct_decl_field() ast.StructField {
 		name = fname
 		typ = ftyp
 		expr = expr
+		pos = pos
 	}
 }
 

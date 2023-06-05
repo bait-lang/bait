@@ -15,6 +15,7 @@ _unreleased_
 - Add `-w` and `-W` to hide warnings or turn them into errors
 
 ### Error Checking
+- Prevent duplicate struct field names
 - Compiling normal projects must include a main package
 - Main package must contain a main function
 - Fix false-positive error with variable names matching an import of an import

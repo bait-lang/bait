@@ -172,19 +172,22 @@ fun (c Checker) return_stmt(node ast.ReturnStmt) {
 }
 
 fun (c Checker) struct_decl(node ast.StructDecl) {
-	for field in node.fields {
-		c.struct_decl_field(field)
-	}
-}
+	for i, field in node.fields {
+		for j := 0; j < i; j += 1 {
+			if field.name == node.fields[j].name {
+				c.error('duplicate field name ${field.name}', field.pos)
+				break
+			}
+		}
 
-fun (c Checker) struct_decl_field(field ast.StructField) {
-	if field.expr is ast.EmptyExpr {
-		return
-	}
+		if field.expr is ast.EmptyExpr {
+			continue
+		}
 
-	typ := c.expr(field.expr)
-	if not c.check_types(typ, field.typ) {
-		c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.EmptyExpr).pos)
+		typ := c.expr(field.expr)
+		if not c.check_types(typ, field.typ) {
+			c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.EmptyExpr).pos)
+		}
 	}
 }
 

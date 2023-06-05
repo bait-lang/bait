@@ -123,6 +123,7 @@ pub struct StructField{
 	name string
 	typ Type
 	expr Expr
+	pos token.Pos
 }
 
 // SumType, Alias, Fun Type

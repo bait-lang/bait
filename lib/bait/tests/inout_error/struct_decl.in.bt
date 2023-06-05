@@ -1,0 +1,4 @@
+struct MyStruct{
+	foo i32
+	foo bool
+}
