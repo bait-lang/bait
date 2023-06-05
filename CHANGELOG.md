@@ -21,6 +21,7 @@ _unreleased_
 - Fix variable redefinition error not being thrown
 
 ### Compiler
+- Struct declaration fields can have default values
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
 - Fix printing type aliased values
 

@@ -122,6 +122,7 @@ pub struct StructDecl{
 pub struct StructField{
 	name string
 	typ Type
+	expr Expr
 }
 
 // SumType, Alias, Fun Type

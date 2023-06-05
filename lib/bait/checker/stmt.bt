@@ -172,6 +172,20 @@ fun (c Checker) return_stmt(node ast.ReturnStmt) {
 }
 
 fun (c Checker) struct_decl(node ast.StructDecl) {
+	for field in node.fields {
+		c.struct_decl_field(field)
+	}
+}
+
+fun (c Checker) struct_decl_field(field ast.StructField) {
+	if field.expr is ast.EmptyExpr {
+		return
+	}
+
+	typ := c.expr(field.expr)
+	if not c.check_types(typ, field.typ) {
+		c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.EmptyExpr).pos)
+	}
 }
 
 fun (c Checker) type_decl(node ast.TypeDecl) {}

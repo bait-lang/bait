@@ -1,1 +1,2 @@
-lib/bait/tests/inout_error/struct_init.in.bt:3:10 error: struct Empty has no field bad_field
+lib/bait/tests/inout_error/struct_init.in.bt:2:17 error: default value not matches field type i32
+lib/bait/tests/inout_error/struct_init.in.bt:5:12 error: struct FooBar has no field spam_eggs
