@@ -127,6 +127,10 @@ pub fun setenv(key string, value string) {
 	#JS.'JS__process.env[key.str] = value.str'
 }
 
+pub fun user_os() string {
+	return from_js_string(#JS.'JS__process.platform' as #JS.String)
+}
+
 pub fun arch() string {
 	return from_js_string(#JS.os.arch())
 }
