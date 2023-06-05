@@ -74,7 +74,7 @@ fun (p Parser) script_mode_main() ast.FunDecl {
 		p.warn('declare the main function or use the --script option')
 	}
 	mut stmts := []ast.Stmt
-	for p.tok.kind != .eof {
+	for  not p.should_abort and p.tok.kind != .eof {
 		stmts.push(p.stmt())
 	}
 	mut node := ast.FunDecl{

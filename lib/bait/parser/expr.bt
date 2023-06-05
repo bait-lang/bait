@@ -57,7 +57,11 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 			node = p.typeof_expr()
 		}
 		else {
-			p.error('invalid expression: kind = ${p.tok.kind}, val = ${p.tok.val}')
+			mut msg := 'invalid expression: kind = ${p.tok.kind}'
+			if p.tok.val.length > 0 {
+				msg += ', val = ${p.tok.val}'
+			}
+			p.error(msg)
 		}
 	}
 	return p.expr_with_left(node, precedence)
