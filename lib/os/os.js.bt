@@ -15,7 +15,7 @@ pub fun walk_ext(dir string, ext string) []string {
 	for file in all_files {
 		fpath := join_path(dir, [file])
 		if is_dir(fpath) {
-			ext_files = ext_files.concat(walk_ext(fpath, ext))
+			ext_files.push_many(walk_ext(fpath, ext))
 		} else if fpath.ends_with(ext) {
 			ext_files.push(fpath)
 		}
@@ -125,6 +125,10 @@ pub fun getenv(key string) string {
 
 pub fun setenv(key string, value string) {
 	#JS.'JS__process.env[key.str] = value.str'
+}
+
+pub fun user_os() string {
+	return from_js_string(#JS.'JS__process.platform' as #JS.String)
 }
 
 pub fun arch() string {

@@ -6,15 +6,14 @@ import os
 
 pub fun build_file(dir string, file string) i32 {
 	cmd := 'node ${$BAITEXE} ${dir}/${file}'
-	res := os.exec(cmd)
+	code := os.system(cmd)
 
-	if res.code == 0 {
+	if code == 0 {
 		println('OK ${file}')
 		return 0
 	}
 
 	eprintln('FAIL ${file}')
-	eprintln(res.stderr)
 	return 1
 }
 

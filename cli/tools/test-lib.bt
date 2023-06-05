@@ -5,19 +5,16 @@ package main
 import os
 
 fun main() {
-	test_files := os.walk_ext('lib', '_test.bt')
-	mut has_fails := false
+	test_files := os.walk_ext('lib', '.bt').filter(fun (f string) bool {
+		return f.contains('_test.') and not f.contains('.in.')
+	}) as []string
+	mut fails := 0
+
 	for file in test_files {
-		res := os.exec('node ${$BAITEXE} test ${file}')
-		if res.code == 0 {
-			println('OK ${file}')
-		} else {
-			has_fails = true
-			println('FAIL ${file}')
-			println(res.stderr)
-		}
+		fails += os.system('node ${$BAITEXE} test ${file}')
 	}
-	if has_fails {
+
+	if fails > 0 {
 		exit(1)
 	}
 }

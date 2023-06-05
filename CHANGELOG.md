@@ -30,7 +30,9 @@ _unreleased_
   - Add inout runner to check stdout
 
 ### Standard Library
-- `os`: fix `cp()` for directories
+- `os`
+  - add `user_os()` function
+  - fix `cp()` for directories
 
 
 ## 0.0.3
