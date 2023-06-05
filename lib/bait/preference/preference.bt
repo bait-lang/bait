@@ -106,7 +106,11 @@ pub fun parse_args(args []string) Prefs {
 
 	// Set default out name if empty
 	if p.out_name.length == 0 {
-		p.out_name = p.command.replace('.bt', '.js')
+		if p.command.ends_with('.bt') {
+			p.out_name = p.command.replace('.bt', '.js')
+		} else {
+			p.out_name = p.command + '.js'
+		}
 	}
 
 	return p
