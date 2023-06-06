@@ -183,9 +183,19 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 	name := p.prepend_pkg(p.check_name())
 	p.check(.lcur)
 	mut variants := []string
+	mut fields := []ast.EnumField
 	for p.tok.kind != .rcur {
-		vname := p.check_name()
-		variants.push(vname)
+		fname := p.check_name()
+		mut expr := ast.EmptyExpr{} as ast.Expr
+		if p.tok.kind == .decl_assign {
+			p.next()
+			expr = p.expr(0)
+		}
+		variants.push(fname)
+		fields.push(ast.EnumField{
+			name = fname
+			expr = expr
+		})
 	}
 	p.check(.rcur)
 	p.table.register_sym(ast.TypeSymbol{
@@ -199,7 +209,7 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 	})
 	return ast.EnumDecl{
 		name = name
-		variants = variants
+		fields = fields
 		pos = pos
 	}
 }

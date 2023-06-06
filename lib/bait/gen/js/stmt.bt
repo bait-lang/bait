@@ -174,8 +174,10 @@ fun (g Gen) const_decl(node ast.ConstDecl){
 fun (g Gen) enum_decl(node ast.EnumDecl){
 	g.writeln('const ' + js_name(node.name) + ' = {')
 	g.indent += 1
-	for i, variant in node.variants {
-		g.writeln('${variant}: ${i},')
+	for field in node.fields {
+		g.write('${field.name}: ')
+		g.expr(field.expr)
+		g.writeln(',')
 	}
 	g.indent -= 1
 	g.writeln('}')
