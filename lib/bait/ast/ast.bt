@@ -31,7 +31,13 @@ pub struct ConstDecl{
 
 pub struct EnumDecl{
 	name string
-	variants []string
+	fields []EnumField
+	pos token.Pos
+}
+
+pub struct EnumField{
+	name string
+	expr Expr
 	pos token.Pos
 }
 

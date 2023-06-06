@@ -105,6 +105,10 @@ pub fun (s string) split_lines() []string {
 	return res
 }
 
+pub fun (s string) toI32() i32 {
+	return #JS.'parseInt(s.str)' as i32
+}
+
 @overload: '+'
 fun (a string) add (b string) string {
 	return from_js_string(a.str + b.str)

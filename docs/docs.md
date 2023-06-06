@@ -179,6 +179,14 @@ r := Rect{
 }
 ```
 
+Struct fields might be assigned default values:
+```bait
+struct Adult {
+    name string
+    age i32 := 18
+}
+```
+
 ### Methods
 ```bait
 struct Rect{
@@ -191,7 +199,7 @@ fun (r Rect) area() i32 {
 }
 ```
 
-## Enums
+## Enum
 ```bait
 enum Language {
   english
@@ -210,7 +218,17 @@ enum Color {
     green
 }
 
-if 1 == Color.green as i32 {}
+if 1 == Color.green as i32 {
+}
+```
+
+Enum fields may be declared with a custom integer value:
+```bait
+enum AnsiColor {
+    black := 30
+    red // 31
+    green // 32
+}
 ```
 
 ## Type Declarations

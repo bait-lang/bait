@@ -100,6 +100,27 @@ fun (c Checker) expr_stmt(node ast.ExprStmt) {
 }
 
 fun (c Checker) enum_decl(node ast.EnumDecl) {
+	mut i := 0
+	for field in node.fields {
+		if field.expr is ast.EmptyExpr {
+			field.expr = ast.IntegerLiteral{ val = '${i}' }
+			i += 1
+			continue
+		}
+
+		if not field.expr is ast.IntegerLiteral {
+			c.error('enum field value must be an integer', field.pos)
+			continue
+		}
+
+		val := (field.expr as ast.IntegerLiteral).val.toI32()
+		if val < i {
+			c.error('enum field value must be greater than previous field', field.pos)
+			continue
+		}
+
+		i = val + 1
+	}
 }
 
 fun (c Checker) for_loop(node ast.ForLoop) {
