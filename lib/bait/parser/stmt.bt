@@ -185,6 +185,7 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 	mut variants := []string
 	mut fields := []ast.EnumField
 	for p.tok.kind != .rcur {
+		fpos := p.tok.pos
 		fname := p.check_name()
 		mut expr := ast.EmptyExpr{} as ast.Expr
 		if p.tok.kind == .decl_assign {
@@ -195,6 +196,7 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 		fields.push(ast.EnumField{
 			name = fname
 			expr = expr
+			pos = fpos
 		})
 	}
 	p.check(.rcur)

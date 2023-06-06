@@ -23,6 +23,7 @@ _unreleased_
 
 ### Compiler
 - Struct declaration fields can have default values
+- Enum fields can have default values
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
 - Fix printing type aliased values
 - Parser: Fix infinite loop with statements during script mode main function
@@ -34,8 +35,9 @@ _unreleased_
 
 ### Standard Library
 - `os`
-  - add `user_os()` function
-  - fix `cp()` for directories
+  - Add `user_os()` function
+  - Fix `cp()` for directories
+- builtin: New `toI32()` string method
 
 
 ## 0.0.3
