@@ -15,15 +15,14 @@ _unreleased_
 - Add `-w` and `-W` to hide warnings or turn them into errors
 
 ### Error Checking
-- Prevent duplicate struct field names
+- Prevent duplicate struct or enum field names
 - Compiling normal projects must include a main package
 - Main package must contain a main function
 - Fix false-positive error with variable names matching an import of an import
 - Fix variable redefinition error not being thrown
 
 ### Compiler
-- Struct declaration fields can have default values
-- Enum fields can have default values
+- Struct declaration and enum fields can have default values
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
 - Fix printing type aliased values
 - Parser: Fix infinite loop with statements during script mode main function

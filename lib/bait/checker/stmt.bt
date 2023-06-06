@@ -100,11 +100,24 @@ fun (c Checker) expr_stmt(node ast.ExprStmt) {
 }
 
 fun (c Checker) enum_decl(node ast.EnumDecl) {
-	mut i := 0
-	for field in node.fields {
+	mut cur_val := 0
+	for i, field in node.fields {
+		mut should_continue := false
+		for j := 0; j < i; j += 1 {
+			if field.name == node.fields[j].name {
+				c.error('duplicate field name ${field.name}', field.pos)
+				should_continue = true
+				break
+			}
+		}
+		// TODO replace with labeled break/continue
+		if should_continue {
+			continue
+		}
+
 		if field.expr is ast.EmptyExpr {
-			field.expr = ast.IntegerLiteral{ val = '${i}' }
-			i += 1
+			field.expr = ast.IntegerLiteral{ val = '${cur_val}' }
+			cur_val += 1
 			continue
 		}
 
@@ -114,12 +127,12 @@ fun (c Checker) enum_decl(node ast.EnumDecl) {
 		}
 
 		val := (field.expr as ast.IntegerLiteral).val.toI32()
-		if val < i {
+		if val < cur_val {
 			c.error('enum field value must be greater than previous field', field.pos)
 			continue
 		}
 
-		i = val + 1
+		cur_val = val + 1
 	}
 }
 

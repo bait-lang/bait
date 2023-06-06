@@ -1,0 +1,4 @@
+enum Dupl{
+	foo
+	foo
+}
