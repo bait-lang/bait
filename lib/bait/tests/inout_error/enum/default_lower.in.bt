@@ -1,0 +1,6 @@
+enum NumbersMixed {
+	zero
+	ten := 10
+	eleven
+	three := 3
+}

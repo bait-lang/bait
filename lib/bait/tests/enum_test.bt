@@ -5,6 +5,8 @@ enum Color {
 	red
 	green
 	blue
+	yellow := 10
+	magenta
 }
 
 fun get_blue() Color {
@@ -28,6 +30,12 @@ fun test_assign() {
 	assert c == Color.red // Makes sure infix works with full syntax too
 }
 
+fun test_default_values() {
+	assert Color.blue as i32 == 2
+	assert Color.yellow as i32 == 10
+	assert Color.magenta as i32 == 11
+}
+
 fun test_return() {
 	b := get_blue()
 	assert b == .blue
@@ -37,9 +45,9 @@ fun test_match() {
 	mut n := 0
 	c := Color.green
 	match c {
-		.red { assert false }
 		.green { n += 1 }
 		Color.blue { assert false }
+		else { assert false }
 	}
 	assert n == 1
 }

@@ -1,0 +1,3 @@
+enum Spam {
+	field := 'should be integer'
+}
