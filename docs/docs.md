@@ -225,7 +225,7 @@ if 1 == Color.green as i32 {
 Enum fields may be declared with a custom integer value:
 ```bait
 enum AnsiColor {
-    black = 30
+    black := 30
     red // 31
     green // 32
 }
