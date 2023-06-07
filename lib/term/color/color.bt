@@ -18,6 +18,14 @@ pub enum ColorCode {
 	magenta
 	cyan
 	white
+	bg_black := 40
+	bg_red
+	bg_green
+	bg_yellow
+	bg_blue
+	bg_magenta
+	bg_cyan
+	bg_white
 }
 
 pub fun format(code ColorCode, text string) string {
@@ -54,4 +62,36 @@ pub fun cyan(text string) string {
 
 pub fun white(text string) string {
 	return format(.white, text)
+}
+
+pub fun bg_black(text string) string {
+	return format(.bg_black, text)
+}
+
+pub fun bg_red(text string) string {
+	return format(.bg_red, text)
+}
+
+pub fun bg_green(text string) string {
+	return format(.bg_green, text)
+}
+
+pub fun bg_yellow(text string) string {
+	return format(.bg_yellow, text)
+}
+
+pub fun bg_blue(text string) string {
+	return format(.bg_blue, text)
+}
+
+pub fun bg_magenta(text string) string {
+	return format(.bg_magenta, text)
+}
+
+pub fun bg_cyan(text string) string {
+	return format(.bg_cyan, text)
+}
+
+pub fun bg_white(text string) string {
+	return format(.bg_white, text)
 }
