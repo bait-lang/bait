@@ -22,6 +22,7 @@ pub fun in_out_runner(runner InOutRunner) {
 	in_files := os.walk_ext(runner.root, '.bt')
 
 	for file in in_files {
+		// Warn if a file lacks the .in.bt extension. This might be a mistake
 		if not file.ends_with('.in.bt') {
 			eprintln('warning: file ${file} does not end with .in.bt')
 			continue

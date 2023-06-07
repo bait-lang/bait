@@ -1,0 +1,57 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package color
+
+const RESET := esc(0)
+
+pub fun esc(code i32) string {
+	// Possible notations for ESC: \x1b, \o33, \u001b
+	return "\x1b[${code}m"
+}
+
+pub enum ColorCode {
+	black := 30
+	red
+	green
+	yellow
+	blue
+	magenta
+	cyan
+	white
+}
+
+pub fun format(code ColorCode, text string) string {
+	return esc(code as i32) + text + RESET
+}
+
+pub fun black(text string) string {
+	return format(.black, text)
+}
+
+pub fun red(text string) string {
+	return format(.red, text)
+}
+
+pub fun green(text string) string {
+	return format(.green, text)
+}
+
+pub fun yellow(text string) string {
+	return format(.yellow, text)
+}
+
+pub fun blue(text string) string {
+	return format(.blue, text)
+}
+
+pub fun magenta(text string) string {
+	return format(.magenta, text)
+}
+
+pub fun cyan(text string) string {
+	return format(.cyan, text)
+}
+
+pub fun white(text string) string {
+	return format(.white, text)
+}
