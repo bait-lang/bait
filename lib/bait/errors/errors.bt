@@ -4,6 +4,7 @@ package errors
 
 import os
 import bait.token
+import term.color
 
 pub enum Kind {
 	info
@@ -72,8 +73,8 @@ fun format_title(k Kind, title string) string {
 		return title
 	}
 	match k {
-		.info { return '\033[0;35m' + title + '\033[0m' }
-		.warning { return '\033[0;33m' + title + '\033[0m' }
-		.error { return '\033[0;31m' + title + '\033[0m' }
+		.info { return color.magenta(title) }
+		.warning { return color.yellow(title) }
+		.error { return color.red(title) }
 	}
 }
