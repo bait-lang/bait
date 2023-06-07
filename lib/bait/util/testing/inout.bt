@@ -19,9 +19,14 @@ fun (runner InOutRunner) check_result(res os.Result, expected string) {
 }
 
 pub fun in_out_runner(runner InOutRunner) {
-	in_files := os.walk_ext(runner.root, '.in.bt')
+	in_files := os.walk_ext(runner.root, '.bt')
 
 	for file in in_files {
+		if not file.ends_with('.in.bt') {
+			eprintln('warning: file ${file} does not end with .in.bt')
+			continue
+		}
+
 		name_ext := os.file_name(file)
 
 		mut cmd := 'build'
