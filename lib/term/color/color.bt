@@ -9,12 +9,24 @@ pub fun esc(code i32) string {
 	return "\x1b[${code}m"
 }
 
-pub fun format(code ColorCode, text string) string {
+pub fun format(code AnsiCode, text string) string {
 	return esc(code as i32) + text + RESET
 }
 
-// See https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
-pub enum ColorCode {
+pub enum AnsiCode {
+	// Formatting, see https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
+	reset
+	bold
+	dim
+	italic
+	underline
+	blink_slow
+	blink_rapid
+	invert
+	hide
+	strike
+
+	// 3/4-bit Colors, see https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
 	black := 30
 	red
 	green
@@ -47,6 +59,42 @@ pub enum ColorCode {
 	bg_bright_magenta
 	bg_bright_cyan
 	bg_bright_white
+}
+
+pub fun bold(text string) string {
+	return format(.bold, text)
+}
+
+pub fun dim(text string) string {
+	return format(.dim, text)
+}
+
+pub fun italic(text string) string {
+	return format(.italic, text)
+}
+
+pub fun underline(text string) string {
+	return format(.underline, text)
+}
+
+pub fun blink_slow(text string) string {
+	return format(.blink_slow, text)
+}
+
+pub fun blink_rapid(text string) string {
+	return format(.blink_rapid, text)
+}
+
+pub fun invert(text string) string {
+	return format(.invert, text)
+}
+
+pub fun hide(text string) string {
+	return format(.hide, text)
+}
+
+pub fun strike(text string) string {
+	return format(.strike, text)
 }
 
 pub fun black(text string) string {

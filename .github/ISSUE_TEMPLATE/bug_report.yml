@@ -53,6 +53,5 @@ body:
     id: environment
     attributes:
       label: Environment details (bait doctor)
-      value: "`bait doctor`"
     validations:
       required: true
