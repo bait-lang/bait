@@ -9,6 +9,11 @@ pub fun esc(code i32) string {
 	return "\x1b[${code}m"
 }
 
+pub fun format(code ColorCode, text string) string {
+	return esc(code as i32) + text + RESET
+}
+
+// See https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
 pub enum ColorCode {
 	black := 30
 	red
@@ -26,10 +31,22 @@ pub enum ColorCode {
 	bg_magenta
 	bg_cyan
 	bg_white
-}
-
-pub fun format(code ColorCode, text string) string {
-	return esc(code as i32) + text + RESET
+	bright_black := 90
+	bright_red
+	bright_green
+	bright_yellow
+	bright_blue
+	bright_magenta
+	bright_cyan
+	bright_white
+	bg_bright_black := 100
+	bg_bright_red
+	bg_bright_green
+	bg_bright_yellow
+	bg_bright_blue
+	bg_bright_magenta
+	bg_bright_cyan
+	bg_bright_white
 }
 
 pub fun black(text string) string {
@@ -94,4 +111,68 @@ pub fun bg_cyan(text string) string {
 
 pub fun bg_white(text string) string {
 	return format(.bg_white, text)
+}
+
+pub fun bright_black(text string) string {
+	return format(.bright_black, text)
+}
+
+pub fun bright_red(text string) string {
+	return format(.bright_red, text)
+}
+
+pub fun bright_green(text string) string {
+	return format(.bright_green, text)
+}
+
+pub fun bright_yellow(text string) string {
+	return format(.bright_yellow, text)
+}
+
+pub fun bright_blue(text string) string {
+	return format(.bright_blue, text)
+}
+
+pub fun bright_magenta(text string) string {
+	return format(.bright_magenta, text)
+}
+
+pub fun bright_cyan(text string) string {
+	return format(.bright_cyan, text)
+}
+
+pub fun bright_white(text string) string {
+	return format(.bright_white, text)
+}
+
+pub fun bg_bright_black(text string) string {
+	return format(.bg_bright_black, text)
+}
+
+pub fun bg_bright_red(text string) string {
+	return format(.bg_bright_red, text)
+}
+
+pub fun bg_bright_green(text string) string {
+	return format(.bg_bright_green, text)
+}
+
+pub fun bg_bright_yellow(text string) string {
+	return format(.bg_bright_yellow, text)
+}
+
+pub fun bg_bright_blue(text string) string {
+	return format(.bg_bright_blue, text)
+}
+
+pub fun bg_bright_magenta(text string) string {
+	return format(.bg_bright_magenta, text)
+}
+
+pub fun bg_bright_cyan(text string) string {
+	return format(.bg_bright_cyan, text)
+}
+
+pub fun bg_bright_white(text string) string {
+	return format(.bg_bright_white, text)
 }
