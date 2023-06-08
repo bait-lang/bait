@@ -1,0 +1,235 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package color
+
+const RESET := esc(0)
+
+pub fun esc(code i32) string {
+	// Possible notations for ESC: \x1b, \o33, \u001b
+	return "\x1b[${code}m"
+}
+
+pub fun format(code AnsiCode, text string) string {
+	return esc(code as i32) + text + RESET
+}
+
+pub enum AnsiCode {
+	// Formatting, see https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
+	reset
+	bold
+	dim
+	italic
+	underline
+	blink_slow
+	blink_rapid
+	invert
+	hide
+	strike
+
+	// Colors (3-bit), see https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
+	black := 30
+	red
+	green
+	yellow
+	blue
+	magenta
+	cyan
+	white
+	bg_black := 40
+	bg_red
+	bg_green
+	bg_yellow
+	bg_blue
+	bg_magenta
+	bg_cyan
+	bg_white
+
+	// Formatting
+	overline := 53
+
+	// Bright Colors (4-bit)
+	bright_black := 90
+	bright_red
+	bright_green
+	bright_yellow
+	bright_blue
+	bright_magenta
+	bright_cyan
+	bright_white
+	bg_bright_black := 100
+	bg_bright_red
+	bg_bright_green
+	bg_bright_yellow
+	bg_bright_blue
+	bg_bright_magenta
+	bg_bright_cyan
+	bg_bright_white
+}
+
+pub fun bold(text string) string {
+	return format(.bold, text)
+}
+
+pub fun dim(text string) string {
+	return format(.dim, text)
+}
+
+pub fun italic(text string) string {
+	return format(.italic, text)
+}
+
+pub fun underline(text string) string {
+	return format(.underline, text)
+}
+
+pub fun blink_slow(text string) string {
+	return format(.blink_slow, text)
+}
+
+pub fun blink_rapid(text string) string {
+	return format(.blink_rapid, text)
+}
+
+pub fun invert(text string) string {
+	return format(.invert, text)
+}
+
+pub fun hide(text string) string {
+	return format(.hide, text)
+}
+
+pub fun strike(text string) string {
+	return format(.strike, text)
+}
+
+pub fun overline(text string) string {
+	return format(.overline, text)
+}
+
+pub fun black(text string) string {
+	return format(.black, text)
+}
+
+pub fun red(text string) string {
+	return format(.red, text)
+}
+
+pub fun green(text string) string {
+	return format(.green, text)
+}
+
+pub fun yellow(text string) string {
+	return format(.yellow, text)
+}
+
+pub fun blue(text string) string {
+	return format(.blue, text)
+}
+
+pub fun magenta(text string) string {
+	return format(.magenta, text)
+}
+
+pub fun cyan(text string) string {
+	return format(.cyan, text)
+}
+
+pub fun white(text string) string {
+	return format(.white, text)
+}
+
+pub fun bg_black(text string) string {
+	return format(.bg_black, text)
+}
+
+pub fun bg_red(text string) string {
+	return format(.bg_red, text)
+}
+
+pub fun bg_green(text string) string {
+	return format(.bg_green, text)
+}
+
+pub fun bg_yellow(text string) string {
+	return format(.bg_yellow, text)
+}
+
+pub fun bg_blue(text string) string {
+	return format(.bg_blue, text)
+}
+
+pub fun bg_magenta(text string) string {
+	return format(.bg_magenta, text)
+}
+
+pub fun bg_cyan(text string) string {
+	return format(.bg_cyan, text)
+}
+
+pub fun bg_white(text string) string {
+	return format(.bg_white, text)
+}
+
+pub fun bright_black(text string) string {
+	return format(.bright_black, text)
+}
+
+pub fun bright_red(text string) string {
+	return format(.bright_red, text)
+}
+
+pub fun bright_green(text string) string {
+	return format(.bright_green, text)
+}
+
+pub fun bright_yellow(text string) string {
+	return format(.bright_yellow, text)
+}
+
+pub fun bright_blue(text string) string {
+	return format(.bright_blue, text)
+}
+
+pub fun bright_magenta(text string) string {
+	return format(.bright_magenta, text)
+}
+
+pub fun bright_cyan(text string) string {
+	return format(.bright_cyan, text)
+}
+
+pub fun bright_white(text string) string {
+	return format(.bright_white, text)
+}
+
+pub fun bg_bright_black(text string) string {
+	return format(.bg_bright_black, text)
+}
+
+pub fun bg_bright_red(text string) string {
+	return format(.bg_bright_red, text)
+}
+
+pub fun bg_bright_green(text string) string {
+	return format(.bg_bright_green, text)
+}
+
+pub fun bg_bright_yellow(text string) string {
+	return format(.bg_bright_yellow, text)
+}
+
+pub fun bg_bright_blue(text string) string {
+	return format(.bg_bright_blue, text)
+}
+
+pub fun bg_bright_magenta(text string) string {
+	return format(.bg_bright_magenta, text)
+}
+
+pub fun bg_bright_cyan(text string) string {
+	return format(.bg_bright_cyan, text)
+}
+
+pub fun bg_bright_white(text string) string {
+	return format(.bg_bright_white, text)
+}
