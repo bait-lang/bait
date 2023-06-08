@@ -97,7 +97,9 @@ pub fun compile(prefs preference.Prefs) i32 {
 	}
 
 	b.parsed_files = files
-	b.print_errors_and_warnings()
+	if b.print_errors_and_warnings() {
+		return 1
+	}
 
 	// TODO move whole depgraph build and resolve into pkg
 	// TODO catch cyclic deps
@@ -137,8 +139,12 @@ pub fun compile(prefs preference.Prefs) i32 {
 	b.checker = checker.new_checker(b.table, b.prefs)
 	b.checker.check_files(sorted_files)
 
-	b.check_redefined_functions()
-	b.print_errors_and_warnings()
+	if b.check_redefined_functions() {
+		return 1
+	}
+	if b.print_errors_and_warnings() {
+		return 1
+	}
 
 	// TODO properly select backend
 	if b.prefs.backend != .js {
@@ -160,7 +166,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	return 0
 }
 
-fun (b Builder) print_errors_and_warnings() {
+fun (b Builder) print_errors_and_warnings() bool {
 	mut nr_warns := 0
 	mut nr_errors := 0
 
@@ -195,9 +201,7 @@ fun (b Builder) print_errors_and_warnings() {
 		err.print()
 	}
 
-	if nr_errors > 0 or (b.prefs.warn_is_error and nr_warns > 0) {
-		exit(1)
-	}
+	return nr_errors > 0 or (b.prefs.warn_is_error and nr_warns > 0)
 }
 
 fun resolve_import(pkg string) string {

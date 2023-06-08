@@ -13,9 +13,13 @@ struct FunRedefinition {
 	signature string
 }
 
-fun (b Builder) check_redefined_functions() {
+fun (b Builder) check_redefined_functions() bool {
 	// Note: It is assumed that there are at most a few redefined functions.
 	// Thus the performance impact of looping over all files and root stmts is negligible.
+
+	if b.table.redefined_funs.length == 0 {
+		return false
+	}
 
 	// Remove duplicates that happen in case of a tripple redefinition
 	mut unique_redefs := []string
@@ -47,6 +51,7 @@ fun (b Builder) check_redefined_functions() {
 			errors.info('conflict', redef.path, redef.pos, redef.signature)
 		}
 	}
+	return true
 }
 
 fun (b Builder) fun_signature(node ast.FunDecl) string {
