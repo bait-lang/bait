@@ -40,6 +40,14 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 	p.next()
 
 	pkg_decl := p.package_decl()
+
+	// Validate the files package name actually matches the desired import
+	if p.pref.expected_pkg.length > 0 and pkg_decl.full_name != p.pref.expected_pkg {
+		return ast.File{
+			path = path
+		}
+	}
+
 	imports := p.import_stmts()
 
 	mut stmts := []ast.Stmt

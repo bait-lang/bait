@@ -17,6 +17,7 @@ pub struct Prefs {
 	should_run bool
 	is_verbose bool
 	backend Backend
+	expected_pkg string
 
 	// Compile mode
 	is_test bool

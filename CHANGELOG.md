@@ -26,6 +26,7 @@ _unreleased_
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
 - Fix printing type aliased values
 - Parser: Fix infinite loop with statements during script mode main function
+- Builder: Do not include files in a imported directory with unexpected package name
 
 ### Testing
 - `bait.util.testing`

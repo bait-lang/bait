@@ -7,3 +7,7 @@ fun test_foo_is_usable() {
 	foo := 123
 	assert foo == 123
 }
+
+// Test the parser early exit if a imported files package name is not expected
+// See also `packages/foo/main_with_spam_fun.bt`
+fun spam(){}

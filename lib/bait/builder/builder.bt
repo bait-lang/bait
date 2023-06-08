@@ -76,6 +76,8 @@ pub fun compile(prefs preference.Prefs) i32 {
 				continue
 			}
 
+			b.prefs.expected_pkg = imp.name
+
 			// Get all imported files and filter out already parsed ones
 			// TODO possible perf improvement: prefilter against list of parsed packages before file collection
 			import_dir := resolve_import(imp.name.replace('.', '/'))
@@ -87,7 +89,9 @@ pub fun compile(prefs preference.Prefs) i32 {
 			// Parse the imported files
 			for p in imp_paths {
 				paths.push(p)
-				files.push(b.parse_source_file(p))
+				parsed_file := b.parse_source_file(p)
+
+				files.push(parsed_file)
 			}
 		}
 	}

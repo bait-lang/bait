@@ -1,0 +1,7 @@
+package main
+
+// This is a file with package main inside the folder of the `foo` package.
+// It should no be included when `foo` is imported.
+// As shadowing_test.bt implicitly also has `package main` and contains a `spam()` function,
+// this test would fail with a function redefinition error in case of improper handling.
+fun spam(){}
