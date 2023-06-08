@@ -9,6 +9,9 @@ fun main() {
 		os.cp($BAITEXE, 'old_bait.js')
 	}
 	res := os.exec('node ${$BAITEXE} cli/bait.bt -o bait.js')
+	if res.stdout.length > 0 {
+		println(res.stdout)
+	}
 	if res.stderr.length > 0 {
 		eprintln(res.stderr)
 	}
