@@ -26,7 +26,7 @@ pub enum AnsiCode {
 	hide
 	strike
 
-	// 3/4-bit Colors, see https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
+	// Colors (3-bit), see https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
 	black := 30
 	red
 	green
@@ -43,6 +43,11 @@ pub enum AnsiCode {
 	bg_magenta
 	bg_cyan
 	bg_white
+
+	// Formatting
+	overline := 53
+
+	// Bright Colors (4-bit)
 	bright_black := 90
 	bright_red
 	bright_green
@@ -95,6 +100,10 @@ pub fun hide(text string) string {
 
 pub fun strike(text string) string {
 	return format(.strike, text)
+}
+
+pub fun overline(text string) string {
+	return format(.overline, text)
 }
 
 pub fun black(text string) string {
