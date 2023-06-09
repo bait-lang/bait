@@ -124,7 +124,6 @@ fun (p Parser) anon_fun()ast.AnonFun{
 }
 
 fun (p Parser) array_init()ast.ArrayInit{
-	mut length_expr := ast.EmptyExpr{} as ast.Expr
 	pos := p.tok.pos
 	p.check(.lbr)
 
@@ -135,6 +134,7 @@ fun (p Parser) array_init()ast.ArrayInit{
 		typ := p.table.find_or_register_array(elem_type)
 
 		// Optional parameters, e.g. `[]i32{ length = 10 }`
+		mut length_expr := ast.EmptyExpr{} as ast.Expr
 		if p.tok.kind == .lcur {
 			p.next()
 			for p.tok.kind != .rcur {
@@ -170,7 +170,6 @@ fun (p Parser) array_init()ast.ArrayInit{
 	p.check(.rbr)
 	return ast.ArrayInit{
 		exprs = exprs
-		length_expr = length_expr
 		pos = pos
 	}
 }
