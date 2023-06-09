@@ -17,7 +17,7 @@ pub fun run_tests(prefs preference.Prefs) i32 {
 			})
 			files_to_test.push_many(t)
 		} else {
-			eprintln('Unrecognized file or directory: "${a}"')
+			eprintln('Unrecognized test file or directory: "${a}"')
 			exit(1)
 		}
 	}

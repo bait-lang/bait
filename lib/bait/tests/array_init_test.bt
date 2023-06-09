@@ -1,0 +1,10 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+pub fun test_init_with_length() {
+	a := []i32{ length = 2 }
+	assert a == [0, 0]
+
+	b := []string{ length = 3 }
+	assert b == ["", "", ""]
+}
