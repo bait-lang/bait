@@ -71,6 +71,20 @@ fun (c Checker) anon_fun(node ast.AnonFun) ast.Type {
 fun (c Checker) array_init(node ast.ArrayInit) ast.Type {
 	// Type init
 	if node.exprs.length == 0 {
+		// Validate length and cap expressions if present
+		if not node.length_expr is ast.EmptyExpr {
+			typ := c.expr(node.length_expr)
+			if not c.check_types(typ, ast.I32_TYPE) {
+				c.error('expected i32, got ${c.table.type_name(typ)}', node.pos)
+			}
+		}
+		if not node.cap_expr is ast.EmptyExpr {
+			typ := c.expr(node.cap_expr)
+			if not c.check_types(typ, ast.I32_TYPE) {
+				c.error('expected i32, got ${c.table.type_name(typ)}', node.pos)
+			}
+		}
+
 		return node.typ
 	}
 
