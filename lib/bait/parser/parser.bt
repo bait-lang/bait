@@ -118,6 +118,9 @@ fun (p Parser) parse_block() []ast.Stmt {
 	mut bstmts := []ast.Stmt
 	for not [token.TokenKind.eof, .rcur].contains(p.tok.kind) {
 		bstmts.push(p.stmt())
+		if p.should_abort {
+			break
+		}
 	}
 	p.check(.rcur)
 	return bstmts

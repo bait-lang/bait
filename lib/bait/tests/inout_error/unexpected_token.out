@@ -1,0 +1,2 @@
+lib/bait/tests/inout_error/unexpected_token.in.bt:2:2 error: invalid expression: kind = lcur
+lib/bait/tests/inout_error/unexpected_token.in.bt:2:2 error: unexpected lcur, expecting rcur
