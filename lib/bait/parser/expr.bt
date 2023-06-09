@@ -124,28 +124,32 @@ fun (p Parser) anon_fun()ast.AnonFun{
 }
 
 fun (p Parser) array_init()ast.ArrayInit{
-	mut exprs := []ast.Expr
-	mut elem_type := ast.PLACEHOLDER_TYPE
-	mut typ := ast.ARRAY_TYPE
 	pos := p.tok.pos
 	p.check(.lbr)
+
+	// Type init, e.g. `[]i32`
 	if p.tok.kind == .rbr {
 		p.next()
-		elem_type = p.parse_type()
-		typ = p.table.find_or_register_array(elem_type)
-	} else {
-		for p.tok.kind != .rbr {
-			exprs.push(p.expr(0))
-			if p.tok.kind == .comma {
-				p.next()
-			}
+		elem_type := p.parse_type()
+		typ := p.table.find_or_register_array(elem_type)
+		return ast.ArrayInit{
+			typ = typ
+			elem_type = elem_type
+			pos = pos
 		}
-		p.check(.rbr)
 	}
+
+	// Expressions init, e.g. `[1, 2, 3]`
+	mut exprs := []ast.Expr
+	for p.tok.kind != .rbr {
+		exprs.push(p.expr(0))
+		if p.tok.kind == .comma {
+			p.next()
+		}
+	}
+	p.check(.rbr)
 	return ast.ArrayInit{
 		exprs = exprs
-		typ = typ
-		elem_type = elem_type
 		pos = pos
 	}
 }
