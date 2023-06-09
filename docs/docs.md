@@ -67,6 +67,8 @@ n := 123 as i16
 ```
 
 ### Arrays
+An array is a zero-indexed list of values of the same type.
+
 ```bait
 names := ['John', 'Max']
 
@@ -75,6 +77,22 @@ arr = [1, 2, 3]
 
 arr.push(0)
 arr[3] = 4
+```
+
+#### Array Initialization
+The array type is inferred from the first element:
+```bait
+enum MyEnum {
+    A
+    B
+}
+
+arr := [MyEnum.A, .B]
+```
+
+It's also possible to preallocate an array with a fixed length:
+```bait
+a := []i32{ length = 3 }
 ```
 
 ### Maps
