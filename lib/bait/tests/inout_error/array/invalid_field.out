@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/array/invalid_field.in.bt:1:28 error: invalid array init field: no_field
