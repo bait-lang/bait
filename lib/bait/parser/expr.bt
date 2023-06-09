@@ -133,9 +133,8 @@ fun (p Parser) array_init()ast.ArrayInit{
 		elem_type := p.parse_type()
 		typ := p.table.find_or_register_array(elem_type)
 
-		// Optional parameters, e.g. `[]i32{ length = 10 cap = 20}`
+		// Optional parameters, e.g. `[]i32{ length = 10 }`
 		mut length_expr := ast.EmptyExpr{} as ast.Expr
-		mut cap_expr := ast.EmptyExpr{} as ast.Expr
 		if p.tok.kind == .lcur {
 			p.next()
 			for p.tok.kind != .rcur {
@@ -145,8 +144,6 @@ fun (p Parser) array_init()ast.ArrayInit{
 
 				if key == 'length' {
 					length_expr = expr
-				} else if key == 'cap' {
-					cap_expr = expr
 				} else {
 					p.error('invalid array init field: ${key}')
 				}
@@ -158,7 +155,6 @@ fun (p Parser) array_init()ast.ArrayInit{
 			typ = typ
 			elem_type = elem_type
 			length_expr = length_expr
-			cap_expr = cap_expr
 			pos = pos
 		}
 	}

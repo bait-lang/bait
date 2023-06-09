@@ -81,7 +81,16 @@ fun (g Gen) anon_fun(node ast.AnonFun) {
 }
 
 fun (g Gen) array_init(node ast.ArrayInit) {
-	g.write('new array({ data: [')
+	g.write('new array({ data: ')
+	// if not node.length_expr is ast.EmptyExpr {
+	// 	len := g.expr_string(node.length_expr)
+	// 	g.write('Array.from({ length: ${len} }, (v, i) => ')
+	// 	g.write_default_value(node.elem_type)
+	// 	g.write('), length: ${len} })')
+	// 	return
+	// }
+
+	g.write('[')
 	for i, expr in node.exprs {
 		g.expr(expr)
 		if i < node.exprs.length - 1 {

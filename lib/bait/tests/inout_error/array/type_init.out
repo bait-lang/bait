@@ -1,2 +1,1 @@
 lib/bait/tests/inout_error/array/type_init.in.bt:1:6 error: expected i32, got bool
-lib/bait/tests/inout_error/array/type_init.in.bt:1:6 error: expected i32, got string
