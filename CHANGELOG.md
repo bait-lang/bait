@@ -13,6 +13,7 @@ _unreleased_
 ### CLI and Tooling
 - Add `--library` option to build as shared library that not requires a main function
 - Add `-w` and `-W` to hide warnings or turn them into errors
+- `ast`: Add `--tokens` option to only print the tokens
 
 ### Error Checking
 - Prevent duplicate struct or enum field names

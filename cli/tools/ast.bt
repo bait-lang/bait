@@ -8,6 +8,8 @@ import bait.ast
 import bait.tokenizer
 import bait.parser
 
+const PRINT_TOKENS := os.ARGS.contains('--tokens')
+
 fun main() {
 	if os.ARGS.length <= 2 {
 		eprintln('error: please specify a file to print the ast')
@@ -23,6 +25,11 @@ fun main() {
 	t := tokenizer.new_tokenizer(text, file)
 	tokens := t.tokenize()
 	t.errors.print_and_exit()
+
+	if PRINT_TOKENS {
+		println(tokens)
+		exit(0)
+	}
 
 	file_ast := parser.parse(tokens, file, ast.new_table(), preference.Prefs{})
 	// TODO handle parser errors, warnings
