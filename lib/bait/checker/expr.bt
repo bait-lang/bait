@@ -69,19 +69,31 @@ fun (c Checker) anon_fun(node ast.AnonFun) ast.Type {
 }
 
 fun (c Checker) array_init(node ast.ArrayInit) ast.Type {
-	if node.exprs.length > 0 {
-		for i, e in node.exprs {
-			typ := c.expr(e)
-			if i == 0 {
-				node.elem_type = typ
-				c.expected_type = typ
-			}
-			if not c.check_types(typ, node.elem_type) {
-				c.error('expected element type ${c.table.type_name(node.elem_type)}, got ${c.table.type_name(typ)}', node.pos)
+	// Type init
+	if node.exprs.length == 0 {
+		// Validate length field if present
+		if not node.length_expr is ast.EmptyExpr {
+			typ := c.expr(node.length_expr)
+			if not c.check_types(typ, ast.I32_TYPE) {
+				c.error('expected i32, got ${c.table.type_name(typ)}', node.pos)
 			}
 		}
-		node.typ = c.table.find_or_register_array(node.elem_type)
+
+		return node.typ
 	}
+
+	// Expressions init
+	for i, e in node.exprs {
+		typ := c.expr(e)
+		if i == 0 {
+			node.elem_type = typ
+			c.expected_type = typ
+		}
+		if not c.check_types(typ, node.elem_type) {
+			c.error('expected element type ${c.table.type_name(node.elem_type)}, got ${c.table.type_name(typ)}', node.pos)
+		}
+	}
+	node.typ = c.table.find_or_register_array(node.elem_type)
 	return node.typ
 }
 

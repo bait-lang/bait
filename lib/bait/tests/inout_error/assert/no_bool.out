@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/assert/no_bool.in.bt:1:16 error: assert must be of type bool

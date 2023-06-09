@@ -24,6 +24,7 @@ _unreleased_
 
 ### Compiler
 - Struct declaration and enum fields can have default values
+- Arrays can be preallocated with a given length
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
 - Fix printing type aliased values
 - Parser: Fix infinite loop with statements during script mode main function
