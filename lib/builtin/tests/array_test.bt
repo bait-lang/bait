@@ -1,7 +1,7 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 
-pub fun test_index_and_last_index() {
+fun test_index_and_last_index() {
 	nums := [1, 2, 1, 2]
 	assert nums.index(1) == 0
 	assert nums.last_index(1) == 2
@@ -11,18 +11,25 @@ pub fun test_index_and_last_index() {
 	assert strings.last_index('c') == 3
 }
 
-pub fun test_reverse() {
+fun test_reverse() {
 	a := [1, 2, 3]
 	b := a.reverse()
-	// TODO fix array compare
-	// TODO uncomment
-	// assert a == [1, 2, 3]
-	// assert b == [3, 2, 1]
+	assert a == [1, 2, 3]
+	assert b == [3, 2, 1]
 }
 
-pub fun test_reverse_in_place() {
+fun test_reverse_in_place() {
 	a := [1, 2, 3]
 	a.reverse_in_place()
-	// TODO uncomment
-	// assert a == [3, 2, 1]
+	assert a == [3, 2, 1]
+}
+
+fun test_other_methods() {
+	mut b := [6, 5]
+	b.push(4)
+	b.push_many([3, 2, 1])
+	rb := b.reverse()
+	c := rb.slice(0, 3)
+	assert b.length == 6
+	assert c == [1, 2, 3]
 }

@@ -55,17 +55,16 @@ pub fun generic_error(msg string) {
 }
 
 fun message(kind Kind, title string, path string, pos token.Pos, msg string) {
-	// TODO move formatting and coloring to a separate package
 	file_line := bold('${path}:${pos.line}:${pos.col}')
 	eprintln('${file_line} ${format_title(kind, title)}: ${msg}')
 }
 
 fun bold(s string) string {
-	// TODO cache the env var value. However this cannot happen as const because it is set afterwards
+	// TODO move check if color is supported into term.color
 	if os.getenv('BAITCOLOR') == '0' {
 		return s
 	}
-	return '\033[1m' + s + '\033[0m'
+	return color.bold(s)
 }
 
 fun format_title(k Kind, title string) string {

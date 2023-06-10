@@ -114,11 +114,6 @@ fun (a string) add (b string) string {
 	return from_js_string(a.str + b.str)
 }
 
-// TODO remove
-fun (a string) eq (b string) bool {
-	return a.str == b.str
-}
-
 pub fun (arr []string) join(sep string) string {
 	js_arr := arr.to_js_arr()
 	return from_js_string(js_arr.join(sep.str))
