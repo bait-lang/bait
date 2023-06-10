@@ -134,7 +134,7 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 		return node.return_type
 	}
 
-	// Handle special array methods with argument of `any` type
+	// Array methods with one argument of `any` type
 	if left_sym.kind == .array and ['push', 'index', 'last_index', 'contains'].contains(node.name) {
 		arg := node.args[0]
 		info := left_sym.info as ast.ArrayInfo
@@ -145,8 +145,8 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 		}
 		return node.return_type
 	}
-	// Handle array.concat
-	if left_sym.kind == .array and node.name == 'concat' {
+	// Array methods with one argument of `array` type
+	if left_sym.kind == .array and ['concat', 'push_many'].contains(node.name) {
 		arg := node.args[0]
 		c.expected_type = left_expr_type
 		arg.typ = c.expr(arg.expr)
@@ -164,6 +164,11 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 		if not c.check_types(arg.typ, param_type) {
 			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
 		}
+	}
+
+	// Array methods with return type `array`
+	if left_sym.kind == .array and ['filter', 'reverse', 'slice', 'copy', 'from_js_arr'].contains(node.name) {
+		return left_expr_type
 	}
 
 	return node.return_type
