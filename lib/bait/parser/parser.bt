@@ -52,9 +52,7 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 
 	mut stmts := []ast.Stmt
 	for p.tok.kind != .eof {
-		if p.tok.kind == .attr {
-			p.parse_attributes()
-		}
+		p.parse_attributes()
 		stmts.push(p.toplevel_stmt())
 		if p.should_abort {
 			break
