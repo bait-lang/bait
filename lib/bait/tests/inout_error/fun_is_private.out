@@ -1,1 +1,0 @@
-lib/bait/tests/inout_error/fun_is_private.in.bt:3:15 error: function bait.tests.packages.foo.private_fun is private

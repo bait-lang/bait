@@ -1,0 +1,4 @@
+lib/bait/tests/inout_error/is_private.in.bt:3:19 error: struct bait.tests.packages.foo.PrivStruct is private
+lib/bait/tests/inout_error/is_private.in.bt:5:17 error: enum bait.tests.packages.foo.PrivEnum is private
+lib/bait/tests/inout_error/is_private.in.bt:7:19 error: const bait.tests.packages.foo.PRIV_CONST is private
+lib/bait/tests/inout_error/is_private.in.bt:9:12 error: function bait.tests.packages.foo.priv_fun is private

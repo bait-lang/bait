@@ -151,6 +151,7 @@ fun (p Parser) const_decl()ast.ConstDecl{
 		typ = typ
 		kind = .constant
 		is_pub = is_pub
+		pkg = p.pkg_name
 		expr = expr
 	})
 	return ast.ConstDecl{

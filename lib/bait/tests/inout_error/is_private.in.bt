@@ -1,0 +1,9 @@
+import bait.tests.packages.foo
+
+s := foo.PrivStruct{}
+
+e := foo.PrivEnum.a
+
+c := foo.PRIV_CONST
+
+foo.priv_fun()

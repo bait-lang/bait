@@ -183,9 +183,15 @@ fun (c Checker) hash_expr(node ast.HashExpr) ast.Type {
 
 fun (c Checker) ident(node ast.Ident) ast.Type {
 	mut obj := c.scope.get(node.name)
+
+	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
+		c.error('const ${node.name} is private', node.pos)
+	}
+
 	if obj.typ != ast.PLACEHOLDER_TYPE {
 		return obj.typ
 	}
+
 	if not node.name.contains('.') and node.pkg != 'builtin' and node.pkg != 'main' {
 		node.name = node.pkg + '.' + node.name
 	}
@@ -193,13 +199,12 @@ fun (c Checker) ident(node ast.Ident) ast.Type {
 	if obj.typ == ast.PLACEHOLDER_TYPE {
 		c.error('undefined variable ${node.name}', node.pos)
 	}
+
 	// unresolved constant
 	if obj.typ == ast.VOID_TYPE {
 		obj.typ = c.expr(obj.expr)
 	}
-	if obj.kind == .constant and not obj.is_pub and node.pkg != c.pkg {
-		c.error('const ${node.name} is private', node.pos)
-	}
+
 	return obj.typ
 }
 

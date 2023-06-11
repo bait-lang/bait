@@ -1,3 +1,0 @@
-import bait.tests.packages.foo
-
-foo.private_fun()

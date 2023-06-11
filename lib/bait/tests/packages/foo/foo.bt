@@ -1,3 +1,11 @@
 package foo
 
-fun private_fun() {}
+struct PrivStruct{}
+
+enum PrivEnum {
+	a
+}
+
+const PRIV_CONST := 2
+
+fun priv_fun() {}
