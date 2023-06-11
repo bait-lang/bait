@@ -6,20 +6,33 @@ import bait.ast
 import bait.token
 
 fun (p Parser) parse_type() ast.Type {
+	// Array type
 	if p.tok.kind == .lbr{
 		p.next()
 		p.check(.rbr)
 		elem_type := p.parse_type()
 		return p.table.find_or_register_array(elem_type)
 	}
+
+	// Function type
 	if p.tok.kind == .key_fun {
 		return p.parse_fun_type()
 	}
+
 	lang := p.parse_lang()
+
+	// Return placeholder or get name. Used for typeless array inits where type is known
+	if p.tok.pos.line != p.prev_tok.pos.line {
+		return ast.PLACEHOLDER_TYPE
+	}
 	mut name := p.prepend_lang(lang, p.check_name())
+
+	// Map type
 	if name == 'map' {
 		return p.parse_map_type()
 	}
+
+	// Build full name and handle imported types
 	if p.tok.kind == .dot {
 		pkg := p.import_aliases[name]
 		p.next()
@@ -29,6 +42,8 @@ fun (p Parser) parse_type() ast.Type {
 	} else if not name.contains('.') and not p.table.type_idxs.contains(name) {
 		name = p.prepend_pkg(name)
 	}
+
+	// Primitive types
 	match name{
 		'i8' { return ast.I8_TYPE }
 		'i16' { return ast.I16_TYPE }
