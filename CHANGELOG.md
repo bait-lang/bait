@@ -26,6 +26,7 @@ _unreleased_
 - Struct declaration and enum fields can have default values
 - Arrays can be preallocated with a given length
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
+- Attribute support for struct fields and add `@required`
 - Fix printing type aliased values
 - Parser: Fix infinite loop with statements during script mode main function
 - Builder: Do not include files in a imported directory with unexpected package name
