@@ -20,11 +20,12 @@ fun (c Checker) fun_decl(node ast.FunDecl) {
 
 fun (c Checker) fun_params(params []ast.Param){
 	for p in params {
-		sym := c.table.get_sym(p.typ)
 		if c.scope.is_known(p.name) {
 			c.error('cannot shadow import "${p.name}"', p.pos)
 			continue
 		}
+
+		sym := c.table.get_sym(p.typ)
 		if sym.kind == .fun_ {
 			c.scope.register(p.name, ast.ScopeObject{
 				typ = p.typ
@@ -69,11 +70,10 @@ fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
 	if not found {
 		c.error('unknown function ${node.name}', node.pos)
 		return ast.VOID_TYPE
-
 	}
 
 	def := c.table.fun_decls[node.name]
-	if not def.is_pub and node.pkg != c.pkg {
+	if not def.is_pub and def.pkg != c.pkg {
 		c.error('function ${def.name} is private', node.pos)
 	}
 	node.return_type = def.return_type

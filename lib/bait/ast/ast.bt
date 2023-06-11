@@ -78,6 +78,7 @@ pub struct FunDecl{
 	is_pub bool
 	lang Language
 	name string
+	pkg string
 	params []Param
 	stmts []Stmt
 	return_type Type
