@@ -1,10 +1,35 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 
-pub fun test_init_with_length() {
+fun test_init_with_length() {
 	a := []i32{ length = 2 }
 	assert a == [0, 0]
 
 	b := []string{ length = 3 }
 	assert b == ["", "", ""]
+}
+
+fun test_typeless_init() {
+	mut a := [1,2,3]
+	a = []
+	assert a.length == 0
+
+	// Names on the next line are not the element type
+	mut b := ['']
+	b = []
+	myvar := 12
+	assert b.length == 0
+	assert myvar == 12
+}
+
+struct Foo{
+	arr []string
+}
+
+fun test_struct_field_array_type(){
+	mut f := Foo{
+		arr = ['a', 'b']
+	}
+	f.arr = []
+	assert f.arr.length == 0
 }
