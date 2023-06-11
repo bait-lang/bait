@@ -1,0 +1,2 @@
+lib/bait/tests/inout_error/struct/required_field.in.bt:7:9 error: field "eggs" requires initialization
+lib/bait/tests/inout_error/struct/required_field.in.bt:11:10 error: field "eggs" requires initialization

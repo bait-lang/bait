@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/attributes/export.in.bt:6:7 error: @export name "spameggs" is already used
