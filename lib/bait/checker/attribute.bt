@@ -49,7 +49,7 @@ fun (c Checker) check_attribute(attr ast.Attribute, known_list map[string]AttrVa
 	return true
 }
 
-fun (c Checker) check_fun_attributes(node ast.FunDecl){
+fun (c Checker) check_fun_attrs(node ast.FunDecl){
 	for attr in node.attrs {
 		if not c.check_attribute(attr, FUN_ATTRS) {
 			continue
@@ -100,7 +100,7 @@ fun (c Checker) attr_export(attr ast.Attribute) {
 	c.export_names.push(attr.value)
 }
 
-fun (c Checker) check_call_attributes(call ast.CallExpr, def ast.FunDecl) {
+fun (c Checker) check_fun_attrs_on_call(call ast.CallExpr, def ast.FunDecl) {
 	mut is_deprecated := false
 	mut depr_attr := ast.Attribute{}
 	mut depr_date_attr := ast.Attribute{}
@@ -131,10 +131,36 @@ fun (c Checker) check_call_attributes(call ast.CallExpr, def ast.FunDecl) {
 	}
 }
 
-fun (c Checker) check_struct_field_attributes(node ast.StructDecl){
-	for attr in node.attrs {
-		if not c.check_attribute(attr, STRUCT_FIELD_ATTRS) {
-			continue
+fun (c Checker) check_struct_field_attrs(node ast.StructDecl){
+	for field in node.fields {
+		for attr in field.attrs {
+			if not c.check_attribute(attr, STRUCT_FIELD_ATTRS) {
+				continue
+			}
+		}
+	}
+}
+
+fun (c Checker) check_struct_field_attrs_on_init(init ast.StructInit, info ast.StructInfo) {
+	for def_field in info.fields {
+		mut is_required := false
+		for attr in def_field.attrs {
+			if attr.name == 'required' {
+				is_required = true
+			}
+		}
+
+		mut is_present := false
+		if is_required {
+			for inited in init.fields {
+				if inited.name == def_field.name {
+					is_present = true
+					break
+				}
+			}
+			if not is_present {
+				c.error('field "${def_field.name}" requires initialization', init.pos)
+			}
 		}
 	}
 }

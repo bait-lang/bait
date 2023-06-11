@@ -11,7 +11,7 @@ fun (c Checker) fun_decl(node ast.FunDecl) {
 	}
 
 	c.cur_fun = node
-	c.check_fun_attributes(node)
+	c.check_fun_attrs(node)
 	c.open_scope()
 	c.fun_params(node.params)
 	c.stmts(node.stmts)
@@ -77,7 +77,7 @@ fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
 		c.error('function ${def.name} is private', node.pos)
 	}
 	node.return_type = def.return_type
-	c.check_call_attributes(node, def)
+	c.check_fun_attrs_on_call(node, def)
 
 	// Check argument count
 	if node.args.length != def.params.length {
@@ -126,7 +126,7 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 	node.lang = def.lang
 	node.left_type = def.params[0].typ
 	node.return_type = def.return_type
-	c.check_call_attributes(node, def)
+	c.check_fun_attrs_on_call(node, def)
 
 	// Check argument count
 	if node.args.length + 1 != def.params.length {

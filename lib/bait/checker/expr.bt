@@ -345,6 +345,9 @@ fun (c Checker) struct_init(node ast.StructInit) ast.Type {
 		c.error('struct ${sym.name} is private', node.pos)
 		return ast.VOID_TYPE
 	}
+
+	c.check_struct_field_attrs_on_init(node, sym.info as ast.StructInfo)
+
 	node.name = sym.name
 	for field in node.fields {
 		def := sym.find_field(field.name, c.table)
