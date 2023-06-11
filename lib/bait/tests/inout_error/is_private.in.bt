@@ -1,9 +1,22 @@
-import bait.tests.packages.foo
+import bait.tests.packages.pubpriv
 
-s := foo.PrivStruct{}
+// TODO fix usage of private type
+struct UsesPriv{
+	p pubpriv.PrivAlias
+}
 
-e := foo.PrivEnum.a
+s := pubpriv.PrivStruct{}
 
-c := foo.PRIV_CONST
+e := pubpriv.PrivEnum.a
 
-foo.priv_fun()
+c := pubpriv.PRIV_CONST
+
+pubpriv.priv_fun()
+
+// TODO fix usage of private type
+a := 5 as pubpriv.PrivAlias
+
+s2 := pubpriv.PubStruct{}
+s2.priv_method()
+
+// TODO test Bait-interfaces, once they are implemented

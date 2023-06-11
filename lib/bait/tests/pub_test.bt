@@ -1,0 +1,26 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+import bait.tests.packages.pubpriv
+
+struct UsesPub{
+	p pubpriv.PubAlias
+}
+
+fun test_pub_works(){
+	s := pubpriv.PubStruct{}
+	assert s.pub_method()
+
+	e := pubpriv.PubEnum.a
+
+	c := pubpriv.PUB_CONST
+	assert c == 3
+
+	assert pubpriv.pub_fun()
+
+	s2 := UsesPub{}
+	assert s2.p == 0 as pubpriv.PubAlias
+	assert typeof(s2.p) == 'bait.tests.packages.pubpriv.PubAlias'
+
+	// TODO test Bait-interfaces, once they are implemented
+}
