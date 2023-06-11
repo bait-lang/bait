@@ -1,0 +1,10 @@
+@xyz_attr
+fun unknown_attr() {}
+
+@deprecated_after
+fun missing_value(){}
+
+struct Foo {
+	@required: 'this should have no value'
+	myfield bool
+}

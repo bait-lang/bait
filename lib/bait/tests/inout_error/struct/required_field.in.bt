@@ -1,0 +1,13 @@
+struct Spam{
+	x i32
+	@required eggs i32
+	y i32
+}
+
+s := Spam{}
+s2 := Spam{
+	eggs = 5
+}
+s3 := Spam{
+	y = 3
+}

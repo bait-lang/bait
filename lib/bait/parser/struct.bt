@@ -15,6 +15,7 @@ fun (p Parser) struct_decl()ast.StructDecl{
 	p.check(.lcur)
 	mut fields := []ast.StructField
 	for p.tok.kind != .rcur {
+		p.parse_attributes()
 		fields.push(p.struct_decl_field())
 	}
 	p.check(.rcur)
@@ -47,12 +48,16 @@ fun (p Parser) struct_decl_field() ast.StructField {
 		p.next()
 		expr = p.expr(0)
 	}
-	return ast.StructField{
+	field := ast.StructField{
 		name = fname
 		typ = ftyp
 		expr = expr
 		pos = pos
+		attrs = p.attributes
 	}
+
+	p.attributes = []ast.Attribute
+	return field
 }
 
 fun (p Parser) struct_init()ast.StructInit{

@@ -10,7 +10,7 @@ enum AttrValue {
 	required
 }
 
-fun build_known_attrs() map[string]AttrValue {
+fun build_fun_attrs() map[string]AttrValue {
 	mut attrs := map[string]AttrValue
 	attrs['deprecated'] = .optional
 	attrs['deprecated_after'] = .required
@@ -19,24 +19,39 @@ fun build_known_attrs() map[string]AttrValue {
 	return attrs
 }
 
-const KNOWN_ATTRS := build_known_attrs()
+fun build_struct_field_attrs() map[string]AttrValue {
+	mut attrs := map[string]AttrValue
+	attrs['required'] = .none
+	return attrs
+}
 
-fun (c Checker) check_attributes(node ast.FunDecl){
+const FUN_ATTRS := build_fun_attrs()
+const STRUCT_FIELD_ATTRS := build_struct_field_attrs()
+
+fun (c Checker) check_attribute(attr ast.Attribute, known_list map[string]AttrValue) bool {
+	// Check attribute is implemented
+	if not known_list.contains(attr.name) {
+		c.warn('unknown attribute "${attr.name}"', attr.pos)
+		return false
+	}
+
+	// Check value requirements are met
+	val_req := known_list[attr.name]
+	if val_req == .none and attr.value.length > 0 {
+		c.error('attribute "${attr.name}" does not take a value', attr.pos)
+		return false
+	}
+	if val_req == .required and attr.value.length == 0 {
+		c.error('attribute "${attr.name}" requires a value', attr.pos)
+		return false
+	}
+
+	return true
+}
+
+fun (c Checker) check_fun_attrs(node ast.FunDecl){
 	for attr in node.attrs {
-		// Check attribute is implemented
-		if not KNOWN_ATTRS.contains(attr.name) {
-			c.warn('unknown attribute "${attr.name}"', attr.pos)
-			continue
-		}
-
-		// Check value requirements are met
-		val_req := KNOWN_ATTRS[attr.name]
-		if val_req == .none and attr.value.length > 0 {
-			c.error('attribute "${attr.name}" does not take a value', attr.pos)
-			continue
-		}
-		if val_req == .required and attr.value.length == 0 {
-			c.error('attribute "${attr.name}" requires a value', attr.pos)
+		if not c.check_attribute(attr, FUN_ATTRS) {
 			continue
 		}
 
@@ -83,4 +98,69 @@ fun (c Checker) attr_export(attr ast.Attribute) {
 		return
 	}
 	c.export_names.push(attr.value)
+}
+
+fun (c Checker) check_fun_attrs_on_call(call ast.CallExpr, def ast.FunDecl) {
+	mut is_deprecated := false
+	mut depr_attr := ast.Attribute{}
+	mut depr_date_attr := ast.Attribute{}
+
+	for attr in def.attrs {
+		if attr.name == 'deprecated_after' {
+			depr_date_attr = attr
+			is_deprecated = true
+		}
+		if attr.name == 'deprecated' {
+			depr_attr = attr
+			is_deprecated = true
+		}
+	}
+
+	if is_deprecated {
+		mut depr_message := 'function "${call.name}" '
+		if depr_date_attr.name.length > 0 {
+			depr_message += 'will be deprecated after ${depr_date_attr.value}'
+		} else {
+			depr_message += 'is deprecated'
+		}
+		if depr_attr.value.length > 0 {
+			depr_message += '; ${depr_attr.value}'
+		}
+		c.info(depr_message, call.pos)
+		// TODO check deprecation date and warn if passed
+	}
+}
+
+fun (c Checker) check_struct_field_attrs(node ast.StructDecl){
+	for field in node.fields {
+		for attr in field.attrs {
+			if not c.check_attribute(attr, STRUCT_FIELD_ATTRS) {
+				continue
+			}
+		}
+	}
+}
+
+fun (c Checker) check_struct_field_attrs_on_init(init ast.StructInit, info ast.StructInfo) {
+	for def_field in info.fields {
+		mut is_required := false
+		for attr in def_field.attrs {
+			if attr.name == 'required' {
+				is_required = true
+			}
+		}
+
+		mut is_present := false
+		if is_required {
+			for inited in init.fields {
+				if inited.name == def_field.name {
+					is_present = true
+					break
+				}
+			}
+			if not is_present {
+				c.error('field "${def_field.name}" requires initialization', init.pos)
+			}
+		}
+	}
 }

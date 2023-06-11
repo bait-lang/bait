@@ -1,7 +1,0 @@
-@xyz_attr
-fun unknown_attr() {}
-
-// TODO add test for attr with value that should have none once such an attr is added
-
-@deprecated_after
-fun missing_value(){}

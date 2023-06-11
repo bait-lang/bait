@@ -220,6 +220,8 @@ fun (c Checker) struct_decl(node ast.StructDecl) {
 			continue
 		}
 
+		c.check_struct_field_attrs(node)
+
 		if field.expr is ast.EmptyExpr {
 			continue
 		}
