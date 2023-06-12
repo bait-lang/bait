@@ -12,6 +12,7 @@ fun test_pub_works(){
 	assert s.pub_method()
 
 	e := pubpriv.PubEnum.a
+	assert e as i32 == 0
 
 	c := pubpriv.PUB_CONST
 	assert c == 3
@@ -19,7 +20,6 @@ fun test_pub_works(){
 	assert pubpriv.pub_fun()
 
 	s2 := UsesPub{}
-	assert s2.p == 0 as pubpriv.PubAlias
 	assert typeof(s2.p) == 'bait.tests.packages.pubpriv.PubAlias'
 
 	// TODO test Bait-interfaces, once they are implemented
