@@ -1,2 +1,2 @@
-lib/bait/tests/inout_error/struct/required_field.in.bt:7:9 error: field "Spam.eggs" requires initialization
-lib/bait/tests/inout_error/struct/required_field.in.bt:11:10 error: field "Spam.eggs" requires initialization
+lib/bait/tests/inout_error/struct/required_field.in.bt:10:9 error: field "Spam.n" requires initialization
+lib/bait/tests/inout_error/struct/required_field.in.bt:14:10 error: field "Spam.eggs" requires initialization

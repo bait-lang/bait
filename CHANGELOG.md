@@ -18,6 +18,7 @@ _unreleased_
 
 ### Error Checking
 - Prevent duplicate struct or enum field names
+- Require initialization of struct fields that are a sum type
 - Compiling normal projects must include a main package
 - Main package must contain a main function
 - Fix false-positive error with variable names matching an import of an import

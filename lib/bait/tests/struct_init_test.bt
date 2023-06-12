@@ -11,14 +11,17 @@ fun test_default_field_value() {
 }
 
 type Int := i32
+type Number := i8 | i16 | i32 | i64
 
 struct Foo{
 	m i32
-	n Int
+	i Int
+	n Number := 5
 }
 
 fun test_alias_default_value(){
 	f := Foo{}
 	assert f.m == 0
-	assert f.n == 0 as Int
+	assert f.i == 0 as Int
+	assert f.n == 5
 }
