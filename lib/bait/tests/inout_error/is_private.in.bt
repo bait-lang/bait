@@ -8,6 +8,7 @@ struct UsesPriv{
 s := pubpriv.PrivStruct{}
 
 e := pubpriv.PrivEnum.a
+e2 := 0 as pubpriv.PrivEnum
 
 c := pubpriv.PRIV_CONST
 

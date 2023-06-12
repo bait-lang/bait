@@ -121,6 +121,32 @@ fun main(){
 package my_pkg
 ```
 
+## Symbol Visibility
+By default all symbols are private to the package they are declared in.
+This includes [functions](#functions), [constants](#constants), [structs](#structs) and [enums](#enums).
+
+To allow other packages to use a symbol, prepend the `pub` keyword:
+```bait
+package my_pkg
+
+pub fun my_public_function() {}
+
+fun my_private_function() {}
+```
+
+For type aliases the visibility is derived from the underlying type:
+```bait
+package other_pkg
+
+type MyInt := i32 // MyInt is usable in other packages
+
+pub struct PubStruct {}
+type PubAlias := PubStruct // PubAlias is public just like PubStruct
+
+struct PrivStruct {}
+type PrivAlias := PrivStruct // PrivAlias is private
+```
+
 ## Statements
 ### If
 ```bait
@@ -184,7 +210,7 @@ for i := 0; i < 10; i += 1 {
 }
 ```
 
-## Struct
+## Structs
 ```bait
 struct Rect{
     width i32
@@ -217,7 +243,7 @@ fun (r Rect) area() i32 {
 }
 ```
 
-## Enum
+## Enums
 ```bait
 enum Language {
   english

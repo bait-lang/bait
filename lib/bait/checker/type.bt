@@ -50,6 +50,11 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 }
 
 fun (c Checker) does_type_exist(sym ast.TypeSymbol, pos token.Pos) bool {
+	if sym.kind == .placeholder {
+		c.error('unknown type ${sym.name}', pos)
+		return false
+	}
+
 	if sym.kind == .other or sym.kind == .string {
 		return true
 	}
@@ -76,7 +81,16 @@ fun (c Checker) does_type_exist(sym ast.TypeSymbol, pos token.Pos) bool {
 		return c.does_type_exist(parent_sym, pos)
 	}
 
-	// TODO sumtype
+	if sym.kind == .sum_type {
+		info := sym.info as ast.SumTypeInfo
+		for variant in info.variants {
+			var_sym := c.table.get_sym(variant)
+			if not c.does_type_exist(var_sym, pos) {
+				return false
+			}
+		}
+		return true
+	}
 
 	c.error('type ${sym.name} is private', pos)
 	return false

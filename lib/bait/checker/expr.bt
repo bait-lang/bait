@@ -110,8 +110,7 @@ fun (c Checker) as_cast(node ast.AsCast) ast.Type {
 
 	// Check the target exists
 	target_sym := c.table.get_sym(node.target)
-	if target_sym.kind == .placeholder {
-		c.error('unknown type ${target_sym.name}', node.pos)
+	if not c.does_type_exist(target_sym, node.pos) {
 		return expr_type
 	}
 

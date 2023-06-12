@@ -14,6 +14,9 @@ fun test_pub_works(){
 	e := pubpriv.PubEnum.a
 	assert e as i32 == 0
 
+	e2 := 0 as pubpriv.PubEnum
+	assert e2 == .a
+
 	c := pubpriv.PUB_CONST
 	assert c == 3
 
