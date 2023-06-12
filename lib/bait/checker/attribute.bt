@@ -145,26 +145,4 @@ fun (c Checker) check_struct_field_attrs(node ast.StructDecl){
 	}
 }
 
-fun (c Checker) check_struct_field_attrs_on_init(init ast.StructInit, info ast.StructInfo) {
-	for def_field in info.fields {
-		mut is_required := false
-		for attr in def_field.attrs {
-			if attr.name == 'required' {
-				is_required = true
-			}
-		}
-
-		mut is_present := false
-		if is_required {
-			for inited in init.fields {
-				if inited.name == def_field.name {
-					is_present = true
-					break
-				}
-			}
-			if not is_present {
-				c.error('field "${init.name}.${def_field.name}" requires initialization', init.pos)
-			}
-		}
-	}
-}
+// See struct.bt for checks on initialization
