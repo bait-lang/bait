@@ -13,6 +13,8 @@ pub enum Backend {
 pub struct Prefs {
 	command string
 	args []string
+	build_options []string
+
 	out_name string
 	should_run bool
 	is_verbose bool
@@ -55,23 +57,23 @@ pub fun parse_args(args []string) Prefs {
 			"-o", '--out' {
 				i += 1
 				p.out_name = args[i]
-				p.args.push(arg)
-				p.args.push(p.out_name)
+				p.build_options.push(arg)
+				p.build_options.push(p.out_name)
 			}
 			'-v', '--verbose' {
 				p.is_verbose = true
-				p.args.push(arg)
+				p.build_options.push(arg)
 			}
 			'--library' {
 				p.is_library = true
 			}
 			'-w' {
 				p.hide_warnings = true
-				p.args.push(arg)
+				p.build_options.push(arg)
 			}
 			'-W' {
 				p.warn_is_error = true
-				p.args.push(arg)
+				p.build_options.push(arg)
 			}
 			'--nocolor' {
 				os.setenv('BAITCOLOR', '0')
