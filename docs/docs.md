@@ -96,15 +96,20 @@ a := []i32{ length = 3 }
 ```
 
 ### Maps
+You can initialize a map with the short literal syntax:
+```bait
+grades := map{
+    'Alice': 92
+    'Bob': 87
+    'Charlie': 95
+}
+```
+
+Or create an empty map and assign values later:
 ```bait
 mut airports := map[string]string
 airports['lax'] = 'Los Angeles'
-
-mut arr := []i32
-arr = [1, 2, 3]
-
-arr.push(0)
-arr[3] = 4
+airports['jfk'] = 'New York'
 ```
 
 ## Package Imports
