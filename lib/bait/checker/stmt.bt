@@ -226,7 +226,7 @@ fun (c Checker) struct_decl(node ast.StructDecl) {
 
 		sym := c.table.get_sym(field.typ)
 		if not c.does_type_exist(sym, field.pos) {
-			// continue
+			continue
 		}
 
 		// Check the default value if present

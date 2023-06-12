@@ -1,7 +1,7 @@
-// type is private
-// type is private
-lib/bait/tests/inout_error/is_private.in.bt:7:23 error: struct bait.tests.packages.pubpriv.PrivStruct is private
-lib/bait/tests/inout_error/is_private.in.bt:9:21 error: enum bait.tests.packages.pubpriv.PrivEnum is private
-lib/bait/tests/inout_error/is_private.in.bt:11:23 error: const bait.tests.packages.pubpriv.PRIV_CONST is private
-lib/bait/tests/inout_error/is_private.in.bt:13:16 error: function bait.tests.packages.pubpriv.priv_fun is private
-lib/bait/tests/inout_error/is_private.in.bt:16:14 error: method priv_method is private
+lib/bait/tests/inout_error/is_private.in.bt:4:3 error: type bait.tests.packages.pubpriv.PrivStruct is private
+lib/bait/tests/inout_error/is_private.in.bt:5:3 error: type bait.tests.packages.pubpriv.PrivStruct is private
+lib/bait/tests/inout_error/is_private.in.bt:8:23 error: struct bait.tests.packages.pubpriv.PrivStruct is private
+lib/bait/tests/inout_error/is_private.in.bt:10:21 error: enum bait.tests.packages.pubpriv.PrivEnum is private
+lib/bait/tests/inout_error/is_private.in.bt:12:23 error: const bait.tests.packages.pubpriv.PRIV_CONST is private
+lib/bait/tests/inout_error/is_private.in.bt:14:16 error: function bait.tests.packages.pubpriv.priv_fun is private
+lib/bait/tests/inout_error/is_private.in.bt:17:14 error: method priv_method is private

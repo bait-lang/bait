@@ -7,7 +7,7 @@ import bait.errors
 import bait.preference
 import bait.token
 
-struct Checker{
+pub struct Checker{
 	pref preference.Prefs
 	table ast.Table
 	scope ast.Scope
