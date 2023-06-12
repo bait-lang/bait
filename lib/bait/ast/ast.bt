@@ -5,9 +5,9 @@ package ast
 import bait.token
 import bait.errors
 
-pub type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt
+type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt
 
-pub type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | CompTimeVar | EnumVal | HashExpr | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
+type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | CompTimeVar | EnumVal | HashExpr | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
 
 pub struct AssertStmt {
 	expr Expr

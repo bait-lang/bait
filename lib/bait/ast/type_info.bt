@@ -2,7 +2,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package ast
 
-pub type TypeInfo := ArrayInfo | EnumInfo | FunInfo | MapInfo | StructInfo | SumTypeInfo | EmptyInfo
+type TypeInfo := ArrayInfo | EnumInfo | FunInfo | MapInfo | StructInfo | SumTypeInfo | EmptyInfo
 
 pub struct ArrayInfo{
 	elem_type Type

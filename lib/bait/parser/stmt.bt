@@ -60,9 +60,6 @@ fun (p Parser) pub_stmt() ast.Stmt {
 		.key_struct{
 			return p.struct_decl()
 		}
-		.key_type{
-			return p.type_decl()
-		}
 		else{
 			p.error('cannot use pub keyword before ${p.next_tok.kind}')
 		}
