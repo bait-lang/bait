@@ -98,8 +98,7 @@ fun (c Checker) check_init_field_values(init ast.StructInit, info ast.StructInfo
 			}
 		}
 		if not is_present {
-			// TODO error
-			c.warn('field "${init.name}.${def_field.name}" requires initialization', init.pos)
+			c.error('field "${init.name}.${def_field.name}" requires initialization', init.pos)
 		}
 	}
 }
