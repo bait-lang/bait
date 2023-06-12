@@ -10,23 +10,15 @@ enum AttrValue {
 	required
 }
 
-fun build_fun_attrs() map[string]AttrValue {
-	mut attrs := map[string]AttrValue
-	attrs['deprecated'] = .optional
-	attrs['deprecated_after'] = .required
-	attrs['export'] = .required
-	attrs['overload'] = .required
-	return attrs
+const FUN_ATTRS := map{
+	'deprecated': AttrValue.optional
+	'deprecated_after': .required
+	'export': .required
+	'overload': .required
 }
-
-fun build_struct_field_attrs() map[string]AttrValue {
-	mut attrs := map[string]AttrValue
-	attrs['required'] = .none
-	return attrs
+const STRUCT_FIELD_ATTRS := map{
+	'required': AttrValue.none
 }
-
-const FUN_ATTRS := build_fun_attrs()
-const STRUCT_FIELD_ATTRS := build_struct_field_attrs()
 
 fun (c Checker) check_attribute(attr ast.Attribute, known_list map[string]AttrValue) bool {
 	// Check attribute is implemented
