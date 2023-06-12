@@ -2,6 +2,4 @@ Usage:
   bait self [options]
 
 Options:
-  --no-backup  Do not create a copy of the original exe before recompilation.
-
-Most other options are passed to the build command.
+  All options are passed down to the build command.

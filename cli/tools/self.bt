@@ -5,11 +5,14 @@ package main
 import os
 
 fun main() {
-	args := os.ARGS.slice(2, os.ARGS.length)
-	if not args.contains('--no-backup') {
+	mut args := os.ARGS.slice(2, os.ARGS.length)
+	mut out := '-o bait.js'
+	if not args.contains('-o') {
 		os.cp($BAITEXE, 'old_bait.js')
+		args.push(out)
 	}
-	res := os.exec('node ${$BAITEXE} ${args.join(' ')} cli/bait.bt -o bait.js')
+	println(args)
+	res := os.exec('node ${$BAITEXE} ${args.join(' ')} cli/bait.bt')
 	if res.stdout.length > 0 {
 		println(res.stdout)
 	}

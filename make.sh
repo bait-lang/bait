@@ -20,7 +20,7 @@ rm -f bait.js
 # Compile new bait.js and ensure self compilation is working
 node $BAITJS_DIR/bait.js cli/bait.bt -o bait1.js
 node bait1.js cli/bait.bt -o bait2.js
-node bait2.js self --no-backup
+node bait2.js self -o bait.js
 
 if [ ! -f bait.js ]; then
     echo "make: compilation failed"
