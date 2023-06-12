@@ -1,0 +1,5 @@
+m := map{
+	"hello": "world"
+	'asd': 123
+	true: 'hi'
+}

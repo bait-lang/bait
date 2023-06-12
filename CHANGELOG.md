@@ -16,6 +16,10 @@ _unreleased_
 - `self`: Pass other options to build command
 - `ast`: Add `--tokens` option to only print the tokens
 
+### Type System
+- Check types of literal map init
+- Allow typeless array inits based on context
+
 ### Error Checking
 - Prevent duplicate struct or enum field names
 - Require initialization of struct fields that are a sum type
@@ -30,7 +34,6 @@ _unreleased_
 ### Compiler
 - Struct declaration and enum fields can have default values
 - Arrays can be preallocated with a given length
-- Allow typeless array inits based on context
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
 - Attribute support for struct fields and add `@required`
 - Fix printing type aliased values
