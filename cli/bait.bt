@@ -55,7 +55,7 @@ fun main() {
 
 	// Handle tool commands
 	if TOOLS.contains(prefs.command) {
-		exit(launch_tool(prefs.command, prefs.args, prefs.is_verbose))
+		exit(launch_tool(prefs.command, prefs.build_options, prefs.is_verbose))
 	}
 
 	// Handle builtin commands (build, run, test, version)

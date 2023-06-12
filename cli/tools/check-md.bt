@@ -12,12 +12,12 @@ struct CodeBlock {
 
 fun main() {
 	if os.ARGS.length <= 2 {
-		eprintln('error: please provide a file to be checked')
+		eprintln('check-md error: please provide a file to be checked')
 		exit(1)
 	}
 	file := os.ARGS[2]
 	if not file.ends_with('.md') {
-		eprintln('error: file must be a markdown file')
+		eprintln('check-md error: file must be a markdown file')
 		exit(1)
 	}
 	println('Checking code blocks in ${file}...')

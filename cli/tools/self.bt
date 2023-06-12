@@ -11,7 +11,7 @@ fun main() {
 		os.cp($BAITEXE, 'old_bait.js')
 		args.push(out)
 	}
-	println(args)
+
 	res := os.exec('node ${$BAITEXE} ${args.join(' ')} cli/bait.bt')
 	if res.stdout.length > 0 {
 		println(res.stdout)
