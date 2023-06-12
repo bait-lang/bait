@@ -11,6 +11,7 @@ pub struct ScopeObject{
 	kind ObjectKind
 	typ Type
 	is_pub bool
+	pkg string
 	expr Expr // Only for constants. Allows resolving their type early
 }
 

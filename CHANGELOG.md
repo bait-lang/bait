@@ -21,6 +21,7 @@ _unreleased_
 - Main package must contain a main function
 - Fix false-positive error with variable names matching an import of an import
 - Fix variable redefinition error not being thrown
+- Many fixes and improvements regarding symbol visibility
 
 ### Compiler
 - Struct declaration and enum fields can have default values

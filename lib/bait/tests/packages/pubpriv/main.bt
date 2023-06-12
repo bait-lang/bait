@@ -1,0 +1,37 @@
+package pubpriv
+
+// Public
+
+pub struct PubStruct{}
+
+pub fun (s PubStruct) pub_method() bool {
+	return true
+}
+
+fun (s PubStruct) priv_method(){}
+
+type PubAlias := PubStruct
+
+pub enum PubEnum{
+	a
+}
+
+pub const PUB_CONST := 3
+
+pub fun pub_fun() bool {
+	return true
+}
+
+// Private
+
+struct PrivStruct{}
+
+type PrivAlias := PrivStruct
+
+enum PrivEnum {
+	a
+}
+
+const PRIV_CONST := 2
+
+fun priv_fun() {}

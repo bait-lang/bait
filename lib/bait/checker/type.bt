@@ -48,3 +48,36 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 	}
 	return false
 }
+
+fun (c Checker) does_type_exist(sym ast.TypeSymbol, pos token.Pos) bool {
+	if sym.kind == .other or sym.kind == .string {
+		return true
+	}
+
+	if sym.is_pub or sym.pkg == c.pkg {
+		return true
+	}
+
+	if sym.kind == .array {
+		info := sym.info as ast.ArrayInfo
+		elem_sym := c.table.get_sym(info.elem_type)
+		return c.does_type_exist(elem_sym, pos)
+	}
+
+	if sym.kind == .map {
+		info := sym.info as ast.MapInfo
+		key_sym := c.table.get_sym(info.key_type)
+		val_sym := c.table.get_sym(info.val_type)
+		return c.does_type_exist(key_sym, pos) and c.does_type_exist(val_sym, pos)
+	}
+
+	if sym.kind == .alias_type {
+		parent_sym := c.table.get_sym(sym.parent)
+		return c.does_type_exist(parent_sym, pos)
+	}
+
+	// TODO sumtype
+
+	c.error('type ${sym.name} is private', pos)
+	return false
+}

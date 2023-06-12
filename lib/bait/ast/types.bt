@@ -2,7 +2,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package ast
 
-pub type Type := i32
+type Type := i32
 
 pub const PLACEHOLDER_TYPE := new_type(0)
 pub const VOID_TYPE := new_type(1)
@@ -116,5 +116,5 @@ pub fun (t Table) register_builtins(){
 		name = 'map'
 		kind = .map
 	})
-	t.register_sym(TypeSymbol{ name = 'any' kind = .other })
+	t.register_sym(TypeSymbol{ name = 'any'})
 }

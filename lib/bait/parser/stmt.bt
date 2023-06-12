@@ -60,9 +60,6 @@ fun (p Parser) pub_stmt() ast.Stmt {
 		.key_struct{
 			return p.struct_decl()
 		}
-		.key_type{
-			return p.type_decl()
-		}
 		else{
 			p.error('cannot use pub keyword before ${p.next_tok.kind}')
 		}
@@ -151,6 +148,7 @@ fun (p Parser) const_decl()ast.ConstDecl{
 		typ = typ
 		kind = .constant
 		is_pub = is_pub
+		pkg = p.pkg_name
 		expr = expr
 	})
 	return ast.ConstDecl{
@@ -317,6 +315,7 @@ fun (p Parser) fun_decl()ast.FunDecl{
 		is_test = name.starts_with('test_')
 		is_pub = is_pub
 		name = name
+		pkg = p.pkg_name
 		params = params
 		return_type = return_type
 		attrs = p.attributes
