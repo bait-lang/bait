@@ -91,6 +91,8 @@ pub fun parse_args(args []string) Prefs {
 		}
 	}
 
+	p.build_options.push_many(p.args)
+
 	if p.hide_warnings and p.warn_is_error {
 		errors.generic_error('Cannot use -w and -W together.')
 		exit(1)
