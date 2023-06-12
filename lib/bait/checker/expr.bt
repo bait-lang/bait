@@ -263,6 +263,15 @@ fun (c Checker) map_init(node ast.MapInit) ast.Type {
 		if i == 0 {
 			node.key_type = key_type
 			node.val_type = val_type
+		} else {
+			if not c.check_types(key_type, node.key_type) {
+				key_expr := key as ast.EmptyExpr
+				c.error('expected key type ${c.table.type_name(node.key_type)}, got ${c.table.type_name(key_type)}', key_expr.pos)
+			}
+			if not c.check_types(val_type, node.val_type) {
+				val_expr := node.vals[i] as ast.EmptyExpr
+				c.error('expected value type ${c.table.type_name(node.val_type)}, got ${c.table.type_name(val_type)}', val_expr.pos)
+			}
 		}
 	}
 	node.typ = c.table.find_or_register_map(node.key_type, node.val_type)
