@@ -102,6 +102,11 @@ fun (c Checker) expr_stmt(node ast.ExprStmt) {
 }
 
 fun (c Checker) enum_decl(node ast.EnumDecl) {
+	if node.fields.length == 0 {
+		c.error('enum cannot be empty', node.pos)
+		return
+	}
+
 	mut cur_val := 0
 	for i, field in node.fields {
 		mut should_continue := false
