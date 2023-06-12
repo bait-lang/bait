@@ -1,7 +1,8 @@
 import bait.tests.packages.pubpriv
 
 struct UsesPriv{
-	p pubpriv.PrivAlias
+	ps pubpriv.PrivStruct
+	pa pubpriv.PrivAlias
 }
 
 s := pubpriv.PrivStruct{}

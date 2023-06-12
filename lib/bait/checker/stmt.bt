@@ -224,10 +224,15 @@ fun (c Checker) struct_decl(node ast.StructDecl) {
 
 		c.check_struct_field_attrs(node)
 
+		sym := c.table.get_sym(field.typ)
+		if not c.does_type_exist(sym, field.pos) {
+			// continue
+		}
+
+		// Check the default value if present
 		if field.expr is ast.EmptyExpr {
 			continue
 		}
-
 		typ := c.expr(field.expr)
 		if not c.check_types(typ, field.typ) {
 			c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.EmptyExpr).pos)

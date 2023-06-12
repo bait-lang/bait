@@ -1,4 +1,5 @@
 // type is private
+// type is private
 lib/bait/tests/inout_error/is_private.in.bt:7:23 error: struct bait.tests.packages.pubpriv.PrivStruct is private
 lib/bait/tests/inout_error/is_private.in.bt:9:21 error: enum bait.tests.packages.pubpriv.PrivEnum is private
 lib/bait/tests/inout_error/is_private.in.bt:11:23 error: const bait.tests.packages.pubpriv.PRIV_CONST is private
