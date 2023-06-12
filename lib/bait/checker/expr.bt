@@ -243,22 +243,29 @@ fun (c Checker) index_expr(node ast.IndexExpr) ast.Type {
 }
 
 fun (c Checker) map_init(node ast.MapInit) ast.Type {
-	if node.keys.length > 0 {
-		for i, key in node.keys {
-			key_type := c.expr(key)
-			val_type := c.expr(node.vals[i])
-			if i == 0 {
-				node.key_type = key_type
-				node.val_type = val_type
-			}
-		}
-		node.typ = c.table.find_or_register_map(node.key_type, node.val_type)
-	} else {
+	// Empty init
+	if node.keys.length == 0 {
 		sym := c.table.get_sym(node.typ)
 		info := sym.info as ast.MapInfo
 		node.key_type = info.key_type
 		node.val_type = info.val_type
+		return node.typ
 	}
+
+	// Literal init
+	for i, key in node.keys {
+		key_type := c.expr(key)
+		if i >= 1 {
+			c.expected_type = node.val_type
+		}
+		val_type := c.expr(node.vals[i])
+
+		if i == 0 {
+			node.key_type = key_type
+			node.val_type = val_type
+		}
+	}
+	node.typ = c.table.find_or_register_map(node.key_type, node.val_type)
 	return node.typ
 }
 
