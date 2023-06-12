@@ -129,7 +129,7 @@ pub struct StructDecl{
 pub struct StructField{
 	name string
 	typ Type
-	expr Expr
+	expr Expr := EmptyExpr{}
 	pos token.Pos
 	attrs []Attribute
 }
@@ -167,7 +167,7 @@ pub struct CallExpr{
 	args []CallArg
 	return_type Type
 	is_method bool
-	left Expr
+	left Expr := EmptyExpr{}
 	left_type Type
 	pkg string
 	pos token.Pos
