@@ -1,0 +1,3 @@
+struct Foo{
+	@required x i32 := 5
+}

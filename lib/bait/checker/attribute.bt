@@ -137,6 +137,10 @@ fun (c Checker) check_struct_field_attrs(node ast.StructDecl){
 			if not c.check_attribute(attr, STRUCT_FIELD_ATTRS) {
 				continue
 			}
+
+			if attr.name == 'required' and not field.expr is ast.EmptyExpr {
+				c.error('@required on field with default value is redundant', attr.pos)
+			}
 		}
 	}
 }
@@ -159,7 +163,7 @@ fun (c Checker) check_struct_field_attrs_on_init(init ast.StructInit, info ast.S
 				}
 			}
 			if not is_present {
-				c.error('field "${def_field.name}" requires initialization', init.pos)
+				c.error('field "${init.name}.${def_field.name}" requires initialization', init.pos)
 			}
 		}
 	}

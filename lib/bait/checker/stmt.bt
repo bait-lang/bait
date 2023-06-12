@@ -1,5 +1,5 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
-// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package checker
 
 import bait.ast
@@ -203,39 +203,6 @@ fun (c Checker) return_stmt(node ast.ReturnStmt) {
 		expr_type := c.expr(node.expr)
 		if not c.check_types(expr_type, c.cur_fun.return_type) {
 			c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}, got ${c.table.type_name(expr_type)}', node.pos)
-		}
-	}
-}
-
-fun (c Checker) struct_decl(node ast.StructDecl) {
-	for i, field in node.fields {
-		mut should_continue := false
-		for j := 0; j < i; j += 1 {
-			if field.name == node.fields[j].name {
-				c.error('duplicate field name ${field.name}', field.pos)
-				should_continue = true
-				break
-			}
-		}
-		// TODO replace with labeled break/continue
-		if should_continue {
-			continue
-		}
-
-		c.check_struct_field_attrs(node)
-
-		sym := c.table.get_sym(field.typ)
-		if not c.does_type_exist(sym, field.pos) {
-			continue
-		}
-
-		// Check the default value if present
-		if field.expr is ast.EmptyExpr {
-			continue
-		}
-		typ := c.expr(field.expr)
-		if not c.check_types(typ, field.typ) {
-			c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.EmptyExpr).pos)
 		}
 	}
 }

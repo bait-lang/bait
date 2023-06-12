@@ -1,0 +1,72 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+package checker
+
+import bait.ast
+import bait.token
+
+
+fun (c Checker) struct_decl(node ast.StructDecl) {
+	for i, field in node.fields {
+		mut should_continue := false
+		for j := 0; j < i; j += 1 {
+			if field.name == node.fields[j].name {
+				c.error('duplicate field name ${field.name}', field.pos)
+				should_continue = true
+				break
+			}
+		}
+		// TODO replace with labeled break/continue
+		if should_continue {
+			continue
+		}
+
+		c.check_struct_field_attrs(node)
+
+		sym := c.table.get_sym(field.typ)
+		if not c.does_type_exist(sym, field.pos) {
+			continue
+		}
+
+		// Check the default value if present
+		if field.expr is ast.EmptyExpr {
+			continue
+		}
+		typ := c.expr(field.expr)
+		if not c.check_types(typ, field.typ) {
+			c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.EmptyExpr).pos)
+		}
+	}
+}
+
+fun (c Checker) struct_init(node ast.StructInit) ast.Type {
+	sym := c.table.get_sym(node.typ)
+	if sym.kind == .placeholder {
+		c.error('undefined struct ${node.name}', node.pos)
+		return ast.VOID_TYPE
+	}
+	if not sym.is_pub and sym.name.contains('.') and sym.pkg != c.pkg {
+		c.error('struct ${sym.name} is private', node.pos)
+		return ast.VOID_TYPE
+	}
+
+	c.check_struct_field_attrs_on_init(node, sym.info as ast.StructInfo)
+
+	node.name = sym.name
+	for field in node.fields {
+		def := sym.find_field(field.name, c.table)
+		if def.name.length == 0 {
+			c.error('struct ${sym.name} has no field ${field.name}', node.pos)
+		}
+		c.expected_type = def.typ
+		expr_type := c.expr(field.expr)
+		if def.typ == ast.PLACEHOLDER_TYPE {
+			// Another error was already raised
+			continue
+		}
+		if not c.check_types(expr_type, def.typ) {
+			c.error('cannot assign to field ${field.name}: expected ${c.table.type_name(def.typ)}, got ${c.table.type_name(expr_type)} ', node.pos)
+		}
+	}
+	return node.typ
+}
