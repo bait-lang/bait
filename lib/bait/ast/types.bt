@@ -53,7 +53,7 @@ pub enum TypeKind {
 pub struct TypeSymbol{
 	name string
 	kind TypeKind
-	info TypeInfo
+	info TypeInfo := EmptyInfo{}
 	methods []FunDecl
 	parent Type
 	overloads map[string]FunDecl

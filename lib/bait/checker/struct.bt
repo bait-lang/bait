@@ -50,7 +50,7 @@ fun (c Checker) struct_init(node ast.StructInit) ast.Type {
 		return ast.VOID_TYPE
 	}
 
-	c.check_struct_field_attrs_on_init(node, sym.info as ast.StructInfo)
+	c.check_init_field_values(node, sym.info as ast.StructInfo)
 
 	node.name = sym.name
 	for field in node.fields {
@@ -69,4 +69,36 @@ fun (c Checker) struct_init(node ast.StructInit) ast.Type {
 		}
 	}
 	return node.typ
+}
+
+fun (c Checker) check_init_field_values(init ast.StructInit, info ast.StructInfo) {
+	for def_field in info.fields {
+		// Field requires initialization if it's a sum type or has the attribute
+		def_sym := c.table.get_sym(def_field.typ)
+		mut is_required := def_sym.kind == .sum_type
+		for attr in def_field.attrs {
+			if attr.name == 'required' {
+				is_required = true
+			}
+		}
+
+		if not is_required {
+			continue
+		}
+
+		if not def_field.expr is ast.EmptyExpr {
+			continue
+		}
+
+		mut is_present := false
+		for inited in init.fields {
+			if inited.name == def_field.name {
+				is_present = true
+				break
+			}
+		}
+		if not is_present {
+			c.error('field "${init.name}.${def_field.name}" requires initialization', init.pos)
+		}
+	}
 }
