@@ -55,19 +55,22 @@ pub fun parse_args(args []string) Prefs {
 			"-o", '--out' {
 				i += 1
 				p.out_name = args[i]
+				p.args.push(arg)
 			}
 			'-v', '--verbose' {
 				p.is_verbose = true
-				p.args.push(arg) // keep option for tools
+				p.args.push(arg)
 			}
 			'--library' {
 				p.is_library = true
 			}
 			'-w' {
 				p.hide_warnings = true
+				p.args.push(arg)
 			}
 			'-W' {
 				p.warn_is_error = true
+				p.args.push(arg)
 			}
 			'--nocolor' {
 				os.setenv('BAITCOLOR', '0')

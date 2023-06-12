@@ -3,3 +3,5 @@ Usage:
 
 Options:
   --no-backup  Do not create a copy of the original exe before recompilation.
+
+Most other options are passed to the build command.
