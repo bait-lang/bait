@@ -3,7 +3,9 @@
 package builtin
 
 struct array {
+mut:
 	data #JS.Array
+pub mut:
 	length i32
 }
 

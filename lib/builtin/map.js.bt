@@ -4,6 +4,7 @@ package builtin
 
 struct map{
 	data #JS.Map
+pub mut:
 	length i32
 }
 

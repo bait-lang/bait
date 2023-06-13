@@ -4,6 +4,7 @@ package builtin
 
 struct string {
 	str #JS.String
+pub:
 	length i32
 }
 
