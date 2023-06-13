@@ -33,6 +33,7 @@ _unreleased_
 
 ### Compiler
 - Struct declaration and enum fields can have default values
+- Add labelled `break` and `continue`
 - Arrays can be preallocated with a given length
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
 - Attribute support for struct fields and add `@required`
