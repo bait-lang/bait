@@ -108,18 +108,12 @@ fun (c Checker) enum_decl(node ast.EnumDecl) {
 	}
 
 	mut cur_val := 0
-	for i, field in node.fields {
-		mut should_continue := false
+	outer: for i, field in node.fields {
 		for j := 0; j < i; j += 1 {
 			if field.name == node.fields[j].name {
 				c.error('duplicate field name ${field.name}', field.pos)
-				should_continue = true
-				break
+				continue outer
 			}
-		}
-		// TODO replace with labeled break/continue
-		if should_continue {
-			continue
 		}
 
 		if field.expr is ast.EmptyExpr {

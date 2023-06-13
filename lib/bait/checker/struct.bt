@@ -7,18 +7,13 @@ import bait.token
 
 
 fun (c Checker) struct_decl(node ast.StructDecl) {
-	for i, field in node.fields {
+	outer: for i, field in node.fields {
 		mut should_continue := false
 		for j := 0; j < i; j += 1 {
 			if field.name == node.fields[j].name {
 				c.error('duplicate field name ${field.name}', field.pos)
-				should_continue = true
-				break
+				continue outer
 			}
-		}
-		// TODO replace with labeled break/continue
-		if should_continue {
-			continue
 		}
 
 		c.check_struct_field_attrs(node)
