@@ -71,7 +71,7 @@ fun (p Parser) struct_decl()ast.StructDecl{
 		}
 
 		p.parse_attributes()
-		fields.push(p.struct_decl_field(field_is_mut, field_is_pub))
+		fields.push(p.struct_decl_field(field_is_mut, field_is_pub, field_is_global))
 	}
 	p.check(.rcur)
 
@@ -94,7 +94,7 @@ fun (p Parser) struct_decl()ast.StructDecl{
 	}
 }
 
-fun (p Parser) struct_decl_field(is_mut bool, is_pub bool) ast.StructField {
+fun (p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) ast.StructField {
 	pos := p.tok.pos
 	fname := p.check_name()
 	ftyp := p.parse_type()
@@ -110,6 +110,7 @@ fun (p Parser) struct_decl_field(is_mut bool, is_pub bool) ast.StructField {
 		pos = pos
 		is_mut = is_mut
 		is_pub = is_pub
+		is_global = is_global
 		attrs = p.attributes
 	}
 
