@@ -188,6 +188,7 @@ fun (c Checker) ident(node ast.Ident) ast.Type {
 	}
 
 	if obj.typ != ast.PLACEHOLDER_TYPE {
+		node.is_mut = obj.is_mut
 		return obj.typ
 	}
 
@@ -204,6 +205,7 @@ fun (c Checker) ident(node ast.Ident) ast.Type {
 		obj.typ = c.expr(obj.expr)
 	}
 
+	node.is_mut = obj.is_mut
 	return obj.typ
 }
 
