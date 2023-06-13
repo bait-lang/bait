@@ -1,0 +1,4 @@
+lib/bait/tests/inout_error/struct/field_is_immutable.in.bt:14:5 error: cannot assign to immutable field bait.tests.packages.struct_mod.Foo.c
+lib/bait/tests/inout_error/struct/field_is_immutable.in.bt:15:5 error: cannot assign to immutable field bait.tests.packages.struct_mod.Foo.d
+lib/bait/tests/inout_error/struct/field_is_immutable.in.bt:18:5 error: cannot assign to immutable field Spam.a
+lib/bait/tests/inout_error/struct/field_is_immutable.in.bt:20:5 error: cannot assign to immutable field Spam.c

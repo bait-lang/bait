@@ -12,6 +12,7 @@ pub struct Parser {
 	path string
 	table ast.Table
 	tokens []token.Token
+mut:
 	idx i32
 	prev_tok token.Token
 	tok token.Token
@@ -23,6 +24,7 @@ pub struct Parser {
 	is_for_init bool
 	is_struct_possible bool
 	should_abort bool
+pub mut:
 	warnings []errors.Message
 	errors []errors.Message
 }

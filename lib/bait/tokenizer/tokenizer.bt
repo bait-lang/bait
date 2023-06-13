@@ -8,12 +8,14 @@ import bait.errors
 struct Tokenizer {
 	path string
 	text string
+mut:
 	pos i32
 	line i32
 	last_nl_pos i32
 	is_string_inter bool
 	str_quote u8
 	should_abort bool
+pub mut:
 	errors []errors.Message
 }
 

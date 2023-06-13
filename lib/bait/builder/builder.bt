@@ -15,6 +15,7 @@ import bait.tokenizer
 struct Builder {
 	prefs preference.Prefs
 	table ast.Table
+mut:
 	parsed_files []ast.File
 	checker checker.Checker
 }

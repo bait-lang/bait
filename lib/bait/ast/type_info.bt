@@ -5,28 +5,34 @@ package ast
 type TypeInfo := ArrayInfo | EnumInfo | FunInfo | MapInfo | StructInfo | SumTypeInfo | EmptyInfo
 
 pub struct ArrayInfo{
+pub:
 	elem_type Type
 }
 
 pub struct EnumInfo {
+pub:
 	vals []string
 }
 
 pub struct FunInfo{
+pub:
 	param_types []Type
 	return_type Type
 }
 
 pub struct MapInfo{
+pub:
 	key_type Type
 	val_type Type
 }
 
 pub struct StructInfo{
+pub:
 	fields []StructField
 }
 
 pub struct SumTypeInfo{
+pub:
 	variants []Type
 }
 

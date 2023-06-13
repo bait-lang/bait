@@ -92,6 +92,16 @@ fun (c Checker) assign_stmt(node ast.AssignStmt) {
 		}
 	}
 
+	if node.left is ast.SelectorExpr {
+		left := node.left as ast.SelectorExpr
+		sym := c.table.get_sym(left.expr_type)
+		field := sym.find_field(left.field_name, c.table)
+		if (not field.is_mut or sym.pkg != c.pkg) and not field.is_global {
+			c.error('cannot assign to immutable field ${sym.name}.${left.field_name}', node.pos)
+			return
+		}
+	}
+
 	if not c.check_types(node.right_type, node.left_type) {
 		c.error('cannot assign type ${c.table.type_name(node.right_type)} to ${c.table.type_name(node.left_type)}', node.pos)
 	}

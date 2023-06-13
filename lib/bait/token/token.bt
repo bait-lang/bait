@@ -3,6 +3,7 @@
 package token
 
 pub struct Token {
+pub:
 	kind TokenKind
 	val string
 	pos Pos

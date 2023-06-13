@@ -1,0 +1,8 @@
+import bait.tests.packages.struct_mod
+
+f := struct_mod.Foo{}
+println(f.a)
+println(f.b)
+
+println(f.c)
+println(f.d)

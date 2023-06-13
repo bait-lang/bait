@@ -136,6 +136,7 @@ pub fun arch() string {
 }
 
 pub struct Result {
+pub:
 	code i32
 	stdout string
 	stderr string
