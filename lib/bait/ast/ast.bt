@@ -137,6 +137,7 @@ pub struct StructField{
 	pos token.Pos
 	is_mut bool
 	is_pub bool
+	is_global bool
 	attrs []Attribute
 }
 

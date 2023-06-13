@@ -15,8 +15,10 @@ fun (p Parser) struct_decl()ast.StructDecl{
 	mut mut_idx := -1
 	mut pub_idx := -1
 	mut pub_mut_idx := -1
+	mut global_idx := -1
 	mut field_is_mut := false
 	mut field_is_pub := false
+	mut field_is_global := false
 	mut fields := []ast.StructField
 
 	p.check(.lcur)
@@ -31,6 +33,7 @@ fun (p Parser) struct_decl()ast.StructDecl{
 			mut_idx = fields.length
 			field_is_mut = true
 			field_is_pub = false
+			field_is_global = false
 		} else if p.tok.kind == .key_pub {
 			p.next()
 			if p.tok.kind == .key_mut {
@@ -42,6 +45,7 @@ fun (p Parser) struct_decl()ast.StructDecl{
 				pub_mut_idx = fields.length
 				field_is_mut = true
 				field_is_pub = true
+				field_is_global = false
 			} else {
 				if pub_idx != -1 {
 					p.error('redefinition of "pub" section')
@@ -50,8 +54,20 @@ fun (p Parser) struct_decl()ast.StructDecl{
 				pub_idx = fields.length
 				field_is_mut = false
 				field_is_pub = true
+				field_is_global = false
 			}
 			p.check(.colon)
+		} else if p.tok.kind == .key_global {
+			if global_idx != -1 {
+				p.error('redefinition of "global" section')
+				return ast.StructDecl{}
+			}
+			p.next()
+			p.check(.colon)
+			global_idx = fields.length
+			field_is_mut = true
+			field_is_pub = true
+			field_is_global = true
 		}
 
 		p.parse_attributes()
