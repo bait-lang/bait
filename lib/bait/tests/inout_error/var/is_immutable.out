@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/var/is_immutable.in.bt:2:1 warning: cannot assign to immutable variable "x"
