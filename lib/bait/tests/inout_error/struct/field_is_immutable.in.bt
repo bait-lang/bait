@@ -1,0 +1,21 @@
+import bait.tests.packages.struct_mod
+
+struct Spam{
+	a i32
+mut:
+	b i32
+pub:
+	c i32
+pub mut:
+	d i32
+}
+
+f := struct_mod.Foo{}
+f.c = 5
+f.d = 10
+
+s := Spam{}
+s.a = 1
+s.b = 2
+s.c = 3
+s.d = 4

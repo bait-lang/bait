@@ -285,6 +285,7 @@ pub struct PrefixExpr{
 
 pub struct SelectorExpr{
 	expr Expr
+	expr_type Type
 	field_name string
 	pos token.Pos
 }

@@ -332,8 +332,8 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 		expr := node.expr as ast.IndexExpr
 		expr.is_selector = true
 	}
-	typ := c.expr(node.expr)
-	sym := c.table.get_sym(typ)
+	node.expr_type = c.expr(node.expr)
+	sym := c.table.get_sym(node.expr_type)
 	if [ast.TypeKind.struct_, .array, .string, .map].contains(sym.kind) {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
@@ -345,8 +345,15 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 			// TODO error
 			c.warn('field ${sym.name}.${node.field_name} is private', node.pos)
 		}
+
+		if c.is_lhs_assign and (not field.is_mut or sym.pkg != c.pkg) {
+			// TODO error, return void
+			c.warn('cannot assign to immutable field ${sym.name}.${node.field_name}', node.pos)
+		}
+
 		return field.typ
 	}
+
 	if sym.kind == .sum_type {
 		// TODO check if field is present on all variants (with same type)
 		c.error('cast to the variant before accessing field of sumtype ${sym.name}', node.pos)
