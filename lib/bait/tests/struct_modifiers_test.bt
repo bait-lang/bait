@@ -13,4 +13,9 @@ fun test_struct_modifiers(){
 
 	f.sub_d(5)
 	assert f.d == 15
+
+	assert f.e == 0
+	f.e = 5
+	f.e -= 3
+	assert f.e == 2
 }

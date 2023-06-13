@@ -10,6 +10,8 @@ pub:
 	c i32 := 1
 pub mut:
 	d i32 := 20
+global:
+	e i32
 }
 
 pub fun (f Foo) get_a() i32 {
