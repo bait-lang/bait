@@ -346,11 +346,6 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 			c.warn('field ${sym.name}.${node.field_name} is private', node.pos)
 		}
 
-		if c.is_lhs_assign and (not field.is_mut or sym.pkg != c.pkg) {
-			// TODO error, return void
-			c.warn('cannot assign to immutable field ${sym.name}.${node.field_name}', node.pos)
-		}
-
 		return field.typ
 	}
 
