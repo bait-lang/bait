@@ -87,8 +87,8 @@ fun (c Checker) assign_stmt(node ast.AssignStmt) {
 	if node.left is ast.Ident {
 		left := node.left as ast.Ident
 		if not left.is_mut {
-			// TODO error, return
-			c.warn('cannot assign to immutable variable "${left.name}"', left.pos)
+			c.error('cannot assign to immutable variable "${left.name}"', left.pos)
+			return
 		}
 	}
 
