@@ -1,0 +1,16 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+import bait.tests.packages.struct_mod
+
+fun test_struct_modifiers(){
+	f := struct_mod.Foo{}
+	assert f.get_a() == 1
+	assert f.c == 1
+	assert f.d == 20
+
+	f.add_b(8)
+	assert f.get_b() == 10
+
+	f.sub_d(5)
+	assert f.d == 15
+}
