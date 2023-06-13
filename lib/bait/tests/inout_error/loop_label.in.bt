@@ -1,0 +1,3 @@
+for true {
+	break my_label
+}

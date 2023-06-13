@@ -35,7 +35,7 @@ fun (c Checker) stmt(stmt ast.Stmt){
 	} else if stmt is ast.InterfaceDecl {
 		c.interface_decl(stmt)
 	} else if stmt is ast.LoopControlStmt {
-		c.control_stmt(stmt)
+		c.loop_control_stmt(stmt)
 	} else if stmt is ast.ReturnStmt {
 		c.return_stmt(stmt)
 	} else if stmt is ast.StructDecl {
@@ -143,8 +143,19 @@ fun (c Checker) enum_decl(node ast.EnumDecl) {
 	}
 }
 
+fun (c Checker) register_label(label string) {
+	if label.length == 0 {
+		return
+	}
+
+	c.scope.register(label, ast.ScopeObject{
+		kind = .label
+	})
+}
+
 fun (c Checker) for_loop(node ast.ForLoop) {
 	c.open_scope()
+	c.register_label(node.label)
 	c.expr(node.cond)
 	c.stmts(node.stmts)
 	c.close_scope()
@@ -152,6 +163,7 @@ fun (c Checker) for_loop(node ast.ForLoop) {
 
 fun (c Checker) for_classic_loop(node ast.ForClassicLoop) {
 	c.open_scope()
+	c.register_label(node.label)
 	c.stmt(node.init)
 	c.expr(node.cond)
 	c.stmt(node.inc)
@@ -161,6 +173,7 @@ fun (c Checker) for_classic_loop(node ast.ForClassicLoop) {
 
 fun (c Checker) for_in_loop(node ast.ForInLoop) {
 	c.open_scope()
+	c.register_label(node.label)
 	node.expr_type = c.expr(node.expr)
 	sym := c.table.get_sym(node.expr_type)
 	mut idx_type := ast.PLACEHOLDER_TYPE
@@ -193,7 +206,16 @@ fun (c Checker) global_decl(node ast.GlobalDecl){
 
 fun (c Checker) interface_decl(node ast.InterfaceDecl){}
 
-fun (c Checker) control_stmt(node ast.LoopControlStmt) {}
+fun (c Checker) loop_control_stmt(node ast.LoopControlStmt) {
+	if node.label.length == 0 {
+		return
+	}
+
+	obj := c.scope.get(node.label)
+	if obj.kind != .label {
+		c.error('label ${node.label} not found', node.pos)
+	}
+}
 
 fun (c Checker) return_stmt(node ast.ReturnStmt) {
 	if node.expr is ast.EmptyExpr {
