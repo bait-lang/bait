@@ -1,0 +1,29 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package struct_mod
+
+pub struct Foo{
+	a i32 := 1
+mut:
+	b i32 := 2
+pub:
+	c i32 := 1
+pub mut:
+	d i32 := 20
+}
+
+pub fun (f Foo) get_a() i32 {
+	return f.a
+}
+
+pub fun (f Foo) get_b() i32 {
+	return f.b
+}
+
+pub fun (f Foo) add_b(n i32) {
+	f.b += n
+}
+
+pub fun (f Foo) sub_d(n i32) {
+	f.d -= n
+}

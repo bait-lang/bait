@@ -135,6 +135,8 @@ pub struct StructField{
 	typ Type
 	expr Expr := EmptyExpr{}
 	pos token.Pos
+	is_mut bool
+	is_pub bool
 	attrs []Attribute
 }
 
