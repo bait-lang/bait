@@ -99,6 +99,7 @@ pub struct Param{
 
 pub struct LoopControlStmt{
 	kind token.TokenKind
+	label string
 	pos token.Pos
 }
 

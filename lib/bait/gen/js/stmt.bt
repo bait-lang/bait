@@ -41,7 +41,7 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 	} else if stmt is ast.InterfaceDecl {
 		g.interface_decl(stmt)
 	} else if stmt is ast.LoopControlStmt {
-		g.control_stmt(stmt)
+		g.loop_control_stmt(stmt)
 	} else if stmt is ast.ReturnStmt {
 		g.return_stmt(stmt)
 	} else if stmt is ast.StructDecl {
@@ -183,11 +183,20 @@ fun (g Gen) enum_decl(node ast.EnumDecl){
 	g.writeln('}')
 }
 
-fun (g Gen) control_stmt(node ast.LoopControlStmt){
-	g.writeln(node.kind.js_repr())
+fun (g Gen) loop_control_stmt(node ast.LoopControlStmt){
+	g.write(node.kind.js_repr())
+	if node.label.length > 0 {
+		g.writeln(' ${node.label}')
+	} else {
+		g.writeln('')
+	}
 }
 
 fun (g Gen) for_loop(node ast.ForLoop){
+	if node.label.length > 0 {
+		g.writeln('${node.label}: ')
+	}
+
 	g.write('while (')
 	g.expr(node.cond)
 	g.writeln(') {')
@@ -196,6 +205,10 @@ fun (g Gen) for_loop(node ast.ForLoop){
 }
 
 fun (g Gen) for_classic_loop(node ast.ForClassicLoop){
+	if node.label.length > 0 {
+		g.writeln('${node.label}: ')
+	}
+
 	g.is_for_loop_head = true
 	g.write('for (')
 	g.stmt(node.init)
@@ -210,6 +223,10 @@ fun (g Gen) for_classic_loop(node ast.ForClassicLoop){
 }
 
 fun (g Gen) for_in_loop(node ast.ForInLoop){
+	if node.label.length > 0 {
+		g.writeln('${node.label}: ')
+	}
+
 	mut i := node.idxvar
 	if i == '' {
 		i = g.new_temp_var()

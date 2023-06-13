@@ -94,7 +94,7 @@ fun (p Parser) stmt() ast.Stmt {
 			return p.assign_stmt()
 		}
 		.key_break, .key_continue {
-			return p.control_stmt()
+			return p.loop_control_stmt()
 		}
 		.key_for {
 			return p.for_loop('')
@@ -174,11 +174,19 @@ fun (p Parser) const_decl()ast.ConstDecl{
 	}
 }
 
-fun (p Parser) control_stmt()ast.LoopControlStmt{
+fun (p Parser) loop_control_stmt()ast.LoopControlStmt{
 	pos := p.tok.pos
+	kind := p.tok.kind
 	p.next()
+
+	mut label := ''
+	if p.tok.kind == .name and p.tok.pos.line == p.prev_tok.pos.line {
+		label = p.check_name()
+	}
+
 	return ast.LoopControlStmt{
-		kind = p.prev_tok.kind
+		kind = kind
+		label = label
 		pos = pos
 	}
 }
