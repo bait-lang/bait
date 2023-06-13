@@ -13,6 +13,7 @@ pub enum Kind {
 }
 
 pub struct Message{
+pub:
 	kind Kind
 	path string
 	pos token.Pos

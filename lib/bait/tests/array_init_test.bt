@@ -23,6 +23,7 @@ fun test_typeless_init() {
 }
 
 struct Foo{
+mut:
 	arr []string
 }
 
