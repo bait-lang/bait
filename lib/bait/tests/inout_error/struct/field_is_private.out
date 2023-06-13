@@ -1,2 +1,2 @@
-lib/bait/tests/inout_error/struct/field_is_private.in.bt:4:10 warning: field bait.tests.packages.struct_mod.Foo.a is private
-lib/bait/tests/inout_error/struct/field_is_private.in.bt:5:10 warning: field bait.tests.packages.struct_mod.Foo.b is private
+lib/bait/tests/inout_error/struct/field_is_private.in.bt:4:10 error: field bait.tests.packages.struct_mod.Foo.a is private
+lib/bait/tests/inout_error/struct/field_is_private.in.bt:5:10 error: field bait.tests.packages.struct_mod.Foo.b is private
