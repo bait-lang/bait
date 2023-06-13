@@ -11,6 +11,7 @@ pub enum Backend {
 }
 
 pub struct Prefs {
+pub mut:
 	command string
 	args []string
 	build_options []string

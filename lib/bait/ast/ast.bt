@@ -10,11 +10,13 @@ type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop
 type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | CompTimeVar | EnumVal | HashExpr | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
 
 pub struct AssertStmt {
+pub:
 	expr Expr
 	pos token.Pos
 }
 
 pub struct AssignStmt{
+pub:
 	op token.TokenKind
 	left Expr
 	left_type Type
@@ -24,28 +26,33 @@ pub struct AssignStmt{
 }
 
 pub struct ConstDecl{
+pub:
 	name string
 	expr Expr
 	pos token.Pos
 }
 
 pub struct EnumDecl{
+pub:
 	name string
 	fields []EnumField
 	pos token.Pos
 }
 
 pub struct EnumField{
+pub:
 	name string
 	expr Expr
 	pos token.Pos
 }
 
 pub struct ExprStmt{
+pub:
 	expr Expr
 }
 
 pub struct ForLoop{
+pub:
 	label string
 	cond Expr
 	stmts []Stmt
@@ -53,6 +60,7 @@ pub struct ForLoop{
 }
 
 pub struct ForClassicLoop{
+pub:
 	label string
 	init Stmt
 	cond Expr
@@ -62,6 +70,7 @@ pub struct ForClassicLoop{
 }
 
 pub struct ForInLoop{
+pub:
 	label string
 	idxvar string
 	valvar string
@@ -72,44 +81,51 @@ pub struct ForInLoop{
 }
 
 pub struct AnonFun{
+pub:
 	decl FunDecl
 	typ Type
 	pos token.Pos
 }
 
 pub struct FunDecl{
+pub:
 	is_pub bool
 	lang Language
 	name string
 	pkg string
 	params []Param
-	stmts []Stmt
 	return_type Type
-	is_method bool
 	is_test bool
 	attrs []Attribute
 	pos token.Pos
+global:
+	is_method bool
+	stmts []Stmt
 }
 
 pub struct Param{
+pub:
 	name string
 	typ Type
 	pos token.Pos
 }
 
 pub struct LoopControlStmt{
+pub:
 	kind token.TokenKind
 	label string
 	pos token.Pos
 }
 
 pub struct GlobalDecl{
+pub:
 	name string
 	expr Expr
 	pos token.Pos
 }
 
 pub struct InterfaceDecl {
+pub:
 	lang Language
 	name string
 	typ Type
@@ -119,11 +135,13 @@ pub struct InterfaceDecl {
 }
 
 pub struct ReturnStmt{
+pub:
 	expr Expr
 	pos token.Pos
 }
 
 pub struct StructDecl{
+pub:
 	name string
 	typ Type
 	fields []StructField
@@ -131,6 +149,7 @@ pub struct StructDecl{
 }
 
 pub struct StructField{
+pub:
 	name string
 	typ Type
 	expr Expr := EmptyExpr{}
@@ -143,12 +162,14 @@ pub struct StructField{
 
 // SumType, Alias, Fun Type
 pub struct TypeDecl {
+pub:
 	name string
 	typ Type
 	pos token.Pos
 }
 
 pub struct ArrayInit{
+pub:
 	exprs []Expr
 	typ Type
 	elem_type Type
@@ -157,6 +178,7 @@ pub struct ArrayInit{
 }
 
 pub struct AsCast{
+pub:
 	expr Expr
 	expr_type Type
 	target Type
@@ -164,11 +186,13 @@ pub struct AsCast{
 }
 
 pub struct BoolLiteral{
+pub:
 	val bool
 	pos token.Pos
 }
 
 pub struct CallExpr{
+pub:
 	lang Language
 	name string
 	args []CallArg
@@ -181,21 +205,25 @@ pub struct CallExpr{
 }
 
 pub struct CallArg {
+pub:
 	expr Expr
 	typ Type
 }
 
 pub struct CharLiteral{
+pub:
 	val string
 	pos token.Pos
 }
 
 pub struct CompTimeVar{
+pub:
 	name string
 	pos token.Pos
 }
 
 pub struct EnumVal {
+pub:
 	name string
 	val string
 	typ Type
@@ -203,11 +231,13 @@ pub struct EnumVal {
 }
 
 pub struct HashExpr{
+pub:
 	val string
 	pos token.Pos
 }
 
 pub struct Ident{
+pub:
 	name string
 	is_mut bool
 	pkg string
@@ -215,18 +245,21 @@ pub struct Ident{
 }
 
 pub struct IfExpr{
+pub:
 	has_else bool
 	branches []IfBranch
 	pos token.Pos
 }
 
 pub struct IfBranch{
+pub:
 	cond Expr
 	stmts []Stmt
 	pos token.Pos
 }
 
 pub struct IndexExpr{
+pub:
 	left Expr
 	index Expr
 	left_type Type
@@ -235,6 +268,7 @@ pub struct IndexExpr{
 }
 
 pub struct InfixExpr{
+pub:
 	left Expr
 	left_type Type
 	right Expr
@@ -244,11 +278,13 @@ pub struct InfixExpr{
 }
 
 pub struct IntegerLiteral{
+pub:
 	val string
 	pos token.Pos
 }
 
 pub struct MatchExpr{
+pub:
 	cond Expr
 	cond_type Type
 	branches []MatchBranch
@@ -257,6 +293,7 @@ pub struct MatchExpr{
 }
 
 pub struct MatchBranch{
+pub:
 	exprs []Expr
 	expr_types []Type
 	stmts []Stmt
@@ -264,6 +301,7 @@ pub struct MatchBranch{
 }
 
 pub struct MapInit{
+pub:
 	typ Type
 	key_type Type
 	val_type Type
@@ -273,17 +311,20 @@ pub struct MapInit{
 }
 
 pub struct ParExpr {
+pub:
 	expr Expr
 	pos token.Pos
 }
 
 pub struct PrefixExpr{
+pub:
 	op token.TokenKind
 	right Expr
 	pos token.Pos
 }
 
 pub struct SelectorExpr{
+pub:
 	expr Expr
 	expr_type Type
 	field_name string
@@ -291,11 +332,13 @@ pub struct SelectorExpr{
 }
 
 pub struct StringLiteral{
+pub:
 	val string
 	pos token.Pos
 }
 
 pub struct StringInterLiteral{
+pub:
 	vals []string
 	exprs []Expr
 	expr_types []Type
@@ -303,6 +346,7 @@ pub struct StringInterLiteral{
 }
 
 pub struct StructInit{
+pub:
 	name string
 	typ Type
 	fields []StructInitField
@@ -310,34 +354,41 @@ pub struct StructInit{
 }
 
 pub struct StructInitField{
+pub:
 	name string
 	expr Expr
 	pos token.Pos
 }
 
 pub struct TypeOf {
+pub:
 	expr Expr
 	typ Type
 	pos token.Pos
 }
 
 pub struct EmptyExpr{
+pub:
 	pos token.Pos
 }
 
 pub struct PackageDecl{
+pub:
 	name string
 	full_name string
 }
 
 pub struct Import{
+pub:
 	name string
 	alias string
-	pos token.Pos
 	lang Language
+global:
+	pos token.Pos
 }
 
 pub struct File{
+pub:
 	path string
 	pkg_decl PackageDecl
 	imports []Import

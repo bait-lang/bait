@@ -3,6 +3,7 @@
 package ast
 
 pub struct Table {
+pub:
 	global_scope Scope
 	fun_decls map[string]FunDecl
 	type_idxs map[string]Type

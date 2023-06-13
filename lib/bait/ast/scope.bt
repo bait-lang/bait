@@ -8,6 +8,7 @@ pub struct Scope {
 }
 
 pub struct ScopeObject{
+pub mut:
 	kind ObjectKind
 	typ Type
 	is_pub bool

@@ -3,6 +3,7 @@
 package token
 
 pub struct Pos{
+pub:
 	line i32
 	col i32
 }

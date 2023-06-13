@@ -3,8 +3,8 @@
 package builtin
 
 struct string {
-	str #JS.String
 pub:
+	str #JS.String
 	length i32
 }
 
