@@ -16,12 +16,13 @@ pub:
 }
 
 pub struct AssignStmt{
+global:
+	left_type Type
+	right_type Type
 pub:
 	op token.TokenKind
 	left Expr
-	left_type Type
 	right Expr
-	right_type Type
 	pos token.Pos
 }
 
@@ -40,9 +41,10 @@ pub:
 }
 
 pub struct EnumField{
+global:
+	expr Expr
 pub:
 	name string
-	expr Expr
 	pos token.Pos
 }
 
@@ -70,12 +72,13 @@ pub:
 }
 
 pub struct ForInLoop{
+global:
+	expr_type Type
 pub:
 	label string
 	idxvar string
 	valvar string
 	expr Expr
-	expr_type Type
 	stmts []Stmt
 	pos token.Pos
 }
@@ -169,18 +172,20 @@ pub:
 }
 
 pub struct ArrayInit{
-pub:
-	exprs []Expr
+global:
 	typ Type
 	elem_type Type
+pub:
+	exprs []Expr
 	length_expr Expr := EmptyExpr{}
 	pos token.Pos
 }
 
 pub struct AsCast{
+global:
+	expr_type Type
 pub:
 	expr Expr
-	expr_type Type
 	target Type
 	pos token.Pos
 }
@@ -192,22 +197,24 @@ pub:
 }
 
 pub struct CallExpr{
-pub:
+global:
 	lang Language
 	name string
-	args []CallArg
 	return_type Type
+	left_type Type
+pub:
+	args []CallArg
 	is_method bool
 	left Expr := EmptyExpr{}
-	left_type Type
 	pkg string
 	pos token.Pos
 }
 
 pub struct CallArg {
+global:
+	typ Type
 pub:
 	expr Expr
-	typ Type
 }
 
 pub struct CharLiteral{
@@ -223,10 +230,11 @@ pub:
 }
 
 pub struct EnumVal {
-pub:
+global:
 	name string
-	val string
 	typ Type
+pub:
+	val string
 	pos token.Pos
 }
 
@@ -237,9 +245,10 @@ pub:
 }
 
 pub struct Ident{
-pub:
+global:
 	name string
 	is_mut bool
+pub:
 	pkg string
 	pos token.Pos
 }
@@ -259,20 +268,22 @@ pub:
 }
 
 pub struct IndexExpr{
+global:
+	is_selector bool
+	left_type Type
 pub:
 	left Expr
 	index Expr
-	left_type Type
-	is_selector bool
 	pos token.Pos
 }
 
 pub struct InfixExpr{
+global:
+	left_type Type
+	right_type Type
 pub:
 	left Expr
-	left_type Type
 	right Expr
-	right_type Type
 	op token.TokenKind
 	pos token.Pos
 }
@@ -284,11 +295,12 @@ pub:
 }
 
 pub struct MatchExpr{
+global:
+	cond_type Type
+	is_sumtype bool
 pub:
 	cond Expr
-	cond_type Type
 	branches []MatchBranch
-	is_sumtype bool
 	pos token.Pos
 }
 
@@ -301,10 +313,11 @@ pub:
 }
 
 pub struct MapInit{
-pub:
+global:
 	typ Type
 	key_type Type
 	val_type Type
+pub:
 	keys []Expr
 	vals []Expr
 	pos token.Pos
@@ -324,9 +337,10 @@ pub:
 }
 
 pub struct SelectorExpr{
+global:
+	expr_type Type
 pub:
 	expr Expr
-	expr_type Type
 	field_name string
 	pos token.Pos
 }
@@ -347,10 +361,11 @@ pub:
 
 pub struct StructInit{
 pub:
-	name string
 	typ Type
 	fields []StructInitField
 	pos token.Pos
+global:
+	name string
 }
 
 pub struct StructInitField{
@@ -361,9 +376,10 @@ pub:
 }
 
 pub struct TypeOf {
+global:
+	typ Type
 pub:
 	expr Expr
-	typ Type
 	pos token.Pos
 }
 
@@ -388,12 +404,13 @@ global:
 }
 
 pub struct File{
+global:
+	infos []errors.Message
+	warnings []errors.Message
+	errors []errors.Message
 pub:
 	path string
 	pkg_decl PackageDecl
 	imports []Import
 	stmts []Stmt
-	infos []errors.Message
-	warnings []errors.Message
-	errors []errors.Message
 }

@@ -10,6 +10,7 @@ import bait.token
 pub struct Checker{
 	pref preference.Prefs
 	table ast.Table
+mut:
 	scope ast.Scope
 	path string
 	pkg string
@@ -20,6 +21,7 @@ pub struct Checker{
 	expected_type ast.Type
 	is_lhs_assign bool
 	export_names []string
+pub mut:
 	infos []errors.Message
 	warnings []errors.Message
 	errors []errors.Message

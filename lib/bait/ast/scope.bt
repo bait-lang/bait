@@ -3,14 +3,16 @@
 package ast
 
 pub struct Scope {
+pub:
 	parent Scope
 	objects map[string]ScopeObject
 }
 
 pub struct ScopeObject{
+global:
+	typ Type
 pub mut:
 	kind ObjectKind
-	typ Type
 	is_pub bool
 	is_mut bool
 	pkg string
