@@ -11,6 +11,7 @@ pub struct ScopeObject{
 	kind ObjectKind
 	typ Type
 	is_pub bool
+	is_mut bool
 	pkg string
 	expr Expr := EmptyExpr{} // Only for constants. Allows resolving their type early
 }
