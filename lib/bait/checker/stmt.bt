@@ -143,8 +143,13 @@ fun (c Checker) enum_decl(node ast.EnumDecl) {
 	}
 }
 
-fun (c Checker) register_label(label string) {
+fun (c Checker) register_label(label string, pos token.Pos) {
 	if label.length == 0 {
+		return
+	}
+
+	if c.scope.is_known(label) {
+		c.error('redefinition of "${label}"', pos)
 		return
 	}
 
@@ -155,7 +160,7 @@ fun (c Checker) register_label(label string) {
 
 fun (c Checker) for_loop(node ast.ForLoop) {
 	c.open_scope()
-	c.register_label(node.label)
+	c.register_label(node.label, node.pos)
 	c.expr(node.cond)
 	c.stmts(node.stmts)
 	c.close_scope()
@@ -163,7 +168,7 @@ fun (c Checker) for_loop(node ast.ForLoop) {
 
 fun (c Checker) for_classic_loop(node ast.ForClassicLoop) {
 	c.open_scope()
-	c.register_label(node.label)
+	c.register_label(node.label, node.pos)
 	c.stmt(node.init)
 	c.expr(node.cond)
 	c.stmt(node.inc)
@@ -173,7 +178,7 @@ fun (c Checker) for_classic_loop(node ast.ForClassicLoop) {
 
 fun (c Checker) for_in_loop(node ast.ForInLoop) {
 	c.open_scope()
-	c.register_label(node.label)
+	c.register_label(node.label, node.pos)
 	node.expr_type = c.expr(node.expr)
 	sym := c.table.get_sym(node.expr_type)
 	mut idx_type := ast.PLACEHOLDER_TYPE
@@ -213,7 +218,7 @@ fun (c Checker) loop_control_stmt(node ast.LoopControlStmt) {
 
 	obj := c.scope.get(node.label)
 	if obj.kind != .label {
-		c.error('label ${node.label} not found', node.pos)
+		c.error('label "${node.label}" not found', node.pos)
 	}
 }
 
