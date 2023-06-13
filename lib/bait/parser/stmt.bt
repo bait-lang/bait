@@ -84,11 +84,14 @@ fun (p Parser) script_mode_main() ast.FunDecl {
 
 fun (p Parser) stmt() ast.Stmt {
 	match p.tok.kind {
+		.name {
+			return p.assign_or_expr_stmt()
+		}
 		.key_assert {
 			return p.assert_stmt()
 		}
-		.key_mut, .name {
-			return p.assign_or_expr_stmt()
+		.key_mut {
+			return p.assign_stmt()
 		}
 		.key_break, .key_continue {
 			return p.control_stmt()
@@ -105,14 +108,6 @@ fun (p Parser) stmt() ast.Stmt {
 	}
 }
 
-fun (p Parser) assign_or_expr_stmt()ast.Stmt{
-	left := p.expr(0)
-	if p.tok.kind.is_assign() {
-		return p.assign_stmt(left)
-	}
-	return ast.ExprStmt{expr = left}
-}
-
 fun (p Parser) assert_stmt() ast.AssertStmt{
 	p.next()
 	pos := p.tok.pos
@@ -123,7 +118,21 @@ fun (p Parser) assert_stmt() ast.AssertStmt{
 	}
 }
 
-fun (p Parser) assign_stmt(left ast.Expr) ast.AssignStmt {
+fun (p Parser) assign_or_expr_stmt()ast.Stmt{
+	left := p.expr(0)
+	if p.tok.kind.is_assign() {
+		return p.partial_assign_stmt(left)
+	}
+	return ast.ExprStmt{expr = left}
+}
+
+fun (p Parser) assign_stmt() ast.AssignStmt {
+	pos := p.tok.pos
+	left := p.expr(0)
+	return p.partial_assign_stmt(left)
+}
+
+fun (p Parser) partial_assign_stmt(left ast.Expr) ast.AssignStmt {
 	pos := p.tok.pos
 	op := p.tok.kind
 	p.next()
@@ -219,7 +228,7 @@ fun (p Parser) for_loop()ast.Stmt{
 	p.next()
 	if p.next_tok.kind == .decl_assign {
 		p.is_for_init = true
-		init := p.assign_or_expr_stmt()
+		init := p.assign_stmt()
 		p.is_for_init = false
 		p.check(.semicolon)
 		cond := p.expr(0)
