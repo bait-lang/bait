@@ -10,11 +10,11 @@ fun main() {
 ## Key Features
 > **Note** Bait is in an alpha state. Incomplete features are marked with :construction:. Breaking changes may occur.
 
-- Clean and simple syntax that is easy to learn
-- :construction: type and memory safety with immutability by default
-- JavaScript backend
+- Clean, simple and consistent syntax
+- Type and memory safety with immutability by default
+- JavaScript backend (NodeJS)
 - :construction: C and native backends
-- :construction: cross-platform support and cross-compilation
+- :construction: Cross-platform support and cross-compilation
 
 ## Documentation
 - [Language Overview](docs/docs.md)

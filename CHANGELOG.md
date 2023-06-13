@@ -21,6 +21,7 @@ _unreleased_
 - Allow typeless array inits based on context
 
 ### Error Checking
+- Enforce default immutability of variables and parameters
 - Prevent duplicate struct or enum field names
 - Require initialization of struct fields that are a sum type
 - Prevent empty enums
