@@ -273,6 +273,23 @@ fun (r Rect) area() i32 {
 }
 ```
 
+### Access Modifiers
+By default struct fields are private and immutable.
+This can be changed by the following labels that apply to all following fields:
+```bait
+pub struct Foo{
+	a i32 // private immutable (default)
+mut:
+	b i32 // private mutable
+pub:
+	c i32 // public readonly
+pub mut:
+	d i32 // public readonly but mutable in the parent package
+global:
+	e i32 // mutable by other packages
+}
+```
+
 ## Enums
 ```bait
 enum Language {

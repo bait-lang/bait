@@ -21,7 +21,8 @@ _unreleased_
 - Allow typeless array inits based on context
 
 ### Error Checking
-- Enforce default immutability of variables and parameters
+- Enforce default immutability of variables, parameters and struct fields
+- Make struct fields private by default
 - Prevent duplicate struct or enum field names
 - Require initialization of struct fields that are a sum type
 - Prevent empty enums
@@ -34,6 +35,7 @@ _unreleased_
 
 ### Compiler
 - Struct declaration and enum fields can have default values
+- Implement struct field access modifiers `mut`, `pub`, `pub mut` and `global`
 - Add labelled `break` and `continue`
 - Arrays can be preallocated with a given length
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
