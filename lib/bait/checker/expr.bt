@@ -340,6 +340,11 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 			c.error('${sym.name} has no field ${node.field_name}', node.pos)
 			return ast.VOID_TYPE
 		}
+
+		if not field.is_pub and sym.pkg != c.pkg {
+			// TODO error
+			c.warn('field ${sym.name}.${node.field_name} is private', node.pos)
+		}
 		return field.typ
 	}
 	if sym.kind == .sum_type {
