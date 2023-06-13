@@ -84,17 +84,20 @@ fun (p Parser) script_mode_main() ast.FunDecl {
 
 fun (p Parser) stmt() ast.Stmt {
 	match p.tok.kind {
+		.name {
+			return p.stmt_with_name()
+		}
 		.key_assert {
 			return p.assert_stmt()
 		}
-		.key_mut, .name {
-			return p.assign_or_expr_stmt()
+		.key_mut {
+			return p.assign_stmt()
 		}
 		.key_break, .key_continue {
-			return p.control_stmt()
+			return p.loop_control_stmt()
 		}
 		.key_for {
-			return p.for_loop()
+			return p.for_loop('')
 		}
 		.key_return {
 			return p.return_stmt()
@@ -105,10 +108,17 @@ fun (p Parser) stmt() ast.Stmt {
 	}
 }
 
-fun (p Parser) assign_or_expr_stmt()ast.Stmt{
+fun (p Parser) stmt_with_name()ast.Stmt{
+	if p.next_tok.kind == .colon {
+		label := p.tok.val
+		p.next()
+		p.next()
+		return p.for_loop(label)
+	}
+
 	left := p.expr(0)
 	if p.tok.kind.is_assign() {
-		return p.assign_stmt(left)
+		return p.partial_assign_stmt(left)
 	}
 	return ast.ExprStmt{expr = left}
 }
@@ -123,7 +133,13 @@ fun (p Parser) assert_stmt() ast.AssertStmt{
 	}
 }
 
-fun (p Parser) assign_stmt(left ast.Expr) ast.AssignStmt {
+fun (p Parser) assign_stmt() ast.AssignStmt {
+	pos := p.tok.pos
+	left := p.expr(0)
+	return p.partial_assign_stmt(left)
+}
+
+fun (p Parser) partial_assign_stmt(left ast.Expr) ast.AssignStmt {
 	pos := p.tok.pos
 	op := p.tok.kind
 	p.next()
@@ -158,11 +174,19 @@ fun (p Parser) const_decl()ast.ConstDecl{
 	}
 }
 
-fun (p Parser) control_stmt()ast.LoopControlStmt{
+fun (p Parser) loop_control_stmt()ast.LoopControlStmt{
 	pos := p.tok.pos
+	kind := p.tok.kind
 	p.next()
+
+	mut label := ''
+	if p.tok.kind == .name and p.tok.pos.line == p.prev_tok.pos.line {
+		label = p.check_name()
+	}
+
 	return ast.LoopControlStmt{
-		kind = p.prev_tok.kind
+		kind = kind
+		label = label
 		pos = pos
 	}
 }
@@ -214,12 +238,12 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 	}
 }
 
-fun (p Parser) for_loop()ast.Stmt{
+fun (p Parser) for_loop(label string)ast.Stmt{
 	pos := p.tok.pos
 	p.next()
 	if p.next_tok.kind == .decl_assign {
 		p.is_for_init = true
-		init := p.assign_or_expr_stmt()
+		init := p.assign_stmt()
 		p.is_for_init = false
 		p.check(.semicolon)
 		cond := p.expr(0)
@@ -227,6 +251,7 @@ fun (p Parser) for_loop()ast.Stmt{
 		inc := p.stmt()
 		stmts := p.parse_block()
 		return ast.ForClassicLoop{
+			label = label
 			init = init
 			cond = cond
 			inc = inc
@@ -247,6 +272,7 @@ fun (p Parser) for_loop()ast.Stmt{
 		p.is_struct_possible = true
 		stmts := p.parse_block()
 		return ast.ForInLoop{
+			label = label
 			idxvar = idxvar
 			valvar = valvar
 			expr = expr
@@ -257,6 +283,7 @@ fun (p Parser) for_loop()ast.Stmt{
 	cond := p.expr(0)
 	stmts := p.parse_block()
 	return ast.ForLoop{
+		label = label
 		cond = cond
 		stmts = stmts
 		pos = pos

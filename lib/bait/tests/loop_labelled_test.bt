@@ -1,0 +1,19 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+fun test_labelled_break_and_continue() {
+	mut count := 0
+	outer: for i := 1; i <= 5; i += 1 {
+		for true {
+			if i > 3 {
+				break outer
+			}
+			if i == 2 {
+				continue outer
+			}
+			count += i
+			break
+		}
+	}
+	assert count == 4
+}

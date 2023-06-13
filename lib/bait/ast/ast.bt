@@ -46,12 +46,14 @@ pub struct ExprStmt{
 }
 
 pub struct ForLoop{
+	label string
 	cond Expr
 	stmts []Stmt
 	pos token.Pos
 }
 
 pub struct ForClassicLoop{
+	label string
 	init Stmt
 	cond Expr
 	inc Stmt
@@ -60,6 +62,7 @@ pub struct ForClassicLoop{
 }
 
 pub struct ForInLoop{
+	label string
 	idxvar string
 	valvar string
 	expr Expr
@@ -96,6 +99,7 @@ pub struct Param{
 
 pub struct LoopControlStmt{
 	kind token.TokenKind
+	label string
 	pos token.Pos
 }
 

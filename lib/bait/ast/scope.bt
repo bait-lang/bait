@@ -22,6 +22,7 @@ pub enum ObjectKind {
 	function
 	global_
 	package_
+	label
 }
 
 pub fun (s Scope) register(name string, obj ScopeObject) {

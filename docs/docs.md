@@ -152,8 +152,7 @@ struct PrivStruct {}
 type PrivAlias := PrivStruct // PrivAlias is private
 ```
 
-## Statements
-### If
+## If
 ```bait
 a := 5
 b := 10
@@ -166,7 +165,7 @@ if a > b {
 }
 ```
 
-### Match
+## Match
 ```bait
 day := 0
 match day {
@@ -176,8 +175,8 @@ match day {
 }
 ```
 
-### For Loops
-#### `for`/`in`
+## For Loops
+### `for`/`in`
 ```bait
 arr := [1, 2, 3]
 for x in arr {
@@ -192,7 +191,7 @@ for key, val in mymap {
 }
 ```
 
-#### Conditional for
+### Conditional for
 ```bait
 mut i := 100
 for i >= 0 {
@@ -208,11 +207,37 @@ for true {
 }
 ```
 
-#### Classic for
+### Classic for
 ```bait
 for i := 0; i < 10; i += 1 {
     println(i)
 }
+```
+
+### Labelled `break` and `continue`
+By default `break` and `continue` affect the innermost loop.<br>
+To break or continue an outer loop, you can use labels:
+
+```bait
+outer: for i := 0; i < 5; i += 1 {
+    for j := 0; j < 5; j += 1 {
+        if i == 2 {
+            break outer
+        }
+        if j == 2 {
+            continue outer
+        }
+        println(j)
+    }
+}
+```
+
+The above code will print:
+```
+0
+1
+0
+1
 ```
 
 ## Structs
