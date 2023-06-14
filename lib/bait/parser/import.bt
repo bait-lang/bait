@@ -6,13 +6,21 @@ import bait.ast
 import bait.token
 
 fun (p Parser) add_builtin_imports() []ast.Import {
-	mut imports := []ast.Import
+	if p.pkg_name == 'builtin' {
+		return []
+	}
 
 	// Everything implicitly imports builtin
-	if p.pkg_name != 'builtin' {
+	mut imports := []ast.Import
+	imports.push(ast.Import{
+		name = 'builtin'
+		alias = 'builtin'
+	})
+
+	if p.pref.is_test and p.pkg_name != 'builtin.testing' {
 		imports.push(ast.Import{
-			name = 'builtin'
-			alias = 'builtin'
+			name = 'builtin.testing'
+			alias = 'testing'
 		})
 	}
 

@@ -105,11 +105,11 @@ fun (g Gen) gen_test_main() {
 		if func.is_test {
 			nr_test_funs += 1
 			name := js_name(func.name)
-			g.writeln('TestRunner_set_test_info(test_runner, from_js_string("${g.path}"), from_js_string("${name}"))')
+			g.writeln('builtin__testing__TestRunner_set_test_info(builtin__testing__test_runner, from_js_string("${g.path}"), from_js_string("${name}"))')
 			g.writeln('${name}()')
 		}
 	}
-	g.writeln('exit(TestRunner_exit_code(test_runner))')
+	g.writeln('exit(builtin__testing__TestRunner_exit_code(builtin__testing__test_runner))')
 	g.indent -= 1
 	g.writeln('}')
 
