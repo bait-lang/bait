@@ -5,7 +5,73 @@ package c
 import bait.preference
 import bait.ast
 
+// Reserved keywords and "main"
+// See https://www.ibm.com/docs/en/developer-for-zos/14.2?topic=programs-c-reserved-keywords
+const C_RESERVED := ['auto', 'break', 'case', 'char', 'const', 'continue', 'default', 'do', 'double', 'else', 'enum', 'extern', 'float', 'for', 'goto', 'if', 'inline', 'int', 'long', 'register', 'restrict', 'return', 'short', 'signed', 'sizeof', 'static', 'struct', 'switch', 'typedef', 'union', 'unsigned', 'void', 'volatile', 'while', 'main']
+
+struct Gen {
+	pref preference.Prefs
+	table ast.Table
+mut:
+	path string
+	pkg string
+	fun_decls_out string
+	out string
+	indent i32 := -1
+	empty_line bool := true
+}
+
 pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
-	// TODO
-	return ''
+	mut g := Gen{
+		pref = pref
+		table = table
+	}
+	for file in files {
+		g.path = file.path
+		g.pkg = file.pkg_decl.full_name
+		g.stmts(file.stmts)
+		g.out += "\n"
+	}
+	if not g.pref.is_library {
+		g.c_main()
+	}
+	return g.fun_decls_out + g.out
+}
+
+fun (g Gen) typ(typ ast.Type) string {
+	sym := g.table.get_sym(typ)
+	return sym.name
+}
+
+fun (g Gen) c_main() {
+	g.writeln('int main(int argc, char* argv[]) {')
+	g.writeln('\tbait_main();')
+	g.writeln('\treturn 0;')
+	g.writeln('}')
+}
+
+fun (g Gen) write_indent() {
+	if g.indent > 0 and g.empty_line {
+		g.out += '\t'.repeat(g.indent)
+	}
+}
+
+fun (g Gen) write(s string){
+	g.write_indent()
+	g.out += s
+	g.empty_line = false
+}
+
+fun (g Gen) writeln (s string){
+	g.write_indent()
+	g.out += s + "\n"
+	g.empty_line = true
+}
+
+fun c_name(n string) string {
+	name := n.replace('.', '__').replace('[]', 'array_')
+	if C_RESERVED.contains(name) {
+		return 'bait_${name}'
+	}
+	return name
 }
