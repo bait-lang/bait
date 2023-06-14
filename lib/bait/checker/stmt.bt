@@ -58,6 +58,12 @@ fun (c Checker) assert_stmt(node ast.AssertStmt){
 fun (c Checker) assign_stmt(node ast.AssignStmt) {
 	if node.op == .decl_assign {
 		typ := c.expr(node.right)
+
+		if not node.left is ast.Ident {
+			c.error('cannot declare a variable with a non-identifier', node.pos)
+			return
+		}
+
 		left := node.left as ast.Ident
 		if c.scope.is_known(left.name) {
 			c.error('redefinition of ${left.name}', node.pos)

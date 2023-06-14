@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/assign/type_not_matches.in.bt:4:3 error: cannot assign type void to i32

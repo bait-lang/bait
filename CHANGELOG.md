@@ -21,25 +21,32 @@ _unreleased_
 - Allow typeless array inits based on context
 
 ### Error Checking
-- Enforce default immutability of variables, parameters and struct fields
-- Make struct fields private by default
-- Prevent duplicate struct or enum field names
-- Require initialization of struct fields that are a sum type
-- Prevent empty enums
-- Compiling normal projects must include a main package
-- Main package must contain a main function
-- Fix false-positive error with variable names matching an import of an import
-- Fix variable redefinition error not being thrown
+- Enums
+  - Cannot be declared empty
+  - Prevent duplicate enum variants
+- Structs
+  - Enforce immutability and privacy of struct fields
+  - Prevent duplicate field names
+  - Sum type fields must be initialized
+- Packages and Imports
+  - Compiling a folder must include a file with `package main`
+  - Main package must contain a main function
+  - Error if a imported package contains no Bait files
+  - Fix false-positive error with variable names matching an import of an import
+- Enforce default immutability of variables and parameters
 - Many fixes and improvements regarding symbol visibility
-- Error if a imported package contains no Bait files
+- Prevent assigning to non-identifiers
+- Fix variable redefinition error not being thrown
 
 ### Compiler
-- Struct declaration and enum fields can have default values
-- Implement struct field access modifiers `mut`, `pub`, `pub mut` and `global`
+- Struct Declarations
+  - Support default field values
+  - Attribute support for fields and add `@required`
+  - Implement field access modifiers `mut`, `pub`, `pub mut` and `global`
+- Enum fields can have default values
 - Add labelled `break` and `continue`
 - Arrays can be preallocated with a given length
 - Implement `@export: 'jsname'` that will generate `module.exports.jsname = fun`
-- Attribute support for struct fields and add `@required`
 - Fix printing type aliased values
 - Parser: Fix infinite loop with statements during script mode main function
 - Builder: Do not include files in a imported directory with unexpected package name

@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/assign/non_ident.in.bt:1:8 error: cannot declare a variable with a non-identifier
