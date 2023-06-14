@@ -5,6 +5,20 @@ package parser
 import bait.ast
 import bait.token
 
+fun (p Parser) add_builtin_imports() []ast.Import {
+	mut imports := []ast.Import
+
+	// Everything implicitly imports builtin
+	if p.pkg_name != 'builtin' {
+		imports.push(ast.Import{
+			name = 'builtin'
+			alias = 'builtin'
+		})
+	}
+
+	return imports
+}
+
 fun (p Parser) js_import() ast.Import {
 	name := p.tok.val
 	p.next()
@@ -44,7 +58,7 @@ fun (p Parser) bait_import() ast.Import {
 }
 
 fun (p Parser) import_stmts() [] ast.Import{
-	mut imports := []ast.Import
+	mut imports := p.add_builtin_imports()
 	for p.tok.kind == .key_import {
 		pos := p.tok.pos
 		p.next()

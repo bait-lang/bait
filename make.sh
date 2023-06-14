@@ -34,7 +34,7 @@ check_success() {
     return
   fi
 
-  if [ "$allow_retry" = true ]; then
+  if [ "$allow_retry" = true ] && [ $IS_LOCAL == 0 ]; then
     # Pull latest version of Bait
     echo "make: compilation failed. Retrying..."
     git pull --quiet
