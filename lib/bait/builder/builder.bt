@@ -57,10 +57,8 @@ pub fun compile(prefs preference.Prefs) i32 {
 		table = ast.new_table()
 	}
 
-	mut paths := b.collect_bait_files(resolve_import('builtin'))
-	paths = paths.concat(b.get_user_files(prefs.command))
-
 	// Tokenize and parse all specified files
+	mut paths := b.get_user_files(prefs.command)
 	mut files := []ast.File
 	for p in paths {
 		files.push(b.parse_source_file(p))
@@ -112,11 +110,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 	mut deps := map[string][]string
 	for f in files {
 		pkg_name := f.pkg_decl.full_name
-
-		// Everything implicitly imports builtin
-		if pkg_name != 'builtin' {
-			deps[pkg_name].push('builtin')
-		}
 
 		for imp in f.imports {
 			if imp.lang != .bait {
