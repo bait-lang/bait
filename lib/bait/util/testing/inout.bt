@@ -10,6 +10,24 @@ pub struct InOutRunner {
 	check_stdout bool // Compare expected to stdout instead of stderr
 }
 
+pub fun (runner InOutRunner) test_dir(dir string) {
+	if not os.is_dir(dir) {
+		return
+	}
+
+	expected := read_out_file('${dir}/expected.in.bt')
+	res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} run ${dir}')
+	runner.check_result(res, expected)
+}
+
+pub fun (runner InOutRunner) test_subdirs(root string) {
+	dirs := os.ls(root)
+	for dir in dirs {
+		in_dir := os.join_path(root, [dir])
+		runner.test_dir(in_dir)
+	}
+}
+
 fun (runner InOutRunner) check_result(res os.Result, expected string) {
 	if runner.check_stdout {
 		assert expected == res.stdout
@@ -40,20 +58,6 @@ pub fun in_out_runner(runner InOutRunner) {
 
 		expected := read_out_file(file)
 		res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} ${cmd} ${file}')
-		runner.check_result(res, expected)
-	}
-}
-
-pub fun in_out_dir_runner(runner InOutRunner) {
-	dirs := os.ls(runner.root)
-	for dir in dirs {
-		in_dir := os.join_path(runner.root, [dir])
-		if not os.is_dir(in_dir) {
-			continue
-		}
-
-		expected := read_out_file('${in_dir}/expected.in.bt')
-		res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} run ${in_dir}')
 		runner.check_result(res, expected)
 	}
 }
