@@ -167,13 +167,19 @@ fun (b Builder) code_gen_js() i32 {
 }
 
 fun (b Builder) code_gen_c() i32 {
-	// res := cgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
-	// ensure_dir_exists(os.dir(b.prefs.out_name))
-	// os.write_file(b.prefs.out_name, res)
+	res := cgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
+	ensure_dir_exists(os.dir(b.prefs.out_name))
+
+	tmp_c_path := '/tmp/' + os.file_name(b.prefs.out_name) + '.c'
+	os.write_file(tmp_c_path, res)
+	comp_res := os.system('cc ${tmp_c_path} -o ${b.prefs.out_name}')
+	if comp_res != 0 {
+		return comp_res
+	}
 
 	if b.prefs.should_run{
-		// run_res := os.system('node ${b.prefs.out_name}')
-		// return run_res
+		run_res := os.system('./${b.prefs.out_name}')
+		return run_res
 	}
 
 	return 0

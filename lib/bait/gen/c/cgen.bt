@@ -1,3 +1,11 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package c
+
+import bait.preference
+import bait.ast
+
+pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
+	// TODO
+	return ''
+}

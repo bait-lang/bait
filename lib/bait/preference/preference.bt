@@ -118,10 +118,15 @@ pub fun parse_args(args []string) Prefs {
 
 	// Set default out name if empty
 	if p.out_name.length == 0 {
+		mut ext := ''
+		if p.backend == .js {
+			ext = '.js'
+		}
+
 		if p.command.ends_with('.bt') {
-			p.out_name = p.command.replace('.bt', '.js')
+			p.out_name = p.command.replace('.bt', ext)
 		} else {
-			p.out_name = p.command + '.js'
+			p.out_name = p.command + ext
 		}
 	}
 
