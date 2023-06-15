@@ -1,6 +1,9 @@
+# ignore executable and build files
+*
+!*.*
+!*/
+*.js
+
 node_modules/
 
 *.code-workspace
-
-baitjs/
-*.js

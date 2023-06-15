@@ -15,7 +15,9 @@ struct Gen {
 mut:
 	path string
 	pkg string
+	type_defs_out string
 	fun_decls_out string
+	type_impls_out string
 	out string
 	indent i32 := -1
 	empty_line bool := true
@@ -35,7 +37,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	if not g.pref.is_library {
 		g.c_main()
 	}
-	return g.fun_decls_out + g.out
+	return g.type_defs_out + g.fun_decls_out + g.type_impls_out + '\n' + g.out
 }
 
 fun (g Gen) typ(typ ast.Type) string {
