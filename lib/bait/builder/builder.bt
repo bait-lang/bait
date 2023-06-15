@@ -8,6 +8,7 @@ import bait.errors
 import bait.parser
 import bait.checker
 import bait.gen.js as jsgen
+import bait.gen.c as cgen
 import bait.preference
 import bait.tokenizer
 
@@ -143,20 +144,41 @@ pub fun compile(prefs preference.Prefs) i32 {
 		return 1
 	}
 
-	// TODO properly select backend
-	if b.prefs.backend != .js {
-		errors.generic_error('Only the JS backend is supported right now.')
-		return 1
+	if b.prefs.backend == .c {
+		return b.code_gen_c()
 	}
 
-	// Run the code gen and write it to the outfile
-	res := jsgen.gen(sorted_files, b.table, b.prefs) + '\n'
+	return b.code_gen_js()
+}
+
+fun (b Builder) code_gen_js() i32 {
+	// Run JSGen and write it to the outfile
+	res := jsgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
 	ensure_dir_exists(os.dir(b.prefs.out_name))
 	os.write_file(b.prefs.out_name, res)
 
-	// Execute the resulting exe if required
+	// Execute the resulting file with NodeJS if required
 	if b.prefs.should_run{
 		run_res := os.system('node ${b.prefs.out_name}')
+		return run_res
+	}
+
+	return 0
+}
+
+fun (b Builder) code_gen_c() i32 {
+	res := cgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
+	ensure_dir_exists(os.dir(b.prefs.out_name))
+
+	tmp_c_path := '/tmp/' + os.file_name(b.prefs.out_name) + '.c'
+	os.write_file(tmp_c_path, res)
+	comp_res := os.system('cc ${tmp_c_path} -o ${b.prefs.out_name}')
+	if comp_res != 0 {
+		return comp_res
+	}
+
+	if b.prefs.should_run{
+		run_res := os.system('./${b.prefs.out_name}')
 		return run_res
 	}
 

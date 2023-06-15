@@ -1,0 +1,70 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package c
+
+import bait.ast
+import bait.errors
+
+fun (g Gen) stmts(stmts []ast.Stmt) {
+	g.indent += 1
+	for stmt in stmts {
+		g.stmt(stmt)
+	}
+	g.indent -= 1
+}
+
+fun (g Gen) stmt(stmt ast.Stmt) {
+	match stmt {
+		ast.FunDecl { g.fun_decl(stmt) }
+		ast.StructDecl { g.struct_decl(stmt) }
+		else {}
+	}
+}
+
+fun (g Gen) fun_decl(node ast.FunDecl) {
+	if node.lang != .bait {
+		return
+	}
+
+	type_str := g.typ(node.return_type)
+	mut name := c_name(node.name)
+	if node.is_method {
+		// TODO
+	}
+	s := '${type_str} ${name}('
+
+	g.fun_decls_out += s
+	g.write(s)
+	g.fun_params(node.params)
+	g.fun_decls_out += ');\n'
+	g.writeln(') {')
+	g.stmts(node.stmts)
+	g.writeln('};\n')
+}
+
+fun (g Gen) fun_params(params []ast.Param){
+	for i, p in params {
+		type_str := g.typ(p.typ)
+		s := '${type_str} ${c_name(p.name)}'
+
+		g.fun_decls_out += s
+		g.write(s)
+
+		if i < params.length - 1 {
+			g.fun_decls_out += ", "
+			g.write(", ")
+		}
+	}
+}
+
+fun (g Gen) struct_decl(node ast.StructDecl){
+	name := c_name(node.name)
+	g.type_defs_out += 'typedef struct ${name} ${name};\n'
+	g.type_impls_out += 'struct ${name} {\n'
+	for field in node.fields {
+		type_str := g.typ(field.typ)
+		field_name := c_name(field.name)
+		g.type_impls_out += '\t${type_str} ${field_name};\n'
+	}
+	g.type_impls_out += '};\n'
+}
