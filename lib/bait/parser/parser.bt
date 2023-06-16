@@ -150,8 +150,8 @@ fun (p Parser) parse_lang() ast.Language {
 	if p.tok.kind != .hash {
 		return .bait
 	}
-	p.next()
 	lang := ast.prefix_to_lang(p.tok.val)
+	p.next()
 	p.check(.dot)
 	return lang
 }

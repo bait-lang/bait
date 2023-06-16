@@ -19,10 +19,10 @@ pub fun (l Language) prepend_to(s string) string {
 }
 
 pub fun prefix_to_lang(p string) Language {
-	if p == '#C.' {
+	if p == 'C' {
 		return .c
 	}
-	if p == '#JS.' {
+	if p == 'JS' {
 		return .js
 	}
 	return .bait
