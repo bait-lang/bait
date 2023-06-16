@@ -28,6 +28,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		pref = pref
 		table = table
 	}
+	g.write_types()
 	for file in files {
 		g.path = file.path
 		g.pkg = file.pkg_decl.full_name
@@ -38,12 +39,6 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.c_main()
 	}
 	return g.type_defs_out + g.fun_decls_out + g.type_impls_out + '\n' + g.out
-}
-
-fun (g Gen) typ(typ ast.Type) string {
-	sym := g.table.get_sym(typ)
-	ptrs := '*'.repeat(typ.get_nr_amp())
-	return sym.name + ptrs
 }
 
 fun (g Gen) c_main() {

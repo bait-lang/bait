@@ -16,7 +16,8 @@ fun (g Gen) stmts(stmts []ast.Stmt) {
 fun (g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
 		ast.FunDecl { g.fun_decl(stmt) }
-		ast.StructDecl { g.struct_decl(stmt) }
+		ast.StructDecl {} // see write_types()
+		ast.TypeDecl {} // see write_types()
 		else {}
 	}
 }
@@ -55,16 +56,4 @@ fun (g Gen) fun_params(params []ast.Param){
 			g.write(", ")
 		}
 	}
-}
-
-fun (g Gen) struct_decl(node ast.StructDecl){
-	name := c_name(node.name)
-	g.type_defs_out += 'typedef struct ${name} ${name};\n'
-	g.type_impls_out += 'struct ${name} {\n'
-	for field in node.fields {
-		type_str := g.typ(field.typ)
-		field_name := c_name(field.name)
-		g.type_impls_out += '\t${type_str} ${field_name};\n'
-	}
-	g.type_impls_out += '};\n'
 }

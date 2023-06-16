@@ -4,5 +4,26 @@ package ast
 
 pub enum Language {
 	bait
+	c
 	js
+}
+
+pub fun (l Language) prepend_to(s string) string {
+	if l == .bait {
+		return s
+	}
+	if l == .c {
+		return '#C.' + s
+	}
+	return '#JS.' + s
+}
+
+pub fun prefix_to_lang(p string) Language {
+	if p == '#C.' {
+		return .c
+	}
+	if p == '#JS.' {
+		return .js
+	}
+	return .bait
 }

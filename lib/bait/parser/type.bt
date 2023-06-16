@@ -32,7 +32,7 @@ fun (p Parser) parse_type() ast.Type {
 	if p.tok.pos.line != p.prev_tok.pos.line {
 		return ast.PLACEHOLDER_TYPE
 	}
-	mut name := p.prepend_lang(lang, p.check_name())
+	mut name := lang.prepend_to(p.check_name())
 
 	// Map type
 	if name == 'map' {
