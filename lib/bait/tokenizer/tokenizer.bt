@@ -187,6 +187,9 @@ fun (t Tokenizer) next_token() token.Token {
 				}
 				return t.new_token(.rcur, "")
 			}
+			`&` {
+				return t.new_token(.amp, "")
+			}
 			`|` {
 				return t.new_token(.pipe, "")
 			}

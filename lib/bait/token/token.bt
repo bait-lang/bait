@@ -45,6 +45,7 @@ pub enum TokenKind {
 	rbr
 	lcur
 	rcur
+	amp
 	pipe
 	dollar
 	hash
@@ -240,6 +241,7 @@ pub fun (kind TokenKind) str() string {
 		.rbr { return 'rbr' }
 		.lcur { return 'lcur' }
 		.rcur { return 'rcur' }
+		.amp { return 'amp' }
 		.pipe { return 'pipe' }
 		.dollar { return 'dollar' }
 		.hash { return 'hash' }

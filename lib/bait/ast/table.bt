@@ -25,12 +25,12 @@ pub fun (t Table) get_idx(name string) Type {
 	return t.type_idxs[name]
 }
 
-pub fun (t Table) get_sym(idx Type) TypeSymbol {
-	return t.type_symbols[idx]
+pub fun (t Table) get_sym(typ Type) TypeSymbol {
+	return t.type_symbols[typ.idx()]
 }
 
-pub fun (t Table) type_name(idx Type) string {
-	return t.get_sym(idx).name
+pub fun (t Table) type_name(typ Type) string {
+	return t.get_sym(typ).name
 }
 
 pub fun (t Table) register_sym(sym TypeSymbol) Type {

@@ -42,7 +42,8 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 
 fun (g Gen) typ(typ ast.Type) string {
 	sym := g.table.get_sym(typ)
-	return sym.name
+	ptrs := '*'.repeat(typ.get_nr_amp())
+	return sym.name + ptrs
 }
 
 fun (g Gen) c_main() {

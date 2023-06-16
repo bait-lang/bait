@@ -6,6 +6,13 @@ import bait.ast
 import bait.token
 
 fun (p Parser) parse_type() ast.Type {
+	// Pointers
+	mut nr_amp := 0
+	for p.tok.kind == .amp{
+		p.next()
+		nr_amp += 1
+	}
+
 	// Array type
 	if p.tok.kind == .lbr{
 		p.next()
@@ -44,22 +51,27 @@ fun (p Parser) parse_type() ast.Type {
 	}
 
 	// Primitive types
+	mut typ := ast.PLACEHOLDER_TYPE
 	match name{
-		'i8' { return ast.I8_TYPE }
-		'i16' { return ast.I16_TYPE }
-		'i32' { return ast.I32_TYPE }
-		'i64' { return ast.I64_TYPE }
-		'u8' { return ast.U8_TYPE }
-		'u16' { return ast.U16_TYPE }
-		'u32' { return ast.U32_TYPE }
-		'u64' { return ast.U64_TYPE }
-		'f32' { return ast.F32_TYPE }
-		'f64' { return ast.F64_TYPE }
-		'bool' { return ast.BOOL_TYPE }
-		'string' { return ast.STRING_TYPE }
-		'any' { return ast.ANY_TYPE }
+		'i8' { typ = ast.I8_TYPE }
+		'i16' { typ = ast.I16_TYPE }
+		'i32' { typ = ast.I32_TYPE }
+		'i64' { typ = ast.I64_TYPE }
+		'u8' { typ = ast.U8_TYPE }
+		'u16' { typ = ast.U16_TYPE }
+		'u32' { typ = ast.U32_TYPE }
+		'u64' { typ = ast.U64_TYPE }
+		'f32' { typ = ast.F32_TYPE }
+		'f64' { typ = ast.F64_TYPE }
+		'bool' { typ = ast.BOOL_TYPE }
+		'string' { typ = ast.STRING_TYPE }
+		'any' { typ = ast.ANY_TYPE }
+		else { typ = p.table.find_type_or_add_placeholder(name) }
 	}
-	return p.table.find_type_or_add_placeholder(name)
+	if nr_amp > 0 {
+		typ = typ.set_nr_amp(nr_amp)
+	}
+	return typ
 }
 
 fun (p Parser) parse_fun_type() ast.Type {
