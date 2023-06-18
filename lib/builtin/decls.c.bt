@@ -20,3 +20,5 @@ pub interface #C.double {}
 
 // actual params: format &u8, ...&void
 pub fun #C.printf(format &u8, s &u8)
+
+pub fun #C.strlen(cs &u8) i32

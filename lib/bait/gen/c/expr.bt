@@ -4,10 +4,12 @@ package c
 
 import bait.ast
 import bait.errors
+import bait.util
 
 fun (g Gen) expr(expr ast.Expr) {
 	match expr {
 		ast.CallExpr { g.call_expr(expr) }
+		ast.StringLiteral { g.string_literal(expr) }
 		else {}
 	}
 }
@@ -33,4 +35,11 @@ fun (g Gen) call_args(args []ast.CallArg) {
 			g.write(", ")
 		}
 	}
+}
+
+fun (g Gen) string_literal(node ast.StringLiteral) {
+	val := util.escape_char(node.val.replace('\n', '\\n'), `\"`)
+	g.write('from_c_string("')
+	g.write(val)
+	g.write('")')
 }
