@@ -6,8 +6,9 @@ import os
 
 pub struct InOutRunner {
 	root string // Root directory to search tests in
-	cmd_options string // Additional cmd options for compiling the tests
 	check_stdout bool // Compare expected to stdout instead of stderr
+global:
+	cmd_options string // Additional cmd options for compiling the tests
 }
 
 pub fun (runner InOutRunner) test_dir(dir string) {
