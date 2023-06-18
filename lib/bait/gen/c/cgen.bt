@@ -21,6 +21,7 @@ mut:
 	out string
 	indent i32 := -1
 	empty_line bool := true
+	foreign_imports []string // C header files
 }
 
 pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
@@ -32,13 +33,33 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	for file in files {
 		g.path = file.path
 		g.pkg = file.pkg_decl.full_name
+
+		g.process_imports(file.imports)
 		g.stmts(file.stmts)
 		g.out += "\n"
 	}
 	if not g.pref.is_library {
 		g.c_main()
 	}
-	return g.type_defs_out + g.fun_decls_out + g.type_impls_out + '\n' + g.out
+	return g.headers() + g.type_defs_out + g.fun_decls_out + g.type_impls_out + '\n' + g.out
+}
+
+fun (g Gen) process_imports(imports []ast.Import) {
+	for imp in imports {
+		// TODO handle alias clash
+		if imp.lang == .bait or g.foreign_imports.contains(imp.name) {
+			continue
+		}
+		g.foreign_imports.push(imp.name)
+	}
+}
+
+fun (g Gen) headers() string {
+	mut headers := ''
+	for name in g.foreign_imports {
+		headers += '#include <${name}>\n'
+	}
+	return headers + '\n'
 }
 
 fun (g Gen) c_main() {

@@ -1,0 +1,13 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package builtin
+
+type i8 := #C.int8_t
+type i16 := #C.int16_t
+type i32 := #C.int32_t
+type i64 := #C.int64_t
+
+type u8 := #C.uint8_t
+type u16 := #C.uint16_t
+type u32 := #C.uint32_t
+type u64 := #C.uint64_t
