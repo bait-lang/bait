@@ -4,32 +4,55 @@ package testing
 
 import os
 
-pub fun build_file(dir string, file string) i32 {
-	cmd := 'node ${$BAITEXE} ${dir}/${file}'
+pub struct BuildRunner{
+	root string
+pub mut:
+	fails i32
+global:
+	cmd_options string
+}
+
+pub fun (runner BuildRunner) build_single(name string) {
+	cmd := 'node ${$BAITEXE} ${runner.cmd_options} ${runner.root}/${name}'
 	code := os.system(cmd)
 
 	if code == 0 {
-		println('OK ${file}')
-		return 0
+		println('OK ${name}')
+		return
 	}
 
-	eprintln('FAIL ${file}')
-	return 1
+	eprintln('FAIL ${name}')
+	runner.fails += 1
 }
 
-pub fun build_files_in_dir(dir string) {
-	mut fails := 0
-	files := os.ls(dir)
-
+pub fun (runner BuildRunner) build_all_in_root() {
+	files := os.ls(runner.root)
 	for file in files {
 		if not file.ends_with('.bt') {
 			continue
 		}
 
-		fails += build_file(dir, file)
+		runner.build_single(file)
 	}
+}
 
-	if fails > 0 {
+@deprecated: 'use BuildRunner instead'
+pub fun build_file(dir string, file string) i32 {
+	mut r := BuildRunner{
+		root = dir
+	}
+	r.build_single(file)
+	return r.fails
+}
+
+@deprecated: 'use BuildRunner instead'
+pub fun build_files_in_dir(dir string) {
+	mut r := BuildRunner{
+		root = dir
+	}
+	r.build_all_in_root()
+
+	if r.fails > 0 {
 		exit(1)
 	}
 }
