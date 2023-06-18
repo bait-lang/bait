@@ -12,6 +12,7 @@ fun (g Gen) expr(expr ast.Expr) {
 		ast.Ident { g.ident(expr) }
 		ast.SelectorExpr { g.selector_expr(expr) }
 		ast.StringLiteral { g.string_literal(expr) }
+		ast.StructInit { g.struct_init(expr) }
 		else {}
 	}
 }
@@ -54,4 +55,35 @@ fun (g Gen) string_literal(node ast.StringLiteral) {
 	g.write('from_c_string("')
 	g.write(val)
 	g.write('")')
+}
+
+fun (g Gen) struct_init(node ast.StructInit) {
+	type_str := g.typ(node.typ)
+	g.write('(${type_str}){')
+
+	mut inited_fields := []string
+	for field in node.fields {
+		inited_fields.push(field.name)
+	}
+
+	info := g.table.get_sym(node.typ).info as ast.StructInfo
+	for i, field in info.fields {
+		name := c_name(field.name)
+		g.write('.${name} = ')
+		init_idx := inited_fields.index(field.name)
+		if init_idx == -1 {
+			g.write('0')
+		} else {
+			g.expr(node.fields[init_idx].expr)
+		}
+		if i < info.fields.length - 1 {
+			g.write(', ')
+		}
+	}
+
+	if info.fields.length == 0 {
+		g.write('0')
+	}
+
+	g.write('}')
 }
