@@ -15,10 +15,18 @@ fun (g Gen) stmts(stmts []ast.Stmt) {
 
 fun (g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
+		ast.ExprStmt { g.expr_stmt(stmt) }
 		ast.FunDecl { g.fun_decl(stmt) }
 		ast.StructDecl {} // see write_types()
 		ast.TypeDecl {} // see write_types()
 		else {}
+	}
+}
+
+fun (g Gen) expr_stmt(node ast.ExprStmt) {
+	g.expr(node.expr)
+	if not g.empty_line {
+		g.writeln(";")
 	}
 }
 

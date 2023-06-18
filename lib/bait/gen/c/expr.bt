@@ -7,6 +7,30 @@ import bait.errors
 
 fun (g Gen) expr(expr ast.Expr) {
 	match expr {
+		ast.CallExpr { g.call_expr(expr) }
 		else {}
+	}
+}
+
+fun (g Gen) call_expr(node ast.CallExpr) {
+	// TODO method
+	if node.lang == .bait{
+		g.write(c_name(node.name))
+	} else {
+		g.write(node.name)
+	}
+	// TODO println
+	g.write('(')
+	// TODO method receiver
+	g.call_args(node.args)
+	g.write(')')
+}
+
+fun (g Gen) call_args(args []ast.CallArg) {
+	for i, a in args {
+		g.expr(a.expr)
+		if i < args.length - 1 {
+			g.write(", ")
+		}
 	}
 }

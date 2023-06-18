@@ -295,13 +295,14 @@ fun (p Parser) enum_val(has_name bool) ast.EnumVal{
 }
 
 fun (p Parser) hash_expr()ast.Expr{
-	p.check(.hash)
-	p.check(.dot)
+	lang := p.parse_lang()
 	if p.tok.kind != .string {
-		p.expr_pkg = 'JS__'
-		p.expr_pkg += p.check_name()
-		p.check(.dot)
-		return p.fun_call(.js)
+		if lang == .js {
+			p.expr_pkg = 'JS__'
+			p.expr_pkg += p.check_name()
+			p.check(.dot)
+		}
+		return p.fun_call(lang)
 	}
 
 	str_node := p.string_literal() as ast.StringLiteral

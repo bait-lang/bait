@@ -4,4 +4,5 @@ package builtin
 
 struct string {
 	str &u8
+	length i32
 }
