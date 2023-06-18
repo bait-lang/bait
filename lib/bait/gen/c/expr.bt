@@ -9,6 +9,8 @@ import bait.util
 fun (g Gen) expr(expr ast.Expr) {
 	match expr {
 		ast.CallExpr { g.call_expr(expr) }
+		ast.Ident { g.ident(expr) }
+		ast.SelectorExpr { g.selector_expr(expr) }
 		ast.StringLiteral { g.string_literal(expr) }
 		else {}
 	}
@@ -35,6 +37,16 @@ fun (g Gen) call_args(args []ast.CallArg) {
 			g.write(", ")
 		}
 	}
+}
+
+fun (g Gen) ident(node ast.Ident) {
+	g.write(c_name(node.name))
+}
+
+fun (g Gen) selector_expr(node ast.SelectorExpr) {
+	g.expr(node.expr)
+	g.write('.')
+	g.write(node.field_name)
 }
 
 fun (g Gen) string_literal(node ast.StringLiteral) {
