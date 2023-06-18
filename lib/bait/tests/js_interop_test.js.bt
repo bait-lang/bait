@@ -7,7 +7,7 @@ fun #JS.fs.existsSync(path #JS.String) #JS.Boolean
 
 fun test_js_interop(){
 	jres := #JS.fs.existsSync($FILE.str)
-	assert typeof(jres) == '#JS.Boolean'
+	assert typeof(jres) == 'JS.Boolean'
 
 	bres := jres as bool
 	assert bres
