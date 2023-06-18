@@ -2,6 +2,7 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
+import 'stdio.h' as #C._
 import 'stdint.h' as #C._
 
 pub interface #C.int8_t {}
@@ -16,3 +17,6 @@ pub interface #C.uint64_t {}
 
 pub interface #C.float {}
 pub interface #C.double {}
+
+// actual params: format &u8, ...&void
+pub fun #C.printf(format &u8, s &u8)

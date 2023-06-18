@@ -301,6 +301,8 @@ fun (p Parser) hash_expr()ast.Expr{
 			p.expr_pkg = 'JS__'
 			p.expr_pkg += p.check_name()
 			p.check(.dot)
+		} else if lang == .c {
+			p.expr_pkg = 'C'
 		}
 		return p.fun_call(lang)
 	}

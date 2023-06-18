@@ -17,7 +17,7 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 	if node.lang == .bait{
 		g.write(c_name(node.name))
 	} else {
-		g.write(node.name)
+		g.write(node.name.replace('C.', ''))
 	}
 	// TODO println
 	g.write('(')

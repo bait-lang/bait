@@ -313,14 +313,15 @@ fun (p Parser) fun_decl()ast.FunDecl{
 	mut name := ''
 	if p.tok.kind == .hash {
 		// language
-		lang = .js
-		name += p.tok.val + '__'
-		p.next()
-		p.check(.dot)
+		lang = p.parse_lang()
+		name = lang.prepend_to(name)
 
 		// foreign package
-		name += p.check_name() + '.'
-		p.check(.dot)
+		if lang == .js {
+			name = name.replace('.', '__')
+			name += p.check_name() + '.'
+			p.check(.dot)
+		}
 	}
 
 	// normal function name
