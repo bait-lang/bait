@@ -13,6 +13,7 @@ fun (g Gen) expr(expr ast.Expr) {
 		ast.HashExpr { g.hash_expr(expr) }
 		ast.Ident { g.ident(expr) }
 		ast.IfExpr { g.if_expr(expr) }
+		ast.IndexExpr { g.index_expr(expr) }
 		ast.InfixExpr { g.infix_expr(expr) }
 		ast.IntegerLiteral { g.integer_literal(expr) }
 		ast.ParExpr { g.par_expr(expr) }
@@ -88,6 +89,63 @@ fun (g Gen) if_expr(node ast.IfExpr) {
 		g.stmts(b.stmts)
 	}
 	g.writeln('}')
+}
+
+fun (g Gen) index_expr(node ast.IndexExpr) {
+	sym := g.table.get_sym(node.left_type)
+	if sym.kind == .map {
+		info := sym.info as ast.MapInfo
+		val_type_str := g.typ(info.val_type)
+		if g.is_lhs_assign and not node.is_selector {
+			g.is_array_map_set = true
+			g.write('map_set((map*)&')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.index)
+			g.write(', (${val_type_str}[])')
+		} else {
+			g.write('(*(${val_type_str}*)(map_get(&')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.index)
+			g.write(')))')
+		}
+		return
+	}
+
+	if sym.kind == .array {
+		info := sym.info as ast.ArrayInfo
+		elem_type_str := g.typ(info.elem_type)
+		if g.is_lhs_assign and not node.is_selector {
+			g.is_array_map_set = true
+			g.write('array_set(&')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.index)
+			g.write(', (${elem_type_str}[])')
+		} else {
+			g.write('(*(${elem_type_str}*)(array_get(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.index)
+			g.write(')))')
+		}
+		return
+	}
+
+	if sym.kind == .string {
+		g.write('string_get(')
+		g.expr(node.left)
+		g.write(', ')
+		g.expr(node.index)
+		g.write(')')
+		return
+	}
+
+	g.expr(node.left)
+	g.write('[')
+	g.expr(node.index)
+	g.write(']')
 }
 
 fun (g Gen) infix_expr(node ast.InfixExpr) {
