@@ -8,11 +8,14 @@ import bait.util
 
 fun (g Gen) expr(expr ast.Expr) {
 	match expr {
+		ast.AsCast { g.as_cast(expr) }
 		ast.CallExpr { g.call_expr(expr) }
+		ast.HashExpr { g.hash_expr(expr) }
 		ast.Ident { g.ident(expr) }
 		ast.IfExpr { g.if_expr(expr) }
 		ast.InfixExpr { g.infix_expr(expr) }
 		ast.IntegerLiteral { g.integer_literal(expr) }
+		ast.ParExpr { g.par_expr(expr) }
 		ast.SelectorExpr { g.selector_expr(expr) }
 		ast.StringLiteral { g.string_literal(expr) }
 		ast.StructInit { g.struct_init(expr) }
@@ -20,9 +23,18 @@ fun (g Gen) expr(expr ast.Expr) {
 	}
 }
 
+fun (g Gen) as_cast(node ast.AsCast) {
+	type_str := g.typ(node.target)
+	g.write('(${type_str})(')
+	g.expr(node.expr)
+	g.write(')')
+}
+
 fun (g Gen) call_expr(node ast.CallExpr) {
-	// TODO method
-	if node.lang == .bait{
+	if node.is_method {
+		sym := g.table.get_sym(node.left_type)
+		g.write(c_name(sym.name + '_' + node.name))
+	} else if node.lang == .bait{
 		g.write(c_name(node.name))
 	} else {
 		g.write(node.name.replace('C.', ''))
@@ -34,7 +46,12 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 		return
 	}
 	g.write('(')
-	// TODO method receiver
+	if node.is_method {
+		g.expr(node.left)
+		if node.args.length > 0 {
+			g.write(', ')
+		}
+	}
 	g.call_args(node.args)
 	g.write(')')
 }
@@ -46,6 +63,10 @@ fun (g Gen) call_args(args []ast.CallArg) {
 			g.write(", ")
 		}
 	}
+}
+
+fun (g Gen) hash_expr(node ast.HashExpr) {
+	g.write(node.val)
 }
 
 fun (g Gen) ident(node ast.Ident) {
@@ -93,6 +114,12 @@ fun (g Gen) infix_expr(node ast.InfixExpr) {
 
 fun (g Gen) integer_literal(node ast.IntegerLiteral) {
 	g.write(node.val)
+}
+
+fun (g Gen) par_expr(node ast.ParExpr) {
+	g.write('(')
+	g.expr(node.expr)
+	g.write(')')
 }
 
 fun (g Gen) selector_expr(node ast.SelectorExpr) {
