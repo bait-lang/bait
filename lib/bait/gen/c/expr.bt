@@ -10,6 +10,7 @@ fun (g Gen) expr(expr ast.Expr) {
 	match expr {
 		ast.CallExpr { g.call_expr(expr) }
 		ast.Ident { g.ident(expr) }
+		ast.IfExpr { g.if_expr(expr) }
 		ast.InfixExpr { g.infix_expr(expr) }
 		ast.IntegerLiteral { g.integer_literal(expr) }
 		ast.SelectorExpr { g.selector_expr(expr) }
@@ -26,7 +27,12 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 	} else {
 		g.write(node.name.replace('C.', ''))
 	}
-	// TODO println
+	if ['println', 'eprintln'].contains(node.name) {
+		g.write('(')
+		g.expr_to_string(node.args[0].expr, node.args[0].typ)
+		g.write(')')
+		return
+	}
 	g.write('(')
 	// TODO method receiver
 	g.call_args(node.args)
@@ -44,6 +50,23 @@ fun (g Gen) call_args(args []ast.CallArg) {
 
 fun (g Gen) ident(node ast.Ident) {
 	g.write(c_name(node.name))
+}
+
+fun (g Gen) if_expr(node ast.IfExpr) {
+	for i, b in node.branches {
+		if i > 0 {
+			g.write('} else ')
+		}
+		if node.has_else and i == node.branches.length - 1 {
+			g.writeln('{')
+		} else {
+			g.write('if (')
+			g.expr(b.cond)
+			g.writeln(') {')
+		}
+		g.stmts(b.stmts)
+	}
+	g.writeln('}')
 }
 
 fun (g Gen) infix_expr(node ast.InfixExpr) {
@@ -114,4 +137,26 @@ fun (g Gen) struct_init(node ast.StructInit) {
 	}
 
 	g.write('}')
+}
+
+fun (g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
+	sym := g.table.get_sym(typ)
+	if sym.kind == .string {
+		g.expr(expr)
+		return
+	}
+
+	str_def := g.table.get_method(sym, 'str')
+	if str_def.name.length > 0 {
+		final_sym := g.table.get_sym(str_def.params[0].typ)
+		mut name := c_name(final_sym.name)
+		g.write('${name}_str(')
+		g.expr(expr)
+		g.write(')')
+		return
+	}
+
+	e := expr as ast.EmptyExpr
+	errors.error(g.path, expr.pos, 'cannot convert ${sym.name} to string')
+	exit(1)
 }

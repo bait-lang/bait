@@ -20,6 +20,11 @@ pub interface #C.float {}
 pub interface #C.double {}
 
 // actual params: format &u8, ...&void
-pub fun #C.printf(format &u8, s &u8)
+pub fun #C.printf(format &u8, x any)
+
+// actual params: str &u8, size i32, format &u8, ...&void
+pub fun #C.snprintf(str &u8, size i32, format &u8, x any) i32
 
 pub fun #C.strlen(cs &u8) i32
+
+pub fun #C.malloc(size i32) &void
