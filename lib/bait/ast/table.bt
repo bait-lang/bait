@@ -30,7 +30,8 @@ pub fun (t Table) get_sym(typ Type) TypeSymbol {
 }
 
 pub fun (t Table) type_name(typ Type) string {
-	return t.get_sym(typ).name
+	amps := '&'.repeat(typ.get_nr_amp())
+	return amps + t.get_sym(typ).name
 }
 
 pub fun (t Table) register_sym(sym TypeSymbol) Type {

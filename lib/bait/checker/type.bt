@@ -9,6 +9,11 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 	if got == expected {
 		return true
 	}
+
+	if got.idx() == expected.idx() {
+		return true
+	}
+
 	// TODO remove any type
 	if got == ast.ANY_TYPE or expected == ast.ANY_TYPE {
 		return true
