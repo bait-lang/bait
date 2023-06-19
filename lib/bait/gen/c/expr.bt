@@ -10,6 +10,8 @@ fun (g Gen) expr(expr ast.Expr) {
 	match expr {
 		ast.CallExpr { g.call_expr(expr) }
 		ast.Ident { g.ident(expr) }
+		ast.InfixExpr { g.infix_expr(expr) }
+		ast.IntegerLiteral { g.integer_literal(expr) }
 		ast.SelectorExpr { g.selector_expr(expr) }
 		ast.StringLiteral { g.string_literal(expr) }
 		ast.StructInit { g.struct_init(expr) }
@@ -42,6 +44,32 @@ fun (g Gen) call_args(args []ast.CallArg) {
 
 fun (g Gen) ident(node ast.Ident) {
 	g.write(c_name(node.name))
+}
+
+fun (g Gen) infix_expr(node ast.InfixExpr) {
+	// Overloading
+	lsym := g.table.get_sym(node.left_type)
+	if lsym.overloads.contains(node.op.js_repr()) {
+		overload := lsym.overloads[node.op.js_repr()]
+		g.write(c_name(lsym.name + '_' + overload.name))
+		g.write('(')
+		g.expr(node.left)
+		g.write(', ')
+		g.expr(node.right)
+		g.write(')')
+		return
+	}
+
+	// Normal cases
+	g.expr(node.left)
+	g.write(' ')
+	g.write(node.op.js_repr())
+	g.write(' ')
+	g.expr(node.right)
+}
+
+fun (g Gen) integer_literal(node ast.IntegerLiteral) {
+	g.write(node.val)
 }
 
 fun (g Gen) selector_expr(node ast.SelectorExpr) {
