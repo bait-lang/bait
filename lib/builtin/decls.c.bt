@@ -27,4 +27,6 @@ pub fun #C.snprintf(str &u8, size i32, format &u8, x any) i32
 
 pub fun #C.strlen(cs &u8) i32
 
-pub fun #C.malloc(size i32) &void
+pub fun #C.calloc(n i32, size i32) &u8
+
+pub fun #C.malloc(size i32) &u8
