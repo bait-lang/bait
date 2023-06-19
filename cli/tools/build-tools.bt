@@ -10,4 +10,7 @@ fun main() {
 		root = os.join_path($BAITDIR, ['cli', 'tools'])
 	}
 	r.build_all_in_root()
+	if r.fails > 0 {
+		exit(1)
+	}
 }
