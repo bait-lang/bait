@@ -6,6 +6,11 @@ import os
 import bait.util.testing
 
 fun main() {
-	tools_dir := os.join_path($BAITDIR, ['cli', 'tools'])
-	testing.build_files_in_dir(tools_dir)
+	mut r := testing.BuildRunner{
+		root = os.join_path($BAITDIR, ['cli', 'tools'])
+	}
+	r.build_all_in_root()
+	if r.fails > 0 {
+		exit(1)
+	}
 }

@@ -313,14 +313,15 @@ fun (p Parser) fun_decl()ast.FunDecl{
 	mut name := ''
 	if p.tok.kind == .hash {
 		// language
-		lang = .js
-		name += p.tok.val + '__'
-		p.next()
-		p.check(.dot)
+		lang = p.parse_lang()
+		name = lang.prepend_to(name)
 
 		// foreign package
-		name += p.check_name() + '.'
-		p.check(.dot)
+		if lang == .js {
+			name = name.replace('.', '__')
+			name += p.check_name() + '.'
+			p.check(.dot)
+		}
 	}
 
 	// normal function name
@@ -418,7 +419,7 @@ fun (p Parser) interface_decl()ast.InterfaceDecl{
 	is_pub := p.check_pub()
 	p.check(.key_interface)
 	lang := p.parse_lang()
-	name := p.prepend_lang(lang, p.check_name())
+	name := lang.prepend_to(p.check_name())
 
 	// TODO investigate why registration of the sym after loop with methods as struct field does not work
 	tsym := ast.TypeSymbol{

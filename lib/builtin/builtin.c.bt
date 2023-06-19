@@ -2,6 +2,6 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
-pub fun println(msg string) {
-	// TODO
+pub fun println(s string) {
+	#C.printf('%s\n'.str, s.str)
 }

@@ -307,7 +307,7 @@ fun (g Gen) interface_decl(node ast.InterfaceDecl){
 	if node.lang != .bait {
 		return
 	}
-	errors.error(g.path, node.pos, 'only JS interfaces are supported right now')
+	errors.error(g.path, node.pos, 'Bait interfaces are not yet supported')
 	exit(1)
 }
 

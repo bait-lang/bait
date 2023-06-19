@@ -150,16 +150,10 @@ fun (p Parser) parse_lang() ast.Language {
 	if p.tok.kind != .hash {
 		return .bait
 	}
+	lang := ast.prefix_to_lang(p.tok.val)
 	p.next()
 	p.check(.dot)
-	return .js
-}
-
-fun (p Parser) prepend_lang(lang ast.Language, val string) string {
-	if lang == .bait {
-		return val
-	}
-	return '#JS.' + val
+	return lang
 }
 
 fun (p Parser) prepend_pkg(val string) string {

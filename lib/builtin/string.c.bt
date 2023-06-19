@@ -4,4 +4,12 @@ package builtin
 
 struct string {
 	str &u8
+	length i32
+}
+
+fun from_c_string(cs &u8) string {
+	return string{
+		str = cs
+		length = #C.strlen(cs)
+	}
 }

@@ -5,26 +5,41 @@ package testing
 import os
 
 pub struct InOutRunner {
+	check_stdout bool // Compare expected to stdout instead of stderr
+global:
 	root string // Root directory to search tests in
 	cmd_options string // Additional cmd options for compiling the tests
-	check_stdout bool // Compare expected to stdout instead of stderr
+	skips []string
 }
 
 pub fun (runner InOutRunner) test_dir(dir string) {
-	if not os.is_dir(dir) {
+	if runner.skips.contains(dir) {
+		eprintln('skipping ${dir}')
 		return
 	}
 
-	expected := read_out_file('${dir}/expected.in.bt')
-	res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} run ${dir}')
+	abs_dir := os.join_path(runner.root, [dir])
+	if not os.is_dir(abs_dir) {
+		return
+	}
+
+	expected := read_out_file('${abs_dir}/expected.in.bt')
+	res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} run ${abs_dir}')
 	runner.check_result(res, expected)
 }
 
+pub fun (runner InOutRunner) test_all_in_root() {
+	dirs := os.ls(runner.root)
+	for dir in dirs {
+		runner.test_dir(dir)
+	}
+}
+
+@deprecated: 'use test_all_in_root() instead'
 pub fun (runner InOutRunner) test_subdirs(root string) {
 	dirs := os.ls(root)
 	for dir in dirs {
-		in_dir := os.join_path(root, [dir])
-		runner.test_dir(in_dir)
+		runner.test_dir(dir)
 	}
 }
 

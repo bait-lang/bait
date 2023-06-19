@@ -7,11 +7,21 @@ import bait.util.testing
 
 fun main() {
 	examples_dir := os.join_path($BAITDIR, ['examples'])
-	testing.build_files_in_dir(examples_dir)
+	mut r := testing.BuildRunner{
+		root = examples_dir
+	}
+	// Build with default JS backend
+	r.build_all_in_root()
 
 	// Building hello_world.bt from a different directory
 	os.chdir(os.home_dir())
-	if testing.build_file(examples_dir, 'hello_world.bt') == 1 {
+	r.build_single('hello_world.bt')
+
+	if r.fails > 0 {
 		exit(1)
 	}
+
+	// Build with C backend
+	r.cmd_options = '-b c'
+	r.build_all_in_root()
 }

@@ -1,0 +1,25 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package builtin
+
+import 'stdint.h' as #C._
+import 'stdio.h' as #C._
+import 'string.h' as #C._
+
+pub interface #C.int8_t {}
+pub interface #C.int16_t {}
+pub interface #C.int32_t {}
+pub interface #C.int64_t {}
+
+pub interface #C.uint8_t {}
+pub interface #C.uint16_t {}
+pub interface #C.uint32_t {}
+pub interface #C.uint64_t {}
+
+pub interface #C.float {}
+pub interface #C.double {}
+
+// actual params: format &u8, ...&void
+pub fun #C.printf(format &u8, s &u8)
+
+pub fun #C.strlen(cs &u8) i32
