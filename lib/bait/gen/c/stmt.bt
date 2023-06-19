@@ -39,9 +39,9 @@ fun (g Gen) assign_stmt(node ast.AssignStmt) {
 	g.is_lhs_assign = false
 
 	lsym := g.table.get_sym(node.left_type)
-	if lsym.overloads.contains(node.op.js_repr()) {
+	if lsym.overloads.contains(node.op.c_repr()) {
 		g.write(' = ')
-		overload := lsym.overloads[node.op.js_repr()]
+		overload := lsym.overloads[node.op.c_repr()]
 		g.write(c_name(lsym.name + '_' + overload.name))
 		g.write('(')
 		g.expr(node.left)
@@ -60,7 +60,7 @@ fun (g Gen) assign_stmt(node ast.AssignStmt) {
 	}
 
 	g.write(' ')
-	g.write(node.op.js_repr())
+	g.write(node.op.c_repr())
 	g.write(' ')
 	g.expr(node.right)
 	if not g.is_for_loop_head {
