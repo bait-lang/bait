@@ -17,6 +17,8 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
 		ast.AssignStmt { g.assign_stmt(stmt) }
 		ast.ExprStmt { g.expr_stmt(stmt) }
+		ast.ForLoop { g.for_loop(stmt) }
+		ast.ForClassicLoop { g.for_classic_loop(stmt) }
 		ast.FunDecl { g.fun_decl(stmt) }
 		ast.InterfaceDecl { g.interface_decl(stmt) }
 		ast.ReturnStmt { g.return_stmt(stmt) }
@@ -57,6 +59,38 @@ fun (g Gen) expr_stmt(node ast.ExprStmt) {
 	if not g.empty_line {
 		g.writeln(";")
 	}
+}
+
+fun (g Gen) write_label(label string){
+	if label.length > 0 {
+		g.writeln('${label}: ')
+	}
+}
+
+fun (g Gen) for_loop(node ast.ForLoop) {
+	g.write('while (')
+	g.expr(node.cond)
+	g.writeln(') {')
+	g.stmts(node.stmts)
+	g.writeln('}')
+
+	g.write_label(node.label)
+}
+
+fun (g Gen) for_classic_loop(node ast.ForClassicLoop) {
+	g.is_for_loop_head = true
+	g.write('for (')
+	g.stmt(node.init)
+	g.write('; ')
+	g.expr(node.cond)
+	g.write('; ')
+	g.stmt(node.inc)
+	g.writeln(') {')
+	g.is_for_loop_head = false
+	g.stmts(node.stmts)
+	g.writeln('}')
+
+	g.write_label(node.label)
 }
 
 fun (g Gen) fun_decl(node ast.FunDecl) {
