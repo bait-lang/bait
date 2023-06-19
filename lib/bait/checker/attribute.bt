@@ -66,7 +66,8 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 		c.error('cannot overload "!=", ">", "<=" and ">=" as they are generated from "==" and "<"', attr.pos)
 		return
 	}
-	if not ['+', '-', '*', '/', '%', '==', '<'].contains(attr.value) {
+	is_math_overload := ['+', '-', '*', '/', '%'].contains(attr.value)
+	if not is_math_overload and not ['==', '<'].contains(attr.value) {
 		c.error('cannot overload "${attr.value}"', attr.pos)
 		return
 	}
@@ -81,6 +82,10 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 
 	// Register overload method
 	rec_sym.overloads[attr.value] = node
+	if is_math_overload {
+		rec_sym.overloads['${attr.value}='] = node
+	}
+
 }
 
 fun (c Checker) attr_export(attr ast.Attribute) {
