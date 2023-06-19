@@ -22,6 +22,9 @@ mut:
 	indent i32 := -1
 	empty_line bool := true
 	foreign_imports []string // C header files
+	is_lhs_assign bool
+	is_array_map_set bool
+	is_for_loop_head bool
 }
 
 pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
