@@ -240,6 +240,7 @@ pub:
 
 pub struct HashExpr{
 pub:
+	lang Language
 	val string
 	pos token.Pos
 }

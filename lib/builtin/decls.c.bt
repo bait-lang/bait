@@ -5,6 +5,8 @@ package builtin
 import 'stdint.h' as #C._
 import 'stdio.h' as #C._
 import 'string.h' as #C._
+import 'stdlib.h' as #C._
+import 'stdbool.h' as #C._
 
 pub interface #C.int8_t {}
 pub interface #C.int16_t {}
@@ -20,6 +22,13 @@ pub interface #C.float {}
 pub interface #C.double {}
 
 // actual params: format &u8, ...&void
-pub fun #C.printf(format &u8, s &u8)
+pub fun #C.printf(format &u8, x any)
+
+// actual params: str &u8, size i32, format &u8, ...&void
+pub fun #C.snprintf(str &u8, size i32, format &u8, x any) i32
 
 pub fun #C.strlen(cs &u8) i32
+
+pub fun #C.calloc(n i32, size i32) &u8
+
+pub fun #C.malloc(size i32) &u8

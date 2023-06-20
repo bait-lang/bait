@@ -11,3 +11,22 @@ type u8 := #C.uint8_t
 type u16 := #C.uint16_t
 type u32 := #C.uint32_t
 type u64 := #C.uint64_t
+
+pub fun (n i8) str() string {
+	return (n as i64).str()
+}
+
+pub fun (n i16) str() string {
+	return (n as i64).str()
+}
+
+pub fun (n i32) str() string {
+	return (n as i64).str()
+}
+
+pub fun (n i64) str() string {
+	length := #C.snprintf(#C.'NULL' as &u8, 0, "%d".str, n)
+	buf := #C.malloc(length + 1)
+	#C.snprintf(buf, length + 1, "%d".str, n)
+	return from_c_string(buf)
+}

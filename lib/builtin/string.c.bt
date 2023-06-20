@@ -7,6 +7,37 @@ struct string {
 	length i32
 }
 
+@overload: '+'
+fun (a string) add (b string) string {
+	new_len := a.length + b.length
+	res := string{
+		str = #C.calloc(1, new_len + 1)
+		length = new_len
+	}
+	for i:=0; i < a.length; i+=1 {
+		res.str[i] = a.str[i]
+	}
+	for i:=0; i < b.length; i+=1 {
+		res.str[a.length + i] = b.str[i]
+	}
+	res.str[new_len] = 0 as u8
+	return res
+}
+
+@overload: '=='
+fun (a string) eq (b string) bool {
+	if a.length != b.length {
+		return false
+	}
+
+	for i := 0; i < a.length; i += 1 {
+		if a.str[i] != b.str[i] {
+			return false
+		}
+	}
+	return true
+}
+
 fun from_c_string(cs &u8) string {
 	return string{
 		str = cs

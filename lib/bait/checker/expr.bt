@@ -174,7 +174,7 @@ fun (c Checker) enum_val(node ast.EnumVal) ast.Type {
 }
 
 fun (c Checker) hash_expr(node ast.HashExpr) ast.Type {
-	if not c.is_js_file {
+	if node.lang == .js and not c.is_js_file {
 		c.warn('JS code can only be used in .js.bt files', node.pos)
 	}
 	return ast.VOID_TYPE

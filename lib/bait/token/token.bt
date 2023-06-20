@@ -205,6 +205,10 @@ pub fun (kind TokenKind) js_repr() string {
 	}
 }
 
+pub fun (kind TokenKind) c_repr() string {
+	return kind.js_repr()
+}
+
 pub fun (kind TokenKind) str() string {
 	match kind {
 		.eof { return 'eof' }

@@ -22,6 +22,10 @@ mut:
 	indent i32 := -1
 	empty_line bool := true
 	foreign_imports []string // C header files
+	generated_eq_funs []ast.Type
+	is_lhs_assign bool
+	is_array_map_set bool
+	is_for_loop_head bool
 }
 
 pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
@@ -30,6 +34,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		table = table
 	}
 	g.write_types()
+	g.gen_equality_funs()
 	for file in files {
 		g.path = file.path
 		g.pkg = file.pkg_decl.full_name

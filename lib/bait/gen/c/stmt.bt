@@ -15,13 +15,56 @@ fun (g Gen) stmts(stmts []ast.Stmt) {
 
 fun (g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
+		ast.AssignStmt { g.assign_stmt(stmt) }
 		ast.ExprStmt { g.expr_stmt(stmt) }
+		ast.ForLoop { g.for_loop(stmt) }
+		ast.ForClassicLoop { g.for_classic_loop(stmt) }
 		ast.FunDecl { g.fun_decl(stmt) }
 		ast.InterfaceDecl { g.interface_decl(stmt) }
 		ast.ReturnStmt { g.return_stmt(stmt) }
 		ast.StructDecl {} // see write_types()
 		ast.TypeDecl {} // see write_types()
 		else {}
+	}
+}
+
+fun (g Gen) assign_stmt(node ast.AssignStmt) {
+	if node.op == .decl_assign {
+		type_str := g.typ(node.right_type)
+		g.write('${type_str} ')
+	}
+
+	g.is_lhs_assign = true
+	g.expr(node.left)
+	g.is_lhs_assign = false
+
+	lsym := g.table.get_sym(node.left_type)
+	if lsym.overloads.contains(node.op.c_repr()) {
+		g.write(' = ')
+		overload := lsym.overloads[node.op.c_repr()]
+		g.write(c_name(lsym.name + '_' + overload.name))
+		g.write('(')
+		g.expr(node.left)
+		g.write(', ')
+		g.expr(node.right)
+		g.writeln(');')
+		return
+	}
+
+	if g.is_array_map_set {
+		g.write('{')
+		g.expr(node.right)
+		g.writeln('});')
+		g.is_array_map_set = false
+		return
+	}
+
+	g.write(' ')
+	g.write(node.op.c_repr())
+	g.write(' ')
+	g.expr(node.right)
+	if not g.is_for_loop_head {
+		g.writeln(';')
 	}
 }
 
@@ -32,6 +75,38 @@ fun (g Gen) expr_stmt(node ast.ExprStmt) {
 	}
 }
 
+fun (g Gen) write_label(label string){
+	if label.length > 0 {
+		g.writeln('${label}: ')
+	}
+}
+
+fun (g Gen) for_loop(node ast.ForLoop) {
+	g.write('while (')
+	g.expr(node.cond)
+	g.writeln(') {')
+	g.stmts(node.stmts)
+	g.writeln('}')
+
+	g.write_label(node.label)
+}
+
+fun (g Gen) for_classic_loop(node ast.ForClassicLoop) {
+	g.is_for_loop_head = true
+	g.write('for (')
+	g.stmt(node.init)
+	g.write('; ')
+	g.expr(node.cond)
+	g.write('; ')
+	g.stmt(node.inc)
+	g.writeln(') {')
+	g.is_for_loop_head = false
+	g.stmts(node.stmts)
+	g.writeln('}')
+
+	g.write_label(node.label)
+}
+
 fun (g Gen) fun_decl(node ast.FunDecl) {
 	if node.lang != .bait {
 		return
@@ -40,7 +115,8 @@ fun (g Gen) fun_decl(node ast.FunDecl) {
 	type_str := g.typ(node.return_type)
 	mut name := c_name(node.name)
 	if node.is_method {
-		// TODO
+		sym := g.table.get_sym(node.params[0].typ)
+		name = c_name(sym.name + '_' + node.name)
 	}
 	s := '${type_str} ${name}('
 

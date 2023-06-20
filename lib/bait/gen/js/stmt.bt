@@ -133,27 +133,31 @@ fun (g Gen) assign_stmt(node ast.AssignStmt){
 			g.write('const ')
 		}
 	}
-	if node.left_type == ast.STRING_TYPE {
-		if node.op == .plus_assign {
-			g.expr(node.left)
-			g.write(' = ')
-			g.write('string_add(')
-			g.expr(node.left)
-			g.write(', ')
-			g.expr(node.right)
-			g.writeln(')')
-			return
-		}
-	}
+
 	g.is_lhs_assign = true
 	g.expr(node.left)
 	g.is_lhs_assign = false
+
+	lsym := g.table.get_sym(node.left_type)
+	if lsym.overloads.contains(node.op.js_repr()) {
+		g.write(' = ')
+		overload := lsym.overloads[node.op.js_repr()]
+		g.write(js_name(lsym.name + '_' + overload.name))
+		g.write('(')
+		g.expr(node.left)
+		g.write(', ')
+		g.expr(node.right)
+		g.writeln(')')
+		return
+	}
+
 	if g.is_array_map_set {
 		g.expr(node.right)
 		g.writeln(')')
 		g.is_array_map_set = false
 		return
 	}
+
 	g.write(' ')
 	g.write(node.op.js_repr())
 	g.write(' ')
@@ -192,10 +196,14 @@ fun (g Gen) loop_control_stmt(node ast.LoopControlStmt){
 	}
 }
 
-fun (g Gen) for_loop(node ast.ForLoop){
-	if node.label.length > 0 {
-		g.writeln('${node.label}: ')
+fun (g Gen) write_label(label string){
+	if label.length > 0 {
+		g.writeln('${label}: ')
 	}
+}
+
+fun (g Gen) for_loop(node ast.ForLoop){
+	g.write_label(node.label)
 
 	g.write('while (')
 	g.expr(node.cond)
@@ -205,9 +213,7 @@ fun (g Gen) for_loop(node ast.ForLoop){
 }
 
 fun (g Gen) for_classic_loop(node ast.ForClassicLoop){
-	if node.label.length > 0 {
-		g.writeln('${node.label}: ')
-	}
+	g.write_label(node.label)
 
 	g.is_for_loop_head = true
 	g.write('for (')
@@ -223,9 +229,7 @@ fun (g Gen) for_classic_loop(node ast.ForClassicLoop){
 }
 
 fun (g Gen) for_in_loop(node ast.ForInLoop){
-	if node.label.length > 0 {
-		g.writeln('${node.label}: ')
-	}
+	g.write_label(node.label)
 
 	mut i := node.idxvar
 	if i == '' {

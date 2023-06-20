@@ -309,6 +309,7 @@ fun (p Parser) hash_expr()ast.Expr{
 
 	str_node := p.string_literal() as ast.StringLiteral
 	return ast.HashExpr{
+		lang = lang
 		val = str_node.val
 		pos = str_node.pos
 	}
