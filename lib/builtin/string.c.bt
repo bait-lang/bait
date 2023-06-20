@@ -24,6 +24,20 @@ fun (a string) add (b string) string {
 	return res
 }
 
+@overload: '=='
+fun (a string) eq (b string) bool {
+	if a.length != b.length {
+		return false
+	}
+
+	for i := 0; i < a.length; i += 1 {
+		if a.str[i] != b.str[i] {
+			return false
+		}
+	}
+	return true
+}
+
 fun from_c_string(cs &u8) string {
 	return string{
 		str = cs

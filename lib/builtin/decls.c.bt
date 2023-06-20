@@ -6,6 +6,7 @@ import 'stdint.h' as #C._
 import 'stdio.h' as #C._
 import 'string.h' as #C._
 import 'stdlib.h' as #C._
+import 'stdbool.h' as #C._
 
 pub interface #C.int8_t {}
 pub interface #C.int16_t {}

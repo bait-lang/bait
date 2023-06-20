@@ -3,12 +3,13 @@
 package ast
 
 pub struct Table {
-pub:
+pub mut:
 	global_scope Scope
 	fun_decls map[string]FunDecl
 	type_idxs map[string]Type
 	type_symbols []TypeSymbol
 	redefined_funs []string
+	needed_equality_funs []Type
 }
 
 pub fun new_table() Table {

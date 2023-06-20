@@ -9,6 +9,7 @@ import bait.util
 fun (g Gen) expr(expr ast.Expr) {
 	match expr {
 		ast.AsCast { g.as_cast(expr) }
+		ast.BoolLiteral { g.bool_literal(expr) }
 		ast.CallExpr { g.call_expr(expr) }
 		ast.HashExpr { g.hash_expr(expr) }
 		ast.Ident { g.ident(expr) }
@@ -29,6 +30,14 @@ fun (g Gen) as_cast(node ast.AsCast) {
 	g.write('(${type_str})(')
 	g.expr(node.expr)
 	g.write(')')
+}
+
+fun (g Gen) bool_literal(node ast.BoolLiteral) {
+	if node.val {
+		g.write('true')
+	} else {
+		g.write('false')
+	}
 }
 
 fun (g Gen) call_expr(node ast.CallExpr) {
