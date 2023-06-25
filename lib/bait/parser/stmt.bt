@@ -156,6 +156,7 @@ fun (p Parser) const_decl()ast.ConstDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.next()
+	lang := p.parse_lang()
 	name := p.prepend_pkg(p.check_name())
 	p.check(.decl_assign)
 	expr := p.expr(0)
@@ -171,6 +172,7 @@ fun (p Parser) const_decl()ast.ConstDecl{
 		name = name
 		expr = expr
 		pos = pos
+		lang = lang
 	}
 }
 

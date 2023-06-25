@@ -5,3 +5,8 @@ package builtin
 pub fun println(s string) {
 	#C.printf('%s\n'.str, s.str)
 }
+
+pub fun eprintln(s string) {
+	// TODO C stderr const
+	#C.fprintf(#C.'stderr', '%s\n'.str, s.str)
+}
