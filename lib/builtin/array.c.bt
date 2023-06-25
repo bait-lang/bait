@@ -3,13 +3,20 @@
 package builtin
 
 struct array{
-	// data
-	// elem_size
+	data &void
 	length i32
+	elem_size i32
 }
 
-fun new_array(len i32) array {
+fun new_array(len i32, elem_size i32) array {
 	return array{
 		length = len
+		elem_size = elem_size
 	}
+}
+
+fun new_array_from_c(len i32, elem_size i32, carr &void) array {
+	mut a := new_array(len, elem_size)
+	#C.memcpy(a.data, carr, len * elem_size)
+	return a
 }

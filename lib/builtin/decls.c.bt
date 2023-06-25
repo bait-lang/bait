@@ -46,3 +46,5 @@ pub fun #C.calloc(n i32, size i32) &u8
 pub fun #C.malloc(size i32) &u8
 
 pub fun #C.access(path &u8, mode i32) i32
+
+pub fun #C.memcpy(dest &void, src &void, size i32)

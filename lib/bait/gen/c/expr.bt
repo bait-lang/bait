@@ -27,16 +27,29 @@ fun (g Gen) expr(expr ast.Expr) {
 }
 
 fun (g Gen) array_init(node ast.ArrayInit){
+	elem_type := g.typ(node.elem_type)
+
 	if node.exprs.length == 0 {
 		g.write('new_array(')
 		if node.length_expr is ast.EmptyExpr {
-			g.write('0')
+			g.write('0, ')
 		} else {
 			g.expr(node.length_expr)
+			g.write(', ')
 		}
-		g.write(')')
+		g.write('sizeof(${elem_type}))')
 		return
 	}
+
+	len := node.exprs.length
+	g.write('new_array_from_c(${len}, sizeof(${elem_type}), (${elem_type}[${len}]){')
+	g.indent += 1
+	for expr in node.exprs {
+		g.expr(expr)
+		g.write(', ')
+	}
+	g.indent -= 1
+	g.write('})')
 }
 
 fun (g Gen) as_cast(node ast.AsCast) {
