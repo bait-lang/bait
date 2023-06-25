@@ -1,0 +1,11 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package builtin
+
+struct array{
+	length i32
+}
+
+fun new_array() array {
+	return array{}
+}
