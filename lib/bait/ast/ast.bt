@@ -253,6 +253,7 @@ global:
 pub:
 	pkg string
 	pos token.Pos
+	lang Language
 }
 
 pub struct IfExpr{

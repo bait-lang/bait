@@ -7,6 +7,5 @@ pub fun println(s string) {
 }
 
 pub fun eprintln(s string) {
-	// TODO C stderr const
-	#C.fprintf(#C.'stderr', '%s\n'.str, s.str)
+	#C.fprintf(#C.stderr, '%s\n'.str, s.str)
 }

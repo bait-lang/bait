@@ -27,7 +27,7 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 			node = p.par_expr()
 		}
 		.name {
-			node = p.name_expr()
+			node = p.name_expr(.bait)
 		}
 		.number {
 			node = p.number_literal()
@@ -48,7 +48,7 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 			node = p.match_expr()
 		}
 		.key_mut {
-			node = p.ident()
+			node = p.ident(.bait)
 		}
 		.key_not, .minus {
 			node = p.prefix_expr()
@@ -304,7 +304,7 @@ fun (p Parser) hash_expr()ast.Expr{
 		} else if lang == .c {
 			p.expr_pkg = 'C'
 		}
-		return p.fun_call(lang)
+		return p.name_expr(lang)
 	}
 
 	str_node := p.string_literal() as ast.StringLiteral
@@ -315,7 +315,7 @@ fun (p Parser) hash_expr()ast.Expr{
 	}
 }
 
-fun (p Parser) ident()ast.Ident{
+fun (p Parser) ident(lang ast.Language)ast.Ident{
 	pos := p.tok.pos
 	mut is_mut := p.tok.kind == .key_mut
 	if is_mut {
@@ -330,6 +330,7 @@ fun (p Parser) ident()ast.Ident{
 		is_mut = is_mut
 		pkg = p.pkg_name
 		pos = pos
+		lang = lang
 	}
 }
 
@@ -453,7 +454,7 @@ fun (p Parser) match_expr()ast.MatchExpr{
 	}
 }
 
-fun (p Parser) name_expr()ast.Expr{
+fun (p Parser) name_expr(lang ast.Language) ast.Expr{
 	if p.next_tok.kind == .dot and p.import_aliases.contains(p.tok.val) {
 		p.expr_pkg = p.import_aliases[p.tok.val]
 		p.next()
@@ -463,7 +464,7 @@ fun (p Parser) name_expr()ast.Expr{
 		return p.map_init()
 	}
 	if p.next_tok.kind == .lpar {
-		return p.fun_call(.bait)
+		return p.fun_call(lang)
 	}
 	if p.is_struct_possible and p.next_tok.kind == .lcur {
 		return p.struct_init()
@@ -471,7 +472,7 @@ fun (p Parser) name_expr()ast.Expr{
 	if p.next_tok.kind == .dot and p.tok.val[0].is_capital() and not p.tok.val.is_upper() {
 		return p.enum_val(true)
 	}
-	return p.ident()
+	return p.ident(lang)
 }
 
 fun (p Parser) number_literal()ast.IntegerLiteral{

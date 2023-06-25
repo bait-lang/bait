@@ -80,7 +80,11 @@ fun (g Gen) hash_expr(node ast.HashExpr) {
 }
 
 fun (g Gen) ident(node ast.Ident) {
-	g.write(c_name(node.name))
+	if node.lang == .bait {
+		g.write(c_name(node.name))
+		return
+	}
+	g.write(node.name.replace('C.', ''))
 }
 
 fun (g Gen) if_expr(node ast.IfExpr) {
