@@ -3,6 +3,7 @@
 package builtin
 
 struct string {
+pub mut:
 	str &u8
 	length i32
 }

@@ -9,3 +9,7 @@ pub fun println(s string) {
 pub fun eprintln(s string) {
 	#C.fprintf(#C.stderr, '%s\n'.str, s.str)
 }
+
+pub fun exit(code i32) {
+	#C.exit(code)
+}
