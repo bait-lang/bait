@@ -28,6 +28,8 @@ fun (g Gen) write_types() {
 				g.type_impls_out += '\t${type_str} ${field_name};\n'
 			}
 			g.type_impls_out += '};\n'
+		} else if sym.info is ast.ArrayInfo {
+			g.type_defs_out += 'typedef array ${cname};\n'
 		} else {
 			match sym.kind {
 				.alias_type {

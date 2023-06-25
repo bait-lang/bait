@@ -8,6 +8,7 @@ import bait.util
 
 fun (g Gen) expr(expr ast.Expr) {
 	match expr {
+		ast.ArrayInit { g.array_init(expr) }
 		ast.AsCast { g.as_cast(expr) }
 		ast.BoolLiteral { g.bool_literal(expr) }
 		ast.CallExpr { g.call_expr(expr) }
@@ -22,6 +23,19 @@ fun (g Gen) expr(expr ast.Expr) {
 		ast.StringLiteral { g.string_literal(expr) }
 		ast.StructInit { g.struct_init(expr) }
 		else {}
+	}
+}
+
+fun (g Gen) array_init(node ast.ArrayInit){
+	if node.exprs.length == 0 {
+		g.write('new_array(')
+		if node.length_expr is ast.EmptyExpr {
+			g.write('0')
+		} else {
+			g.expr(node.length_expr)
+		}
+		g.write(')')
+		return
 	}
 }
 

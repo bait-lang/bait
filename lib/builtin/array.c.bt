@@ -3,9 +3,13 @@
 package builtin
 
 struct array{
+	// data
+	// elem_size
 	length i32
 }
 
-fun new_array() array {
-	return array{}
+fun new_array(len i32) array {
+	return array{
+		length = len
+	}
 }
