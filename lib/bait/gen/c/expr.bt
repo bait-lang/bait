@@ -37,12 +37,19 @@ fun (g Gen) array_init(node ast.ArrayInit){
 			g.expr(node.length_expr)
 			g.write(', ')
 		}
+		// TODO cap expr
+		// if node.length_expr is ast.EmptyExpr {
+			g.write('0, ')
+		// } else {
+			// g.expr(node.length_expr)
+			// g.write(', ')
+		// }
 		g.write('sizeof(${elem_type}))')
 		return
 	}
 
 	len := node.exprs.length
-	g.write('new_array_from_c(${len}, sizeof(${elem_type}), (${elem_type}[${len}]){')
+	g.write('new_array_from_c(${len}, ${len}, sizeof(${elem_type}), (${elem_type}[${len}]){')
 	g.indent += 1
 	for expr in node.exprs {
 		g.expr(expr)
@@ -68,14 +75,19 @@ fun (g Gen) bool_literal(node ast.BoolLiteral) {
 }
 
 fun (g Gen) call_expr(node ast.CallExpr) {
+	mut name := c_name(node.name)
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
-		g.write(c_name(sym.name + '_' + node.name))
-	} else if node.lang == .bait{
-		g.write(c_name(node.name))
-	} else {
-		g.write(node.name.replace('C.', ''))
+		if sym.kind == .array and name == 'push' {
+			g.gen_array_method(name, node, sym)
+			return
+		}
+
+		name = c_name(sym.name + '_' + node.name)
+	} else if node.lang != .bait{
+		name = node.name.replace('C.', '')
 	}
+	g.write(name)
 	if ['println', 'eprintln'].contains(node.name) {
 		g.write('(')
 		g.expr_to_string(node.args[0].expr, node.args[0].typ)
@@ -100,6 +112,18 @@ fun (g Gen) call_args(args []ast.CallArg) {
 			g.write(", ")
 		}
 	}
+}
+
+// TODO fix elem_type (it's placeholder for array but should be the actual type)
+// this should not interfer with JS or be applied to both
+fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol) {
+	info := sym.info as ast.ArrayInfo
+	type_str := g.typ(info.elem_type)
+	g.write('array_${name}(&')
+	g.expr(node.left)
+	g.write(', (${type_str}[]){')
+	g.expr(node.args[0].expr)
+	g.write('})')
 }
 
 fun (g Gen) hash_expr(node ast.HashExpr) {
@@ -222,7 +246,11 @@ fun (g Gen) par_expr(node ast.ParExpr) {
 
 fun (g Gen) selector_expr(node ast.SelectorExpr) {
 	g.expr(node.expr)
-	g.write('.')
+	if node.expr_type.get_nr_amp() > 0 {
+		g.write('->')
+	} else {
+		g.write('.')
+	}
 	g.write(node.field_name)
 }
 
