@@ -17,6 +17,10 @@ fun (g Gen) ctyp(typ ast.Type) string {
 
 fun (g Gen) write_types() {
 	for sym in g.table.type_symbols {
+		if sym.name.starts_with('C.') {
+			continue
+		}
+
 		cname := c_name(sym.name)
 		if sym.info is ast.StructInfo {
 			info := sym.info as ast.StructInfo
