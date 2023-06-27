@@ -156,11 +156,12 @@ fun (p Parser) const_decl()ast.ConstDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.next()
+	lang := p.parse_lang()
 	name := p.prepend_pkg(p.check_name())
 	p.check(.decl_assign)
 	expr := p.expr(0)
 	typ := p.infer_expr_type(expr)
-	p.table.global_scope.register(name, ast.ScopeObject{
+	p.table.global_scope.register(lang.prepend_to(name), ast.ScopeObject{
 		typ = typ
 		kind = .constant
 		is_pub = is_pub
@@ -171,6 +172,7 @@ fun (p Parser) const_decl()ast.ConstDecl{
 		name = name
 		expr = expr
 		pos = pos
+		lang = lang
 	}
 }
 
@@ -280,7 +282,9 @@ fun (p Parser) for_loop(label string)ast.Stmt{
 			pos = pos
 		}
 	}
+	p.is_struct_possible = false
 	cond := p.expr(0)
+	p.is_struct_possible = true
 	stmts := p.parse_block()
 	return ast.ForLoop{
 		label = label

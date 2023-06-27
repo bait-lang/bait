@@ -7,6 +7,7 @@ import 'stdio.h' as #C._
 import 'string.h' as #C._
 import 'stdlib.h' as #C._
 import 'stdbool.h' as #C._
+import 'unistd.h' as #C._
 
 pub interface #C.int8_t {}
 pub interface #C.int16_t {}
@@ -21,14 +22,31 @@ pub interface #C.uint64_t {}
 pub interface #C.float {}
 pub interface #C.double {}
 
+pub interface #C.FILE {}
+
+pub const #C.stdin := 0 as &#C.FILE
+pub const #C.stdout := 1 as &#C.FILE
+pub const #C.stderr := 1 as &#C.FILE
+
 // actual params: format &u8, ...&void
 pub fun #C.printf(format &u8, x any)
 
+// actual params: stream &#C.FILE, format &u8, ...&void
+pub fun #C.fprintf(stream any, format &u8, x any)
+
 // actual params: str &u8, size i32, format &u8, ...&void
 pub fun #C.snprintf(str &u8, size i32, format &u8, x any) i32
+
+pub fun #C.exit(code i32)
 
 pub fun #C.strlen(cs &u8) i32
 
 pub fun #C.calloc(n i32, size i32) &u8
 
 pub fun #C.malloc(size i32) &u8
+
+pub fun #C.access(path &u8, mode i32) i32
+
+pub fun #C.memcpy(dest &void, src &void, size i32)
+
+pub fun #C.memmove(dest &void, src &void, size i32)
