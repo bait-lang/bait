@@ -282,7 +282,9 @@ fun (p Parser) for_loop(label string)ast.Stmt{
 			pos = pos
 		}
 	}
+	p.is_struct_possible = false
 	cond := p.expr(0)
+	p.is_struct_possible = true
 	stmts := p.parse_block()
 	return ast.ForLoop{
 		label = label
