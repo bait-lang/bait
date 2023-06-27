@@ -3,6 +3,7 @@
 package builtin
 
 struct array{
+pub mut:
 	data &void
 	length i32
 	cap i32
@@ -33,33 +34,32 @@ fun (a &array) ensure_cap(min i32) {
 		return
 	}
 
-	// mut cap := a.cap
-	// if cap == 0 {
-	// 	cap = 1
-	// }
-	// for min > cap {
-	// 	cap *= 2
-	// }
+	mut cap := a.cap
+	if cap == 0 {
+		cap = 1
+	}
+	for min > cap {
+		cap *= 2
+		break
+	}
 
-	// new_size := cap * a.elem_size
-	// new_data := #C.realloc(1, new_size)
-	// #C.memcpy(new_data, a.data, a.length * a.elem_size)
-	// a.data = new_data
-	// a.cap = cap
+	new_size := cap * a.elem_size
+	new_data := #C.calloc(1, new_size) as &void
+	#C.memcpy(new_data, a.data, a.length * a.elem_size)
+	a.data = new_data
+	a.cap = cap
 }
 
 pub fun (a &array) set(i i32, val &void) {
-	// TODO pointer arithmetic
-	// #C.memcpy(a.data + i * a.elem_size, val, a.elem_size)
+	#C.memcpy(#C.'a->data + i * a->elem_size' as &void, val, a.elem_size)
 }
 
 pub fun (a array) get(i i32) &void {
-	// TODO pointer arithmetic
-	// return a.data + i * a.elem_size
+	return #C.'a.data + i * a.elem_size' as &void
 }
 
 pub fun (a &array) push(val &void) {
-	a.ensure_cap(a.length + 1)
-	// C.memmove(&u8(a.data) + a.elem_size * a.len, val, a.elem_size)
-	// a.len += 1
+	a.length += 1
+	a.ensure_cap(a.length)
+	#C.memmove(#C.'a->data + a->elem_size * (a->length - 1)' as &void, val, a.elem_size)
 }
