@@ -339,7 +339,13 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 		expr.is_selector = true
 	}
 	node.expr_type = c.expr(node.expr)
-	sym := c.table.get_sym(node.expr_type)
+
+	mut sym := c.table.get_sym(node.expr_type)
+	if sym.kind == .alias_type {
+		sym = c.table.get_sym(sym.parent)
+	}
+
+	// TODO interface (especially JS)
 	if [ast.TypeKind.struct_, .array, .string, .map].contains(sym.kind) {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
@@ -359,7 +365,7 @@ fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
 		c.error('cast to the variant before accessing field of sumtype ${sym.name}', node.pos)
 		return ast.VOID_TYPE
 	}
-	// TODO other variants of selector expr; should this even be reachable?
+
 	return ast.ANY_TYPE
 }
 
