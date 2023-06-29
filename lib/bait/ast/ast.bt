@@ -181,6 +181,7 @@ global:
 pub:
 	exprs []Expr
 	length_expr Expr := EmptyExpr{}
+	cap_expr Expr := EmptyExpr{}
 	pos token.Pos
 }
 

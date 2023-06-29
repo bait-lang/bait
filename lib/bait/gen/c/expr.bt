@@ -22,6 +22,7 @@ fun (g Gen) expr(expr ast.Expr) {
 		ast.PrefixExpr { g.prefix_expr(expr)}
 		ast.SelectorExpr { g.selector_expr(expr) }
 		ast.StringLiteral { g.string_literal(expr) }
+		ast.StringInterLiteral { g.string_inter_literal(expr) }
 		ast.StructInit { g.struct_init(expr) }
 		else {}
 	}
@@ -48,13 +49,13 @@ fun (g Gen) array_init(node ast.ArrayInit){
 			g.expr(node.length_expr)
 			g.write(', ')
 		}
-		// TODO cap expr
-		// if node.length_expr is ast.EmptyExpr {
+		if node.cap_expr is ast.EmptyExpr {
 			g.write('0, ')
-		// } else {
-			// g.expr(node.length_expr)
-			// g.write(', ')
-		// }
+		} else {
+			g.expr(node.cap_expr)
+			g.write(', ')
+		}
+
 		g.write('sizeof(${elem_type}))')
 		return
 	}
@@ -275,6 +276,10 @@ fun (g Gen) string_literal(node ast.StringLiteral) {
 	g.write('from_c_string("')
 	g.write(val)
 	g.write('")')
+}
+
+fun (g Gen) string_inter_literal(node ast.StringInterLiteral) {
+
 }
 
 fun (g Gen) struct_init(node ast.StructInit) {
