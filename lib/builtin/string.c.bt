@@ -8,6 +8,10 @@ pub mut:
 	length i32
 }
 
+fun (s string) get(i i32) u8 {
+	return s.str[i]
+}
+
 @overload: '+'
 fun (a string) add (b string) string {
 	new_len := a.length + b.length

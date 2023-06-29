@@ -24,6 +24,7 @@ mut:
 	empty_line bool := true
 	foreign_imports []string // C header files
 	generated_eq_funs []ast.Type
+	tmp_counter i32
 	is_lhs_assign bool
 	is_array_map_set bool
 	is_for_loop_head bool
@@ -74,6 +75,11 @@ fun (g Gen) c_main() {
 	g.writeln('\tbait_main();')
 	g.writeln('\treturn 0;')
 	g.writeln('}')
+}
+
+fun (g Gen) new_temp_var() string {
+	g.tmp_counter += 1
+	return '_t${g.tmp_counter}'
 }
 
 fun (g Gen) write_indent() {

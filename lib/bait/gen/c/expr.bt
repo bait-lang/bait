@@ -19,6 +19,7 @@ fun (g Gen) expr(expr ast.Expr) {
 		ast.InfixExpr { g.infix_expr(expr) }
 		ast.IntegerLiteral { g.integer_literal(expr) }
 		ast.ParExpr { g.par_expr(expr) }
+		ast.PrefixExpr { g.prefix_expr(expr)}
 		ast.SelectorExpr { g.selector_expr(expr) }
 		ast.StringLiteral { g.string_literal(expr) }
 		ast.StructInit { g.struct_init(expr) }
@@ -252,6 +253,11 @@ fun (g Gen) par_expr(node ast.ParExpr) {
 	g.write('(')
 	g.expr(node.expr)
 	g.write(')')
+}
+
+fun (g Gen) prefix_expr(node ast.PrefixExpr) {
+	g.write(node.op.c_repr())
+	g.expr(node.right)
 }
 
 fun (g Gen) selector_expr(node ast.SelectorExpr) {
