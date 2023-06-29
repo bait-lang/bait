@@ -111,6 +111,7 @@ global:
 
 pub struct Param{
 pub:
+	is_mut bool
 	name string
 	typ Type
 	pos token.Pos

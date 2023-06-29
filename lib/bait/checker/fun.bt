@@ -32,7 +32,10 @@ fun (c Checker) fun_params(params []ast.Param){
 				kind = .function
 			})
 		} else {
-			c.scope.register(p.name, ast.ScopeObject{typ = p.typ})
+			c.scope.register(p.name, ast.ScopeObject{
+				typ = p.typ
+				is_mut = p.is_mut
+			})
 		}
 	}
 }
