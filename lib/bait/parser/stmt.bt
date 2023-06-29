@@ -171,6 +171,7 @@ fun (p Parser) const_decl()ast.ConstDecl{
 	return ast.ConstDecl{
 		name = name
 		expr = expr
+		typ = typ
 		pos = pos
 		lang = lang
 	}

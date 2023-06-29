@@ -16,9 +16,11 @@ fun (g Gen) stmts(stmts []ast.Stmt) {
 fun (g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
 		ast.AssignStmt { g.assign_stmt(stmt) }
+		ast.ConstDecl { g.const_decl(stmt) }
 		ast.ExprStmt { g.expr_stmt(stmt) }
 		ast.ForLoop { g.for_loop(stmt) }
 		ast.ForClassicLoop { g.for_classic_loop(stmt) }
+		ast.ForInLoop { g.for_in_loop(stmt) }
 		ast.FunDecl { g.fun_decl(stmt) }
 		ast.InterfaceDecl { g.interface_decl(stmt) }
 		ast.ReturnStmt { g.return_stmt(stmt) }
@@ -68,6 +70,23 @@ fun (g Gen) assign_stmt(node ast.AssignStmt) {
 	}
 }
 
+fun (g Gen) const_decl(node ast.ConstDecl){
+	if node.lang != .bait {
+		return
+	}
+
+	name := c_name(node.name)
+	val := g.expr_string(node.expr)
+
+	if node.expr is ast.ArrayInit or node.expr is ast.CallExpr or node.expr is ast.MapInit {
+		typ := g.typ(node.typ)
+		g.type_defs_out += '${typ} ${name};\n'
+		g.main_inits_out += '${name} = ${val};\n'
+	} else {
+		g.type_impls_out += '#define ${name} ${val}\n'
+	}
+}
+
 fun (g Gen) expr_stmt(node ast.ExprStmt) {
 	g.expr(node.expr)
 	if not g.empty_line {
@@ -105,6 +124,10 @@ fun (g Gen) for_classic_loop(node ast.ForClassicLoop) {
 	g.writeln('}')
 
 	g.write_label(node.label)
+}
+
+fun (g Gen) for_in_loop(node ast.ForInLoop){
+	// TODO
 }
 
 fun (g Gen) fun_decl(node ast.FunDecl) {

@@ -32,6 +32,8 @@ pub:
 	expr Expr
 	pos token.Pos
 	lang Language
+global:
+	typ Type
 }
 
 pub struct EnumDecl{

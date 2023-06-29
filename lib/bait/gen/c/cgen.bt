@@ -15,6 +15,7 @@ struct Gen {
 mut:
 	path string
 	pkg string
+	main_inits_out string
 	type_defs_out string
 	fun_decls_out string
 	type_impls_out string
@@ -69,6 +70,7 @@ fun (g Gen) headers() string {
 
 fun (g Gen) c_main() {
 	g.writeln('int main(int argc, char* argv[]) {')
+	g.writeln(g.main_inits_out)
 	g.writeln('\tbait_main();')
 	g.writeln('\treturn 0;')
 	g.writeln('}')

@@ -115,8 +115,8 @@ fun (c Checker) assign_stmt(node ast.AssignStmt) {
 }
 
 fun (c Checker) const_decl(node ast.ConstDecl) {
-	typ := c.expr(node.expr)
-	c.table.global_scope.update_type(node.name, typ)
+	node.typ = c.expr(node.expr)
+	c.table.global_scope.update_type(node.name, node.typ)
 }
 
 fun (c Checker) expr_stmt(node ast.ExprStmt) {

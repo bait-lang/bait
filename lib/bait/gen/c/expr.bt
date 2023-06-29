@@ -26,6 +26,16 @@ fun (g Gen) expr(expr ast.Expr) {
 	}
 }
 
+fun (g Gen) expr_string(expr ast.Expr) string {
+	was_line_empty := g.empty_line
+	start := g.out.length
+	g.expr(expr)
+	s := g.out.substr(start, g.out.length)
+	g.out = g.out.substr(0, start)
+	g.empty_line = was_line_empty
+	return s.trim_space()
+}
+
 fun (g Gen) array_init(node ast.ArrayInit){
 	elem_type := g.typ(node.elem_type)
 
