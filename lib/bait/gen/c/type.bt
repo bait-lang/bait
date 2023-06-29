@@ -6,13 +6,9 @@ import bait.ast
 
 fun (g Gen) typ(typ ast.Type) string {
 	sym := g.table.get_sym(typ)
-	name := sym.name.replace('[]', 'array_')
+	name := sym.name.replace('[]', 'array_').replace('C.', '').replace('.', '__')
 	ptrs := '*'.repeat(typ.get_nr_amp())
 	return name + ptrs
-}
-
-fun (g Gen) ctyp(typ ast.Type) string {
-	return g.typ(typ).replace('C.', '')
 }
 
 fun (g Gen) write_types() {
@@ -37,7 +33,7 @@ fun (g Gen) write_types() {
 		} else {
 			match sym.kind {
 				.alias_type {
-					g.type_defs_out += 'typedef ${g.ctyp(sym.parent)} ${cname};\n'
+					g.type_defs_out += 'typedef ${g.typ(sym.parent)} ${cname};\n'
 				}
 			}
 		}
