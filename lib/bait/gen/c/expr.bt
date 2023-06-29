@@ -24,6 +24,7 @@ fun (g Gen) expr(expr ast.Expr) {
 		ast.StringLiteral { g.string_literal(expr) }
 		ast.StringInterLiteral { g.string_inter_literal(expr) }
 		ast.StructInit { g.struct_init(expr) }
+		ast.TypeOf{ g.type_of(expr)}
 		else {}
 	}
 }
@@ -311,6 +312,11 @@ fun (g Gen) struct_init(node ast.StructInit) {
 	}
 
 	g.write('}')
+}
+
+fun (g Gen) type_of(node ast.TypeOf){
+	sym := g.table.get_sym(node.typ)
+	g.write('from_c_string("' + sym.name + '")')
 }
 
 fun (g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
