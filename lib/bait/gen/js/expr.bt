@@ -131,11 +131,12 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
-		if sym.kind == .array and node.name == 'push' {
-			g.write('array_push')
-		} else {
-			g.write(js_name(sym.name + '_' + node.name))
+		if sym.kind == .array and ['push', 'push_many'].contains(node.name) {
+			g.gen_array_method(node.name, node, sym)
+			return
 		}
+
+		g.write(js_name(sym.name + '_' + node.name))
 	} else if node.lang == .bait{
 		g.write(js_name(node.name))
 	} else {
@@ -165,6 +166,14 @@ fun (g Gen) call_args(args []ast.CallArg) {
 			g.write(", ")
 		}
 	}
+}
+
+fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol) {
+	g.write('array_${name}(')
+	g.expr(node.left)
+	g.write(', ')
+	g.expr(node.args[0].expr)
+	g.write(')')
 }
 
 fun (g Gen) char_literal(node ast.CharLiteral) {

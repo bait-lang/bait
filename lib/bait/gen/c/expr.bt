@@ -91,7 +91,7 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 	mut name := c_name(node.name)
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
-		if sym.kind == .array and name == 'push' {
+		if sym.kind == .array and ['push', 'push_many'].contains(name) {
 			g.gen_array_method(name, node, sym)
 			return
 		}

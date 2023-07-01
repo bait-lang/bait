@@ -128,7 +128,7 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 
 	node.lang = def.lang
 	node.left_type = def.params[0].typ
-	if left_sym.kind == .array and node.name == 'push' {
+	if left_sym.kind == .array and ['push', 'push_many'].contains(node.name) {
 		node.left_type = left_expr_type
 	}
 	node.return_type = def.return_type
