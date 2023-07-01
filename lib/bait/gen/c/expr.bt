@@ -92,9 +92,15 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
 		final_sym := g.table.get_final_sym(node.left_type)
-		if final_sym.kind == .array and ['push', 'push_many'].contains(name) {
-			g.gen_array_method(name, node, final_sym)
-			return
+		if final_sym.kind == .array {
+			if name == 'push' {
+				g.gen_array_method(name, node, final_sym)
+				return
+			}
+			if name == 'push_many' {
+				g.gen_array_push_many(node)
+				return
+			}
 		}
 
 		name = c_name(sym.name + '_' + node.name)
@@ -138,6 +144,14 @@ fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol)
 	g.write(', (${type_str}[]){')
 	g.expr(node.args[0].expr)
 	g.write('})')
+}
+
+fun (g Gen) gen_array_push_many(node ast.CallExpr) {
+	g.write('array_push_many(&')
+	g.expr(node.left)
+	g.write(', &')
+	g.expr(node.args[0].expr)
+	g.write(')')
 }
 
 fun (g Gen) hash_expr(node ast.HashExpr) {
