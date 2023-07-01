@@ -30,6 +30,14 @@ pub fun (t Table) get_sym(typ Type) TypeSymbol {
 	return t.type_symbols[typ.idx()]
 }
 
+pub fun (t Table) get_final_sym(typ Type) TypeSymbol {
+	mut s := t.get_sym(typ)
+	for s.kind == .alias_type {
+		s = t.get_sym(s.parent)
+	}
+	return s
+}
+
 pub fun (t Table) type_name(typ Type) string {
 	amps := '&'.repeat(typ.get_nr_amp())
 	return amps + t.get_sym(typ).name
