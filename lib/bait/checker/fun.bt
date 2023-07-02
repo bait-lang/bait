@@ -129,7 +129,7 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 
 	node.lang = def.lang
 	node.left_type = def.params[0].typ
-	if final_sym.kind == .array and ['push', 'push_many'].contains(node.name) {
+	if final_sym.kind == .array and ['push', 'push_many_with_len', 'push_many'].contains(node.name) {
 		node.left_type = left_expr_type
 	}
 	node.return_type = def.return_type
@@ -142,9 +142,9 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 	}
 
 	// Array methods with one argument of `any` type
-	if final_sym.kind == .array and ['push', 'index', 'last_index', 'contains'].contains(node.name) {
+	if final_sym.kind == .array and ['push', 'push_many_with_len', 'index', 'last_index', 'contains'].contains(node.name) {
 		arg := node.args[0]
-		info := left_sym.info as ast.ArrayInfo
+		info := final_sym.info as ast.ArrayInfo
 		c.expected_type = info.elem_type
 		arg.typ = c.expr(arg.expr)
 		if not c.check_types(arg.typ, info.elem_type) {

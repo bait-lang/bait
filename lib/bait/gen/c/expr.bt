@@ -94,7 +94,11 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 		final_sym := g.table.get_final_sym(node.left_type)
 		if final_sym.kind == .array {
 			if name == 'push' {
-				g.gen_array_method(name, node, final_sym)
+				g.gen_array_method(name, node, final_sym, true)
+				return
+			}
+			if name == 'push_many_with_len' {
+				g.gen_array_method(name, node, final_sym, false)
 				return
 			}
 			if name == 'push_many' {
@@ -136,14 +140,24 @@ fun (g Gen) call_args(args []ast.CallArg) {
 
 // TODO fix elem_type (it's placeholder for array but should be the actual type)
 // this should not interfer with JS or be applied to both
-fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol) {
-	info := sym.info as ast.ArrayInfo
-	type_str := g.typ(info.elem_type)
+fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol, cast bool) {
 	g.write('array_${name}(&')
 	g.expr(node.left)
-	g.write(', (${type_str}[]){')
-	g.expr(node.args[0].expr)
-	g.write('})')
+	if cast {
+		info := sym.info as ast.ArrayInfo
+		type_str := g.typ(info.elem_type)
+		g.write(', (${type_str}[]){')
+		g.expr(node.args[0].expr)
+		g.write('}')
+	} else {
+		g.write(', ')
+		g.expr(node.args[0].expr)
+	}
+	for i := 1; i < node.args.length; i += 1 {
+		g.write(', ')
+		g.expr(node.args[i].expr)
+	}
+	g.write(')')
 }
 
 fun (g Gen) gen_array_push_many(node ast.CallExpr) {

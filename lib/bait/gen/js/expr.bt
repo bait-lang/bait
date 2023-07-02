@@ -131,7 +131,7 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
-		if sym.kind == .array and ['push', 'push_many'].contains(node.name) {
+		if sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.name) {
 			g.gen_array_method(node.name, node, sym)
 			return
 		}
@@ -173,6 +173,10 @@ fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol)
 	g.expr(node.left)
 	g.write(', ')
 	g.expr(node.args[0].expr)
+	for i := 1; i < node.args.length; i += 1 {
+		g.write(', ')
+		g.expr(node.args[i].expr)
+	}
 	g.write(')')
 }
 

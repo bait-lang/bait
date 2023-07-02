@@ -14,17 +14,25 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 		return true
 	}
 
-	// TODO remove any type
 	if got == ast.ANY_TYPE or expected == ast.ANY_TYPE {
 		return true
 	}
+
+	if expected.idx() == 1 and expected.get_nr_amp() >= 1 and got.get_nr_amp() >= 1 {
+		return true
+	}
+
 	got_sym := c.table.get_sym(got)
 	exp_sym := c.table.get_sym(expected)
+
+	if exp_sym.parent.idx() == got.idx() {
+		return true
+	}
+
 	if exp_sym.kind == .array and got_sym.kind == .array {
 		if exp_sym.name == 'array' or got_sym.name == 'array' {
 			return true
 		}
-		// TODO remove any type
 		got_info := got_sym.info as ast.ArrayInfo
 		if got_info.elem_type == ast.ANY_TYPE {
 			return true
@@ -34,10 +42,12 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 			return true
 		}
 	}
+
 	if exp_sym.kind == .sum_type {
 		info := exp_sym.info as ast.SumTypeInfo
 		return info.variants.contains(got)
 	}
+
 	if got_sym.kind == .fun_ and exp_sym.kind == .fun_ {
 		got_info := got_sym.info as ast.FunInfo
 		exp_info := exp_sym.info as ast.FunInfo
@@ -51,6 +61,8 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 		}
 		return c.check_types(got_info.return_type, exp_info.return_type)
 	}
+
+
 	return false
 }
 

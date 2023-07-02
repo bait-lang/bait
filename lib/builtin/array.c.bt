@@ -65,7 +65,15 @@ pub fun (a &array) push(val &void) {
 }
 
 pub fun (a &array) push_many(vals &array) {
+	// TODO fix sym of &a not being found as vals.data is expected as placeholder
+	// a.push_many_with_len(vals.data, vals.length)
 	a.ensure_cap(a.length + vals.length)
 	#C.memmove(#C.'a->data + a->elem_size * (a->length)' as &void, vals.data, a.elem_size * vals.length)
 	a.length += vals.length
+}
+
+pub fun (a &array) push_many_with_len(data &void, len i32) {
+	a.ensure_cap(a.length + len)
+	#C.memmove(#C.'a->data + a->elem_size * (a->length)' as &void, data, a.elem_size * len)
+	a.length += len
 }
