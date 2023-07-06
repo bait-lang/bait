@@ -22,7 +22,9 @@ fun (g Gen) expr(expr ast.Expr) {
 		ast.PrefixExpr { g.prefix_expr(expr)}
 		ast.SelectorExpr { g.selector_expr(expr) }
 		ast.StringLiteral { g.string_literal(expr) }
+		ast.StringInterLiteral { g.string_inter_literal(expr) }
 		ast.StructInit { g.struct_init(expr) }
+		ast.TypeOf{ g.type_of(expr)}
 		else {}
 	}
 }
@@ -48,13 +50,13 @@ fun (g Gen) array_init(node ast.ArrayInit){
 			g.expr(node.length_expr)
 			g.write(', ')
 		}
-		// TODO cap expr
-		// if node.length_expr is ast.EmptyExpr {
+		if node.cap_expr is ast.EmptyExpr {
 			g.write('0, ')
-		// } else {
-			// g.expr(node.length_expr)
-			// g.write(', ')
-		// }
+		} else {
+			g.expr(node.cap_expr)
+			g.write(', ')
+		}
+
 		g.write('sizeof(${elem_type}))')
 		return
 	}
@@ -89,9 +91,20 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 	mut name := c_name(node.name)
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
-		if sym.kind == .array and name == 'push' {
-			g.gen_array_method(name, node, sym)
-			return
+		final_sym := g.table.get_final_sym(node.left_type)
+		if final_sym.kind == .array {
+			if name == 'push' {
+				g.gen_array_method(name, node, final_sym, true)
+				return
+			}
+			if name == 'push_many_with_len' {
+				g.gen_array_method(name, node, final_sym, false)
+				return
+			}
+			if name == 'push_many' {
+				g.gen_array_push_many(node)
+				return
+			}
 		}
 
 		name = c_name(sym.name + '_' + node.name)
@@ -127,14 +140,32 @@ fun (g Gen) call_args(args []ast.CallArg) {
 
 // TODO fix elem_type (it's placeholder for array but should be the actual type)
 // this should not interfer with JS or be applied to both
-fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol) {
-	info := sym.info as ast.ArrayInfo
-	type_str := g.typ(info.elem_type)
+fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol, cast bool) {
 	g.write('array_${name}(&')
 	g.expr(node.left)
-	g.write(', (${type_str}[]){')
+	if cast {
+		info := sym.info as ast.ArrayInfo
+		type_str := g.typ(info.elem_type)
+		g.write(', (${type_str}[]){')
+		g.expr(node.args[0].expr)
+		g.write('}')
+	} else {
+		g.write(', ')
+		g.expr(node.args[0].expr)
+	}
+	for i := 1; i < node.args.length; i += 1 {
+		g.write(', ')
+		g.expr(node.args[i].expr)
+	}
+	g.write(')')
+}
+
+fun (g Gen) gen_array_push_many(node ast.CallExpr) {
+	g.write('array_push_many(&')
+	g.expr(node.left)
+	g.write(', &')
 	g.expr(node.args[0].expr)
-	g.write('})')
+	g.write(')')
 }
 
 fun (g Gen) hash_expr(node ast.HashExpr) {
@@ -277,6 +308,10 @@ fun (g Gen) string_literal(node ast.StringLiteral) {
 	g.write('")')
 }
 
+fun (g Gen) string_inter_literal(node ast.StringInterLiteral) {
+
+}
+
 fun (g Gen) struct_init(node ast.StructInit) {
 	type_str := g.typ(node.typ)
 	g.write('(${type_str}){')
@@ -306,6 +341,11 @@ fun (g Gen) struct_init(node ast.StructInit) {
 	}
 
 	g.write('}')
+}
+
+fun (g Gen) type_of(node ast.TypeOf){
+	sym := g.table.get_sym(node.typ)
+	g.write('from_c_string("' + sym.name + '")')
 }
 
 fun (g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {

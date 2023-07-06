@@ -32,7 +32,10 @@ fun (c Checker) fun_params(params []ast.Param){
 				kind = .function
 			})
 		} else {
-			c.scope.register(p.name, ast.ScopeObject{typ = p.typ})
+			c.scope.register(p.name, ast.ScopeObject{
+				typ = p.typ
+				is_mut = p.is_mut
+			})
 		}
 	}
 }
@@ -114,6 +117,7 @@ fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
 fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 	left_expr_type := c.expr(node.left)
 	left_sym := c.table.get_sym(left_expr_type)
+	final_sym := c.table.get_final_sym(left_expr_type)
 	def := c.table.get_method(left_sym, node.name)
 	if def.name.length == 0 {
 		c.error('method ${node.name} not found on type ${left_sym.name}', node.pos)
@@ -125,7 +129,7 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 
 	node.lang = def.lang
 	node.left_type = def.params[0].typ
-	if left_sym.kind == .array and node.name == 'push' {
+	if final_sym.kind == .array and ['push', 'push_many_with_len', 'push_many'].contains(node.name) {
 		node.left_type = left_expr_type
 	}
 	node.return_type = def.return_type
@@ -138,9 +142,9 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 	}
 
 	// Array methods with one argument of `any` type
-	if left_sym.kind == .array and ['push', 'index', 'last_index', 'contains'].contains(node.name) {
+	if final_sym.kind == .array and ['push', 'push_many_with_len', 'index', 'last_index', 'contains'].contains(node.name) {
 		arg := node.args[0]
-		info := left_sym.info as ast.ArrayInfo
+		info := final_sym.info as ast.ArrayInfo
 		c.expected_type = info.elem_type
 		arg.typ = c.expr(arg.expr)
 		if not c.check_types(arg.typ, info.elem_type) {
@@ -149,7 +153,7 @@ fun (c Checker) method_call(node ast.CallExpr) ast.Type {
 		return node.return_type
 	}
 	// Array methods with one argument of `array` type
-	if left_sym.kind == .array and ['concat', 'push_many'].contains(node.name) {
+	if final_sym.kind == .array and ['concat', 'push_many'].contains(node.name) {
 		arg := node.args[0]
 		c.expected_type = left_expr_type
 		arg.typ = c.expr(arg.expr)
