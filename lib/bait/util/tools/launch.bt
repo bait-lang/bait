@@ -37,7 +37,7 @@ pub fun launch_tool(name string, args []string) i32 {
 }
 
 fun get_tool_source(base string) string {
-	if os.is_dir(base) {
+	if os.exists(base) and os.is_dir(base) {
 		return base
 	}
 	return base + '.bt'
