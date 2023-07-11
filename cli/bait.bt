@@ -5,6 +5,7 @@ package main
 import bait.preference
 import bait.builder
 import bait.util
+import bait.util.tools
 import os
 
 // List of commands implemented as tool
@@ -23,30 +24,6 @@ const TOOLS := [
 	'gen-baitjs',
 ]
 
-fun launch_tool(name string, args []string, is_verbose bool) i32 {
-	baitexe := os.executable()
-	tool_base_path := os.resource_abs_path(os.join_path('cli', ['tools', name]))
-	tool_source := tool_base_path + '.bt'
-	tool_exe := tool_base_path + '.js'
-
-	// Compile the tool
-	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
-	if comp_res.code != 0 {
-		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
-		return 1
-	}
-
-	// Execute
-	args_string := args.join(' ')
-	if is_verbose {
-		println('launching tool')
-		println('  bait:      ${baitexe}')
-		println('  source:    ${tool_source}')
-		println('  args:      ${args_string}')
-	}
-	return os.system('node ${tool_exe} ${args_string}')
-}
-
 fun main() {
 	// Parse arguments into Prefs struct
 	args := os.ARGS.slice(2, os.ARGS.length)
@@ -55,22 +32,22 @@ fun main() {
 
 	// Handle tool commands
 	if TOOLS.contains(prefs.command) {
-		exit(launch_tool(prefs.command, prefs.build_options, prefs.is_verbose))
+		exit(tools.launch_tool(prefs.command, prefs.build_options))
 	}
 
-	// Handle builtin commands (build, run, test, version)
-	match prefs.command {
-		'test' {
-			exit(builder.run_tests(prefs))
-		}
-		'version' {
-			println('Bait ${util.VERSION}')
-			return
-		}
+	// Handle builtin commands
+	if prefs.command == 'test' {
+		exit(builder.run_tests(prefs))
 	}
+	if prefs.command == 'version' {
+		println('Bait ${util.VERSION}')
+		return
+	}
+	// build, run: prefs.command is equal to the file or folder
 	if os.exists(prefs.command) {
 		exit(builder.compile(prefs))
 	}
+
 	eprintln('error: unknown file or command: "${prefs.command}"')
 	exit(1)
 }

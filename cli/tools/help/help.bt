@@ -1,5 +1,5 @@
 // Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
-// This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package main
 
 import os
@@ -9,16 +9,19 @@ fun main() {
 		print_topic('default')
 		return
 	}
+
 	print_topic(os.ARGS[2])
 }
 
 fun print_topic(topic string) {
-	help_root := os.resource_abs_path('help')
-	topic_path := '${help_root}/${topic}.txt'
+	root := os.dir($ABS_FILE)
+	topic_path := '${root}/topics/${topic}.txt'
+
 	if not os.exists(topic_path) {
 		eprintln('help: unknown topic "${topic}"')
 		exit(1)
 	}
-	content := os.read_file(topic_path)
+
+	content := os.read_file(topic_path).trim_space()
 	println(content)
 }

@@ -1,0 +1,44 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package tools
+
+import os
+
+const VERBOSE := os.ARGS.contains('--verbose') or os.ARGS.contains('-v')
+
+// TODO implement check if recompile can be skipped
+//   - exe exists
+//   - AND mime time of source is older than exe
+//   - AND mime time of imports (recursive!) are older than exe
+// TODO prepare for C backend
+
+pub fun launch_tool(name string, args []string) i32 {
+	base_path := os.join_path($BAITDIR, ['cli', 'tools', name])
+	tool_source := get_tool_source(base_path)
+	tool_exe := base_path + '.js'
+
+	// Run Bait to compile the tool
+	baitexe := os.executable()
+	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
+	if comp_res.code != 0 {
+		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
+		return 1
+	}
+
+	// Execute
+	args_string := args.join(' ')
+	if VERBOSE {
+		println('launching tool')
+		println('  bait:      ${baitexe}')
+		println('  source:    ${tool_source}')
+		println('  args:      ${args_string}')
+	}
+	return os.system('node ${tool_exe} ${args_string}')
+}
+
+fun get_tool_source(base string) string {
+	if os.is_dir(base) {
+		return base
+	}
+	return base + '.bt'
+}
