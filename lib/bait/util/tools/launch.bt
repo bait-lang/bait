@@ -6,11 +6,15 @@ import os
 
 const VERBOSE := os.ARGS.contains('--verbose') or os.ARGS.contains('-v')
 
+// TODO implement check if recompile can be skipped
+//   - exe exists
+//   - AND mime time of source is older than exe
+//   - AND mime time of imports (recursive!) are older than exe
 // TODO prepare for C backend
+
 pub fun launch_tool(name string, args []string) i32 {
 	base_path := os.join_path($BAITDIR, ['cli', 'tools', name])
-	// TODO support folder tools
-	tool_source := base_path + '.bt'
+	tool_source := get_tool_source(base_path)
 	tool_exe := base_path + '.js'
 
 	// Run Bait to compile the tool
@@ -30,4 +34,11 @@ pub fun launch_tool(name string, args []string) i32 {
 		println('  args:      ${args_string}')
 	}
 	return os.system('node ${tool_exe} ${args_string}')
+}
+
+fun get_tool_source(base string) string {
+	if os.is_dir(base) {
+		return base
+	}
+	return base + '.bt'
 }
