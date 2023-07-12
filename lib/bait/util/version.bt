@@ -2,4 +2,5 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package util
 
-pub const VERSION := '0.0.4-dev ${$BAITHASH}'
+pub const VERSION := '0.0.4-dev'
+pub const FULL_VERSION := '${VERSION} ${$BAITHASH}'

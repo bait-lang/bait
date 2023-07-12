@@ -10,7 +10,7 @@ const VERBOSE := os.ARGS.contains('--verbose') or os.ARGS.contains('-v')
 //   - exe exists
 //   - AND mime time of source is older than exe
 //   - AND mime time of imports (recursive!) are older than exe
-// TODO prepare for C backend
+// TODO prepare for C backend (respect -b option)
 
 pub fun launch_tool(name string, args []string) i32 {
 	base_path := os.join_path($BAITDIR, ['cli', 'tools', name])
@@ -29,9 +29,9 @@ pub fun launch_tool(name string, args []string) i32 {
 	args_string := args.join(' ')
 	if VERBOSE {
 		println('launching tool')
-		println('  bait:      ${baitexe}')
-		println('  source:    ${tool_source}')
-		println('  args:      ${args_string}')
+		println('  bait:   ${baitexe}')
+		println('  source: ${tool_source}')
+		println('  args:   ${args_string}')
 	}
 	return os.system('node ${tool_exe} ${args_string}')
 }

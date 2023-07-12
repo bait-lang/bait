@@ -40,7 +40,7 @@ fun main() {
 		exit(builder.run_tests(prefs))
 	}
 	if prefs.command == 'version' {
-		println('Bait ${util.VERSION}')
+		println('Bait ${util.FULL_VERSION}')
 		return
 	}
 	// build, run: prefs.command is equal to the file or folder
