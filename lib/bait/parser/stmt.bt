@@ -394,7 +394,13 @@ fun (p Parser) fun_params() []ast.Param{
 	mut params := []ast.Param
 	for p.tok.kind != .rpar{
 		pos := p.tok.pos
+		mut is_mut := false
+		if p.tok.kind == .key_mut {
+			is_mut = true
+			p.next()
+		}
 		param := ast.Param{
+			is_mut = is_mut
 			name = p.check_name()
 			typ = p.parse_type()
 			pos = pos
