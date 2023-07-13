@@ -138,9 +138,9 @@ fun (g Gen) for_in_loop(node ast.ForInLoop){
 	if sym.kind == .array {
 		info := sym.info as ast.ArrayInfo
 		typ := g.typ(info.elem_type)
-		g.writeln('\t${typ} ${node.valvar} = (*(${typ}*)(array_get(${container}, ${i})));')
+		g.writeln('\t${typ} ${node.valvar.name} = (*(${typ}*)(array_get(${container}, ${i})));')
 	} else if sym.kind == .string {
-		g.writeln('\tu8 ${node.valvar} = string_get(${container}, ${i});')
+		g.writeln('\tu8 ${node.valvar.name} = string_get(${container}, ${i});')
 	}
 	// TODO for in map
 	g.stmts(node.stmts)

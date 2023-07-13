@@ -16,29 +16,29 @@ mut:
 	got_val string
 }
 
-fun (tr TestRunner) set_test_info(file string, name string) {
+fun (mut tr TestRunner) set_test_info(file string, name string) {
 	tr.file = file
 	tr.fun_name = name
 }
 
-fun (tr TestRunner) set_assert_info(line i32, expr_string string, exp string, got string) {
+fun (mut tr TestRunner) set_assert_info(line i32, expr_string string, exp string, got string) {
 	tr.line = line
 	tr.expr_string = expr_string
 	tr.exp_val = exp
 	tr.got_val = got
 }
 
-fun (tr TestRunner) assert_pass() {
+fun (mut tr TestRunner) assert_pass() {
 	tr.passes += 1
 }
 
-fun (tr TestRunner) assert_fail() {
+fun (mut tr TestRunner) assert_fail() {
 	tr.fails += 1
 	eprintln('${tr.file}:${tr.line} ${tr.fun_name}')
 	eprintln(tr.expr_string)
 }
 
-fun (tr TestRunner) assert_fail_infix() {
+fun (mut tr TestRunner) assert_fail_infix() {
 	tr.fails += 1
 	eprintln('${tr.file}:${tr.line} ${tr.fun_name}')
 	eprintln(tr.expr_string)

@@ -29,7 +29,7 @@ fun new_array_from_c(len i32, cap i32, elem_size i32, carr &void) array {
 	return a
 }
 
-fun (a &array) ensure_cap(min i32) {
+fun (mut a array) ensure_cap(min i32) {
 	if min <= a.cap {
 		return
 	}
@@ -58,13 +58,13 @@ pub fun (a array) get(i i32) &void {
 	return #C.'a.data + i * a.elem_size' as &void
 }
 
-pub fun (a &array) push(val &void) {
+pub fun (mut a array) push(val &void) {
 	a.ensure_cap(a.length + 1)
 	#C.memmove(#C.'a->data + a->elem_size * (a->length)' as &void, val, a.elem_size)
 	a.length += 1
 }
 
-pub fun (a &array) push_many(vals &array) {
+pub fun (mut a array) push_many(vals &array) {
 	// TODO fix sym of &a not being found as vals.data is expected as placeholder
 	// a.push_many_with_len(vals.data, vals.length)
 	a.ensure_cap(a.length + vals.length)
@@ -72,7 +72,7 @@ pub fun (a &array) push_many(vals &array) {
 	a.length += vals.length
 }
 
-pub fun (a &array) push_many_with_len(data &void, len i32) {
+pub fun (mut a array) push_many_with_len(data &void, len i32) {
 	a.ensure_cap(a.length + len)
 	#C.memmove(#C.'a->data + a->elem_size * (a->length)' as &void, data, a.elem_size * len)
 	a.length += len

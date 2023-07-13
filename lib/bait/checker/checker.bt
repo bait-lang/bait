@@ -35,7 +35,7 @@ pub fun new_checker(table ast.Table, pref preference.Prefs) Checker {
 }
 
 pub fun (mut c Checker) check_files(files []ast.File) {
-	for f in files {
+	for mut f in files {
 		c.check(f)
 
 		f.infos = c.infos

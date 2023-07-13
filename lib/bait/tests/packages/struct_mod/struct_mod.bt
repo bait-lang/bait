@@ -22,10 +22,10 @@ pub fun (f Foo) get_b() i32 {
 	return f.b
 }
 
-pub fun (f Foo) add_b(n i32) {
+pub fun (mut f Foo) add_b(n i32) {
 	f.b += n
 }
 
-pub fun (f Foo) sub_d(n i32) {
+pub fun (mut f Foo) sub_d(n i32) {
 	f.d -= n
 }
