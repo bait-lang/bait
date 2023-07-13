@@ -55,7 +55,7 @@ fun (c Checker) call_expr(node ast.CallExpr) ast.Type {
 	return c.fun_call(node)
 }
 
-fun (mut c Checker) fun_call(node ast.CallExpr) ast.Type {
+fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 	mut found := c.table.fun_decls.contains(node.name)
 	if not found and not node.name.contains('.') and node.pkg != 'builtin' {
 		full_name := node.pkg + '.' + node.name
@@ -98,7 +98,7 @@ fun (mut c Checker) fun_call(node ast.CallExpr) ast.Type {
 	}
 
 	// Check argument types
-	for i, arg in node.args {
+	for i, mut arg in node.args {
 		param_type := def.params[i].typ
 		c.expected_type = param_type
 		arg.typ = c.expr(arg.expr)
@@ -114,7 +114,7 @@ fun (mut c Checker) fun_call(node ast.CallExpr) ast.Type {
 	return node.return_type
 }
 
-fun (mut c Checker) method_call(node ast.CallExpr) ast.Type {
+fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	left_expr_type := c.expr(node.left)
 	left_sym := c.table.get_sym(left_expr_type)
 	final_sym := c.table.get_final_sym(left_expr_type)
@@ -143,7 +143,7 @@ fun (mut c Checker) method_call(node ast.CallExpr) ast.Type {
 
 	// Array methods with one argument of `any` type
 	if final_sym.kind == .array and ['push', 'push_many_with_len', 'index', 'last_index', 'contains'].contains(node.name) {
-		arg := node.args[0]
+		mut arg := node.args[0]
 		info := final_sym.info as ast.ArrayInfo
 		c.expected_type = info.elem_type
 		arg.typ = c.expr(arg.expr)
@@ -154,7 +154,7 @@ fun (mut c Checker) method_call(node ast.CallExpr) ast.Type {
 	}
 	// Array methods with one argument of `array` type
 	if final_sym.kind == .array and ['concat', 'push_many'].contains(node.name) {
-		arg := node.args[0]
+		mut arg := node.args[0]
 		c.expected_type = left_expr_type
 		arg.typ = c.expr(arg.expr)
 		if not c.check_types(arg.typ, left_expr_type) {
@@ -164,7 +164,7 @@ fun (mut c Checker) method_call(node ast.CallExpr) ast.Type {
 	}
 
 	// Check argument types
-	for i, arg in node.args {
+	for i, mut arg in node.args {
 		param_type := def.params[i + 1].typ
 		c.expected_type = param_type
 		arg.typ = c.expr(arg.expr)
