@@ -6,7 +6,7 @@ import bait.ast
 import bait.errors
 import bait.token
 
-fun (g Gen) stmts(stmts []ast.Stmt) {
+fun (mut g Gen) stmts(stmts []ast.Stmt) {
 	g.indent += 1
 	for stmt in stmts {
 		g.stmt(stmt)
@@ -124,7 +124,7 @@ fun (g Gen) assert_side_expr(node ast.Expr) {
 	}
 }
 
-fun (g Gen) assign_stmt(node ast.AssignStmt){
+fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 	if node.op == .decl_assign {
 		left := node.left as ast.Ident
 		if left.is_mut {
@@ -175,7 +175,7 @@ fun (g Gen) const_decl(node ast.ConstDecl){
 	g.writeln('')
 }
 
-fun (g Gen) enum_decl(node ast.EnumDecl){
+fun (mut g Gen) enum_decl(node ast.EnumDecl){
 	g.writeln('const ' + js_name(node.name) + ' = {')
 	g.indent += 1
 	for field in node.fields {
@@ -212,7 +212,7 @@ fun (g Gen) for_loop(node ast.ForLoop){
 	g.writeln('}')
 }
 
-fun (g Gen) for_classic_loop(node ast.ForClassicLoop){
+fun (mut g Gen) for_classic_loop(node ast.ForClassicLoop){
 	g.write_label(node.label)
 
 	g.is_for_loop_head = true
@@ -265,7 +265,7 @@ fun (g Gen) for_in_map(node ast.ForInLoop){
 	g.writeln('}')
 }
 
-fun (g Gen) fun_decl(node ast.FunDecl) {
+fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	if node.lang != .bait {
 		return
 	}
@@ -301,7 +301,7 @@ fun (g Gen) fun_params(params []ast.Param){
 	}
 }
 
-fun (g Gen) global_decl(node ast.GlobalDecl){
+fun (mut g Gen) global_decl(node ast.GlobalDecl){
 	name := js_name(node.name)
 	expr := g.expr_string(node.expr)
 	g.global_out += 'var ${name} = ${expr}\n'

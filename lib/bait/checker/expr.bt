@@ -57,7 +57,7 @@ fun (c Checker) expr(expr ast.Expr) ast.Type {
 	}
 }
 
-fun (c Checker) anon_fun(node ast.AnonFun) ast.Type {
+fun (mut c Checker) anon_fun(node ast.AnonFun) ast.Type {
 	root_fun_decl := c.cur_fun
 	c.cur_fun = node.decl
 	c.open_scope()
@@ -68,7 +68,7 @@ fun (c Checker) anon_fun(node ast.AnonFun) ast.Type {
 	return node.typ
 }
 
-fun (c Checker) array_init(node ast.ArrayInit) ast.Type {
+fun (mut c Checker) array_init(node ast.ArrayInit) ast.Type {
 	// Type init
 	if node.exprs.length == 0 {
 		// Typeless array init
@@ -250,7 +250,7 @@ fun (c Checker) index_expr(node ast.IndexExpr) ast.Type {
 	return node.left_type
 }
 
-fun (c Checker) map_init(node ast.MapInit) ast.Type {
+fun (mut c Checker) map_init(node ast.MapInit) ast.Type {
 	// Empty init
 	if node.keys.length == 0 {
 		sym := c.table.get_sym(node.typ)
@@ -286,7 +286,7 @@ fun (c Checker) map_init(node ast.MapInit) ast.Type {
 	return node.typ
 }
 
-fun (c Checker) match_expr(node ast.MatchExpr) ast.Type {
+fun (mut c Checker) match_expr(node ast.MatchExpr) ast.Type {
 	node.cond_type = c.expr(node.cond)
 	if node.branches.length == 0 {
 		c.error('match expression must have at least one branch', node.pos)

@@ -71,7 +71,7 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 	}
 }
 
-fun (p Parser) package_decl() ast.PackageDecl {
+fun (mut p Parser) package_decl() ast.PackageDecl {
 	if p.tok.kind != .key_package {
 		p.pkg_name = "main"
 		return ast.PackageDecl{
@@ -163,7 +163,7 @@ fun (p Parser) prepend_pkg(val string) string {
 	return p.pkg_name + '.' + val
 }
 
-fun (p Parser) prepend_expr_pkg(val string) string {
+fun (mut p Parser) prepend_expr_pkg(val string) string {
 	if p.expr_pkg.length == 0 or p.expr_pkg == p.pkg_name {
 		return val
 	}
@@ -172,7 +172,7 @@ fun (p Parser) prepend_expr_pkg(val string) string {
 	return res
 }
 
-fun (p Parser) next() {
+fun (mut p Parser) next() {
 	p.prev_tok = p.tok
 	p.tok = p.next_tok
 	p.next_tok = p.tokens[p.idx]
@@ -189,7 +189,7 @@ fun (p Parser) warn(msg string) {
 	})
 }
 
-fun (p Parser) error(msg string){
+fun (mut p Parser) error(msg string){
 	p.errors.push(errors.Message{
 		kind = .error
 		path = p.path

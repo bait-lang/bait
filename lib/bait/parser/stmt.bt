@@ -241,7 +241,7 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 	}
 }
 
-fun (p Parser) for_loop(label string)ast.Stmt{
+fun (mut p Parser) for_loop(label string)ast.Stmt{
 	pos := p.tok.pos
 	p.next()
 	if p.next_tok.kind == .decl_assign {
@@ -295,7 +295,7 @@ fun (p Parser) for_loop(label string)ast.Stmt{
 	}
 }
 
-fun (p Parser) fun_decl()ast.FunDecl{
+fun (mut p Parser) fun_decl()ast.FunDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.check(.key_fun)

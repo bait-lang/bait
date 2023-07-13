@@ -17,12 +17,12 @@ fun (a array) set(i i32, val any) {
 	#JS.'a.data[i] = val'
 }
 
-pub fun (a array) push(el any) {
+pub fun (mut a array) push(el any) {
 	a.data.push(el)
 	a.length += 1
 }
 
-pub fun (a array) push_many(b array) {
+pub fun (mut a array) push_many(b array) {
 	a.data = a.data.concat(b.data)
 	a.length += b.length
 }

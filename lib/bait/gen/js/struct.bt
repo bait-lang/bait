@@ -4,7 +4,7 @@ package js
 
 import bait.ast
 
-fun (g Gen) struct_decl(node ast.StructDecl){
+fun (mut g Gen) struct_decl(node ast.StructDecl){
 	g.write('function ')
 	jsname := js_name(node.name)
 	g.write(jsname)

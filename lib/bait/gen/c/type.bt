@@ -11,7 +11,7 @@ fun (g Gen) typ(typ ast.Type) string {
 	return name + ptrs
 }
 
-fun (g Gen) write_types() {
+fun (mut g Gen) write_types() {
 	for sym in g.table.type_symbols {
 		if sym.name.starts_with('C.') {
 			continue

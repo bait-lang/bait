@@ -12,7 +12,7 @@ fun (m map) get(key string) any {
 	return m.data.get(key.str)
 }
 
-fun (m map) set(key string, val any) {
+fun (mut m map) set(key string, val any) {
 	if not m.contains(key) {
 		m.length += 1
 	}
