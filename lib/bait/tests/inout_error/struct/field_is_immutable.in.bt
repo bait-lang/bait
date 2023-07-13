@@ -10,11 +10,11 @@ pub mut:
 	d i32
 }
 
-f := struct_mod.Foo{}
+mut f := struct_mod.Foo{}
 f.c = 5
 f.d = 10
 
-s := Spam{}
+mut s := Spam{}
 s.a = 1
 s.b = 2
 s.c = 3

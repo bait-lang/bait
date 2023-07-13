@@ -105,7 +105,7 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 		if left.expr is ast.Ident {
 			lident := left.expr as ast.Ident
 			if not lident.is_mut {
-				c.warn('cannot assign to field of immutable struct "${lident.name}.${left.field_name}"', node.pos)
+				c.error('cannot assign to field of immutable struct "${lident.name}.${left.field_name}"', node.pos)
 				return
 			}
 		}

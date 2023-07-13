@@ -3,7 +3,7 @@
 import bait.tests.packages.struct_mod
 
 fun test_struct_modifiers(){
-	f := struct_mod.Foo{}
+	mut f := struct_mod.Foo{}
 	assert f.get_a() == 1
 	assert f.c == 1
 	assert f.d == 20
