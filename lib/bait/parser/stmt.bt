@@ -385,7 +385,7 @@ fun (p Parser) interface_decl()ast.InterfaceDecl{
 	name := lang.prepend_to(p.check_name())
 
 	// TODO investigate why registration of the sym after loop with methods as struct field does not work
-	tsym := ast.TypeSymbol{
+	mut tsym := ast.TypeSymbol{
 		kind = .interface_
 		name = name
 		is_pub = is_pub

@@ -34,7 +34,7 @@ fun (c Checker) struct_decl(node ast.StructDecl) {
 	}
 }
 
-fun (mut c Checker) struct_init(node ast.StructInit) ast.Type {
+fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 	sym := c.table.get_sym(node.typ)
 	if sym.kind == .placeholder {
 		c.error('undefined struct ${node.name}', node.pos)

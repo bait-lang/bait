@@ -55,7 +55,7 @@ fun (c Checker) assert_stmt(node ast.AssertStmt){
 	}
 }
 
-fun (mut c Checker) assign_stmt(node ast.AssignStmt) {
+fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 	if node.op == .decl_assign {
 		typ := c.expr(node.right)
 
@@ -123,7 +123,7 @@ fun (mut c Checker) assign_stmt(node ast.AssignStmt) {
 	}
 }
 
-fun (c Checker) const_decl(node ast.ConstDecl) {
+fun (c Checker) const_decl(mut node ast.ConstDecl) {
 	node.typ = c.expr(node.expr)
 	c.table.global_scope.update_type(node.name, node.typ)
 }
@@ -144,7 +144,7 @@ fun (c Checker) enum_decl(node ast.EnumDecl) {
 	}
 
 	mut cur_val := 0
-	outer: for i, field in node.fields {
+	outer: for i, mut field in node.fields {
 		for j := 0; j < i; j += 1 {
 			if field.name == node.fields[j].name {
 				c.error('duplicate field name ${field.name}', field.pos)
@@ -206,7 +206,7 @@ fun (c Checker) for_classic_loop(node ast.ForClassicLoop) {
 	c.close_scope()
 }
 
-fun (mut c Checker) for_in_loop(node ast.ForInLoop) {
+fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 	c.open_scope()
 	c.register_label(node.label, node.pos)
 	node.expr_type = c.expr(node.expr)

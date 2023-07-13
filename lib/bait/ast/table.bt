@@ -48,8 +48,9 @@ pub fun (t Table) register_sym(sym TypeSymbol) Type {
 	if idx > 0 as Type {
 		cur_sym := t.get_sym(idx)
 		if cur_sym.kind == .placeholder {
-			sym.methods = cur_sym.methods
-			t.type_symbols[idx] = sym
+			mut new_sym := sym
+			new_sym.methods = cur_sym.methods
+			t.type_symbols[idx] = new_sym
 			return idx
 		}
 		if BUILTIN_STRUCT_TYPES.contains(idx) {

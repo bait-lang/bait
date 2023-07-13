@@ -68,7 +68,7 @@ fun (mut c Checker) anon_fun(node ast.AnonFun) ast.Type {
 	return node.typ
 }
 
-fun (mut c Checker) array_init(node ast.ArrayInit) ast.Type {
+fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 	// Type init
 	if node.exprs.length == 0 {
 		// Typeless array init
@@ -109,7 +109,7 @@ fun (mut c Checker) array_init(node ast.ArrayInit) ast.Type {
 	return node.typ
 }
 
-fun (c Checker) as_cast(node ast.AsCast) ast.Type {
+fun (c Checker) as_cast(mut node ast.AsCast) ast.Type {
 	expr_type := c.expr(node.expr)
 	node.expr_type = expr_type
 	expr_sym := c.table.get_sym(expr_type)
@@ -151,7 +151,7 @@ fun (c Checker) comp_time_var(node ast.CompTimeVar) ast.Type {
 	return ast.STRING_TYPE
 }
 
-fun (c Checker) enum_val(node ast.EnumVal) ast.Type {
+fun (c Checker) enum_val(mut node ast.EnumVal) ast.Type {
 	if node.name.length == 0 {
 		node.typ = c.expected_type
 	} else {
@@ -186,7 +186,7 @@ fun (c Checker) hash_expr(node ast.HashExpr) ast.Type {
 	return ast.VOID_TYPE
 }
 
-fun (c Checker) ident(node ast.Ident) ast.Type {
+fun (c Checker) ident(mut node ast.Ident) ast.Type {
 	mut obj := c.scope.get(node.name)
 
 	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
@@ -228,7 +228,7 @@ fun (c Checker) if_expr(node ast.IfExpr) ast.Type {
 	return ast.VOID_TYPE
 }
 
-fun (c Checker) index_expr(node ast.IndexExpr) ast.Type {
+fun (c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 	node.left_type = c.expr(node.left)
 	c.expr(node.index)
 	sym := c.table.get_sym(node.left_type)
@@ -250,7 +250,7 @@ fun (c Checker) index_expr(node ast.IndexExpr) ast.Type {
 	return node.left_type
 }
 
-fun (mut c Checker) map_init(node ast.MapInit) ast.Type {
+fun (mut c Checker) map_init(mut node ast.MapInit) ast.Type {
 	// Empty init
 	if node.keys.length == 0 {
 		sym := c.table.get_sym(node.typ)
@@ -286,7 +286,7 @@ fun (mut c Checker) map_init(node ast.MapInit) ast.Type {
 	return node.typ
 }
 
-fun (mut c Checker) match_expr(node ast.MatchExpr) ast.Type {
+fun (mut c Checker) match_expr(mut node ast.MatchExpr) ast.Type {
 	node.cond_type = c.expr(node.cond)
 	if node.branches.length == 0 {
 		c.error('match expression must have at least one branch', node.pos)
@@ -333,9 +333,9 @@ fun (c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
 	return typ
 }
 
-fun (c Checker) selector_expr(node ast.SelectorExpr) ast.Type {
+fun (c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 	if node.expr is ast.IndexExpr {
-		expr := node.expr as ast.IndexExpr
+		mut expr := node.expr as ast.IndexExpr
 		expr.is_selector = true
 	}
 	node.expr_type = c.expr(node.expr)
@@ -381,7 +381,7 @@ fun (c Checker) string_inter_literal(node ast.StringInterLiteral) ast.Type {
 	return ast.STRING_TYPE
 }
 
-fun (c Checker) type_of(node ast.TypeOf) ast.Type {
+fun (c Checker) type_of(mut node ast.TypeOf) ast.Type {
 	typ := c.expr(node.expr)
 	node.typ = typ
 	return ast.STRING_TYPE
