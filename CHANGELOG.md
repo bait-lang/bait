@@ -15,6 +15,7 @@ _unreleased_
 - Add `-w` and `-W` to hide warnings or turn them into errors
 - `self`: Pass other options to build command
 - `ast`: Add `--tokens` option to only print the tokens
+- `make.sh`: Improve error robustness
 
 ### Type System
 - Check types of literal map init
@@ -55,12 +56,17 @@ _unreleased_
 - `bait.util.testing`
   - Add inout runner for project directories
   - Add inout runner to check stdout
+  - Allow passing an array of elements to skip
 
 ### Standard Library
 - `os`
   - Add `user_os()` function
   - Fix `cp()` for directories
 - builtin: New `toI32()` string method
+
+### C Backend (experimental)
+- Properly implement backend selection
+- Limited code generation (enough for hello world and fizzbuzz)
 
 
 ## 0.0.3
