@@ -26,7 +26,7 @@ _unreleased_
 - Enforce immutability and privacy of struct fields
 - Enforce default immutability of variables and parameters
 - Support parsing of mutable method receivers, function parameters and for-in-loop variables
-- Add warning if assigning to a field of a immutable struct
+- Add error when assigning to a field of a immutable struct
 
 ### Error Checking
 - Enums

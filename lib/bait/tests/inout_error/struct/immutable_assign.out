@@ -1,0 +1,2 @@
+lib/bait/tests/inout_error/struct/immutable_assign.in.bt:8:5 error: cannot assign to field of immutable struct "f.a"
+lib/bait/tests/inout_error/struct/immutable_assign.in.bt:9:5 error: cannot assign to field of immutable struct "f.b"
