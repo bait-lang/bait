@@ -229,7 +229,10 @@ fun (mut c Checker) for_in_loop(node ast.ForInLoop) {
 	if node.idxvar.length > 0 {
 		c.scope.register(node.idxvar, ast.ScopeObject{typ = idx_type})
 	}
-	c.scope.register(node.valvar, ast.ScopeObject{typ = val_type})
+	c.scope.register(node.valvar.name, ast.ScopeObject{
+		typ = val_type
+		is_mut = node.valvar.is_mut
+	})
 	c.stmts(node.stmts)
 	c.close_scope()
 }

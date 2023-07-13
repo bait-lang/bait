@@ -1,0 +1,92 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package parser
+
+import bait.ast
+
+fun (mut p Parser) for_loop(label string)ast.Stmt{
+	p.next()
+
+	if p.next_tok.kind == .decl_assign {
+		return p.for_classic_loop(label)
+	}
+
+	if p.next_tok.kind == .key_in or p.next_tok.kind == .comma {
+		return p.for_in_loop(label)
+	}
+
+	pos := p.prev_tok.pos
+
+	p.is_struct_possible = false
+	cond := p.expr(0)
+	p.is_struct_possible = true
+
+	stmts := p.parse_block()
+
+	return ast.ForLoop{
+		label = label
+		cond = cond
+		stmts = stmts
+		pos = pos
+	}
+}
+
+fun (mut p Parser) for_classic_loop(label string) ast.ForClassicLoop {
+	pos := p.prev_tok.pos
+
+	p.is_for_init = true
+	init := p.assign_stmt()
+	p.is_for_init = false
+	p.check(.semicolon)
+	cond := p.expr(0)
+	p.check(.semicolon)
+	inc := p.stmt()
+
+	stmts := p.parse_block()
+
+	return ast.ForClassicLoop{
+		label = label
+		init = init
+		cond = cond
+		inc = inc
+		stmts = stmts
+		pos = pos
+	}
+}
+
+fun (mut p Parser) for_in_loop(label string) ast.ForInLoop {
+	pos := p.prev_tok.pos
+
+	mut idxvar := ''
+	if p.next_tok.kind == .comma {
+		idxvar = p.check_name()
+		p.next()
+	}
+
+	mut is_mut := false
+	if p.tok.kind == .key_mut {
+		is_mut = true
+		p.next()
+	}
+	mut valvar := ast.Param{
+		pos = p.tok.pos
+		name = p.check_name()
+		is_mut = is_mut
+	}
+
+	p.check(.key_in)
+	p.is_struct_possible = false
+	expr := p.expr(0)
+	p.is_struct_possible = true
+
+	stmts := p.parse_block()
+
+	return ast.ForInLoop{
+		label = label
+		idxvar = idxvar
+		valvar = valvar
+		expr = expr
+		stmts = stmts
+		pos = pos
+	}
+}

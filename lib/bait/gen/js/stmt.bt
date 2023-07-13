@@ -243,11 +243,11 @@ fun (g Gen) for_in_loop(node ast.ForInLoop){
 	container := g.expr_string(node.expr)
 	g.writeln('for (let ${i} = 0; ${i} < ${container}.length; ${i}++) {')
 	if sym.kind == .array {
-		g.writeln('\tconst ${node.valvar} = array_get(${container}, ${i})')
+		g.writeln('\tconst ${node.valvar.name} = array_get(${container}, ${i})')
 	} else if sym.kind == .string {
-		g.writeln('\tconst ${node.valvar} = string_get(${container}, ${i})')
+		g.writeln('\tconst ${node.valvar.name} = string_get(${container}, ${i})')
 	} else {
-		g.writeln('\tconst ${node.valvar} = ${container}[${i}]')
+		g.writeln('\tconst ${node.valvar.name} = ${container}[${i}]')
 	}
 	g.stmts(node.stmts)
 	g.writeln('}')
@@ -260,7 +260,7 @@ fun (g Gen) for_in_map(node ast.ForInLoop){
 	i := g.new_temp_var()
 	g.writeln('for (let ${i} = 0; ${i} < ${keys_var}.length; ${i}++) {')
 	g.writeln('\tconst ${node.idxvar} = array_get(${keys_var}, ${i})')
-	g.writeln('\tconst ${node.valvar} = map_get(${container}, ${node.idxvar})')
+	g.writeln('\tconst ${node.valvar.name} = map_get(${container}, ${node.idxvar})')
 	g.stmts(node.stmts)
 	g.writeln('}')
 }

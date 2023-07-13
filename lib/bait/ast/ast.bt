@@ -80,7 +80,7 @@ global:
 pub:
 	label string
 	idxvar string
-	valvar string
+	valvar Param
 	expr Expr
 	stmts []Stmt
 	pos token.Pos

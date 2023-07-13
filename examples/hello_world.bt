@@ -1,3 +1,4 @@
 fun main() {
-	println('hello world')
+	mut a := [1,2]
+	for i, mut el in a {}
 }
