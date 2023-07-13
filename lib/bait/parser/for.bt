@@ -11,7 +11,7 @@ fun (mut p Parser) for_loop(label string)ast.Stmt{
 		return p.for_classic_loop(label)
 	}
 
-	if p.next_tok.kind == .key_in or p.next_tok.kind == .comma {
+	if p.next_tok.kind == .key_in or p.next_tok.kind == .comma or p.tok.kind == .key_mut {
 		return p.for_in_loop(label)
 	}
 
