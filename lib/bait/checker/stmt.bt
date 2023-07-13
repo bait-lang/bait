@@ -101,6 +101,15 @@ fun (c Checker) assign_stmt(node ast.AssignStmt) {
 
 	if node.left is ast.SelectorExpr {
 		left := node.left as ast.SelectorExpr
+
+		if left.expr is ast.Ident {
+			lident := left.expr as ast.Ident
+			if not lident.is_mut {
+				c.warn('cannot assign to field of immutable struct "${lident.name}.${left.field_name}"', node.pos)
+				return
+			}
+		}
+
 		sym := c.table.get_sym(left.expr_type)
 		field := sym.find_field(left.field_name, c.table)
 		if (not field.is_mut or sym.pkg != c.pkg) and not field.is_global {
