@@ -77,24 +77,24 @@ fun (g Gen) c_main() {
 	g.writeln('}')
 }
 
-fun (g Gen) new_temp_var() string {
+fun (mut g Gen) new_temp_var() string {
 	g.tmp_counter += 1
 	return '_t${g.tmp_counter}'
 }
 
-fun (g Gen) write_indent() {
+fun (mut g Gen) write_indent() {
 	if g.indent > 0 and g.empty_line {
 		g.out += '\t'.repeat(g.indent)
 	}
 }
 
-fun (g Gen) write(s string){
+fun (mut g Gen) write(s string){
 	g.write_indent()
 	g.out += s
 	g.empty_line = false
 }
 
-fun (g Gen) writeln (s string){
+fun (mut g Gen) writeln (s string){
 	g.write_indent()
 	g.out += s + "\n"
 	g.empty_line = true

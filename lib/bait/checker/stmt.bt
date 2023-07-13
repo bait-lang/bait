@@ -11,7 +11,7 @@ fun (c Checker) stmts(stmts []ast.Stmt){
 	}
 }
 
-fun (c Checker) stmt(stmt ast.Stmt){
+fun (mut c Checker) stmt(stmt ast.Stmt){
 	if stmt is ast.AssertStmt {
 		c.assert_stmt(stmt)
 	} else if stmt is ast.AssignStmt {
@@ -55,7 +55,7 @@ fun (c Checker) assert_stmt(node ast.AssertStmt){
 	}
 }
 
-fun (c Checker) assign_stmt(node ast.AssignStmt) {
+fun (mut c Checker) assign_stmt(node ast.AssignStmt) {
 	if node.op == .decl_assign {
 		typ := c.expr(node.right)
 
@@ -101,6 +101,15 @@ fun (c Checker) assign_stmt(node ast.AssignStmt) {
 
 	if node.left is ast.SelectorExpr {
 		left := node.left as ast.SelectorExpr
+
+		if left.expr is ast.Ident {
+			lident := left.expr as ast.Ident
+			if not lident.is_mut {
+				c.warn('cannot assign to field of immutable struct "${lident.name}.${left.field_name}"', node.pos)
+				return
+			}
+		}
+
 		sym := c.table.get_sym(left.expr_type)
 		field := sym.find_field(left.field_name, c.table)
 		if (not field.is_mut or sym.pkg != c.pkg) and not field.is_global {
@@ -197,7 +206,7 @@ fun (c Checker) for_classic_loop(node ast.ForClassicLoop) {
 	c.close_scope()
 }
 
-fun (c Checker) for_in_loop(node ast.ForInLoop) {
+fun (mut c Checker) for_in_loop(node ast.ForInLoop) {
 	c.open_scope()
 	c.register_label(node.label, node.pos)
 	node.expr_type = c.expr(node.expr)
@@ -220,7 +229,10 @@ fun (c Checker) for_in_loop(node ast.ForInLoop) {
 	if node.idxvar.length > 0 {
 		c.scope.register(node.idxvar, ast.ScopeObject{typ = idx_type})
 	}
-	c.scope.register(node.valvar, ast.ScopeObject{typ = val_type})
+	c.scope.register(node.valvar.name, ast.ScopeObject{
+		typ = val_type
+		is_mut = node.valvar.is_mut
+	})
 	c.stmts(node.stmts)
 	c.close_scope()
 }
@@ -243,7 +255,7 @@ fun (c Checker) loop_control_stmt(node ast.LoopControlStmt) {
 	}
 }
 
-fun (c Checker) return_stmt(node ast.ReturnStmt) {
+fun (mut c Checker) return_stmt(node ast.ReturnStmt) {
 	if node.expr is ast.EmptyExpr {
 		if c.cur_fun.return_type != ast.VOID_TYPE {
 			c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}', node.pos)

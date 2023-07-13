@@ -5,7 +5,7 @@ package checker
 import bait.ast
 import bait.token
 
-fun (c Checker) fun_decl(node ast.FunDecl) {
+fun (mut c Checker) fun_decl(node ast.FunDecl) {
 	if node.lang != .bait {
 		return
 	}
@@ -40,7 +40,7 @@ fun (c Checker) fun_params(params []ast.Param){
 	}
 }
 
-fun (c Checker) check_main_fun(stmts []ast.Stmt) {
+fun (mut c Checker) check_main_fun(stmts []ast.Stmt) {
 	for stmt in stmts {
 		if stmt is ast.FunDecl and stmt.name == 'main' {
 			c.has_main_fun = true
@@ -55,7 +55,7 @@ fun (c Checker) call_expr(node ast.CallExpr) ast.Type {
 	return c.fun_call(node)
 }
 
-fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
+fun (mut c Checker) fun_call(node ast.CallExpr) ast.Type {
 	mut found := c.table.fun_decls.contains(node.name)
 	if not found and not node.name.contains('.') and node.pkg != 'builtin' {
 		full_name := node.pkg + '.' + node.name
@@ -114,7 +114,7 @@ fun (c Checker) fun_call(node ast.CallExpr) ast.Type {
 	return node.return_type
 }
 
-fun (c Checker) method_call(node ast.CallExpr) ast.Type {
+fun (mut c Checker) method_call(node ast.CallExpr) ast.Type {
 	left_expr_type := c.expr(node.left)
 	left_sym := c.table.get_sym(left_expr_type)
 	final_sym := c.table.get_final_sym(left_expr_type)

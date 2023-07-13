@@ -241,61 +241,7 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 	}
 }
 
-fun (p Parser) for_loop(label string)ast.Stmt{
-	pos := p.tok.pos
-	p.next()
-	if p.next_tok.kind == .decl_assign {
-		p.is_for_init = true
-		init := p.assign_stmt()
-		p.is_for_init = false
-		p.check(.semicolon)
-		cond := p.expr(0)
-		p.check(.semicolon)
-		inc := p.stmt()
-		stmts := p.parse_block()
-		return ast.ForClassicLoop{
-			label = label
-			init = init
-			cond = cond
-			inc = inc
-			stmts = stmts
-			pos = pos
-		}
-	}
-	if p.next_tok.kind == .key_in or p.next_tok.kind == .comma {
-		mut idxvar := ''
-		if p.next_tok.kind == .comma {
-			idxvar = p.check_name()
-			p.next()
-		}
-		valvar := p.check_name()
-		p.check(.key_in)
-		p.is_struct_possible = false
-		expr := p.expr(0)
-		p.is_struct_possible = true
-		stmts := p.parse_block()
-		return ast.ForInLoop{
-			label = label
-			idxvar = idxvar
-			valvar = valvar
-			expr = expr
-			stmts = stmts
-			pos = pos
-		}
-	}
-	p.is_struct_possible = false
-	cond := p.expr(0)
-	p.is_struct_possible = true
-	stmts := p.parse_block()
-	return ast.ForLoop{
-		label = label
-		cond = cond
-		stmts = stmts
-		pos = pos
-	}
-}
-
-fun (p Parser) fun_decl()ast.FunDecl{
+fun (mut p Parser) fun_decl()ast.FunDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.check(.key_fun)
@@ -394,7 +340,13 @@ fun (p Parser) fun_params() []ast.Param{
 	mut params := []ast.Param
 	for p.tok.kind != .rpar{
 		pos := p.tok.pos
+		mut is_mut := false
+		if p.tok.kind == .key_mut {
+			is_mut = true
+			p.next()
+		}
 		param := ast.Param{
+			is_mut = is_mut
 			name = p.check_name()
 			typ = p.parse_type()
 			pos = pos

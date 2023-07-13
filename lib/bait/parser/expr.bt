@@ -298,7 +298,7 @@ fun (p Parser) enum_val(has_name bool) ast.EnumVal{
 	}
 }
 
-fun (p Parser) hash_expr()ast.Expr{
+fun (mut p Parser) hash_expr()ast.Expr{
 	lang := p.parse_lang()
 	if p.tok.kind != .string {
 		if lang == .js {
@@ -338,7 +338,7 @@ fun (p Parser) ident(lang ast.Language)ast.Ident{
 	}
 }
 
-fun (p Parser) if_expr()ast.IfExpr{
+fun (mut p Parser) if_expr()ast.IfExpr{
 	pos := p.tok.pos
 	mut branches := []ast.IfBranch
 	mut has_else := false
@@ -425,7 +425,7 @@ fun (p Parser) map_init() ast.MapInit{
 	}
 }
 
-fun (p Parser) match_expr()ast.MatchExpr{
+fun (mut p Parser) match_expr()ast.MatchExpr{
 	pos := p.tok.pos
 	mut branches := []ast.MatchBranch
 	p.check(.key_match)
@@ -458,7 +458,7 @@ fun (p Parser) match_expr()ast.MatchExpr{
 	}
 }
 
-fun (p Parser) name_expr(lang ast.Language) ast.Expr{
+fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
 	if p.next_tok.kind == .dot and p.import_aliases.contains(p.tok.val) {
 		p.expr_pkg = p.import_aliases[p.tok.val]
 		p.next()

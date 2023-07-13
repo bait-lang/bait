@@ -34,7 +34,7 @@ pub fun new_checker(table ast.Table, pref preference.Prefs) Checker {
 	}
 }
 
-pub fun (c Checker) check_files(files []ast.File) {
+pub fun (mut c Checker) check_files(files []ast.File) {
 	for f in files {
 		c.check(f)
 
@@ -59,7 +59,7 @@ pub fun (c Checker) check_files(files []ast.File) {
 	}
 }
 
-fun (c Checker) check(file ast.File) {
+fun (mut c Checker) check(file ast.File) {
 	c.path = file.path
 	c.is_js_file = c.path.contains('.js.')
 	c.pkg = file.pkg_decl.full_name
@@ -93,13 +93,13 @@ fun (c Checker) check_imports(imports []ast.Import) {
 
 }
 
-fun (c Checker) open_scope(){
+fun (mut c Checker) open_scope(){
 	c.scope = ast.Scope{
 		parent = c.scope
 	}
 }
 
-fun (c Checker) close_scope(){
+fun (mut c Checker) close_scope(){
 	c.scope = c.scope.parent
 }
 

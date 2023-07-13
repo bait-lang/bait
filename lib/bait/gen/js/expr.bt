@@ -57,7 +57,7 @@ fun (g Gen) expr(expr ast.Expr) {
 	} else {}
 }
 
-fun (g Gen) expr_string(expr ast.Expr) string {
+fun (mut g Gen) expr_string(expr ast.Expr) string {
 	was_line_empty := g.empty_line
 	start := g.out.length
 	g.expr(expr)
@@ -235,7 +235,7 @@ fun (g Gen) integer_literal(node ast.IntegerLiteral){
 	g.write(node.val)
 }
 
-fun (g Gen) index_expr(node ast.IndexExpr){
+fun (mut g Gen) index_expr(node ast.IndexExpr){
 	sym := g.table.get_sym(node.left_type)
 	if sym.kind == .map {
 		if g.is_lhs_assign and not node.is_selector {
@@ -337,7 +337,7 @@ fun (g Gen) infix_expr(node ast.InfixExpr){
 	g.expr(node.right)
 }
 
-fun (g Gen) map_init(node ast.MapInit) {
+fun (mut g Gen) map_init(node ast.MapInit) {
 	g.write('new map({ data: new Map([')
 	for i, key in node.keys {
 		g.write('[')
@@ -352,7 +352,7 @@ fun (g Gen) map_init(node ast.MapInit) {
 	g.write(']), length: ${node.keys.length} })')
 }
 
-fun (g Gen) match_expr(node ast.MatchExpr){
+fun (mut g Gen) match_expr(node ast.MatchExpr){
 	if node.is_sumtype {
 		g.sumtype_match(node)
 		return

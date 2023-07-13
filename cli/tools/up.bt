@@ -15,7 +15,7 @@ fun main() {
 		exit(1)
 	}
 	if pull_res.stdout.contains('Already up to date.') {
-		println('Bait ${util.VERSION} is up to date.')
+		println('Bait ${util.FULL_VERSION} is up to date.')
 		return
 	}
 	if is_verbose {

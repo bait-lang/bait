@@ -6,7 +6,7 @@ import bait.util
 import os
 
 fun main(){
-	println('Version: Bait ${util.VERSION}')
+	println('Version: Bait ${util.FULL_VERSION}')
 	println('OS: ${os.user_os()}/${os.arch()}')
 	git_version := os.exec('git --version').stdout.trim_space()
 	println('Git: ${git_version}')

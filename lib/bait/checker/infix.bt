@@ -5,7 +5,7 @@ package checker
 import bait.ast
 import bait.token
 
-fun (c Checker) infix_expr(node ast.InfixExpr) ast.Type {
+fun (mut c Checker) infix_expr(node ast.InfixExpr) ast.Type {
 	node.left_type = c.expr(node.left)
 	c.table.needed_equality_funs.push(node.left_type)
 

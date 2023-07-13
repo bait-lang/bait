@@ -40,7 +40,7 @@ pub mut:
 }
 
 pub fun parse_args(args []string) Prefs {
-	p := Prefs{
+	mut p := Prefs{
 		backend = .js
 	}
 	// Default action in case of no arguments: help
@@ -133,7 +133,7 @@ pub fun parse_args(args []string) Prefs {
 	return p
 }
 
-pub fun (p Prefs) set_comptime_vars() {
+pub fun (mut p Prefs) set_comptime_vars() {
 	p.baitexe = os.executable()
 	p.baitdir = os.dir(p.baitexe)
 	p.baithash = os.exec('git rev-parse --short HEAD').stdout.trim_space()

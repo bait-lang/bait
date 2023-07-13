@@ -5,7 +5,7 @@ package c
 import bait.ast
 import bait.errors
 
-fun (g Gen) stmts(stmts []ast.Stmt) {
+fun (mut g Gen) stmts(stmts []ast.Stmt) {
 	g.indent += 1
 	for stmt in stmts {
 		g.stmt(stmt)
@@ -30,7 +30,7 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 	}
 }
 
-fun (g Gen) assign_stmt(node ast.AssignStmt) {
+fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	if node.op == .decl_assign {
 		type_str := g.typ(node.right_type)
 		g.write('${type_str} ')
@@ -70,7 +70,7 @@ fun (g Gen) assign_stmt(node ast.AssignStmt) {
 	}
 }
 
-fun (g Gen) const_decl(node ast.ConstDecl){
+fun (mut g Gen) const_decl(node ast.ConstDecl){
 	if node.lang != .bait {
 		return
 	}
@@ -110,7 +110,7 @@ fun (g Gen) for_loop(node ast.ForLoop) {
 	g.write_label(node.label)
 }
 
-fun (g Gen) for_classic_loop(node ast.ForClassicLoop) {
+fun (mut g Gen) for_classic_loop(node ast.ForClassicLoop) {
 	g.is_for_loop_head = true
 	g.write('for (')
 	g.stmt(node.init)
@@ -147,7 +147,7 @@ fun (g Gen) for_in_loop(node ast.ForInLoop){
 	g.writeln('}')
 }
 
-fun (g Gen) fun_decl(node ast.FunDecl) {
+fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	if node.lang != .bait {
 		return
 	}
@@ -169,7 +169,7 @@ fun (g Gen) fun_decl(node ast.FunDecl) {
 	g.writeln('};\n')
 }
 
-fun (g Gen) fun_params(params []ast.Param){
+fun (mut g Gen) fun_params(params []ast.Param){
 	for i, p in params {
 		type_str := g.typ(p.typ)
 		s := '${type_str} ${c_name(p.name)}'

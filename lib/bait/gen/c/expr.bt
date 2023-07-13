@@ -29,7 +29,7 @@ fun (g Gen) expr(expr ast.Expr) {
 	}
 }
 
-fun (g Gen) expr_string(expr ast.Expr) string {
+fun (mut g Gen) expr_string(expr ast.Expr) string {
 	was_line_empty := g.empty_line
 	start := g.out.length
 	g.expr(expr)
@@ -39,7 +39,7 @@ fun (g Gen) expr_string(expr ast.Expr) string {
 	return s.trim_space()
 }
 
-fun (g Gen) array_init(node ast.ArrayInit){
+fun (mut g Gen) array_init(node ast.ArrayInit){
 	elem_type := g.typ(node.elem_type)
 
 	if node.exprs.length == 0 {
@@ -197,7 +197,7 @@ fun (g Gen) if_expr(node ast.IfExpr) {
 	g.writeln('}')
 }
 
-fun (g Gen) index_expr(node ast.IndexExpr) {
+fun (mut g Gen) index_expr(node ast.IndexExpr) {
 	sym := g.table.get_sym(node.left_type)
 	if sym.kind == .map {
 		info := sym.info as ast.MapInfo

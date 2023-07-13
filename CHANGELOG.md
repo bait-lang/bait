@@ -15,17 +15,24 @@ _unreleased_
 - Add `-w` and `-W` to hide warnings or turn them into errors
 - `self`: Pass other options to build command
 - `ast`: Add `--tokens` option to only print the tokens
+- `make.sh`: Improve error robustness
 
 ### Type System
 - Check types of literal map init
 - Allow typeless array inits based on context
+
+### Immutability by Default
+- Implement struct field access modifiers `mut`, `pub`, `pub mut` and `global`
+- Enforce immutability and privacy of struct fields
+- Enforce default immutability of variables and parameters
+- Support parsing of mutable method receivers, function parameters and for-in-loop variables
+- Add warning if assigning to a field of a immutable struct
 
 ### Error Checking
 - Enums
   - Cannot be declared empty
   - Prevent duplicate enum variants
 - Structs
-  - Enforce immutability and privacy of struct fields
   - Prevent duplicate field names
   - Sum type fields must be initialized
 - Packages and Imports
@@ -33,7 +40,6 @@ _unreleased_
   - Main package must contain a main function
   - Error if a imported package contains no Bait files
   - Fix false-positive error with variable names matching an import of an import
-- Enforce default immutability of variables and parameters
 - Many fixes and improvements regarding symbol visibility
 - Prevent assigning to non-identifiers
 - Fix variable redefinition error not being thrown
@@ -42,7 +48,6 @@ _unreleased_
 - Struct Declarations
   - Support default field values
   - Attribute support for fields and add `@required`
-  - Implement field access modifiers `mut`, `pub`, `pub mut` and `global`
 - Enum fields can have default values
 - Add labelled `break` and `continue`
 - Arrays can be preallocated with a given length
@@ -55,12 +60,17 @@ _unreleased_
 - `bait.util.testing`
   - Add inout runner for project directories
   - Add inout runner to check stdout
+  - Allow passing an array of elements to skip
 
 ### Standard Library
 - `os`
   - Add `user_os()` function
   - Fix `cp()` for directories
 - builtin: New `toI32()` string method
+
+### C Backend (experimental)
+- Properly implement backend selection
+- Limited code generation (enough for hello world and fizzbuzz)
 
 
 ## 0.0.3

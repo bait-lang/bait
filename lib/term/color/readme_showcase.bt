@@ -1,0 +1,64 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package main
+
+import term.color
+
+const TAB := '\t'
+const TAB2 := '\t\t'
+
+fun main() {
+	println('')
+	supported_formatting()
+
+	println('')
+	unsupported_formatting()
+
+	println('')
+	foreground_colors()
+
+	println('')
+	background_colors()
+
+	println('')
+}
+
+// These formats are supported by most terminals
+fun supported_formatting() {
+	println(color.bold('bold'))
+	println(color.dim('dim'))
+	println(color.italic('italic'))
+	println(color.underline('underline'))
+	println(color.blink_slow('blink_slow'))
+	println(color.invert('invert'))
+	println(color.hide('hide') + ' <- Hidden')
+	println(color.strike('strike'))
+	println(color.overline('overline'))
+}
+
+// These formats are likely not supported
+fun unsupported_formatting() {
+	println(color.blink_rapid('blink_rapid'))
+}
+
+fun foreground_colors() {
+	println(color.black('black')     + TAB2 + color.bright_black('bright_black'))
+	println(color.red('red')         + TAB2 + color.bright_red('bright_red'))
+	println(color.green('green')     + TAB2 + color.bright_green('bright_green'))
+	println(color.yellow('yellow')   + TAB2 + color.bright_yellow('bright_yellow'))
+	println(color.blue('blue')       + TAB2 + color.bright_blue('bright_blue'))
+	println(color.magenta('magenta') + TAB2 + color.bright_magenta('bright_magenta'))
+	println(color.cyan('cyan')       + TAB2 + color.bright_cyan('bright_cyan'))
+	println(color.white('white')     + TAB2 + color.bright_white('bright_white'))
+}
+
+fun background_colors() {
+	println(color.bg_black('bg_black')     + TAB + color.bg_bright_black('bg_bright_black'))
+	println(color.bg_red('bg_red')         + TAB2 + color.bg_bright_red('bg_bright_red'))
+	println(color.bg_green('bg_green')     + TAB + color.bg_bright_green('bg_bright_green'))
+	println(color.bg_yellow('bg_yellow')   + TAB + color.bg_bright_yellow('bg_bright_yellow'))
+	println(color.bg_blue('bg_blue')       + TAB2 + color.bg_bright_blue('bg_bright_blue'))
+	println(color.bg_magenta('bg_magenta') + TAB + color.bg_bright_magenta('bg_bright_magenta'))
+	println(color.bg_cyan('bg_cyan')       + TAB2 + color.bg_bright_cyan('bg_bright_cyan'))
+	println(color.bg_white('bg_white')     + TAB + color.bg_bright_white('bg_bright_white'))
+}

@@ -51,12 +51,12 @@ fun (t Tokenizer) new_token(kind token.TokenKind, val string) token.Token {
 	}
 }
 
-fun (t Tokenizer) eof_token() token.Token {
+fun (mut t Tokenizer) eof_token() token.Token {
 	t.should_abort = true
 	return t.new_token(.eof, "")
 }
 
-fun (t Tokenizer) next_token() token.Token {
+fun (mut t Tokenizer) next_token() token.Token {
 	for true {
 		t.pos += 1
 		t.skip_whitespace()
@@ -223,7 +223,7 @@ fun (t Tokenizer) name_or_keyword() token.Token {
 	return t.new_token(.name, name)
 }
 
-fun (t Tokenizer) name_val() string{
+fun (mut t Tokenizer) name_val() string{
 	start := t.pos
 	t.pos += 1
 	for t.pos < t.text.length {
@@ -236,7 +236,7 @@ fun (t Tokenizer) name_val() string{
 	return t.text.substr(start, t.pos + 1)
 }
 
-fun (t Tokenizer) number_val() string {
+fun (mut t Tokenizer) number_val() string {
 	start := t.pos
 	for is_digit(t.text[t.pos]) {
 		t.pos += 1
@@ -245,7 +245,7 @@ fun (t Tokenizer) number_val() string {
 	return t.text.substr(start, t.pos + 1)
 }
 
-fun (t Tokenizer) string_val(quote u8) string {
+fun (mut t Tokenizer) string_val(quote u8) string {
 	is_js := t.text[t.pos - 1] == `.`
 	start_line := t.line
 	start := t.pos + 1
@@ -272,7 +272,7 @@ fun (t Tokenizer) string_val(quote u8) string {
 	return t.text.substr(start, t.pos)
 }
 
-fun (t Tokenizer) char_val() string {
+fun (mut t Tokenizer) char_val() string {
 	start := t.pos + 1
 	for true {
 		t.pos += 1
@@ -286,7 +286,7 @@ fun (t Tokenizer) char_val() string {
 	return t.text.substr(start, t.pos)
 }
 
-fun (t Tokenizer) skip_whitespace(){
+fun (mut t Tokenizer) skip_whitespace(){
 	for t.pos < t.text.length {
 		c := t.text[t.pos]
 		if c == `\n` {
@@ -299,7 +299,7 @@ fun (t Tokenizer) skip_whitespace(){
 	}
 }
 
-fun (t Tokenizer) ignore_line() {
+fun (mut t Tokenizer) ignore_line() {
 	for t.pos < t.text.length and t.text[t.pos] != `\n` {
 		t.pos += 1
 	}
@@ -311,7 +311,7 @@ fun (t Tokenizer) error(msg string){
 	t.error_with_line(msg, t.line)
 }
 
-fun (t Tokenizer) error_with_line(msg string, line i32){
+fun (mut t Tokenizer) error_with_line(msg string, line i32){
 	t.errors.push(errors.Message{
 		kind = .error
 		path = t.path
