@@ -225,55 +225,13 @@ fun (p Parser) dot_expr(left ast.Expr) ast.Expr {
 	if p.next_tok.kind == .lpar {
 		return p.method_call(left)
 	}
+
 	name := p.check_name()
 	return ast.SelectorExpr{
 		expr = left
 		field_name = name
 		pos = pos
 	}
-}
-
-fun (p Parser) fun_call(lang ast.Language)ast.CallExpr{
-	pos := p.tok.pos
-	name := p.prepend_expr_pkg(p.check_name())
-	p.check(.lpar)
-	args := p.call_args()
-	p.check(.rpar)
-	return ast.CallExpr{
-		name = name
-		args = args
-		pkg = p.pkg_name
-		pos = pos
-		lang = lang
-	}
-}
-
-fun (p Parser) method_call(left ast.Expr) ast.CallExpr {
-	pos := p.tok.pos
-	name := p.check_name()
-	p.check(.lpar)
-	args := p.call_args()
-	p.check(.rpar)
-	return ast.CallExpr{
-		is_method = true
-		left = left
-		name = name
-		args = args
-		pos = pos
-	}
-}
-
-fun (p Parser) call_args() []ast.CallArg {
-	mut args := []ast.CallArg
-	for p.tok.kind != .rpar {
-		args.push(ast.CallArg{
-			expr = p.expr(0)
-		})
-		if p.tok.kind != .rpar {
-			p.check(.comma)
-		}
-	}
-	return args
 }
 
 fun (p Parser) enum_val(has_name bool) ast.EnumVal{
@@ -287,13 +245,11 @@ fun (p Parser) enum_val(has_name bool) ast.EnumVal{
 			name = p.prepend_pkg(name)
 		}
 	}
-	// typ := p.table.find_type_or_add_placeholder(name)
 	p.check(.dot)
 	val := p.check_name()
 	return ast.EnumVal{
 		name = name
 		val = val
-		// typ = typ
 		pos = pos
 	}
 }

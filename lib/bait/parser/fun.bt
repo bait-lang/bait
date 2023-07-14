@@ -12,6 +12,8 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 	mut lang := ast.Language.bait
 	mut is_method := false
 	mut params := []ast.Param
+
+	// Method receiver
 	if p.tok.kind == .lpar {
 		is_method = true
 		p.next()
@@ -22,6 +24,7 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 			p.next()
 		}
 
+		// Pass mutable receiver as pointer
 		rec_name := p.check_name()
 		mut rec_type := p.parse_type()
 		if is_mut {
@@ -126,4 +129,49 @@ fun (p Parser) fun_params() []ast.Param{
 		}
 	}
 	return params
+}
+
+fun (p Parser) fun_call(lang ast.Language)ast.CallExpr{
+	pos := p.tok.pos
+	name := p.prepend_expr_pkg(p.check_name())
+	p.check(.lpar)
+	args := p.call_args()
+	p.check(.rpar)
+
+	return ast.CallExpr{
+		name = name
+		args = args
+		pkg = p.pkg_name
+		pos = pos
+		lang = lang
+	}
+}
+
+fun (p Parser) method_call(left ast.Expr) ast.CallExpr {
+	pos := p.tok.pos
+	name := p.check_name()
+	p.check(.lpar)
+	args := p.call_args()
+	p.check(.rpar)
+
+	return ast.CallExpr{
+		is_method = true
+		left = left
+		name = name
+		args = args
+		pos = pos
+	}
+}
+
+fun (p Parser) call_args() []ast.CallArg {
+	mut args := []ast.CallArg
+	for p.tok.kind != .rpar {
+		args.push(ast.CallArg{
+			expr = p.expr(0)
+		})
+		if p.tok.kind != .rpar {
+			p.check(.comma)
+		}
+	}
+	return args
 }
