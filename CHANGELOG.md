@@ -27,6 +27,7 @@ _unreleased_
 - Enforce default immutability of variables and parameters
 - Support parsing of mutable method receivers, function parameters and for-in-loop variables
 - Add error when assigning to a field of a immutable struct
+- Error if a method that requires a mutable receiver is called on a immutable variable
 
 ### Error Checking
 - Enums

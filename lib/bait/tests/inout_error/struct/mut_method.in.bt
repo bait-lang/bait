@@ -1,0 +1,6 @@
+struct Foo{}
+
+fun (mut f Foo) bar() {}
+
+f := Foo{}
+f.bar()
