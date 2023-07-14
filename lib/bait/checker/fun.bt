@@ -52,6 +52,7 @@ fun (c Checker) call_expr(node ast.CallExpr) ast.Type {
 	if node.is_method{
 		return c.method_call(node)
 	}
+
 	return c.fun_call(node)
 }
 
@@ -135,13 +136,17 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	node.return_type = def.return_type
 	c.check_fun_attrs_on_call(node, def)
 
+	if def.params[0].is_mut and not (node.left as ast.Ident).is_mut {
+		c.warn('method requires an mutable receiver', node.pos)
+	}
+
 	// Check argument count
 	if node.args.length + 1 != def.params.length {
 		c.error('expected ${def.params.length - 1} arguments but got ${node.args.length}', node.pos)
 		return node.return_type
 	}
 
-	// Array methods with one argument of `any` type
+	// Array methods with one argument of `any` type, expecting the element
 	if final_sym.kind == .array and ['push', 'push_many_with_len', 'index', 'last_index', 'contains'].contains(node.name) {
 		mut arg := node.args[0]
 		info := final_sym.info as ast.ArrayInfo
@@ -152,7 +157,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		}
 		return node.return_type
 	}
-	// Array methods with one argument of `array` type
+	// Array methods with one argument of `array` type, expecting the specific array type
 	if final_sym.kind == .array and ['concat', 'push_many'].contains(node.name) {
 		mut arg := node.args[0]
 		c.expected_type = left_expr_type
