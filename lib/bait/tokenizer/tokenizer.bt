@@ -32,7 +32,7 @@ pub fun new_tokenizer(text string, path string) Tokenizer {
 	}
 }
 
-pub fun (t Tokenizer) tokenize() []token.Token {
+pub fun (mut t Tokenizer) tokenize() []token.Token {
 	mut tokens := []token.Token
 	for not t.should_abort {
 		tokens.push(t.next_token())
@@ -214,7 +214,7 @@ fun (mut t Tokenizer) next_token() token.Token {
 	return t.eof_token()
 }
 
-fun (t Tokenizer) name_or_keyword() token.Token {
+fun (mut t Tokenizer) name_or_keyword() token.Token {
 	name := t.name_val()
 	kind := token.keyword_to_kind(name)
 	if kind != .name {
@@ -307,7 +307,7 @@ fun (mut t Tokenizer) ignore_line() {
 	t.line += 1
 }
 
-fun (t Tokenizer) error(msg string){
+fun (mut t Tokenizer) error(msg string){
 	t.error_with_line(msg, t.line)
 }
 

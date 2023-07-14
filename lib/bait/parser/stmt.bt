@@ -5,7 +5,7 @@ package parser
 import bait.ast
 import bait.token
 
-fun (p Parser) toplevel_stmt() ast.Stmt {
+fun (mut p Parser) toplevel_stmt() ast.Stmt {
 	match p.tok.kind {
 		.key_pub{
 			return p.pub_stmt()
@@ -43,7 +43,7 @@ fun (p Parser) toplevel_stmt() ast.Stmt {
 	}
 }
 
-fun (p Parser) pub_stmt() ast.Stmt {
+fun (mut p Parser) pub_stmt() ast.Stmt {
 	match p.next_tok.kind {
 		.key_const{
 			return p.const_decl()
@@ -66,7 +66,7 @@ fun (p Parser) pub_stmt() ast.Stmt {
 	}
 }
 
-fun (p Parser) script_mode_main() ast.FunDecl {
+fun (mut p Parser) script_mode_main() ast.FunDecl {
 	if not p.pref.is_script {
 		p.warn('declare the main function or use the --script option')
 	}
@@ -82,7 +82,7 @@ fun (p Parser) script_mode_main() ast.FunDecl {
 	return node
 }
 
-fun (p Parser) stmt() ast.Stmt {
+fun (mut p Parser) stmt() ast.Stmt {
 	match p.tok.kind {
 		.name {
 			return p.stmt_with_name()
@@ -108,7 +108,7 @@ fun (p Parser) stmt() ast.Stmt {
 	}
 }
 
-fun (p Parser) stmt_with_name()ast.Stmt{
+fun (mut p Parser) stmt_with_name()ast.Stmt{
 	if p.next_tok.kind == .colon {
 		label := p.tok.val
 		p.next()
@@ -123,7 +123,7 @@ fun (p Parser) stmt_with_name()ast.Stmt{
 	return ast.ExprStmt{expr = left}
 }
 
-fun (p Parser) assert_stmt() ast.AssertStmt{
+fun (mut p Parser) assert_stmt() ast.AssertStmt{
 	p.next()
 	pos := p.tok.pos
 	expr := p.expr(0)
@@ -133,13 +133,13 @@ fun (p Parser) assert_stmt() ast.AssertStmt{
 	}
 }
 
-fun (p Parser) assign_stmt() ast.AssignStmt {
+fun (mut p Parser) assign_stmt() ast.AssignStmt {
 	pos := p.tok.pos
 	left := p.expr(0)
 	return p.partial_assign_stmt(left)
 }
 
-fun (p Parser) partial_assign_stmt(left ast.Expr) ast.AssignStmt {
+fun (mut p Parser) partial_assign_stmt(left ast.Expr) ast.AssignStmt {
 	pos := p.tok.pos
 	op := p.tok.kind
 	p.next()
@@ -152,7 +152,7 @@ fun (p Parser) partial_assign_stmt(left ast.Expr) ast.AssignStmt {
 	}
 }
 
-fun (p Parser) const_decl()ast.ConstDecl{
+fun (mut p Parser) const_decl()ast.ConstDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.next()
@@ -177,7 +177,7 @@ fun (p Parser) const_decl()ast.ConstDecl{
 	}
 }
 
-fun (p Parser) loop_control_stmt()ast.LoopControlStmt{
+fun (mut p Parser) loop_control_stmt()ast.LoopControlStmt{
 	pos := p.tok.pos
 	kind := p.tok.kind
 	p.next()
@@ -194,14 +194,14 @@ fun (p Parser) loop_control_stmt()ast.LoopControlStmt{
 	}
 }
 
-fun (p Parser) expr_stmt()ast.ExprStmt{
+fun (mut p Parser) expr_stmt()ast.ExprStmt{
 	expr := p.expr(0)
 	return ast.ExprStmt{
 		expr = expr
 	}
 }
 
-fun (p Parser) enum_decl()ast.EnumDecl{
+fun (mut p Parser) enum_decl()ast.EnumDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.next()
@@ -241,7 +241,7 @@ fun (p Parser) enum_decl()ast.EnumDecl{
 	}
 }
 
-fun (p Parser) global_decl()ast.GlobalDecl{
+fun (mut p Parser) global_decl()ast.GlobalDecl{
 	pos := p.tok.pos
 	p.check(.key_global)
 	name := p.prepend_pkg(p.check_name())
@@ -259,7 +259,7 @@ fun (p Parser) global_decl()ast.GlobalDecl{
 	}
 }
 
-fun (p Parser) interface_decl()ast.InterfaceDecl{
+fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.check(.key_interface)
@@ -333,7 +333,7 @@ fun (p Parser) interface_decl()ast.InterfaceDecl{
 	}
 }
 
-fun (p Parser) return_stmt()ast.ReturnStmt{
+fun (mut p Parser) return_stmt()ast.ReturnStmt{
 	pos := p.tok.pos
 	p.check(.key_return)
 	mut expr := ast.EmptyExpr{} as ast.Expr
@@ -346,7 +346,7 @@ fun (p Parser) return_stmt()ast.ReturnStmt{
 	}
 }
 
-fun (p Parser) type_decl() ast.TypeDecl {
+fun (mut p Parser) type_decl() ast.TypeDecl {
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.next()

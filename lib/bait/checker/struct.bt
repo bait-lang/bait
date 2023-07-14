@@ -6,7 +6,7 @@ import bait.ast
 import bait.token
 
 
-fun (c Checker) struct_decl(node ast.StructDecl) {
+fun (mut c Checker) struct_decl(node ast.StructDecl) {
 	outer: for i, field in node.fields {
 		mut should_continue := false
 		for j := 0; j < i; j += 1 {

@@ -94,7 +94,7 @@ fun (mut p Parser) package_decl() ast.PackageDecl {
 }
 
 // Parses one or more attributes
-fun (p Parser) parse_attributes() {
+fun (mut p Parser) parse_attributes() {
 	for p.tok.kind == .attr {
 		pos := p.tok.pos
 		name := p.tok.val
@@ -113,7 +113,7 @@ fun (p Parser) parse_attributes() {
 	}
 }
 
-fun (p Parser) parse_block() []ast.Stmt {
+fun (mut p Parser) parse_block() []ast.Stmt {
 	p.check(.lcur)
 	mut bstmts := []ast.Stmt
 	for not [token.TokenKind.eof, .rcur].contains(p.tok.kind) {
@@ -126,19 +126,19 @@ fun (p Parser) parse_block() []ast.Stmt {
 	return bstmts
 }
 
-fun (p Parser) check (expected token.TokenKind) {
+fun (mut p Parser) check (expected token.TokenKind) {
 	if p.tok.kind != expected {
 		p.error('unexpected ${p.tok.kind}, expecting ${expected}')
 	}
 	p.next()
 }
 
-fun (p Parser) check_name() string {
+fun (mut p Parser) check_name() string {
 	p.check(.name)
 	return p.prev_tok.val
 }
 
-fun (p Parser) check_pub() bool {
+fun (mut p Parser) check_pub() bool {
 	if p.tok.kind == .key_pub {
 		p.next()
 		return true
@@ -146,7 +146,7 @@ fun (p Parser) check_pub() bool {
 	return false
 }
 
-fun (p Parser) parse_lang() ast.Language {
+fun (mut p Parser) parse_lang() ast.Language {
 	if p.tok.kind != .hash {
 		return .bait
 	}

@@ -6,7 +6,7 @@ import bait.ast
 import bait.errors
 import bait.util
 
-fun (g Gen) expr(expr ast.Expr) {
+fun (mut g Gen) expr(expr ast.Expr) {
 	match expr {
 		ast.ArrayInit { g.array_init(expr) }
 		ast.AsCast { g.as_cast(expr) }
@@ -72,14 +72,14 @@ fun (mut g Gen) array_init(node ast.ArrayInit){
 	g.write('})')
 }
 
-fun (g Gen) as_cast(node ast.AsCast) {
+fun (mut g Gen) as_cast(node ast.AsCast) {
 	type_str := g.typ(node.target)
 	g.write('(${type_str})(')
 	g.expr(node.expr)
 	g.write(')')
 }
 
-fun (g Gen) bool_literal(node ast.BoolLiteral) {
+fun (mut g Gen) bool_literal(node ast.BoolLiteral) {
 	if node.val {
 		g.write('true')
 	} else {
@@ -87,7 +87,7 @@ fun (g Gen) bool_literal(node ast.BoolLiteral) {
 	}
 }
 
-fun (g Gen) call_expr(node ast.CallExpr) {
+fun (mut g Gen) call_expr(node ast.CallExpr) {
 	mut name := c_name(node.name)
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
@@ -129,7 +129,7 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 	g.write(')')
 }
 
-fun (g Gen) call_args(args []ast.CallArg) {
+fun (mut g Gen) call_args(args []ast.CallArg) {
 	for i, a in args {
 		g.expr(a.expr)
 		if i < args.length - 1 {
@@ -140,7 +140,7 @@ fun (g Gen) call_args(args []ast.CallArg) {
 
 // TODO fix elem_type (it's placeholder for array but should be the actual type)
 // this should not interfer with JS or be applied to both
-fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol, cast bool) {
+fun (mut g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol, cast bool) {
 	g.write('array_${name}(&')
 	g.expr(node.left)
 	if cast {
@@ -160,7 +160,7 @@ fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol,
 	g.write(')')
 }
 
-fun (g Gen) gen_array_push_many(node ast.CallExpr) {
+fun (mut g Gen) gen_array_push_many(node ast.CallExpr) {
 	g.write('array_push_many(&')
 	g.expr(node.left)
 	g.write(', &')
@@ -168,11 +168,11 @@ fun (g Gen) gen_array_push_many(node ast.CallExpr) {
 	g.write(')')
 }
 
-fun (g Gen) hash_expr(node ast.HashExpr) {
+fun (mut g Gen) hash_expr(node ast.HashExpr) {
 	g.write(node.val)
 }
 
-fun (g Gen) ident(node ast.Ident) {
+fun (mut g Gen) ident(node ast.Ident) {
 	if node.lang == .bait {
 		g.write(c_name(node.name))
 		return
@@ -180,7 +180,7 @@ fun (g Gen) ident(node ast.Ident) {
 	g.write(node.name.replace('C.', ''))
 }
 
-fun (g Gen) if_expr(node ast.IfExpr) {
+fun (mut g Gen) if_expr(node ast.IfExpr) {
 	for i, b in node.branches {
 		if i > 0 {
 			g.write('} else ')
@@ -254,7 +254,7 @@ fun (mut g Gen) index_expr(node ast.IndexExpr) {
 	g.write(']')
 }
 
-fun (g Gen) infix_expr(node ast.InfixExpr) {
+fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 	// Overloading
 	lsym := g.table.get_sym(node.left_type)
 	if lsym.overloads.contains(node.op.c_repr()) {
@@ -276,22 +276,22 @@ fun (g Gen) infix_expr(node ast.InfixExpr) {
 	g.expr(node.right)
 }
 
-fun (g Gen) integer_literal(node ast.IntegerLiteral) {
+fun (mut g Gen) integer_literal(node ast.IntegerLiteral) {
 	g.write(node.val)
 }
 
-fun (g Gen) par_expr(node ast.ParExpr) {
+fun (mut g Gen) par_expr(node ast.ParExpr) {
 	g.write('(')
 	g.expr(node.expr)
 	g.write(')')
 }
 
-fun (g Gen) prefix_expr(node ast.PrefixExpr) {
+fun (mut g Gen) prefix_expr(node ast.PrefixExpr) {
 	g.write(node.op.c_repr())
 	g.expr(node.right)
 }
 
-fun (g Gen) selector_expr(node ast.SelectorExpr) {
+fun (mut g Gen) selector_expr(node ast.SelectorExpr) {
 	g.expr(node.expr)
 	if node.expr_type.get_nr_amp() > 0 {
 		g.write('->')
@@ -301,18 +301,18 @@ fun (g Gen) selector_expr(node ast.SelectorExpr) {
 	g.write(node.field_name)
 }
 
-fun (g Gen) string_literal(node ast.StringLiteral) {
+fun (mut g Gen) string_literal(node ast.StringLiteral) {
 	val := util.escape_char(node.val.replace('\n', '\\n'), `\"`)
 	g.write('from_c_string("')
 	g.write(val)
 	g.write('")')
 }
 
-fun (g Gen) string_inter_literal(node ast.StringInterLiteral) {
-
+fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
+	// TODO
 }
 
-fun (g Gen) struct_init(node ast.StructInit) {
+fun (mut g Gen) struct_init(node ast.StructInit) {
 	type_str := g.typ(node.typ)
 	g.write('(${type_str}){')
 
@@ -343,12 +343,12 @@ fun (g Gen) struct_init(node ast.StructInit) {
 	g.write('}')
 }
 
-fun (g Gen) type_of(node ast.TypeOf){
+fun (mut g Gen) type_of(node ast.TypeOf){
 	sym := g.table.get_sym(node.typ)
 	g.write('from_c_string("' + sym.name + '")')
 }
 
-fun (g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
+fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 	sym := g.table.get_sym(typ)
 	if sym.kind == .string {
 		g.expr(expr)

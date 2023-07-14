@@ -14,7 +14,7 @@ fun (mut g Gen) stmts(stmts []ast.Stmt) {
 	g.indent -= 1
 }
 
-fun (g Gen) stmt(stmt ast.Stmt) {
+fun (mut g Gen) stmt(stmt ast.Stmt) {
 	if stmt is ast.AssertStmt {
 		g.assert_stmt(stmt)
 	} else if stmt is ast.AssignStmt {
@@ -51,7 +51,7 @@ fun (g Gen) stmt(stmt ast.Stmt) {
 	} else {}
 }
 
-fun (g Gen) assert_stmt(node ast.AssertStmt) {
+fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 	g.write('if (')
 	g.expr(node.expr)
 	g.writeln(') {')
@@ -78,7 +78,7 @@ fun (g Gen) assert_stmt(node ast.AssertStmt) {
 	g.writeln('}')
 }
 
-fun (g Gen) assert_side_expr(node ast.Expr) {
+fun (mut g Gen) assert_side_expr(node ast.Expr) {
 	if node is ast.BoolLiteral {
 		g.bool_literal(node)
 	} else if node is ast.IntegerLiteral {
@@ -167,7 +167,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 	}
 }
 
-fun (g Gen) const_decl(node ast.ConstDecl){
+fun (mut g Gen) const_decl(node ast.ConstDecl){
 	g.write('const ')
 	g.write(js_name(node.name))
 	g.write(' = ')
@@ -187,7 +187,7 @@ fun (mut g Gen) enum_decl(node ast.EnumDecl){
 	g.writeln('}')
 }
 
-fun (g Gen) loop_control_stmt(node ast.LoopControlStmt){
+fun (mut g Gen) loop_control_stmt(node ast.LoopControlStmt){
 	g.write(node.kind.js_repr())
 	if node.label.length > 0 {
 		g.writeln(' ${node.label}')
@@ -196,13 +196,13 @@ fun (g Gen) loop_control_stmt(node ast.LoopControlStmt){
 	}
 }
 
-fun (g Gen) write_label(label string){
+fun (mut g Gen) write_label(label string){
 	if label.length > 0 {
 		g.writeln('${label}: ')
 	}
 }
 
-fun (g Gen) for_loop(node ast.ForLoop){
+fun (mut g Gen) for_loop(node ast.ForLoop){
 	g.write_label(node.label)
 
 	g.write('while (')
@@ -228,7 +228,7 @@ fun (mut g Gen) for_classic_loop(node ast.ForClassicLoop){
 	g.writeln('}')
 }
 
-fun (g Gen) for_in_loop(node ast.ForInLoop){
+fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 	g.write_label(node.label)
 
 	mut i := node.idxvar
@@ -253,7 +253,7 @@ fun (g Gen) for_in_loop(node ast.ForInLoop){
 	g.writeln('}')
 }
 
-fun (g Gen) for_in_map(node ast.ForInLoop){
+fun (mut g Gen) for_in_map(node ast.ForInLoop){
 	container := g.expr_string(node.expr)
 	keys_var := g.new_temp_var()
 	g.writeln('const ${keys_var} = map_keys(${container})')
@@ -292,7 +292,7 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	g.writeln('')
 }
 
-fun (g Gen) fun_params(params []ast.Param){
+fun (mut g Gen) fun_params(params []ast.Param){
 	for i, p in params {
 		g.write(js_name(p.name))
 		if i < params.length - 1 {
@@ -307,7 +307,7 @@ fun (mut g Gen) global_decl(node ast.GlobalDecl){
 	g.global_out += 'var ${name} = ${expr}\n'
 }
 
-fun (g Gen) interface_decl(node ast.InterfaceDecl){
+fun (mut g Gen) interface_decl(node ast.InterfaceDecl){
 	if node.lang != .bait {
 		return
 	}
@@ -315,7 +315,7 @@ fun (g Gen) interface_decl(node ast.InterfaceDecl){
 	exit(1)
 }
 
-fun (g Gen) return_stmt(node ast.ReturnStmt){
+fun (mut g Gen) return_stmt(node ast.ReturnStmt){
 	g.write('return')
 	if not node.expr is ast.EmptyExpr {
 		g.write(" ")
@@ -324,7 +324,7 @@ fun (g Gen) return_stmt(node ast.ReturnStmt){
 	g.writeln('')
 }
 
-fun (g Gen) type_decl(node ast.TypeDecl){
+fun (mut g Gen) type_decl(node ast.TypeDecl){
 	sym := g.table.get_sym(node.typ)
 	if sym.kind != .alias_type {
 		return

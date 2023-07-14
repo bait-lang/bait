@@ -47,7 +47,7 @@ fun (mut g Gen) struct_decl(node ast.StructDecl){
 }
 
 
-fun (g Gen) struct_init(node ast.StructInit) {
+fun (mut g Gen) struct_init(node ast.StructInit) {
 	g.write('new ' + js_name(node.name) + '({')
 	if node.fields.length == 0 {
 		g.write('})')
