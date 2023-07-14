@@ -13,7 +13,7 @@ fun (mut g Gen) stmts(stmts []ast.Stmt) {
 	g.indent -= 1
 }
 
-fun (g Gen) stmt(stmt ast.Stmt) {
+fun (mut g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
 		ast.AssignStmt { g.assign_stmt(stmt) }
 		ast.ConstDecl { g.const_decl(stmt) }
@@ -87,20 +87,20 @@ fun (mut g Gen) const_decl(node ast.ConstDecl){
 	}
 }
 
-fun (g Gen) expr_stmt(node ast.ExprStmt) {
+fun (mut g Gen) expr_stmt(node ast.ExprStmt) {
 	g.expr(node.expr)
 	if not g.empty_line {
 		g.writeln(";")
 	}
 }
 
-fun (g Gen) write_label(label string){
+fun (mut g Gen) write_label(label string){
 	if label.length > 0 {
 		g.writeln('${label}: ')
 	}
 }
 
-fun (g Gen) for_loop(node ast.ForLoop) {
+fun (mut g Gen) for_loop(node ast.ForLoop) {
 	g.write('while (')
 	g.expr(node.cond)
 	g.writeln(') {')
@@ -126,7 +126,7 @@ fun (mut g Gen) for_classic_loop(node ast.ForClassicLoop) {
 	g.write_label(node.label)
 }
 
-fun (g Gen) for_in_loop(node ast.ForInLoop){
+fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 	mut i := node.idxvar
 	if i == '' {
 		i = g.new_temp_var()
@@ -192,7 +192,7 @@ fun (g Gen) interface_decl(node ast.InterfaceDecl){
 	exit(1)
 }
 
-fun (g Gen) return_stmt(node ast.ReturnStmt){
+fun (mut g Gen) return_stmt(node ast.ReturnStmt){
 	g.write('return')
 	if not node.expr is ast.EmptyExpr {
 		g.write(" ")

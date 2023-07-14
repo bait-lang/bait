@@ -45,7 +45,7 @@ fun (b Builder) get_user_files(path string) []string {
 
 fun (b Builder) parse_source_file(path string) ast.File {
 	text := os.read_file(path)
-	t := tokenizer.new_tokenizer(text, path)
+	mut t := tokenizer.new_tokenizer(text, path)
 	tokens := t.tokenize()
 	t.errors.print_and_exit()
 
@@ -238,7 +238,7 @@ fun resolve_import(pkg string) string {
 	return os.join_path(os.getwd(), ["lib", pkg])
 }
 
-fun order_pkgs(ordered []string, pkg string, deps map[string][]string) {
+fun order_pkgs(mut ordered []string, pkg string, deps map[string][]string) {
 	for d in deps[pkg] {
 		order_pkgs(ordered, d, deps)
 	}

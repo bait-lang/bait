@@ -5,7 +5,7 @@ package parser
 import bait.ast
 import bait.token
 
-fun (p Parser) parse_type() ast.Type {
+fun (mut p Parser) parse_type() ast.Type {
 	// Pointers
 	mut nr_amp := 0
 	for p.tok.kind == .amp{
@@ -74,7 +74,7 @@ fun (p Parser) parse_type() ast.Type {
 	return typ
 }
 
-fun (p Parser) parse_fun_type() ast.Type {
+fun (mut p Parser) parse_fun_type() ast.Type {
 	p.next()
 	p.check(.lpar)
 	mut param_types := []ast.Type
@@ -93,7 +93,7 @@ fun (p Parser) parse_fun_type() ast.Type {
 	return p.table.find_or_register_fun(param_types, return_type)
 }
 
-fun (p Parser) parse_map_type() ast.Type {
+fun (mut p Parser) parse_map_type() ast.Type {
 	if p.tok.kind == .rpar and p.pkg_name == 'builtin' {
 		return ast.MAP_TYPE
 	}

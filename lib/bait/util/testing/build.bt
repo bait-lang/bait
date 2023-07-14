@@ -25,7 +25,7 @@ pub fun (mut runner BuildRunner) build_single(name string) {
 	runner.fails += 1
 }
 
-pub fun (runner BuildRunner) build_all_in_root() {
+pub fun (mut runner BuildRunner) build_all_in_root() {
 	files := os.ls(runner.root)
 	for file in files {
 		if not file.ends_with('.bt') {

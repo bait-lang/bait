@@ -5,7 +5,7 @@ package checker
 import bait.ast
 import bait.token
 
-fun (c Checker) expr(expr ast.Expr) ast.Type {
+fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 	if expr is ast.AnonFun {
 		return c.anon_fun(expr)
 	} else if expr is ast.ArrayInit {
@@ -109,7 +109,7 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 	return node.typ
 }
 
-fun (c Checker) as_cast(mut node ast.AsCast) ast.Type {
+fun (mut c Checker) as_cast(mut node ast.AsCast) ast.Type {
 	expr_type := c.expr(node.expr)
 	node.expr_type = expr_type
 	expr_sym := c.table.get_sym(expr_type)
@@ -144,14 +144,14 @@ const SUPPORTED_COMPTIME_VARS := [
 	'BAITHASH',
 ]
 
-fun (c Checker) comp_time_var(node ast.CompTimeVar) ast.Type {
+fun (mut c Checker) comp_time_var(node ast.CompTimeVar) ast.Type {
 	if not SUPPORTED_COMPTIME_VARS.contains(node.name) {
 		c.error('unsupported comptime var "${node.name}"', node.pos)
 	}
 	return ast.STRING_TYPE
 }
 
-fun (c Checker) enum_val(mut node ast.EnumVal) ast.Type {
+fun (mut c Checker) enum_val(mut node ast.EnumVal) ast.Type {
 	if node.name.length == 0 {
 		node.typ = c.expected_type
 	} else {
@@ -179,14 +179,14 @@ fun (c Checker) enum_val(mut node ast.EnumVal) ast.Type {
 	return node.typ
 }
 
-fun (c Checker) hash_expr(node ast.HashExpr) ast.Type {
+fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 	if node.lang == .js and not c.is_js_file {
 		c.warn('JS code can only be used in .js.bt files', node.pos)
 	}
 	return ast.VOID_TYPE
 }
 
-fun (c Checker) ident(mut node ast.Ident) ast.Type {
+fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	mut obj := c.scope.get(node.name)
 
 	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
@@ -215,7 +215,7 @@ fun (c Checker) ident(mut node ast.Ident) ast.Type {
 	return obj.typ
 }
 
-fun (c Checker) if_expr(node ast.IfExpr) ast.Type {
+fun (mut c Checker) if_expr(node ast.IfExpr) ast.Type {
 	for i, b in node.branches {
 		if not node.has_else or i < node.branches.length - 1 {
 			c.expr(b.cond)
@@ -228,7 +228,7 @@ fun (c Checker) if_expr(node ast.IfExpr) ast.Type {
 	return ast.VOID_TYPE
 }
 
-fun (c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
+fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 	node.left_type = c.expr(node.left)
 	c.expr(node.index)
 	sym := c.table.get_sym(node.left_type)
@@ -324,16 +324,16 @@ fun (mut c Checker) match_expr(mut node ast.MatchExpr) ast.Type {
 	return ast.VOID_TYPE
 }
 
-fun (c Checker) par_expr(node ast.ParExpr) ast.Type {
+fun (mut c Checker) par_expr(node ast.ParExpr) ast.Type {
 	return c.expr(node.expr)
 }
 
-fun (c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
+fun (mut c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
 	typ := c.expr(node.right)
 	return typ
 }
 
-fun (c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
+fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 	if node.expr is ast.IndexExpr {
 		mut expr := node.expr as ast.IndexExpr
 		expr.is_selector = true
@@ -373,7 +373,7 @@ fun (c Checker) string_literal(node ast.StringLiteral) ast.Type {
 	return ast.STRING_TYPE
 }
 
-fun (c Checker) string_inter_literal(node ast.StringInterLiteral) ast.Type {
+fun (mut c Checker) string_inter_literal(node ast.StringInterLiteral) ast.Type {
 	for e in node.exprs {
 		typ := c.expr(e)
 		node.expr_types.push(typ)
@@ -381,7 +381,7 @@ fun (c Checker) string_inter_literal(node ast.StringInterLiteral) ast.Type {
 	return ast.STRING_TYPE
 }
 
-fun (c Checker) type_of(mut node ast.TypeOf) ast.Type {
+fun (mut c Checker) type_of(mut node ast.TypeOf) ast.Type {
 	typ := c.expr(node.expr)
 	node.typ = typ
 	return ast.STRING_TYPE

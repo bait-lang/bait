@@ -108,7 +108,7 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 	return node
 }
 
-fun (p Parser) fun_params() []ast.Param{
+fun (mut p Parser) fun_params() []ast.Param{
 	mut params := []ast.Param
 	for p.tok.kind != .rpar{
 		pos := p.tok.pos
@@ -131,7 +131,7 @@ fun (p Parser) fun_params() []ast.Param{
 	return params
 }
 
-fun (p Parser) fun_call(lang ast.Language)ast.CallExpr{
+fun (mut p Parser) fun_call(lang ast.Language)ast.CallExpr{
 	pos := p.tok.pos
 	name := p.prepend_expr_pkg(p.check_name())
 	p.check(.lpar)
@@ -147,7 +147,7 @@ fun (p Parser) fun_call(lang ast.Language)ast.CallExpr{
 	}
 }
 
-fun (p Parser) method_call(left ast.Expr) ast.CallExpr {
+fun (mut p Parser) method_call(left ast.Expr) ast.CallExpr {
 	pos := p.tok.pos
 	name := p.check_name()
 	p.check(.lpar)
@@ -163,7 +163,7 @@ fun (p Parser) method_call(left ast.Expr) ast.CallExpr {
 	}
 }
 
-fun (p Parser) call_args() []ast.CallArg {
+fun (mut p Parser) call_args() []ast.CallArg {
 	mut args := []ast.CallArg
 	for p.tok.kind != .rpar {
 		args.push(ast.CallArg{

@@ -7,7 +7,7 @@ import bait.token
 import bait.util
 import os
 
-fun (g Gen) expr(expr ast.Expr) {
+fun (mut g Gen) expr(expr ast.Expr) {
 	if expr is ast.AnonFun {
 		g.anon_fun(expr)
 	} else if expr is ast.ArrayInit {
@@ -67,7 +67,7 @@ fun (mut g Gen) expr_string(expr ast.Expr) string {
 	return s.trim_space()
 }
 
-fun (g Gen) anon_fun(node ast.AnonFun) {
+fun (mut g Gen) anon_fun(node ast.AnonFun) {
 	g.write('function (')
 	for i, param in node.decl.params {
 		g.write(param.name)
@@ -80,7 +80,7 @@ fun (g Gen) anon_fun(node ast.AnonFun) {
 	g.write('}')
 }
 
-fun (g Gen) array_init(node ast.ArrayInit) {
+fun (mut g Gen) array_init(node ast.ArrayInit) {
 	g.write('new array({ data: ')
 	if node.length_expr is ast.EmptyExpr {
 		g.write('[')
@@ -100,7 +100,7 @@ fun (g Gen) array_init(node ast.ArrayInit) {
 	g.write('), length: ${len} })')
 }
 
-fun (g Gen) as_cast(node ast.AsCast) {
+fun (mut g Gen) as_cast(node ast.AsCast) {
 	target_sym := g.table.get_sym(node.target)
 	if target_sym.kind == .alias_type {
 		// g.write('new ${js_name(target_sym.name)}(')
@@ -112,7 +112,7 @@ fun (g Gen) as_cast(node ast.AsCast) {
 	g.expr(node.expr)
 }
 
-fun (g Gen) bool_literal(node ast.BoolLiteral){
+fun (mut g Gen) bool_literal(node ast.BoolLiteral){
 	if node.val {
 		g.write('true')
 	} else {
@@ -120,7 +120,7 @@ fun (g Gen) bool_literal(node ast.BoolLiteral){
 	}
 }
 
-fun (g Gen) call_expr(node ast.CallExpr) {
+fun (mut g Gen) call_expr(node ast.CallExpr) {
 	if node.is_method and node.lang != .bait {
 		g.expr(node.left)
 		g.write('.' + node.name + '(')
@@ -159,7 +159,7 @@ fun (g Gen) call_expr(node ast.CallExpr) {
 	g.write(')')
 }
 
-fun (g Gen) call_args(args []ast.CallArg) {
+fun (mut g Gen) call_args(args []ast.CallArg) {
 	for i, a in args {
 		g.expr(a.expr)
 		if i < args.length - 1 {
@@ -168,7 +168,7 @@ fun (g Gen) call_args(args []ast.CallArg) {
 	}
 }
 
-fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol) {
+fun (mut g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol) {
 	g.write('array_${name}(')
 	g.expr(node.left)
 	g.write(', ')
@@ -180,13 +180,13 @@ fun (g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol)
 	g.write(')')
 }
 
-fun (g Gen) char_literal(node ast.CharLiteral) {
+fun (mut g Gen) char_literal(node ast.CharLiteral) {
 	g.write('new u8("')
 	g.write(util.escape_char(node.val, `\"`))
 	g.write('")')
 }
 
-fun (g Gen) comp_time_var(node ast.CompTimeVar){
+fun (mut g Gen) comp_time_var(node ast.CompTimeVar){
 	g.write('from_js_string("')
 	match node.name{
 		'PKG' {g.write(g.pkg)}
@@ -202,19 +202,19 @@ fun (g Gen) comp_time_var(node ast.CompTimeVar){
 	g.write('")')
 }
 
-fun (g Gen) enum_val(node ast.EnumVal) {
+fun (mut g Gen) enum_val(node ast.EnumVal) {
 	g.write(js_name(node.name) + '.' + node.val)
 }
 
-fun (g Gen) hash_expr(node ast.HashExpr) {
+fun (mut g Gen) hash_expr(node ast.HashExpr) {
 	g.write(node.val)
 }
 
-fun (g Gen) ident(node ast.Ident) {
+fun (mut g Gen) ident(node ast.Ident) {
 	g.write(js_name(node.name))
 }
 
-fun (g Gen) if_expr(node ast.IfExpr){
+fun (mut g Gen) if_expr(node ast.IfExpr){
 	for i, b in node.branches {
 		if i > 0 {
 			g.write("} else ")
@@ -231,7 +231,7 @@ fun (g Gen) if_expr(node ast.IfExpr){
 	g.writeln('}')
 }
 
-fun (g Gen) integer_literal(node ast.IntegerLiteral){
+fun (mut g Gen) integer_literal(node ast.IntegerLiteral){
 	g.write(node.val)
 }
 
@@ -291,7 +291,7 @@ fun (mut g Gen) index_expr(node ast.IndexExpr){
 	g.write(']')
 }
 
-fun (g Gen) infix_expr(node ast.InfixExpr){
+fun (mut g Gen) infix_expr(node ast.InfixExpr){
 	// TODO should overloading be recursive like methods too?
 	lsym := g.table.get_sym(node.left_type)
 	if lsym.overloads.contains(node.op.js_repr()) {
@@ -394,7 +394,7 @@ fun (mut g Gen) match_expr(node ast.MatchExpr){
 	g.writeln('}')
 }
 
-fun (g Gen) sumtype_match(node ast.MatchExpr){
+fun (mut g Gen) sumtype_match(node ast.MatchExpr){
 	cond := g.expr_string(node.cond)
 	for i, b in node.branches {
 		if i >= 1 {
@@ -418,13 +418,13 @@ fun (g Gen) sumtype_match(node ast.MatchExpr){
 	g.writeln('}')
 }
 
-fun (g Gen) par_expr(node ast.ParExpr){
+fun (mut g Gen) par_expr(node ast.ParExpr){
 	g.write('(')
 	g.expr(node.expr)
 	g.write(')')
 }
 
-fun (g Gen) prefix_expr(node ast.PrefixExpr){
+fun (mut g Gen) prefix_expr(node ast.PrefixExpr){
 	g.write(node.op.js_repr())
 	if node.right is ast.InfixExpr and (node.right as ast.InfixExpr).op == .key_is {
 		g.write('(')
@@ -435,20 +435,20 @@ fun (g Gen) prefix_expr(node ast.PrefixExpr){
 	g.expr(node.right)
 }
 
-fun (g Gen) selector_expr(node ast.SelectorExpr) {
+fun (mut g Gen) selector_expr(node ast.SelectorExpr) {
 	g.expr(node.expr)
 	g.write('.')
 	g.write(node.field_name)
 }
 
-fun (g Gen) string_literal(node ast.StringLiteral) {
+fun (mut g Gen) string_literal(node ast.StringLiteral) {
 	val := util.escape_char(node.val.replace('\n', '\\n'), `\"`)
 	g.write('from_js_string("')
 	g.write(val)
 	g.write('")')
 }
 
-fun (g Gen) string_inter_literal(node ast.StringInterLiteral) {
+fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
 	g.write('from_js_string(`')
 	for i, val in node.vals {
 		g.write(util.escape_char(val, `\``))
@@ -461,12 +461,12 @@ fun (g Gen) string_inter_literal(node ast.StringInterLiteral) {
 	g.write('`)')
 }
 
-fun (g Gen) type_of(node ast.TypeOf) {
+fun (mut g Gen) type_of(node ast.TypeOf) {
 	sym := g.table.get_sym(node.typ)
 	g.write('from_js_string("' + sym.name + '")')
 }
 
-fun (g Gen) expr_to_jsstring(expr ast.Expr, typ ast.Type) {
+fun (mut g Gen) expr_to_jsstring(expr ast.Expr, typ ast.Type) {
 	sym := g.table.get_sym(typ)
 	if sym.kind == .string {
 		g.expr(expr)

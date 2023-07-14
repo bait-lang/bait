@@ -19,7 +19,7 @@ fun (mut m map) set(key string, val any) {
 	m.data.set(key.str, val)
 }
 
-fun (m map) get_set(key string, val any) any {
+fun (mut m map) get_set(key string, val any) any {
 	if not m.contains(key) {
 		m.set(key, val)
 	}

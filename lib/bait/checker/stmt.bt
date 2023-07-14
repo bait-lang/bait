@@ -5,7 +5,7 @@ package checker
 import bait.ast
 import bait.token
 
-fun (c Checker) stmts(stmts []ast.Stmt){
+fun (mut c Checker) stmts(stmts []ast.Stmt){
 	for stmt in stmts{
 		c.stmt(stmt)
 	}
@@ -48,7 +48,7 @@ fun (mut c Checker) stmt(stmt ast.Stmt){
 	c.expected_type = ast.VOID_TYPE
 }
 
-fun (c Checker) assert_stmt(node ast.AssertStmt){
+fun (mut c Checker) assert_stmt(node ast.AssertStmt){
 	typ := c.expr(node.expr)
 	if not c.check_types(typ, ast.BOOL_TYPE) {
 		c.error('assert must be of type bool', node.pos)
@@ -123,12 +123,12 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 	}
 }
 
-fun (c Checker) const_decl(mut node ast.ConstDecl) {
+fun (mut c Checker) const_decl(mut node ast.ConstDecl) {
 	node.typ = c.expr(node.expr)
 	c.table.global_scope.update_type(node.name, node.typ)
 }
 
-fun (c Checker) expr_stmt(node ast.ExprStmt) {
+fun (mut c Checker) expr_stmt(node ast.ExprStmt) {
 	expr := node.expr
 	c.expr(expr)
 	if expr is ast.CallExpr or expr is ast.IfExpr or expr is ast.MatchExpr or expr is ast.HashExpr {
@@ -188,7 +188,7 @@ fun (c Checker) register_label(label string, pos token.Pos) {
 	})
 }
 
-fun (c Checker) for_loop(node ast.ForLoop) {
+fun (mut c Checker) for_loop(node ast.ForLoop) {
 	c.open_scope()
 	c.register_label(node.label, node.pos)
 	c.expr(node.cond)
@@ -196,7 +196,7 @@ fun (c Checker) for_loop(node ast.ForLoop) {
 	c.close_scope()
 }
 
-fun (c Checker) for_classic_loop(node ast.ForClassicLoop) {
+fun (mut c Checker) for_classic_loop(node ast.ForClassicLoop) {
 	c.open_scope()
 	c.register_label(node.label, node.pos)
 	c.stmt(node.init)
@@ -237,7 +237,7 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 	c.close_scope()
 }
 
-fun (c Checker) global_decl(node ast.GlobalDecl){
+fun (mut c Checker) global_decl(node ast.GlobalDecl){
 	typ := c.expr(node.expr)
 	c.table.global_scope.update_type(node.name, typ)
 }

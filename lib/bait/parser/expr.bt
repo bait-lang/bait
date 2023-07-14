@@ -5,7 +5,7 @@ package parser
 import bait.ast
 import bait.token
 
-fun (p Parser) expr(precedence i32) ast.Expr {
+fun (mut p Parser) expr(precedence i32) ast.Expr {
 	mut node := ast.EmptyExpr{} as ast.Expr
 	match p.tok.kind {
 		.hash {
@@ -67,7 +67,7 @@ fun (p Parser) expr(precedence i32) ast.Expr {
 	return p.expr_with_left(node, precedence)
 }
 
-fun (p Parser) expr_with_left(left_ ast.Expr, precedence i32) ast.Expr {
+fun (mut p Parser) expr_with_left(left_ ast.Expr, precedence i32) ast.Expr {
 	mut left := left_
 	for precedence < p.tok.precedence() as i32 {
 		if p.tok.kind == .dot {
@@ -85,7 +85,7 @@ fun (p Parser) expr_with_left(left_ ast.Expr, precedence i32) ast.Expr {
 	return left
 }
 
-fun (p Parser) expr_list() []ast.Expr{
+fun (mut p Parser) expr_list() []ast.Expr{
 	mut exprs := []ast.Expr
 	for true {
 		exprs.push(p.expr(0))
@@ -97,7 +97,7 @@ fun (p Parser) expr_list() []ast.Expr{
 	return exprs
 }
 
-fun (p Parser) anon_fun()ast.AnonFun{
+fun (mut p Parser) anon_fun()ast.AnonFun{
 	pos := p.tok.pos
 	p.check(.key_fun)
 	p.check(.lpar)
@@ -124,7 +124,7 @@ fun (p Parser) anon_fun()ast.AnonFun{
 	}
 }
 
-fun (p Parser) array_init()ast.ArrayInit{
+fun (mut p Parser) array_init()ast.ArrayInit{
 	pos := p.tok.pos
 	p.check(.lbr)
 
@@ -179,7 +179,7 @@ fun (p Parser) array_init()ast.ArrayInit{
 	}
 }
 
-fun (p Parser) as_cast(left ast.Expr) ast.AsCast {
+fun (mut p Parser) as_cast(left ast.Expr) ast.AsCast {
 	pos := p.tok.pos
 	p.check(.key_as)
 	target := p.parse_type()
@@ -190,7 +190,7 @@ fun (p Parser) as_cast(left ast.Expr) ast.AsCast {
 	}
 }
 
-fun (p Parser) bool_literal()ast.BoolLiteral{
+fun (mut p Parser) bool_literal()ast.BoolLiteral{
 	pos := p.tok.pos
 	val := p.tok.kind == .key_true
 	p.next()
@@ -200,7 +200,7 @@ fun (p Parser) bool_literal()ast.BoolLiteral{
 	}
 }
 
-fun (p Parser) char_literal()ast.CharLiteral{
+fun (mut p Parser) char_literal()ast.CharLiteral{
 	pos := p.tok.pos
 	p.next()
 	return ast.CharLiteral{
@@ -209,7 +209,7 @@ fun (p Parser) char_literal()ast.CharLiteral{
 	}
 }
 
-fun (p Parser) comp_time_var() ast.CompTimeVar{
+fun (mut p Parser) comp_time_var() ast.CompTimeVar{
 	pos := p.tok.pos
 	p.next()
 	name := p.check_name()
@@ -219,7 +219,7 @@ fun (p Parser) comp_time_var() ast.CompTimeVar{
 	}
 }
 
-fun (p Parser) dot_expr(left ast.Expr) ast.Expr {
+fun (mut p Parser) dot_expr(left ast.Expr) ast.Expr {
 	pos := p.tok.pos
 	p.check(.dot)
 	if p.next_tok.kind == .lpar {
@@ -234,7 +234,7 @@ fun (p Parser) dot_expr(left ast.Expr) ast.Expr {
 	}
 }
 
-fun (p Parser) enum_val(has_name bool) ast.EnumVal{
+fun (mut p Parser) enum_val(has_name bool) ast.EnumVal{
 	pos := p.tok.pos
 	mut name := ''
 	if has_name {
@@ -275,7 +275,7 @@ fun (mut p Parser) hash_expr()ast.Expr{
 	}
 }
 
-fun (p Parser) ident(lang ast.Language)ast.Ident{
+fun (mut p Parser) ident(lang ast.Language)ast.Ident{
 	pos := p.tok.pos
 	mut is_mut := p.tok.kind == .key_mut
 	if is_mut {
@@ -330,7 +330,7 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 	}
 }
 
-fun (p Parser) index_expr(left ast.Expr)ast.IndexExpr {
+fun (mut p Parser) index_expr(left ast.Expr)ast.IndexExpr {
 	pos := p.tok.pos
 	p.check(.lbr)
 	index := p.expr(0)
@@ -342,7 +342,7 @@ fun (p Parser) index_expr(left ast.Expr)ast.IndexExpr {
 	}
 }
 
-fun (p Parser) infix_expr(left ast.Expr)ast.InfixExpr{
+fun (mut p Parser) infix_expr(left ast.Expr)ast.InfixExpr{
 	pos := p.tok.pos
 	op_tok := p.tok
 	p.next()
@@ -355,7 +355,7 @@ fun (p Parser) infix_expr(left ast.Expr)ast.InfixExpr{
 	}
 }
 
-fun (p Parser) map_init() ast.MapInit{
+fun (mut p Parser) map_init() ast.MapInit{
 	pos := p.tok.pos
 	p.next()
 	if p.tok.kind == .lbr{
@@ -435,7 +435,7 @@ fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
 	return p.ident(lang)
 }
 
-fun (p Parser) number_literal()ast.IntegerLiteral{
+fun (mut p Parser) number_literal()ast.IntegerLiteral{
 	pos := p.tok.pos
 	p.next()
 	return ast.IntegerLiteral{
@@ -444,7 +444,7 @@ fun (p Parser) number_literal()ast.IntegerLiteral{
 	}
 }
 
-fun (p Parser) par_expr() ast.ParExpr {
+fun (mut p Parser) par_expr() ast.ParExpr {
 	pos := p.tok.pos
 	p.next()
 	expr := p.expr(0)
@@ -455,7 +455,7 @@ fun (p Parser) par_expr() ast.ParExpr {
 	}
 }
 
-fun (p Parser) prefix_expr()ast.PrefixExpr{
+fun (mut p Parser) prefix_expr()ast.PrefixExpr{
 	pos := p.tok.pos
 	op := p.tok.kind
 	p.next()
@@ -467,7 +467,7 @@ fun (p Parser) prefix_expr()ast.PrefixExpr{
 	}
 }
 
-fun (p Parser) string_literal()ast.Expr{
+fun (mut p Parser) string_literal()ast.Expr{
 	pos := p.tok.pos
 	if p.next_tok.kind != .dollar {
 		p.next()
@@ -495,7 +495,7 @@ fun (p Parser) string_literal()ast.Expr{
 	}
 }
 
-fun (p Parser) typeof_expr() ast.TypeOf {
+fun (mut p Parser) typeof_expr() ast.TypeOf {
 	pos := p.tok.pos
 	p.check(.key_typeof)
 	p.check(.lpar)

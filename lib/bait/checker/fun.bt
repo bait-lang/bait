@@ -48,7 +48,7 @@ fun (mut c Checker) check_main_fun(stmts []ast.Stmt) {
 	}
 }
 
-fun (c Checker) call_expr(node ast.CallExpr) ast.Type {
+fun (mut c Checker) call_expr(node ast.CallExpr) ast.Type {
 	if node.is_method{
 		return c.method_call(node)
 	}
@@ -136,8 +136,11 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	node.return_type = def.return_type
 	c.check_fun_attrs_on_call(node, def)
 
-	if def.params[0].is_mut and not (node.left as ast.Ident).is_mut {
-		c.warn('method requires an mutable receiver', node.pos)
+	// Check if the receiver is and should be mutable
+	if def.params[0].is_mut {
+		if node.left is ast.Ident and not (node.left as ast.Ident).is_mut {
+			c.warn('method requires an mutable receiver', node.pos)
+		}
 	}
 
 	// Check argument count

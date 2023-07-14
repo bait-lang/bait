@@ -22,7 +22,7 @@ fun main() {
 	}
 
 	text := os.read_file(file)
-	t := tokenizer.new_tokenizer(text, file)
+	mut t := tokenizer.new_tokenizer(text, file)
 	tokens := t.tokenize()
 	t.errors.print_and_exit()
 
