@@ -141,7 +141,10 @@ fun (mut g Gen) call_args(args []ast.CallArg) {
 // TODO fix elem_type (it's placeholder for array but should be the actual type)
 // this should not interfer with JS or be applied to both
 fun (mut g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol, cast bool) {
-	g.write('array_${name}(&')
+	g.write('array_${name}(')
+	if node.left_type.get_nr_amp() == 0 {
+		g.write('&')
+	}
 	g.expr(node.left)
 	if cast {
 		info := sym.info as ast.ArrayInfo
@@ -161,7 +164,10 @@ fun (mut g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSym
 }
 
 fun (mut g Gen) gen_array_push_many(node ast.CallExpr) {
-	g.write('array_push_many(&')
+	g.write('array_push_many(')
+	if node.left_type.get_nr_amp() == 0 {
+		g.write('&')
+	}
 	g.expr(node.left)
 	g.write(', &')
 	g.expr(node.args[0].expr)
