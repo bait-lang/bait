@@ -129,6 +129,15 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	node.lang = def.lang
+	node.return_type = def.return_type
+
+	// Check if the receiver is and should be mutable
+	if def.params[0].is_mut {
+		if node.left is ast.Ident and not (node.left as ast.Ident).is_mut {
+			c.error('method requires an mutable receiver', node.pos)
+			return node.return_type
+		}
+	}
 
 	// Set the receiver to be a pointer if the method expects one
 	if left_expr_type.get_nr_amp() < def.params[0].typ.get_nr_amp() {
@@ -144,15 +153,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		node.left_type = left_expr_type
 	}
 
-	node.return_type = def.return_type
 	c.check_fun_attrs_on_call(node, def)
-
-	// Check if the receiver is and should be mutable
-	if def.params[0].is_mut {
-		if node.left is ast.Ident and not (node.left as ast.Ident).is_mut {
-			c.error('method requires an mutable receiver', node.pos)
-		}
-	}
 
 	// Check argument count
 	if node.args.length + 1 != def.params.length {
