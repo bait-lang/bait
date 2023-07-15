@@ -202,10 +202,16 @@ pub fun (kind TokenKind) js_repr() string {
 		.key_or {
 			return "||"
 		}
+		else {
+			return ''
+		}
 	}
 }
 
 pub fun (kind TokenKind) c_repr() string {
+	match kind {
+		.amp { return '&' }
+	}
 	return kind.js_repr()
 }
 

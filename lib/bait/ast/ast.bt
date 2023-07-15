@@ -207,10 +207,10 @@ global:
 	name string
 	return_type Type
 	left_type Type
+	left Expr := EmptyExpr{}
 pub:
 	args []CallArg
 	is_method bool
-	left Expr := EmptyExpr{}
 	pkg string
 	pos token.Pos
 }

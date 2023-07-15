@@ -34,6 +34,8 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	if node.op == .decl_assign {
 		type_str := g.typ(node.right_type)
 		g.write('${type_str} ')
+	} else if node.left_type.get_nr_amp() > 0 and node.left is ast.Ident {
+		g.write('*')
 	}
 
 	g.is_lhs_assign = true
