@@ -129,10 +129,21 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	node.lang = def.lang
+
+	// Set the receiver to be a pointer if the method expects one
+	if left_expr_type.get_nr_amp() < def.params[0].typ.get_nr_amp() {
+		node.left = ast.PrefixExpr{
+			op = .amp
+			right = node.left
+		}
+	}
+
+	// The following is required for some builtin array and map methods
 	node.left_type = def.params[0].typ
 	if final_sym.kind == .array and ['push', 'push_many_with_len', 'push_many'].contains(node.name) {
 		node.left_type = left_expr_type
 	}
+
 	node.return_type = def.return_type
 	c.check_fun_attrs_on_call(node, def)
 
