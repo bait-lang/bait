@@ -5,7 +5,7 @@ All notable changes will be documented in this file.
 
 
 ## 0.0.4
-_unreleased_
+_16 July 2023_
 
 ### Breaking
 - Replace struct init syntax `Struct{ field: value }` with `Struct{ field = value }`
@@ -68,6 +68,7 @@ _unreleased_
   - Add `user_os()` function
   - Fix `cp()` for directories
 - builtin: New `toI32()` string method
+- Add `strings` package containing a simple string builder _(C backend only)_
 
 ### C Backend (experimental)
 - Properly implement backend selection
