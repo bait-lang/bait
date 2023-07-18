@@ -35,24 +35,3 @@ pub fun (mut runner BuildRunner) build_all_in_root() {
 		runner.build_single(file)
 	}
 }
-
-@deprecated: 'use BuildRunner instead'
-pub fun build_file(dir string, file string) i32 {
-	mut r := BuildRunner{
-		root = dir
-	}
-	r.build_single(file)
-	return r.fails
-}
-
-@deprecated: 'use BuildRunner instead'
-pub fun build_files_in_dir(dir string) {
-	mut r := BuildRunner{
-		root = dir
-	}
-	r.build_all_in_root()
-
-	if r.fails > 0 {
-		exit(1)
-	}
-}
