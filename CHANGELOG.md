@@ -7,6 +7,12 @@ All notable changes will be documented in this file.
 ## 0.0.5
 _unreleased_
 
+### C Backend
+- Codegen for string interpolation
+
+### Compiler
+- Prevent crash with cyclic imports
+
 
 ## 0.0.4
 _16 July 2023_
