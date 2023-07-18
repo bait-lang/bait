@@ -2,6 +2,8 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
+import strings
+
 struct string {
 pub mut:
 	str &u8
@@ -48,4 +50,12 @@ fun from_c_string(cs &u8) string {
 		str = cs
 		length = #C.strlen(cs)
 	}
+}
+
+fun interpolate(strs []string) string {
+	mut b := strings.new_builder(100)
+	for s in strs {
+		b.write_str(s)
+	}
+	return b.str()
 }

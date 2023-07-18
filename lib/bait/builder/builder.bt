@@ -105,7 +105,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 	}
 
 	// TODO move whole depgraph build and resolve into pkg
-	// TODO catch cyclic deps
 
 	// Build a dependency map for each file
 	mut deps := map[string][]string
@@ -121,8 +120,9 @@ pub fun compile(prefs preference.Prefs) i32 {
 	}
 
 	// Sort the packages, so type checking works properly
+	mut looked := []string
 	mut pkg_order := []string
-	order_pkgs(pkg_order, root_pkg, deps)
+	order_pkgs(pkg_order, root_pkg, deps, looked)
 	mut sorted_files := []ast.File
 	for pkg in pkg_order {
 		for f in files {
@@ -238,9 +238,14 @@ fun resolve_import(pkg string) string {
 	return os.join_path(os.getwd(), ["lib", pkg])
 }
 
-fun order_pkgs(mut ordered []string, pkg string, deps map[string][]string) {
+fun order_pkgs(mut ordered []string, pkg string, deps map[string][]string, mut looked []string) {
+	looked.push(pkg)
 	for d in deps[pkg] {
-		order_pkgs(ordered, d, deps)
+		if looked.contains(d) {
+			// TODO warn on cyclic deps
+			continue
+		}
+		order_pkgs(ordered, d, deps, looked)
 	}
 	if not ordered.contains(pkg) {
 		ordered.push(pkg)
