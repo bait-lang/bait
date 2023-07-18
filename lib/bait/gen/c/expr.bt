@@ -315,7 +315,18 @@ fun (mut g Gen) string_literal(node ast.StringLiteral) {
 }
 
 fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
-	// TODO
+	len := node.vals.length + node.exprs.length
+	g.write('interpolate(new_array_from_c(${len}, ${len}, sizeof(string), (string[]){')
+	for i, val in node.vals {
+		esc_val := util.escape_char(val.replace('\n', '\\n'), `\"`)
+		g.write('from_c_string("${esc_val}")')
+		g.write(', ')
+		if i < node.exprs.length {
+			g.expr_to_string(node.exprs[i], node.expr_types[i])
+			g.write(', ')
+		}
+	}
+	g.write('}))')
 }
 
 fun (mut g Gen) struct_init(node ast.StructInit) {
