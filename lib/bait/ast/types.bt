@@ -60,6 +60,7 @@ pub enum TypeKind {
 	alias_type
 	sum_type
 	fun_
+	generic
 }
 
 pub struct TypeSymbol{
