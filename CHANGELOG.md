@@ -7,6 +7,9 @@ All notable changes will be documented in this file.
 ## 0.0.5
 _unreleased_
 
+### JS Backend
+- Very limited and minimal generics
+
 ### C Backend
 - Codegen for string interpolation
 

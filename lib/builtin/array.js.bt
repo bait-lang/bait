@@ -27,46 +27,18 @@ pub fun (mut a array) push_many(b array) {
 	a.length += b.length
 }
 
-// TODO remove requirement for functions like index, last_index, contains, ... to be duplicated for types that are objects in JS
-
-pub fun (a array) index(el any) i32 {
-	return a.data.indexOf(el) as i32
-}
-
-pub fun (a []u8) index(c u8) i32 {
-	for i, el in a {
-		if el == c {
+pub fun (a array) index[T](val T) i32 {
+	for i := 0; i < a.length; i += 1 {
+		if a.data[i] as T == val {
 			return i
 		}
 	}
 	return -1
 }
 
-pub fun (a []string) index(s string) i32 {
-	for i, el in a {
-		if el == s {
-			return i
-		}
-	}
-	return -1
-}
-
-pub fun (a array) last_index(el any) i32 {
-	return a.data.lastIndexOf(el) as i32
-}
-
-pub fun (a []u8) last_index(c u8) i32 {
+pub fun (a array) last_index[T](val T) i32 {
 	for i := a.length - 1; i >= 0; i -= 1 {
-		if a[i] == c {
-			return i
-		}
-	}
-	return -1
-}
-
-pub fun (a []string) last_index(s string) i32 {
-	for i := a.length - 1; i >= 0; i -= 1 {
-		if a[i] == s {
+		if a.data[i] as T == val {
 			return i
 		}
 	}
