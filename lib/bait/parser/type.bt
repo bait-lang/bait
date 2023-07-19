@@ -107,6 +107,41 @@ fun (mut p Parser) parse_map_type() ast.Type {
 	return p.table.find_or_register_map(key_type, val_type)
 }
 
+fun (mut p Parser) generic_type_names() []string {
+	if p.tok.kind != .lbr {
+		return []
+	}
+	p.next()
+
+	mut names := []string
+	for true {
+		name := p.check_name()
+		if name.length > 1 {
+			p.error('generic types names have to be exactly one character')
+		}
+		if not name[0].is_capital() {
+			p.error('generic type names have to be capital letters')
+		}
+		names.push(name)
+
+		idx := p.table.get_idx(name)
+		if idx == 0 {
+			p.table.register_sym(ast.TypeSymbol{
+				name = name
+				pkg = p.pkg_name
+				kind = .generic
+			})
+		}
+
+		if p.tok.kind == .rbr {
+			break
+		}
+		p.check(.comma)
+	}
+	p.next()
+	return names
+}
+
 fun (p Parser) infer_expr_type(expr ast.Expr) ast.Type {
 	match expr {
 		ast.BoolLiteral{ return ast.BOOL_TYPE }

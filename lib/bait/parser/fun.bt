@@ -59,6 +59,10 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 		name = p.prepend_pkg(name)
 	}
 
+	// Generics
+	generic_names := p.generic_type_names()
+
+	// Params
 	p.check(.lpar)
 	params = params.concat(p.fun_params())
 	p.check(.rpar)
