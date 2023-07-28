@@ -4,12 +4,12 @@ package builtin
 
 #JS.'function u8(v) {
 	if (typeof(v) == "string") {
-		this.val = v.charCodeAt(0)
-	} else if (v instanceof string) {
-		this.val = v.str.charCodeAt(0)
-	} else {
-		this.val = Number(v)
+		return v.charCodeAt(0)
 	}
+	if (v instanceof string) {
+		return v.str.charCodeAt(0)
+	}
+	return Number(v)
 }'
 
 pub fun (c u8) is_capital() bool {
@@ -17,10 +17,5 @@ pub fun (c u8) is_capital() bool {
 }
 
 pub fun (c u8) ascii() string {
-	return from_js_string(#JS.'String.fromCharCode(c.val)' as #JS.String)
-}
-
-@overload: '+'
-fun (a u8) add (b u8) u8 {
-	return #JS.'new u8(a.val + b.val)' as u8
+	return from_js_string(#JS.'String.fromCharCode(c)' as #JS.String)
 }

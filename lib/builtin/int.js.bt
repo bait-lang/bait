@@ -19,7 +19,7 @@ pub fun (n i64) str() string {
 }
 
 pub fun (n u8) str() string {
-	return from_js_string(#JS.'n.val.toString()' as #JS.String)
+	return from_js_string(#JS.'n.toString()' as #JS.String)
 }
 
 pub fun (n u16) str() string {

@@ -15,7 +15,7 @@ pub:
 }'
 
 fun (s string) get(i i32) u8 {
-	return #JS.'new u8(s.str.charCodeAt(i))' as u8
+	return #JS.'u8(s.str.charCodeAt(i))' as u8
 }
 
 pub fun (s string) get_str(i i32) string {
