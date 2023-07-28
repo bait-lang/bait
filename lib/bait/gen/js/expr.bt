@@ -103,9 +103,7 @@ fun (mut g Gen) array_init(node ast.ArrayInit) {
 fun (mut g Gen) as_cast(node ast.AsCast) {
 	target_sym := g.table.get_sym(node.target)
 	if target_sym.kind == .alias_type {
-		// g.write('new ${js_name(target_sym.name)}(')
 		g.expr(node.expr)
-		// g.write(')')
 		return
 	}
 
@@ -181,7 +179,7 @@ fun (mut g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSym
 }
 
 fun (mut g Gen) char_literal(node ast.CharLiteral) {
-	g.write('new u8("')
+	g.write('u8("')
 	g.write(util.escape_char(node.val, `\"`))
 	g.write('")')
 }
@@ -318,17 +316,6 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr){
 		return
 	}
 
-	// U8 special cases
-	if node.left_type == ast.U8_TYPE {
-		g.expr(node.left)
-		g.write('.val ')
-		g.write(node.op.js_repr())
-		g.write(' ')
-		g.expr(node.right)
-		g.write('.val')
-		return
-	}
-
 	// Normal cases
 	g.expr(node.left)
 	g.write(' ')
@@ -361,8 +348,6 @@ fun (mut g Gen) match_expr(node ast.MatchExpr){
 	g.expr(node.cond)
 	if node.cond_type == ast.STRING_TYPE {
 		g.write('.str')
-	} else if node.cond_type == ast.U8_TYPE {
-		g.write('.val')
 	}
 	g.writeln(') {')
 	g.indent += 1
@@ -374,9 +359,6 @@ fun (mut g Gen) match_expr(node ast.MatchExpr){
 				g.write("case ")
 				if node.cond_type == ast.STRING_TYPE {
 					g.expr_to_jsstring(e, b.expr_types[i])
-				} else if node.cond_type == ast.U8_TYPE {
-					g.expr(e)
-					g.write('.val')
 				} else {
 					g.expr(e)
 				}

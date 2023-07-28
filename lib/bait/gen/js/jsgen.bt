@@ -151,9 +151,7 @@ fun (mut g Gen) write_default_value(typ ast.Type) {
 			} else if sym.kind == .struct_ {
 				g.write('new ${js_name(sym.name)}({})')
 			} else if sym.kind == .alias_type {
-				// g.write('new ${js_name(sym.name)}(')
 				g.write_default_value(sym.parent)
-				// g.write(')')
 			} else if sym.kind == .enum_ {
 				g.write('0')
 			} else {

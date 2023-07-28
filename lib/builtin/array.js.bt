@@ -49,14 +49,6 @@ pub fun (a array) contains(el any) bool {
 	return a.index(el) >= 0
 }
 
-pub fun (a []u8) contains(c u8) bool {
-	return a.index(c) >= 0
-}
-
-pub fun (a []string) contains(s string) bool {
-	return a.index(s) >= 0
-}
-
 pub fun (a array) slice(start i32, end i32) array {
 	return array{
 		data = a.data.slice(start as #JS.Number, end as #JS.Number)
