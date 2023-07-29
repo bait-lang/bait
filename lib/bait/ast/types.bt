@@ -51,6 +51,7 @@ const BUILTIN_STRUCT_TYPES := [
 pub enum TypeKind {
 	other
 	placeholder
+	number
 	string
 	array
 	map
@@ -108,14 +109,14 @@ pub fun (t Table) register_builtins(){
 		kind = .placeholder
 	})
 	t.register_sym(TypeSymbol{ name = 'void' })
-	t.register_sym(TypeSymbol{ name = 'i8' })
-	t.register_sym(TypeSymbol{ name = 'i16' })
-	t.register_sym(TypeSymbol{ name = 'i32' })
-	t.register_sym(TypeSymbol{ name = 'i64' })
-	t.register_sym(TypeSymbol{ name = 'u8' })
-	t.register_sym(TypeSymbol{ name = 'u16' })
-	t.register_sym(TypeSymbol{ name = 'u32' })
-	t.register_sym(TypeSymbol{ name = 'u64' })
+	t.register_num('i8')
+	t.register_num('i16')
+	t.register_num('i32')
+	t.register_num('i64')
+	t.register_num('u8')
+	t.register_num('u16')
+	t.register_num('u32')
+	t.register_num('u64')
 	t.register_sym(TypeSymbol{ name = 'f32' })
 	t.register_sym(TypeSymbol{ name = 'f64' })
 	t.register_sym(TypeSymbol{ name = 'bool' })
@@ -132,4 +133,12 @@ pub fun (t Table) register_builtins(){
 		kind = .map
 	})
 	t.register_sym(TypeSymbol{ name = 'any'})
+}
+
+pub fun (t Table) register_num(name string) {
+	t.register_sym(TypeSymbol{
+		name = name
+		kind = .number
+		is_pub = true
+	})
 }
