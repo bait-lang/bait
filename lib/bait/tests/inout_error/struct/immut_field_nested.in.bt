@@ -1,0 +1,11 @@
+struct Alpha {
+	b Bravo
+}
+
+struct Bravo {
+mut:
+	x i32
+}
+
+mut a := Alpha{}
+a.b.x = 2

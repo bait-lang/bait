@@ -7,14 +7,21 @@ All notable changes will be documented in this file.
 ## 0.0.5
 _unreleased_
 
+### Immutability and Error Checks
+- Check mutability of all fields in nested selector expressions
+
 ### JS Backend
 - Very limited and minimal generics
+- Results of integer math operations are properly floored
 
 ### C Backend
 - Codegen for string interpolation
 
 ### Compiler
 - Prevent crash with cyclic imports
+
+### CLI and Tooling
+- `make.sh`: Add `--no-self` flag to compile Bait exactly one time
 
 
 ## 0.0.4
