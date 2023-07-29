@@ -5,6 +5,8 @@ package builtin
 import 'console' as #JS.console
 import 'process' as #JS.process
 
+// TODO foreign type aliases
+// type #JS.Any := #JS.Boolean | #JS.Number | #JS.String | #JS.Array | #JS.Map
 pub interface #JS.Any {}
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean

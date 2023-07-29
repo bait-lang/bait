@@ -317,11 +317,17 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr){
 	}
 
 	// Normal cases
+	if lsym.kind == .number {
+		g.write('${lsym.name}(')
+	}
 	g.expr(node.left)
 	g.write(' ')
 	g.write(node.op.js_repr())
 	g.write(' ')
 	g.expr(node.right)
+	if lsym.kind == .number {
+		g.write(')')
+	}
 }
 
 fun (mut g Gen) map_init(node ast.MapInit) {
