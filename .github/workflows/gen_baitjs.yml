@@ -20,7 +20,7 @@ jobs:
           node-version: 16
       - name: Build baitjs
         run: |
-          ./make.sh
+          ./make.sh --no-self
           ./bait symlink
       - name: Generate, commit and push latest bait.js
         env:

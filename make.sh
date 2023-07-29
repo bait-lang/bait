@@ -1,7 +1,22 @@
 #!/usr/bin/env bash
 
 BAITJS_DIR="$HOME/.bait/baitjs"
-IS_LOCAL=0; [ "$1" == "--local" ] && IS_LOCAL=1
+
+# Parse arguments
+IS_LOCAL=0
+NO_SELF=0
+
+for i in "$@"; do
+  case $i in
+    --local)
+      IS_LOCAL=1
+    ;;
+
+    --no-self)
+      NO_SELF=1
+    ;;
+  esac
+done
 
 download_baitjs() {
   # Pull or clone baitjs
@@ -20,6 +35,14 @@ download_baitjs() {
 bootstrap() {
   # Backup bait.js
   [ -f bait.js ] && mv -f bait.js old_bait.js
+
+
+  # Just compile once (required for implementing breaking changes)
+  if [ $NO_SELF == 1 ]; then
+    cp $BAITJS_DIR/bait.js . # Required to set correct value for $BAITDIR, etc.
+    node bait.js cli/bait.bt -o bait.js
+    return
+  fi
 
   # Compile new bait.js and ensure self compilation is working
   node $BAITJS_DIR/bait.js cli/bait.bt -o bait1.js
@@ -56,7 +79,7 @@ cleanup() {
     exit 1
   fi
 
-  rm bait1.js bait2.js
+  rm -f bait1.js bait2.js
 }
 
 download_baitjs
