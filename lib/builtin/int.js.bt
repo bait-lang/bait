@@ -2,6 +2,12 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
+// Note: code related to u8 is in a separate file
+
+pub fun i8(n #JS.Any) i8 {
+	return #JS.'Math.floor(n)' as i8
+}
+
 pub fun (n i8) str() string {
 	return from_js_string(#JS.'n.toString()' as #JS.String)
 }
@@ -15,10 +21,6 @@ pub fun (n i32) str() string {
 }
 
 pub fun (n i64) str() string {
-	return from_js_string(#JS.'n.toString()' as #JS.String)
-}
-
-pub fun (n u8) str() string {
 	return from_js_string(#JS.'n.toString()' as #JS.String)
 }
 
