@@ -4,6 +4,29 @@ package checker
 
 import bait.ast
 import bait.token
+
+fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
+	typ := c.expr(node.right)
+
+	if not node.left is ast.Ident {
+		c.error('cannot declare a variable with a non-identifier', node.pos)
+		return
+	}
+
+	left := node.left as ast.Ident
+	if c.scope.is_known(left.name) {
+		c.error('redefinition of ${left.name}', node.pos)
+		return
+	}
+	c.scope.register(left.name, ast.ScopeObject{
+		kind = .variable
+		typ = typ
+		is_mut = left.is_mut
+	})
+	node.left_type = c.expr(node.left)
+	node.right_type = node.left_type
+}
+
 fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 	if node.op == .decl_assign {
 		c.decl_assign(node)
@@ -30,12 +53,15 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 		}
 	} else if node.left is ast.SelectorExpr {
 		mut left := node.left as ast.SelectorExpr
-
-		sym := c.table.get_sym(left.expr_type)
-		field := sym.find_field(left.field_name, c.table)
-		if (not field.is_mut or sym.pkg != c.pkg) and not field.is_global {
-			c.error('field `${sym.name}.${left.field_name}` is immutable', node.pos)
+		if not c.is_field_mutable(left) {
 			return
+		}
+
+		for left.expr is ast.SelectorExpr {
+			left = left.expr as ast.SelectorExpr
+			if not c.is_field_mutable(left) {
+				return
+			}
 		}
 
 		if left.expr is ast.Ident {
@@ -52,24 +78,12 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 	}
 }
 
-fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
-	typ := c.expr(node.right)
-
-	if not node.left is ast.Ident {
-		c.error('cannot declare a variable with a non-identifier', node.pos)
-		return
+fun (c Checker) is_field_mutable(left ast.SelectorExpr) bool {
+	sym := c.table.get_sym(left.expr_type)
+	field := sym.find_field(left.field_name, c.table)
+	if (not field.is_mut or sym.pkg != c.pkg) and not field.is_global {
+		c.error('field `${sym.name}.${left.field_name}` is immutable', left.pos)
+		return false
 	}
-
-	left := node.left as ast.Ident
-	if c.scope.is_known(left.name) {
-		c.error('redefinition of ${left.name}', node.pos)
-		return
-	}
-	c.scope.register(left.name, ast.ScopeObject{
-		kind = .variable
-		typ = typ
-		is_mut = left.is_mut
-	})
-	node.left_type = c.expr(node.left)
-	node.right_type = node.left_type
+	return true
 }

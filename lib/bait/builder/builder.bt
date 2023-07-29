@@ -14,9 +14,9 @@ import bait.tokenizer
 
 
 struct Builder {
-	prefs preference.Prefs
 	table ast.Table
 mut:
+	prefs preference.Prefs
 	parsed_files []ast.File
 	checker checker.Checker
 }
@@ -166,7 +166,7 @@ fun (b Builder) code_gen_js() i32 {
 	return 0
 }
 
-fun (b Builder) code_gen_c() i32 {
+fun (mut b Builder) code_gen_c() i32 {
 	res := cgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
 
 	if os.exists(b.prefs.out_name) and os.is_dir(b.prefs.out_name) {
