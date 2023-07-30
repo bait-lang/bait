@@ -13,7 +13,7 @@ fun (g Gen) gen_equality_funs() {
 
 fun (g Gen) equality_fun(typ ast.Type) string {
 	sym := g.table.get_sym(typ)
-	if sym.kind == .other {
+	if sym.kind == .number or sym.kind == .other {
 		// Simple builtin types have this type. They don't need an equality function
 		return ''
 	}

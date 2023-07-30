@@ -20,8 +20,12 @@ _unreleased_
 ### Compiler
 - Prevent crash with cyclic imports
 
+### Testing
+- `bait.util.testing`: Various fixes to the inout runner
+
 ### CLI and Tooling
 - `make.sh`: Add `--no-self` flag to compile Bait exactly one time
+- `build-examples`: Fix exit code on error for the C backend
 
 
 ## 0.0.4
