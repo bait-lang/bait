@@ -17,11 +17,11 @@ fun main() {
 	os.chdir(os.home_dir())
 	r.build_single('hello_world.bt')
 
-	if r.fails > 0 {
-		exit(1)
-	}
-
 	// Build with C backend
 	r.cmd_options = '-b c'
 	r.build_all_in_root()
+
+	if r.fails > 0 {
+		exit(1)
+	}
 }
