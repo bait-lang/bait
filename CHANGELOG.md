@@ -24,6 +24,7 @@ _unreleased_
 - `bait.util.testing`: Various fixes to the inout runner
 
 ### CLI and Tooling
+- `up`: Fix failure if working directory is not the Bait repo
 - `make.sh`: Add `--no-self` flag to compile Bait exactly one time
 - `build-examples`: Fix exit code on error for the C backend
 

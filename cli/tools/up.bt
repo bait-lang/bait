@@ -8,6 +8,9 @@ import os
 fun main() {
 	is_verbose := os.ARGS.contains('-v') or os.ARGS.contains('--verbose')
 	println('Updating Bait...')
+
+	os.chdir($BAITDIR)
+
 	pull_res := os.exec('git pull')
 	if pull_res.code != 0 {
 		println('git pull failed.')
@@ -21,12 +24,16 @@ fun main() {
 	if is_verbose {
 		println(pull_res.stdout)
 	}
+
+	// Recompile Bait
 	self_res := os.exec('node ${$BAITEXE} self')
 	if self_res.code == 0 {
 		new_version := os.exec('node ${$BAITEXE} version').stdout.trim_space()
 		println('Bait updated successfully to ${new_version}.')
 		return
 	}
+
+	// In case of failure, try make
 	println('"bait self" failed, running make...')
 	make_res := os.system('./make.sh')
 	if make_res != 0 {
