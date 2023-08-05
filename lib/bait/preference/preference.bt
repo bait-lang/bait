@@ -117,6 +117,7 @@ pub fun parse_args(args []string) Prefs {
 
 	if p.command == 'test' {
 		p.should_run = true
+		p.keep_exe = true
 		p.is_test = true
 	}
 
