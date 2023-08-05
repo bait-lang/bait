@@ -17,6 +17,11 @@ _unreleased_
 ### C Backend
 - Codegen for string interpolation
 
+### Standard Library
+- `os`
+  - Implement `ARGS` for C backend
+  - Add function `user_args()` that returns only the arguments passed by the user
+
 ### Compiler
 - Prevent crash with cyclic imports
 

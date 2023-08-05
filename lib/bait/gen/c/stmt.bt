@@ -83,7 +83,7 @@ fun (mut g Gen) const_decl(node ast.ConstDecl){
 	if node.expr is ast.ArrayInit or node.expr is ast.CallExpr or node.expr is ast.MapInit {
 		typ := g.typ(node.typ)
 		g.type_defs_out += '${typ} ${name};\n'
-		g.main_inits_out += '${name} = ${val};\n'
+		g.main_inits_out += '\t${name} = ${val};\n'
 	} else {
 		g.type_impls_out += '#define ${name} ${val}\n'
 	}

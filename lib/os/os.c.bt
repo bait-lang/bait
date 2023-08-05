@@ -2,6 +2,20 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package os
 
+pub const ARGS := init_os_args(#C.'argc', #C.'argv' as &&u8)
+
+fun init_os_args(argc i32, argv &&u8) []string {
+	mut a := []string{length = argc}
+	for i := 0; i < argc; i += 1 {
+		a[i] = from_c_string(argv[i])
+	}
+	return a
+}
+
+pub fun user_args() []string {
+	return ARGS.slice(1, ARGS.length)
+}
+
 pub fun exists(path string) bool {
 	return #C.access(path.str, 0) != -1
 }
