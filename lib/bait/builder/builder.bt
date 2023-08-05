@@ -160,7 +160,9 @@ fun (b Builder) code_gen_js() i32 {
 	// Execute the resulting file with NodeJS if required
 	if b.prefs.should_run{
 		run_res := os.system('node ${b.prefs.out_name}')
-		os.rm(b.prefs.out_name)
+		if not b.prefs.keep_exe {
+			os.rm(b.prefs.out_name)
+		}
 		return run_res
 	}
 
@@ -184,7 +186,9 @@ fun (mut b Builder) code_gen_c() i32 {
 
 	if b.prefs.should_run{
 		run_res := os.system('./${b.prefs.out_name}')
-		os.rm(b.prefs.out_name)
+		if not b.prefs.keep_exe {
+			os.rm(b.prefs.out_name)
+		}
 		return run_res
 	}
 
