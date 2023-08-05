@@ -5,6 +5,10 @@ package os
 // TODO JS constants
 pub const ARGS := from_js_string_arr(#JS.'JS__process.argv' as #JS.Array)
 
+pub fun user_args() []string {
+	return ARGS.slice(2, ARGS.length)
+}
+
 pub fun ls(dir string) []string {
 	return from_js_string_arr(#JS.fs.readdirSync(dir.str))
 }

@@ -12,6 +12,10 @@ fun init_os_args(argc i32, argv &&u8) []string {
 	return a
 }
 
+pub fun user_args() []string {
+	return ARGS.slice(1, ARGS.length)
+}
+
 pub fun exists(path string) bool {
 	return #C.access(path.str, 0) != -1
 }
