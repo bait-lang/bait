@@ -45,7 +45,7 @@ fun (a string) eq (b string) bool {
 	return true
 }
 
-fun from_c_string(cs &u8) string {
+pub fun from_c_string(cs &u8) string {
 	return string{
 		str = cs
 		length = #C.strlen(cs)

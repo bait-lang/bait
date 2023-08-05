@@ -77,3 +77,12 @@ pub fun (mut a array) push_many_with_len(data &void, len i32) {
 	#C.memmove(#C.'a->data + a->elem_size * (a->length)' as &void, data, a.elem_size * len)
 	a.length += len
 }
+
+pub fun (a array) slice(start i32, end i32) array {
+	return array{
+		data = #C.'a.data + start * a.elem_size' as &void
+		length = end - start
+		cap = a.cap - start
+		elem_size = a.elem_size
+	}
+}
