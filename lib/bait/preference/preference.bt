@@ -28,6 +28,7 @@ pub mut:
 	is_test bool
 	is_script bool
 	is_library bool
+	keep_exe bool
 
 	// Error related
 	hide_warnings bool
@@ -66,6 +67,9 @@ pub fun parse_args(args []string) Prefs {
 			'-v', '--verbose' {
 				p.is_verbose = true
 				p.build_options.push(arg)
+			}
+			'-k', '--keep' {
+				p.keep_exe = true
 			}
 			'--library' {
 				p.is_library = true
@@ -126,7 +130,7 @@ pub fun parse_args(args []string) Prefs {
 		if p.command.ends_with('.bt') {
 			p.out_name = p.command.replace('.bt', ext)
 		} else {
-			p.out_name = p.command + ext
+			p.out_name = os.abs_path(p.command).all_after_last('/') + ext
 		}
 	}
 

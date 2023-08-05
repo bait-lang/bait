@@ -1,6 +1,10 @@
 Usage:
   bait run [options] <file.bt|directory>
 
-This command is the same as excuting `bait build` and running the compiled exe.
+This command is like running `bait build` and executing the compiled exe.
+However it is deleted afterwards.
 
-For supported run options, see `bait help build`.
+Options:
+  -k, --keep  Do not delete the executable.
+
+For more supported options, see `bait help build`.

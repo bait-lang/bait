@@ -11,7 +11,7 @@ Note: If no command is specified, the "build" command is assumed.
 
 Important Commands:
   build <path>  Compile files and projects.
-  run <path>    Builds and executes files or projects.
+  run <path>    Build and execute files or projects. Delete the executable afterwards.
   test <dir>    Run all tests in the given directory.
 
   self          Recompile bait.

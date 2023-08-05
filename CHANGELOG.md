@@ -7,6 +7,9 @@ All notable changes will be documented in this file.
 ## 0.0.5
 _unreleased_
 
+### Breaking
+- `bait run`: Delete executable afterwards. Use option `--keep` for old behaviour.
+
 ### Immutability and Error Checks
 - Check mutability of all fields in nested selector expressions
 
@@ -24,12 +27,14 @@ _unreleased_
 
 ### Compiler
 - Prevent crash with cyclic imports
+- Fix executable name if compiling directories `.` or `..`
 
 ### Testing
 - `bait.util.testing`: Various fixes to the inout runner
 
 ### CLI and Tooling
-- `up`: Fix failure if working directory is not the Bait repo
+- `up`, `self`: Make tools independent of working directory
+- `run`: Add `--keep` flag to not delete the executable after running
 - `make.sh`: Add `--no-self` flag to compile Bait exactly one time
 - `build-examples`: Fix exit code on error for the C backend
 
