@@ -130,7 +130,7 @@ pub fun parse_args(args []string) Prefs {
 		if p.command.ends_with('.bt') {
 			p.out_name = p.command.replace('.bt', ext)
 		} else {
-			p.out_name = p.command + ext
+			p.out_name = os.abs_path(p.command).all_after_last('/') + ext
 		}
 	}
 

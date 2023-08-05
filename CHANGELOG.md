@@ -27,6 +27,7 @@ _unreleased_
 
 ### Compiler
 - Prevent crash with cyclic imports
+- Fix executable name if compiling directories `.` or `..`
 
 ### Testing
 - `bait.util.testing`: Various fixes to the inout runner
