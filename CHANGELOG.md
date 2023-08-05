@@ -7,6 +7,9 @@ All notable changes will be documented in this file.
 ## 0.0.5
 _unreleased_
 
+### Breaking
+- `bait run`: Delete executable afterwards.
+
 ### Immutability and Error Checks
 - Check mutability of all fields in nested selector expressions
 
