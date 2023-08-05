@@ -5,7 +5,9 @@ package main
 import os
 
 fun main() {
-	mut args := os.ARGS.slice(2, os.ARGS.length)
+	os.chdir($BAITDIR)
+	mut args := os.user_args()
+
 	mut out := '-o bait.js'
 	if not args.contains('-o') {
 		os.cp($BAITEXE, 'old_bait.js')
