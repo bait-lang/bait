@@ -169,7 +169,7 @@ fun (mut p Parser) method_call(left ast.Expr) ast.CallExpr {
 
 fun (mut p Parser) call_args() []ast.CallArg {
 	mut args := []ast.CallArg
-	for p.tok.kind != .rpar {
+	for p.tok.kind != .rpar and not p.should_abort {
 		args.push(ast.CallArg{
 			expr = p.expr(0)
 		})
