@@ -56,6 +56,10 @@ fun (mut p Parser) expr(precedence i32) ast.Expr {
 		.key_typeof {
 			node = p.typeof_expr()
 		}
+		.eof {
+			p.should_abort = true
+			return node
+		}
 		else {
 			mut msg := 'invalid expression: kind = ${p.tok.kind}'
 			if p.tok.val.length > 0 {

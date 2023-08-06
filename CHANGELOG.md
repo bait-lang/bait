@@ -21,6 +21,8 @@ _unreleased_
 - Codegen for string interpolation
 
 ### Standard Library
+- builtin
+  - New array method `last()`
 - `os`
   - Implement `ARGS` for C backend
   - Add function `user_args()` that returns only the arguments passed by the user
@@ -28,6 +30,7 @@ _unreleased_
 ### Compiler
 - Prevent crash with cyclic imports
 - Fix executable name if compiling directories `.` or `..`
+- parser: Fix crash if a fun call closing parenthesis is missing
 
 ### Testing
 - `bait.util.testing`: Various fixes to the inout runner

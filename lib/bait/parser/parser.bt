@@ -13,6 +13,7 @@ pub struct Parser {
 	table ast.Table
 	tokens []token.Token
 mut:
+	eofs i32
 	idx i32
 	prev_tok token.Token
 	tok token.Token
@@ -175,8 +176,16 @@ fun (mut p Parser) prepend_expr_pkg(val string) string {
 fun (mut p Parser) next() {
 	p.prev_tok = p.tok
 	p.tok = p.next_tok
-	p.next_tok = p.tokens[p.idx]
-	p.idx += 1
+	if p.idx < p.tokens.length {
+		p.next_tok = p.tokens[p.idx]
+		p.idx += 1
+	} else {
+		p.eofs += 1
+		if p.eofs > 10 {
+			panic('parser is stuck at end of file ${p.path}')
+		}
+		p.next_tok = p.tokens.last()
+	}
 }
 
 fun (p Parser) warn(msg string) {

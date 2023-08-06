@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/parser/missing_rpar.in.bt:2:1 error: unexpected eof, expecting rpar
