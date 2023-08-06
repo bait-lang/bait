@@ -173,7 +173,7 @@ fun (mut p Parser) call_args() []ast.CallArg {
 		args.push(ast.CallArg{
 			expr = p.expr(0)
 		})
-		if p.tok.kind != .rpar {
+		if p.tok.kind != .rpar and p.tok.kind != .eof {
 			p.check(.comma)
 		}
 	}
