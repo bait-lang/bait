@@ -26,6 +26,7 @@ _unreleased_
 - `os`
   - Implement `ARGS` for C backend
   - Add function `user_args()` that returns only the arguments passed by the user
+- New package `cli.cmdline` containing functions for low level command line parsing
 
 ### Compiler
 - Prevent crash with cyclic imports
