@@ -18,6 +18,7 @@ global:
 
 pub mut:
 	args []string
+	user_args []string
 	build_options []string
 
 	should_run bool
@@ -49,6 +50,8 @@ pub fun parse_args(args []string) Prefs {
 		p.command = 'help'
 		return p
 	}
+
+	mut after_double_dash := false
 
 	// Parse options and commands
 	for i := 0; i < args.length; i += 1{
@@ -88,9 +91,14 @@ pub fun parse_args(args []string) Prefs {
 			'--script' {
 				p.is_script = true
 			}
+			'--' {
+				after_double_dash = true
+			}
 			else{
 				if p.command.length == 0 {
 					p.command = arg
+				} else if after_double_dash {
+					p.user_args.push(arg)
 				} else {
 					p.args.push(arg)
 				}
