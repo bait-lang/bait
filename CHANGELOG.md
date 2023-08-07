@@ -21,6 +21,8 @@ _unreleased_
 - Codegen for string interpolation
 
 ### Standard Library
+- builtin:
+  - New string method `split(delim)` _[JS backend]_
 - `os`
   - Implement `ARGS` for C backend
   - Add function `user_args()` that returns only the arguments passed by the user
