@@ -101,33 +101,6 @@ fun (mut p Parser) expr_list() []ast.Expr{
 	return exprs
 }
 
-fun (mut p Parser) anon_fun()ast.AnonFun{
-	pos := p.tok.pos
-	p.check(.key_fun)
-	p.check(.lpar)
-	params := p.fun_params()
-	p.check(.rpar)
-	mut return_type := ast.VOID_TYPE
-	if p.tok.kind != .lcur {
-		return_type = p.parse_type()
-	}
-	mut param_types := []ast.Type
-	for param in params {
-		param_types.push(param.typ)
-	}
-	typ := p.table.find_or_register_fun(param_types, return_type)
-	stmts := p.parse_block()
-	return ast.AnonFun{
-		decl = ast.FunDecl{
-			params = params
-			return_type = return_type
-			stmts = stmts
-		}
-		typ = typ
-		pos = pos
-	}
-}
-
 fun (mut p Parser) array_init()ast.ArrayInit{
 	pos := p.tok.pos
 	p.check(.lbr)
