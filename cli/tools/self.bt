@@ -3,14 +3,17 @@
 package main
 
 import os
+import cli.cmdline
 
 fun main() {
 	os.chdir($BAITDIR)
 	mut args := os.user_args()
 
-	mut out := '-o bait.js'
-	if not args.contains('-o') {
+	mut out := cmdline.option(args, '-o')
+	if out == '' {
 		os.cp($BAITEXE, 'old_bait.js')
+		out = 'bait.js'
+		args.push('-o')
 		args.push(out)
 	}
 
@@ -25,5 +28,6 @@ fun main() {
 		eprintln('"bait self" failed:')
 		exit(1)
 	}
-	println('Bait compiled successfully into "bait.js"')
+
+	println('Bait compiled successfully into "${out}"')
 }
