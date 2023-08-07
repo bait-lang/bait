@@ -98,6 +98,32 @@ pub fun (s string) is_upper() bool {
 	return s.str == s.str.toUpperCase() and s.str != s.str.toLowerCase()
 }
 
+pub fun (s string) split(delim string) []string {
+	mut res := []string
+	mut i := 0
+
+	if delim.length == 0 {
+		for c in s {
+			res.push(c.ascii())
+		}
+		return res
+	}
+
+	mut start := 0
+	for i < s.length {
+		is_delim := i + delim.length <= s.length and s.substr(i, i + delim.length) == delim
+		if is_delim {
+			res.push(s.substr(start, i))
+			start = i + delim.length
+			i = start
+		} else {
+			i += 1
+		}
+	}
+	res.push(s.substr(start, s.length))
+	return res
+}
+
 pub fun (s string) split_lines() []string {
 	res := from_js_string_arr(s.str.split(#JS.'"\n"' as #JS.String))
 	if res[res.length - 1].length == 0 {

@@ -1,0 +1,21 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+import cli.cmdline
+
+fun test_parse_string_whitespace() {
+	inp := '--foo -a   bc d'
+	exp := ['--foo', '-a', 'bc', 'd']
+	assert cmdline.parse_string(inp) == exp
+}
+
+fun test_parse_string_quoted() {
+	inp := '-s "w spa  ce"'
+	exp := ['-s', 'w spa  ce']
+	assert cmdline.parse_string(inp) == exp
+}
+
+fun test_parse_string_quotes_mixed() {
+	inp := '"a a" "s\'" \'"d\' \'b b\''
+	exp := ['a a', "s'", '"d', 'b b']
+	assert cmdline.parse_string(inp) == exp
+}

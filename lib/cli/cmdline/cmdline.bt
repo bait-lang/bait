@@ -1,0 +1,49 @@
+// Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package cmdline
+
+pub fun parse_string(s string) []string {
+	mut args := []string
+	mut in_quotes := false
+	mut quote := ` `
+	mut start := 0
+
+	for i, c in s {
+		if not in_quotes and c == ` ` {
+			if start != i {
+				args.push(s.substr(start, i))
+			}
+			start = i + 1
+			continue
+		}
+
+		if c == `"` or c == `'` {
+			if in_quotes and c == quote {
+				args.push(s.substr(start, i))
+				start = i + 1
+				in_quotes = false
+			} else if not in_quotes {
+				start = i + 1
+				in_quotes = true
+				quote = c
+			}
+		}
+	}
+
+	if start != s.length {
+		args.push(s.substr(start, s.length))
+	}
+
+	return args
+}
+
+pub fun option(args []string, name string) string {
+	for i, arg in args {
+		if arg == name {
+			if i + 1 < args.length {
+				return args[i + 1]
+			}
+		}
+	}
+	return ''
+}
