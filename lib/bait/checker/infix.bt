@@ -30,21 +30,26 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 	if node.left is ast.Ident {
 		mut right := node.right as ast.Ident
-		if not right.name.contains('.') {
+		if not right.name.contains('.') and right.pkg != 'main' {
 			right.name = right.pkg + '.' + right.name
 		}
 		node.right_type = c.table.get_idx(right.name)
 		left := node.left as ast.Ident
 		c.scope.update_type(left.name, node.right_type)
-	} else if node.left is ast.SelectorExpr {
+		return ast.BOOL_TYPE
+	}
+
+	if node.left is ast.SelectorExpr {
 		mut right := node.right as ast.Ident
-		if not right.name.contains('.') {
+		if not right.name.contains('.') and right.pkg != 'main' {
 			right.name = right.pkg + '.' + right.name
 		}
 		node.right_type = c.table.get_idx(right.name)
 		left := node.left as ast.SelectorExpr
 		name := (left.expr as ast.Ident).name + '.' + left.field_name
 		c.scope.update_type(name, node.right_type)
+		return ast.BOOL_TYPE
 	}
+
 	return ast.BOOL_TYPE
 }
