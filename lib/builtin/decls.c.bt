@@ -24,9 +24,9 @@ pub interface #C.double {}
 
 pub interface #C.FILE {}
 
-pub const #C.stdin := 0 as &#C.FILE
-pub const #C.stdout := 1 as &#C.FILE
-pub const #C.stderr := 1 as &#C.FILE
+pub const #C.stdin := &#C.FILE
+pub const #C.stdout := &#C.FILE
+pub const #C.stderr := &#C.FILE
 
 // actual params: format &u8, ...&void
 pub fun #C.printf(format &u8, x any)
