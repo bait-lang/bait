@@ -168,6 +168,10 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 }
 
 fun (mut g Gen) const_decl(node ast.ConstDecl){
+	if node.lang != .bait {
+		return
+	}
+
 	g.write('const ')
 	g.write(js_name(node.name))
 	g.write(' = ')

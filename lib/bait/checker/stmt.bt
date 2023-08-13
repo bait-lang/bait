@@ -56,6 +56,9 @@ fun (mut c Checker) assert_stmt(node ast.AssertStmt){
 }
 
 fun (mut c Checker) const_decl(mut node ast.ConstDecl) {
+	if node.lang != .bait {
+		return
+	}
 	node.typ = c.expr(node.expr)
 	c.table.global_scope.update_type(node.name, node.typ)
 }

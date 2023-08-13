@@ -1,0 +1,5 @@
+const #JS.name := #JS.String
+
+fun main() {
+	println(typeof(#JS.name))
+}
