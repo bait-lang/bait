@@ -16,6 +16,7 @@ _unreleased_
 ### JS Backend
 - Very limited and minimal generics
 - Results of integer math operations are properly floored
+- Support type definition for JS constants
 
 ### C Backend
 - Codegen for string interpolation
