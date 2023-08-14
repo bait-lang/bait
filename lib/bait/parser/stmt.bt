@@ -288,40 +288,24 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 		if p.tok.kind == .key_fun {
 			p.next()
 			fun_name := p.check_name()
-			p.check(.lpar)
-			// The first param is a fictional receiver in this case
-			mut params := [ast.Param{
-				name = '_'
-				typ = typ
-			}]
-			params = params.concat(p.fun_params())
-			p.check(.rpar)
-			mut return_type := ast.VOID_TYPE
-			if p.tok.pos.line == p.prev_tok.pos.line {
-				return_type = p.parse_type()
-			}
-			m := ast.FunDecl{
-				lang = .js
-				name = fun_name
-				params = params
-				return_type = return_type
-				is_pub = true
-				is_method = true
-			}
+			m := p.interface_method(fun_name, typ)
 			methods.push(m)
 			tsym.methods.push(m)
 			continue
 		}
 
-		if p.tok.kind == .name {
-			fields.push(ast.StructField{
-				name = p.check_name()
-				typ = p.parse_type()
-			})
+		fname := p.check_name()
+		if p.tok.kind == .lpar {
+			m := p.interface_method(fname, typ)
+			methods.push(m)
+			tsym.methods.push(m)
 			continue
 		}
 
-		// TODO error
+		fields.push(ast.StructField{
+			name = fname
+			typ = p.parse_type()
+		})
 	}
 	p.next()
 
@@ -336,6 +320,29 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 		methods = methods
 		fields = fields
 		pos = pos
+	}
+}
+
+fun (mut p Parser) interface_method(name string, rec_type ast.Type) ast.FunDecl {
+	p.check(.lpar)
+	// The first param is a fictional receiver in this case
+	mut params := [ast.Param{
+		name = '_'
+		typ = rec_type
+	}]
+	params = params.concat(p.fun_params())
+	p.check(.rpar)
+	mut return_type := ast.VOID_TYPE
+	if p.tok.pos.line == p.prev_tok.pos.line {
+		return_type = p.parse_type()
+	}
+	return ast.FunDecl{
+		lang = .js
+		name = name
+		params = params
+		return_type = return_type
+		is_pub = true
+		is_method = true
 	}
 }
 
