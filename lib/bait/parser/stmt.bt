@@ -285,15 +285,6 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 	mut fields := []ast.StructField
 	p.check(.lcur)
 	for p.tok.kind != .rcur {
-		if p.tok.kind == .key_fun {
-			p.next()
-			fun_name := p.check_name()
-			m := p.interface_method(fun_name, typ)
-			methods.push(m)
-			tsym.methods.push(m)
-			continue
-		}
-
 		fname := p.check_name()
 		if p.tok.kind == .lpar {
 			m := p.interface_method(fname, typ)

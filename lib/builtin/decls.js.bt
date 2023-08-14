@@ -18,42 +18,42 @@ pub interface #JS.Number {}
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
 pub interface #JS.String {
 	length #JS.Number
-	fun charAt(pos #JS.Number) #JS.String
-	fun charCodeAt(pos #JS.Number) #JS.Number
-	fun indexOf(search #JS.String) #JS.Number
-	fun lastIndexOf(search #JS.String) #JS.Number
-	fun startsWith(search #JS.String) #JS.Boolean
-	fun endsWith(search #JS.String) #JS.Boolean
-	fun includes(search #JS.String) #JS.Boolean
-	fun repeat(count #JS.Number) #JS.String
-	fun replaceAll(pattern #JS.String, rep #JS.String) #JS.String
-	fun slice(start #JS.Number, end #JS.Number) #JS.String
-	fun split(sep #JS.String) #JS.Array
-	fun trim() #JS.String
-	fun toLowerCase() #JS.String
-	fun toUpperCase() #JS.String
+	charAt(pos #JS.Number) #JS.String
+	charCodeAt(pos #JS.Number) #JS.Number
+	indexOf(search #JS.String) #JS.Number
+	lastIndexOf(search #JS.String) #JS.Number
+	startsWith(search #JS.String) #JS.Boolean
+	endsWith(search #JS.String) #JS.Boolean
+	includes(search #JS.String) #JS.Boolean
+	repeat(count #JS.Number) #JS.String
+	replaceAll(pattern #JS.String, rep #JS.String) #JS.String
+	slice(start #JS.Number, end #JS.Number) #JS.String
+	split(sep #JS.String) #JS.Array
+	trim() #JS.String
+	toLowerCase() #JS.String
+	toUpperCase() #JS.String
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
 pub interface #JS.Array{
 	length #JS.Number
-	fun at(index #JS.Number) #JS.Any
-	fun push(element #JS.Any)
-	fun indexOf(element #JS.Any) #JS.Number
-	fun lastIndexOf(element #JS.Any) #JS.Number
-	fun concat(array2 #JS.Array) #JS.Array
-	fun slice(start #JS.Number, end #JS.Number) #JS.Array
-	fun join(separator #JS.String) #JS.String
-	fun reverse()
-	fun filter(callback #JS.Any) #JS.Array
+	at(index #JS.Number) #JS.Any
+	push(element #JS.Any)
+	indexOf(element #JS.Any) #JS.Number
+	lastIndexOf(element #JS.Any) #JS.Number
+	concat(array2 #JS.Array) #JS.Array
+	slice(start #JS.Number, end #JS.Number) #JS.Array
+	join(separator #JS.String) #JS.String
+	reverse()
+	filter(callback #JS.Any) #JS.Array
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
 pub interface #JS.Map{
 	size #JS.Number
-	fun get(key #JS.String) #JS.Any
-	fun set(key #JS.String, value #JS.Any)
-	fun has(key #JS.String) #JS.Boolean
+	get(key #JS.String) #JS.Any
+	set(key #JS.String, value #JS.Any)
+	has(key #JS.String) #JS.Boolean
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/console

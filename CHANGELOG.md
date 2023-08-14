@@ -8,7 +8,8 @@ All notable changes will be documented in this file.
 _unreleased_
 
 ### Breaking
-- `bait run`: Delete executable afterwards. Use option `--keep` for old behaviour.
+- Interfaces: Methods must not be prefixed with `fun`. Just use `method_name(...) ...`
+- `bait run`: Delete executable afterwards. Use option `--keep` for old behaviour
 
 ### Immutability and Error Checks
 - Check mutability of all fields in nested selector expressions
@@ -33,7 +34,9 @@ _unreleased_
 ### Compiler
 - Prevent crash with cyclic imports
 - Fix executable name if compiling directories `.` or `..`
-- parser: Fix crash if a fun call closing parenthesis is missing
+- Parser:
+  - Fix crash if a fun call closing parenthesis is missing
+  - Do not get stuck due to a unexpected token inside interface declaration
 
 ### Testing
 - `bait.util.testing`: Various fixes to the inout runner
