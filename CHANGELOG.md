@@ -27,6 +27,7 @@ _unreleased_
   - New string method `split(delim)` _[JS backend]_
   - New array method `last()`
 - `os`
+  - Add `PATH_SEP` constant
   - Implement `ARGS` for C backend
   - Add function `user_args()` that returns only the arguments passed by the user
 - New package `cli.cmdline` containing functions for low level command line parsing
