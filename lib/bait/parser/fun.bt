@@ -47,7 +47,6 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 
 		// foreign package
 		if lang == .js {
-			name = name.replace('.', '__')
 			name += p.check_name() + '.'
 			p.check(.dot)
 		}
