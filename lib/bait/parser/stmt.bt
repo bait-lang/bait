@@ -162,7 +162,7 @@ fun (mut p Parser) const_decl()ast.ConstDecl{
 
 	// foreign package
 	if lang == .js and p.next_tok.kind == .dot {
-		name = p.check_name() + '.'
+		name = 'JS__' + p.check_name() + '.'
 		p.next()
 	}
 
@@ -182,7 +182,7 @@ fun (mut p Parser) const_decl()ast.ConstDecl{
 		typ = p.parse_type()
 	}
 
-	p.table.global_scope.register(lang.prepend_to(name), ast.ScopeObject{
+	p.table.global_scope.register(name, ast.ScopeObject{
 		typ = typ
 		kind = .constant
 		is_pub = is_pub
