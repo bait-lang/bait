@@ -209,6 +209,11 @@ fun (mut g Gen) hash_expr(node ast.HashExpr) {
 }
 
 fun (mut g Gen) ident(node ast.Ident) {
+	if node.lang == .js {
+		g.write(node.name)
+		return
+	}
+
 	g.write(js_name(node.name))
 }
 
