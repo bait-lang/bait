@@ -68,7 +68,9 @@ fun (mut g Gen) process_imports(imports []ast.Import) {
 fun (g Gen) headers() string {
 	mut headers := 'const JS = {}\n'
 	for alias, name in g.foreign_imports {
+		js_alias := js_name(alias)
 		headers += '${alias} = require("${name}")\n'
+		headers += '${js_alias} = require("${name}")\n'
 	}
 	return headers + '\n'
 }
