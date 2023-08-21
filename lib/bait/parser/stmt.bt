@@ -156,8 +156,22 @@ fun (mut p Parser) const_decl()ast.ConstDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.next()
+
 	lang := p.parse_lang()
-	name := p.prepend_pkg(p.check_name())
+	mut name := ''
+
+	// foreign package
+	if lang == .js and p.next_tok.kind == .dot {
+		name = p.check_name() + '.'
+		p.next()
+	}
+
+	// normal name and bait package
+	name += p.check_name()
+	if lang == .bait {
+		name = p.prepend_pkg(name)
+	}
+
 	p.check(.decl_assign)
 	mut expr := ast.EmptyExpr{} as ast.Expr
 	mut typ := ast.PLACEHOLDER_TYPE
@@ -167,6 +181,7 @@ fun (mut p Parser) const_decl()ast.ConstDecl{
 	} else {
 		typ = p.parse_type()
 	}
+
 	p.table.global_scope.register(lang.prepend_to(name), ast.ScopeObject{
 		typ = typ
 		kind = .constant
@@ -174,6 +189,7 @@ fun (mut p Parser) const_decl()ast.ConstDecl{
 		pkg = p.pkg_name
 		expr = expr
 	})
+
 	return ast.ConstDecl{
 		name = name
 		expr = expr
