@@ -2,6 +2,7 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package parser
 
+import os
 import bait.preference
 import bait.errors
 import bait.ast
@@ -83,9 +84,10 @@ fun (mut p Parser) package_decl() ast.PackageDecl {
 	p.next()
 	name := p.check_name()
 	mut full_name := name
-	if full_name != 'main' and p.path.contains('lib/') {
-		rel_path := p.path.substr(p.path.index('lib/') + 4, p.path.length)
-		full_name = rel_path.substr(0, rel_path.last_index('/')).replace('/', '.')
+	lib_part := os.PATH_SEP + 'lib' + os.PATH_SEP
+	if full_name != 'main' and p.path.contains(lib_part) {
+		rel_path := p.path.substr(p.path.index(lib_part) + lib_part.length, p.path.length)
+		full_name = rel_path.substr(0, rel_path.last_index(os.PATH_SEP)).replace(os.PATH_SEP, '.')
 	}
 	p.pkg_name = full_name
 	return ast.PackageDecl{

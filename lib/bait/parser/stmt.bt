@@ -182,12 +182,7 @@ fun (mut p Parser) const_decl()ast.ConstDecl{
 		typ = p.parse_type()
 	}
 
-	// TODO remove this workaround
-	mut rname := name
-	// if not name.starts_with('JS__') {
-		rname = lang.prepend_to(name)
-	// }
-	p.table.global_scope.register(rname, ast.ScopeObject{
+	p.table.global_scope.register(lang.prepend_to(name), ast.ScopeObject{
 		typ = typ
 		kind = .constant
 		is_pub = is_pub
