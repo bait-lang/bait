@@ -23,9 +23,18 @@ fun test_all_after() {
 fun test_all_after_last() {
 	assert 'photo'.all_after_last('o') == ''
 }
+
 fun test_split() {
 	assert 'bar'.split('') == ['b', 'a', 'r']
 	assert 'foo'.split('o') == ['f', '', '']
 	assert ' qw e rt '.split(' ') == ['', 'qw', 'e', 'rt', '']
 	assert 'barbarian'.split('ar') == ['b', 'b', 'ian']
+}
+
+fun test_trim_left() {
+	assert 'bbbar'.trim_left('b') == 'ar'
+}
+
+fun test_trim_right() {
+	assert 'fo o '.trim_right(' o') == 'f'
 }

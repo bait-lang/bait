@@ -24,7 +24,7 @@ _unreleased_
 
 ### Standard Library
 - builtin:
-  - New string method `split(delim)` _[JS backend]_
+  - New string methods `split(delim)`, `trim_left(cutset)`, `trim_right(cutset)`  _[JS backend]_
   - New array method `last()`
 - `os`
   - Add `PATH_SEP` constant
