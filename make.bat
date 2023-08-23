@@ -1,13 +1,28 @@
 @echo off
 
-set BAITJS_DIR="%USERPROFILE%\.bait\baitjs"
+set "BAITJS_DIR=%USERPROFILE%\.bait\baitjs"
+
+REM Parse arguments
+set "IS_LOCAL=0"
+
+for %%i in (%*) do (
+  if "%%i"=="--local" (
+    set "IS_LOCAL=1"
+  )
+)
 
 :download_baitjs
-REM Pull or clone baitjs
 if exist "%BAITJS_DIR%\bait.js" (
-  git -C "%BAITJS_DIR%" pull --quiet
+  if "%IS_LOCAL%"=="0" (
+    git -C "%BAITJS_DIR%" pull --quiet
+  )
 ) else (
-  git clone --depth 1 https://github.com/tiabeast/baitjs "%BAITJS_DIR%"
+  if "%IS_LOCAL%"=="0" (
+    git clone --depth 1 https://github.com/tiabeast/baitjs "%BAITJS_DIR%"
+  ) else (
+    echo baitjs not found locally. Run without "--local"
+    exit /b 1
+  )
 )
 
 :bootstrap
@@ -44,4 +59,4 @@ if %line_count% LEQ 5000 (
 
 del /f bait1.js bait2.js
 
-echo "Run 'bait.exe symlink' to add Bait to your path.""
+echo Run 'bait.exe symlink' to add Bait to your path.
