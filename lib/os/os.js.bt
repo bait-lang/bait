@@ -57,7 +57,22 @@ pub fun home_dir() string {
 }
 
 pub fun dir(path string) string {
-	return from_js_string(#JS.path.dirname(path.str))
+	mut other_sep := '\\'
+	if PATH_SEP != '/' {
+		other_sep = '/'
+	}
+	p := path.replace(other_sep, PATH_SEP)
+
+	pos := p.last_index(PATH_SEP)
+	if pos == -1 {
+		return '.'
+	}
+
+	if pos == 0 and PATH_SEP == '/' {
+		return '/'
+	}
+
+	return path.substr(0, pos)
 }
 
 pub fun is_dir(path string) bool {

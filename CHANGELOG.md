@@ -30,6 +30,7 @@ _unreleased_
   - Add `PATH_SEP` constant
   - Implement `ARGS` for C backend
   - Add function `user_args()` that returns only the arguments passed by the user
+  - `dir()`: Fix trailing slashes
 - New package `cli.cmdline` containing functions for low level command line parsing
 
 ### Compiler

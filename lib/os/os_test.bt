@@ -2,6 +2,14 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 2.0.
 import os
 
+fun test_dir(){
+	l := '/foo/bar/file'
+	assert os.dir(l) == '/foo/bar'
+
+	w := 'C:\\foo\\bar\\file'
+	assert os.dir(w) == 'C:\\foo\\bar'
+}
+
 fun test_read_lines() {
 	lines := os.read_lines("${$BAITDIR}/lib/os/tests/3_lines.txt")
 	assert lines.length == 3
