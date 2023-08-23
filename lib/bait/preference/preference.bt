@@ -147,8 +147,8 @@ pub fun parse_args(args []string) Prefs {
 }
 
 pub fun (mut p Prefs) set_comptime_vars() {
-	p.baitexe = os.executable()
-	p.baitdir = os.dir(p.baitexe)
+	p.baitexe = os.executable().replace('\\', '\\\\')
+	p.baitdir = os.dir(p.baitexe).trim_right('\\')
 	p.baithash = os.exec('git rev-parse --short HEAD').stdout.trim_space()
 }
 

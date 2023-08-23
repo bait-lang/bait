@@ -11,9 +11,9 @@ trim_trailing_whitespace = true
 indent_style = tab
 indent_size = 4
 
-[*.yml]
+[*.yml, *.sh, *.bat]
 indent_style = space
 indent_size = 2
 
 # [*.md]
-# Whitespace will also be trimmed in markdown files. Use <br> for linebreaks.
+# Whitespace will also be trimmed in markdown files! Use <br> for linebreaks.
