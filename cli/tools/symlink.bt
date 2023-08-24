@@ -5,6 +5,11 @@ package main
 import os
 
 fun main(){
+	if os.ARGS.contains('--ghci-win') {
+		link_github_actions()
+		return
+	}
+
 	platform := os.platform()
 	if platform == 'linux' {
 		link_linux()
@@ -47,4 +52,12 @@ fun link_windows() {
 	os.symlink(orig_bat, link_bat)
 
 	os.exec('setx PATH "%PATH%;${link_dir}"')
+}
+
+fun link_github_actions() {
+	x := os.getenv('GITHUB_PATH')
+	println(x)
+	y := os.read_file(x)
+	println(y)
+	println(os.getwd())
 }

@@ -41,6 +41,6 @@ jobs:
       - name: Build baitjs
         run: |
           ./make.bat
-          ./bait.bat symlink
+          ./bait.bat symlink --ghci-win
       - name: bait doctor
         run: bait doctor
