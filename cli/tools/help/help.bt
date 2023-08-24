@@ -15,7 +15,7 @@ fun main() {
 
 fun print_topic(topic string) {
 	root := os.dir($ABS_FILE)
-	topic_path := '${root}/topics/${topic}.txt'
+	topic_path := os.join_path(root, ['topics', '${topic}.txt'])
 
 	if not os.exists(topic_path) {
 		eprintln('help: unknown topic "${topic}"')

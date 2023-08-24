@@ -9,6 +9,8 @@ import 'process' as #JS.process
 import 'child_process' as #JS.child_process
 
 const #JS.process.argv := #JS.Array
+const #JS.process.platform := #JS.String
+
 const #JS.path.sep := #JS.String
 
 fun #JS.fs.readdirSync(dir #JS.String) #JS.Array

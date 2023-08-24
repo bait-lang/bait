@@ -189,9 +189,9 @@ fun (mut g Gen) comp_time_var(node ast.CompTimeVar){
 	match node.name{
 		'PKG' {g.write(g.pkg)}
 		'FILE' {g.write(g.path)}
-		'ABS_FILE' {g.write(os.abs_path(g.path))}
+		'ABS_FILE' {g.write(os.abs_path(g.path).replace('\\', '\\\\'))}
 		'LINE' {g.write('${node.pos.line}')}
-		'FILE_LINE' {g.write('${g.path}:${node.pos.line}')}
+		'FILE_LINE' {g.write('${g.path.replace('\\', '\\\\')}:${node.pos.line}')}
 		'FUN' {g.write(g.cur_fun.name)}
 		'BAITEXE' {g.write(g.pref.baitexe)}
 		'BAITDIR' {g.write(g.pref.baitdir)}
