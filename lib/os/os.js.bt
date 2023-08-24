@@ -108,7 +108,7 @@ pub fun read_file(path string) string {
 }
 
 pub fun read_lines(path string) []string {
-	text := read_file(path)
+	text := read_file(path).replace('\r\n', '\n')
 	return text.split_lines()
 }
 

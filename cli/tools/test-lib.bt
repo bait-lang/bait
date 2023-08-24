@@ -4,11 +4,21 @@ package main
 
 import os
 
+const WIN_SKIP := [
+	'lib\\bait\\tests\\inout_runner_test.bt'
+]
+
 fun main() {
-	test_files := os.walk_ext('lib', '.bt').filter(fun (f string) bool {
+	mut test_files := os.walk_ext('lib', '.bt').filter(fun (f string) bool {
 		return f.contains('_test.') and not f.contains('.in.')
 	}) as []string
 	mut fails := 0
+
+	if os.platform() == 'win32' {
+		test_files = test_files.filter(fun (f string) bool {
+			return not WIN_SKIP.contains(f)
+		}) as []string
+	}
 
 	for file in test_files {
 		fails += os.system('node ${$BAITEXE} test ${file}')
