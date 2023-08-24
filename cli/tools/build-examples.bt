@@ -9,17 +9,14 @@ fun main() {
 	examples_dir := os.join_path($BAITDIR, ['examples'])
 	mut r := testing.BuildRunner{
 		root = examples_dir
+		cmd_options = os.user_args().join(' ')
 	}
-	// Build with default JS backend
+
 	r.build_all_in_root()
 
 	// Building hello_world.bt from a different directory
 	os.chdir(os.home_dir())
 	r.build_single('hello_world.bt')
-
-	// Build with C backend
-	r.cmd_options = '-b c'
-	r.build_all_in_root()
 
 	if r.fails > 0 {
 		exit(1)

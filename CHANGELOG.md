@@ -49,7 +49,9 @@ _unreleased_
   - Add `--keep` flag to not delete the executable after running
   - Arguments after `--` are passed to the executable
 - `make.sh`: Add `--no-self` flag to compile Bait exactly one time
-- `build-examples`: Fix exit code on error for the C backend
+- `build-examples`:
+  - Fix exit code on error for the C backend
+  - Do not build both backends by default but respect the `--backend` option
 - `self`: Respect `--out` value in success message
 
 

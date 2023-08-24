@@ -60,6 +60,8 @@ pub fun parse_args(args []string) Prefs {
 			'-b', '--backend' {
 				i += 1
 				p.backend = backend_from_string(args[i])
+				p.build_options.push(arg)
+				p.build_options.push(args[i])
 			}
 			"-o", '--out' {
 				i += 1
