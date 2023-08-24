@@ -8,32 +8,32 @@ const DIR := os.dir($FILE)
 
 fun test_in_outs() {
 	testing.in_out_runner(testing.InOutRunner{
-		root = os.join_path(DIR, ['inout'])
+		root = '${DIR}/inout'
 		check_stdout = true
 	})
 }
 
 fun test_error_in_outs() {
 	testing.in_out_runner(testing.InOutRunner{
-		root = os.join_path(DIR, ['inout_error'])
+		root = '${DIR}/inout_error'
 		cmd_options = '--script'
 	})
 }
 
 fun test_in_outs_with_options() {
-	root := os.join_path(DIR, ['inout_opts'])
+	root := '${DIR}/inout_opts'
 
 	testing.in_out_runner(testing.InOutRunner{
-		root = os.join_path(DIR, ['no_script'])
+		root = '${root}/no_script'
 	})
 
 	testing.in_out_runner(testing.InOutRunner{
-		root = os.join_path(DIR, ['warn_error'])
+		root = '${root}/warn_error'
 		cmd_options = '--script -W'
 	})
 
 	testing.in_out_runner(testing.InOutRunner{
-		root = os.join_path(DIR, ['no_warn'])
+		root = '${root}/no_warn'
 		cmd_options = '--script -w'
 	})
 }
