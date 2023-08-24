@@ -30,3 +30,17 @@ jobs:
         run: |
           bait check-md docs/docs.md
           bait check-md README.md
+
+  windows:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Build baitjs
+        run: |
+          ./make.bat
+          ./bait symlink
+      - name: bait doctor
+        run: bait doctor
