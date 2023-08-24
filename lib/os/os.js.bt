@@ -155,6 +155,10 @@ pub fun arch() string {
 	return from_js_string(#JS.os.arch())
 }
 
+pub fun platform() string {
+	return from_js_string(#JS.process.platform)
+}
+
 pub struct Result {
 pub:
 	code i32
