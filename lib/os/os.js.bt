@@ -56,6 +56,10 @@ pub fun home_dir() string {
 	return from_js_string(#JS.os.homedir())
 }
 
+pub fun tmp_dir() string {
+	return from_js_string(#JS.os.tmpdir())
+}
+
 pub fun dir(path string) string {
 	mut other_sep := '\\'
 	if PATH_SEP != '/' {
@@ -104,7 +108,7 @@ pub fun read_file(path string) string {
 }
 
 pub fun read_lines(path string) []string {
-	text := read_file(path)
+	text := read_file(path).replace('\r\n', '\n')
 	return text.split_lines()
 }
 

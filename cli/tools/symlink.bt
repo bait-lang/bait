@@ -5,15 +5,24 @@ package main
 import os
 
 fun main(){
+	if os.ARGS.contains('--ghci-win') {
+		link_github_actions()
+		return
+	}
+
 	platform := os.platform()
 	if platform == 'linux' {
 		link_linux()
-	} else if platform == 'win32' {
-		link_windows()
-	} else {
-		eprintln('Unsupported platform ${platform}')
-		exit(1)
+		return
 	}
+
+	if platform == 'win32' {
+		link_windows()
+		return
+	}
+
+	eprintln('Unsupported platform ${platform}')
+	exit(1)
 }
 
 fun link_linux() {
@@ -29,12 +38,24 @@ fun link_linux() {
 
 fun link_windows() {
 	link_dir := os.join_path($BAITDIR, ['bin'])
-	os.mkdir_all(link_dir)
-	link_path := os.join_path(link_dir, ['bait.bat'])
-	if os.exists(link_path) {
-		os.rm(link_path)
+	if os.exists(link_dir) {
+		os.rmdir_all(link_dir)
 	}
-	exe_path := $BAITEXE.replace('.js', '.bat')
-	os.symlink(exe_path, link_path)
+	os.mkdir_all(link_dir)
+
+	link_js := os.join_path(link_dir, ['bait.js'])
+	orig_js := $BAITEXE
+	os.symlink(orig_js, link_js)
+
+	link_bat := os.join_path(link_dir, ['bait.bat'])
+	orig_bat := $BAITEXE.replace('.js', '.bat')
+	os.symlink(orig_bat, link_bat)
+
 	os.exec('setx PATH "%PATH%;${link_dir}"')
+}
+
+fun link_github_actions() {
+	mut path_content := os.read_file(os.getenv('GITHUB_PATH'))
+	path_content += '\n${os.getwd()}\n'
+	os.write_file(os.getenv('GITHUB_PATH'), path_content)
 }

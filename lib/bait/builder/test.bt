@@ -28,7 +28,7 @@ pub fun run_tests(prefs preference.Prefs) i32 {
 	// Compile and run all tests
 	for i, file in files_to_test {
 		test_prefs.command = file
-		test_prefs.out_name = '/tmp/test_${i}.js'
+		test_prefs.out_name = os.join_path(os.tmp_dir(), ['test_${i}.js'])
 		res := compile(test_prefs)
 		if res == 0 {
 			println('OK ${file}')
