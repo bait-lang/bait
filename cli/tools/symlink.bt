@@ -5,6 +5,18 @@ package main
 import os
 
 fun main(){
+	platform := os.platform()
+	if platform == 'linux' {
+		link_linux()
+	} else if platform == 'win32' {
+		link_windows()
+	} else {
+		eprintln('Unsupported platform ${platform}')
+		exit(1)
+	}
+}
+
+fun link_linux() {
 	link_dir := '/usr/local/bin'
 	os.mkdir_all(link_dir)
 	link_path := link_dir + '/bait'
@@ -13,4 +25,16 @@ fun main(){
 	}
 	exe_path := os.abs_path($BAITEXE.replace('.js', ''))
 	os.symlink(exe_path, link_path)
+}
+
+fun link_windows() {
+	link_dir := os.join_path($BAITDIR, ['bin'])
+	os.mkdir_all(link_dir)
+	link_path := os.join_path(link_dir, ['bait.bat'])
+	if os.exists(link_path) {
+		os.rm(link_path)
+	}
+	exe_path := $BAITEXE.replace('.js', '.bat')
+	os.symlink(exe_path, link_path)
+	os.exec('setx PATH "%PATH%;${link_dir}"')
 }
