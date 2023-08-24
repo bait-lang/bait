@@ -41,6 +41,8 @@ jobs:
       - name: Build baitjs
         run: |
           ./make.bat
+          pwd
+          dir
           ./bait symlink
       - name: bait doctor
         run: bait doctor
