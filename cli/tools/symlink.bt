@@ -39,7 +39,7 @@ fun link_linux() {
 fun link_windows() {
 	link_dir := os.join_path($BAITDIR, ['bin'])
 	if os.exists(link_dir) {
-		os.rm(link_dir)
+		os.rmdir_all(link_dir)
 	}
 	os.mkdir_all(link_dir)
 
