@@ -56,6 +56,10 @@ pub fun home_dir() string {
 	return from_js_string(#JS.os.homedir())
 }
 
+pub fun tmp_dir() string {
+	return from_js_string(#JS.os.tmpdir())
+}
+
 pub fun dir(path string) string {
 	mut other_sep := '\\'
 	if PATH_SEP != '/' {

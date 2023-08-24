@@ -42,6 +42,8 @@ fun #JS.fs.writeFileSync(path #JS.String, text #JS.String)
 
 fun #JS.os.homedir() #JS.String
 
+fun #JS.os.tmpdir() #JS.String
+
 fun #JS.os.arch() #JS.String
 
 fun #JS.path.basename(path #JS.String) #JS.String
