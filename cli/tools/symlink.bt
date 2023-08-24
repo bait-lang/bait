@@ -55,9 +55,7 @@ fun link_windows() {
 }
 
 fun link_github_actions() {
-	x := os.getenv('GITHUB_PATH')
-	println(x)
-	y := os.read_file(x)
-	println(y)
-	println(os.getwd())
+	mut path_content := os.read_file(os.getenv('GITHUB_PATH'))
+	path_content += '\n${os.getwd()}\n'
+	os.write_file(os.getenv('GITHUB_PATH'), path_content)
 }
