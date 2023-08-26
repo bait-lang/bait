@@ -30,7 +30,7 @@ pub fun (runner InOutRunner) test_dir(dir string) {
 		return
 	}
 
-	expected := read_out_file('${abs_dir}/expected.out')
+	expected := read_out_file('${abs_dir}/expected.out').replace('\r\n', '\n')
 	runner.compare_expected(res, expected)
 }
 
