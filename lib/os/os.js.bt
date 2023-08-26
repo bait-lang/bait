@@ -172,8 +172,7 @@ pub:
 
 pub fun exec(cmd string) Result {
 	mut res := Result{}
-	#JS.'const commands = cmd.str.split(" ")
-	const out = JS.child_process.spawnSync(commands[0], commands.slice(1))
+	#JS.'const out = JS.child_process.spawnSync(cmd.str, { shell: true })
 	res.code = out.status
 	res.stdout = from_js_string(out.stdout.toString())
 	res.stderr = from_js_string(out.stderr.toString())'

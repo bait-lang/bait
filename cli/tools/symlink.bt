@@ -51,7 +51,12 @@ fun link_windows() {
 	orig_bat := $BAITEXE.replace('.js', '.bat')
 	os.symlink(orig_bat, link_bat)
 
-	os.exec('setx PATH "%PATH%;${link_dir}"')
+	cur_path := os.getenv('PATH')
+	res := os.exec('setx /M path "${cur_path};${link_dir}"')
+	if res.code != 0 {
+		eprintln(res.stderr)
+		exit(1)
+	}
 }
 
 fun link_github_actions() {
