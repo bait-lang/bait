@@ -149,6 +149,7 @@ pub:
 
 pub struct StructDecl{
 pub:
+	lang Language
 	name string
 	typ Type
 	fields []StructField

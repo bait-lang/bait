@@ -7,10 +7,16 @@ import bait.token
 
 fun (mut p Parser) struct_decl()ast.StructDecl{
 	pos := p.tok.pos
-
 	is_pub := p.check_pub()
 	p.check(.key_struct)
-	name := p.prepend_pkg(p.check_name())
+
+	lang := p.parse_lang()
+	mut name := p.check_name()
+	if lang == .bait {
+		name = p.prepend_pkg(name)
+	} else {
+		name = lang.prepend_to(name)
+	}
 
 	mut mut_idx := -1
 	mut pub_idx := -1
@@ -87,6 +93,7 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 	typ := p.table.register_sym(tsym)
 
 	return ast.StructDecl{
+		lang = lang
 		name = name
 		typ = typ
 		fields = fields

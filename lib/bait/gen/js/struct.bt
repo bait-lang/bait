@@ -5,6 +5,10 @@ package js
 import bait.ast
 
 fun (mut g Gen) struct_decl(node ast.StructDecl){
+	if node.lang != .bait {
+		return
+	}
+
 	g.write('function ')
 	jsname := js_name(node.name)
 	g.write(jsname)
