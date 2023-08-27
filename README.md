@@ -1,6 +1,8 @@
 # Bait Programming Language
 Simple compiled language for building reliable software.
 
+This repository contains the compiler, standard library and documentation for Bait.
+
 ```bait
 fun main() {
     println('hello world')
@@ -13,16 +15,20 @@ fun main() {
 - Clean, simple and consistent syntax
 - Type and memory safety with immutability by default
 - JavaScript backend (NodeJS)
-- :construction: C and native backends
-- :construction: Cross-platform support and cross-compilation
+- Cross-platform support
+- :construction: C backend
 
 ## Documentation
 - [Language Overview](docs/docs.md)
 - [Examples](examples) and [Rosetta Code](https://github.com/tiabeast/rosetta-bait)
 
-## Building from Source
+## Installation
+Right now Bait has to be compiled from source.
+Precompiled binaries will be available in the future.
+
 > Required dependencies: `git` and `NodeJS >= 16`
 
+Linux:
 ```sh
 git clone https://github.com/tiabeast/bait
 cd bait
@@ -30,11 +36,21 @@ cd bait
 sudo ./bait symlink
 ```
 
+Windows:
+```powershell
+git clone https://github.com/tiabeast/bait
+cd bait
+./make.bat
+
+# In admin shell:
+./bait.bat symlink
+```
+
 Now you should have Bait compiled to JS at `<repo>/bait.js`.
 
 Due to the symlinked wrapper script, the compiler can be used like `bait run examples/hello_world.bt`.
 
-## Upgrading to the latest version
+### Upgrading to the latest version
 To update Bait to the latest commit, run `bait up`.
 
 ## License

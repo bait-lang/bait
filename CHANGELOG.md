@@ -11,16 +11,17 @@ _unreleased_
 - Interfaces: Methods must not be prefixed with `fun`. Just use `method_name(...) ...`
 - `bait run`: Delete executable afterwards. Use option `--keep` for old behaviour
 
-### Immutability and Error Checks
-- Check mutability of all fields in nested selector expressions
+### Windows Support
+- Initial support for Windows with the JS backend, including:
+  - Bootstrapping with `make.bat`
+  - Symlinking
+  - setup-bait GitHub Action
+  - Many adjustments in lib, the compiler and tooling
 
 ### JS Backend
 - Very limited and minimal generics
 - Results of integer math operations are properly floored
 - Support type definition for JS constants
-
-### C Backend
-- Codegen for string interpolation
 
 ### Standard Library
 - builtin:
@@ -31,17 +32,8 @@ _unreleased_
   - Implement `ARGS` for C backend
   - Add function `user_args()` that returns only the arguments passed by the user
   - `dir()`: Fix trailing slashes
+  - `exec()`: Fix handling of quoted arguments with whitespace
 - New package `cli.cmdline` containing functions for low level command line parsing
-
-### Compiler
-- Prevent crash with cyclic imports
-- Fix executable name if compiling directories `.` or `..`
-- Parser:
-  - Fix crash if a fun call closing parenthesis is missing
-  - Do not get stuck due to a unexpected token inside interface declaration
-
-### Testing
-- `bait.util.testing`: Various fixes to the inout runner
 
 ### CLI and Tooling
 - `up`, `self`: Make tools independent of working directory
@@ -53,6 +45,16 @@ _unreleased_
   - Fix exit code on error for the C backend
   - Do not build both backends by default but respect the `--backend` option
 - `self`: Respect `--out` value in success message
+
+### Other Changes
+- Check mutability of all fields in nested selector expressions
+- Prevent crash with cyclic imports
+- Fix executable name if compiling directories `.` or `..`
+- Parser:
+  - Fix crash if a fun call closing parenthesis is missing
+  - Do not get stuck due to a unexpected token inside interface declaration
+- C: Codegen for string interpolation
+- `bait.util.testing`: Various fixes to the inout runner
 
 
 ## 0.0.4
