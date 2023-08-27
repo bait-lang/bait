@@ -5,7 +5,7 @@ All notable changes will be documented in this file.
 
 
 ## 0.0.5
-_unreleased_
+_27 August 2023_
 
 ### Breaking
 - Interfaces: Methods must not be prefixed with `fun`. Just use `method_name(...) ...`
