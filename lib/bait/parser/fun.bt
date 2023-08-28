@@ -26,7 +26,14 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 
 		// Pass mutable receiver as pointer
 		rec_name := p.check_name()
-		mut rec_type := p.parse_type()
+		lang = p.parse_lang()
+
+		mut rec_type := ast.PLACEHOLDER_TYPE
+		if lang != .bait {
+			rec_type = p.parse_name_type(lang)
+		} else {
+			rec_type = p.parse_type()
+		}
 		if is_mut {
 			rec_type = rec_type.set_nr_amp(1)
 		}
@@ -87,7 +94,7 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 	if is_method {
 		sym := p.table.get_sym(params[0].typ)
 		// TODO move this error into checker
-		if sym.has_method(name) {
+		if lang == .bait and sym.has_method(name) {
 			p.error('Method "${name}" already exists on type "${sym.name}"')
 		}
 		sym.methods.push(node)
