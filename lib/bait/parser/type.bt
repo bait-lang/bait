@@ -26,18 +26,27 @@ fun (mut p Parser) parse_type() ast.Type {
 		return p.parse_fun_type()
 	}
 
-	lang := p.parse_lang()
+	// Map type
+	if p.tok.val == 'map' {
+		p.next()
+		return p.parse_map_type()
+	}
 
 	// Return placeholder or get name. Used for typeless array inits where type is known
 	if p.tok.pos.line != p.prev_tok.pos.line {
 		return ast.PLACEHOLDER_TYPE
 	}
-	mut name := lang.prepend_to(p.check_name())
 
-	// Map type
-	if name == 'map' {
-		return p.parse_map_type()
+	lang := p.parse_lang()
+	mut typ := p.parse_name_type(lang)
+	if nr_amp > 0 {
+		typ = typ.set_nr_amp(nr_amp)
 	}
+	return typ
+}
+
+fun (mut p Parser) parse_name_type(lang ast.Language) ast.Type {
+	mut name := lang.prepend_to(p.check_name())
 
 	// Build full name and handle imported types
 	if p.tok.kind == .dot {
@@ -51,27 +60,23 @@ fun (mut p Parser) parse_type() ast.Type {
 	}
 
 	// Primitive types
-	mut typ := ast.PLACEHOLDER_TYPE
 	match name{
-		'i8' { typ = ast.I8_TYPE }
-		'i16' { typ = ast.I16_TYPE }
-		'i32' { typ = ast.I32_TYPE }
-		'i64' { typ = ast.I64_TYPE }
-		'u8' { typ = ast.U8_TYPE }
-		'u16' { typ = ast.U16_TYPE }
-		'u32' { typ = ast.U32_TYPE }
-		'u64' { typ = ast.U64_TYPE }
-		'f32' { typ = ast.F32_TYPE }
-		'f64' { typ = ast.F64_TYPE }
-		'bool' { typ = ast.BOOL_TYPE }
-		'string' { typ = ast.STRING_TYPE }
-		'any' { typ = ast.ANY_TYPE }
-		else { typ = p.table.find_type_or_add_placeholder(name) }
+		'i8' { return ast.I8_TYPE }
+		'i16' { return ast.I16_TYPE }
+		'i32' { return ast.I32_TYPE }
+		'i64' { return ast.I64_TYPE }
+		'u8' { return ast.U8_TYPE }
+		'u16' { return ast.U16_TYPE }
+		'u32' { return ast.U32_TYPE }
+		'u64' { return ast.U64_TYPE }
+		'f32' { return ast.F32_TYPE }
+		'f64' { return ast.F64_TYPE }
+		'bool' { return ast.BOOL_TYPE }
+		'string' { return ast.STRING_TYPE }
+		'any' { return ast.ANY_TYPE }
+		else {}
 	}
-	if nr_amp > 0 {
-		typ = typ.set_nr_amp(nr_amp)
-	}
-	return typ
+	return p.table.find_type_or_add_placeholder(name)
 }
 
 fun (mut p Parser) parse_fun_type() ast.Type {
