@@ -59,4 +59,4 @@ if %line_count% LEQ 5000 (
 
 del /f bait1.js bait2.js
 
-echo Run 'bait.bat symlink' to add Bait to your path.
+echo Run 'bait.bat symlink' as Admin to add Bait to your path.

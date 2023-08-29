@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'cli/**'
+      - 'cli/bait.bt'
       - 'lib/**'
 
 jobs:

@@ -18,6 +18,7 @@ fun main(){
 
 	if platform == 'win32' {
 		link_windows()
+		println('Please restart your terminal to use bait')
 		return
 	}
 
