@@ -227,7 +227,15 @@ fun (mut p Parser) enum_decl()ast.EnumDecl{
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.next()
-	name := p.prepend_pkg(p.check_name())
+
+	lang := p.parse_lang()
+	mut name := p.check_name()
+	if lang == .bait {
+		name = p.prepend_pkg(name)
+	} else {
+		name = lang.prepend_to(name)
+	}
+
 	p.check(.lcur)
 	mut variants := []string
 	mut fields := []ast.EnumField
@@ -247,6 +255,7 @@ fun (mut p Parser) enum_decl()ast.EnumDecl{
 		})
 	}
 	p.check(.rcur)
+
 	p.table.register_sym(ast.TypeSymbol{
 		name = name
 		is_pub = is_pub
@@ -256,7 +265,9 @@ fun (mut p Parser) enum_decl()ast.EnumDecl{
 			vals = variants
 		}
 	})
+
 	return ast.EnumDecl{
+		lang = lang
 		name = name
 		fields = fields
 		pos = pos

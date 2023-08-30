@@ -59,6 +59,7 @@ fun (mut c Checker) const_decl(mut node ast.ConstDecl) {
 	if node.lang != .bait {
 		return
 	}
+
 	node.typ = c.expr(node.expr)
 	c.table.global_scope.update_type(node.name, node.typ)
 }
@@ -73,6 +74,10 @@ fun (mut c Checker) expr_stmt(node ast.ExprStmt) {
 }
 
 fun (c Checker) enum_decl(node ast.EnumDecl) {
+	if node.lang != .bait {
+		return
+	}
+
 	if node.fields.length == 0 {
 		c.error('enum cannot be empty', node.pos)
 		return

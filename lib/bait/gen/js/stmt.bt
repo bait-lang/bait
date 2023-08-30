@@ -180,6 +180,10 @@ fun (mut g Gen) const_decl(node ast.ConstDecl){
 }
 
 fun (mut g Gen) enum_decl(node ast.EnumDecl){
+	if node.lang != .bait {
+		return
+	}
+
 	g.writeln('const ' + js_name(node.name) + ' = {')
 	g.indent += 1
 	for field in node.fields {
