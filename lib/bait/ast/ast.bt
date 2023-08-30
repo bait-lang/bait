@@ -38,6 +38,7 @@ global:
 
 pub struct EnumDecl{
 pub:
+	lang Language
 	name string
 	fields []EnumField
 	pos token.Pos

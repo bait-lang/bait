@@ -15,7 +15,7 @@ fun main() {
 - Clean, simple and consistent syntax
 - Type and memory safety with immutability by default
 - JavaScript backend (NodeJS)
-- Cross-platform support
+- Cross-platform support (Linux, Windows)
 - :construction: C backend
 
 ## Documentation
