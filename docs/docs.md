@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2023-present Lukas Neubert and contributors (see AUTHORS.md).
+Copyright (c) 2023-present Lukas Neubert.
 This Documentation is subject to the terms of the Mozilla Public License 2.0.
 -->
 # Bait Documentation
