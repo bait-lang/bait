@@ -108,6 +108,7 @@ pub:
 global:
 	is_method bool
 	stmts []Stmt
+	generic_names []string
 }
 
 pub struct Param{
@@ -211,6 +212,7 @@ global:
 	return_type Type
 	left_type Type
 	left Expr := EmptyExpr{}
+	concrete_types []Type
 pub:
 	args []CallArg
 	is_method bool
