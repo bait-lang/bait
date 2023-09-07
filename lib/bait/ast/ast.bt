@@ -172,6 +172,7 @@ pub:
 // SumType, Alias, Fun Type
 pub struct TypeDecl {
 pub:
+	lang Language
 	name string
 	typ Type
 	pos token.Pos

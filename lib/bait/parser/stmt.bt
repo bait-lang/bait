@@ -381,7 +381,15 @@ fun (mut p Parser) type_decl() ast.TypeDecl {
 	pos := p.tok.pos
 	is_pub := p.check_pub()
 	p.next()
-	name := p.prepend_pkg(p.check_name())
+
+	lang := p.parse_lang()
+	mut name := p.check_name()
+	if lang == .bait {
+		name = p.prepend_pkg(name)
+	} else {
+		name = lang.prepend_to(name)
+	}
+
 	p.check(.decl_assign)
 	is_fun_type := p.tok.kind == .key_fun
 	mut variants := []ast.Type
@@ -398,6 +406,7 @@ fun (mut p Parser) type_decl() ast.TypeDecl {
 			info = sym.info
 		})
 		return ast.TypeDecl{
+			lang = lang
 			name = name
 			typ = typ
 			pos = pos
@@ -414,6 +423,7 @@ fun (mut p Parser) type_decl() ast.TypeDecl {
 			pkg = p.pkg_name
 		})
 		return ast.TypeDecl{
+			lang = lang
 			name = name
 			typ = typ
 			pos = pos
@@ -435,6 +445,7 @@ fun (mut p Parser) type_decl() ast.TypeDecl {
 		}
 	})
 	return ast.TypeDecl{
+		lang = lang
 		name = name
 		typ = typ
 		pos = pos
