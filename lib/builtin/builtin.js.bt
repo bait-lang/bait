@@ -2,13 +2,20 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
-// Paramterers will be converted to JS strings during codegen
-pub fun println(msg #JS.String) {
+pub fun println(msg string) {
+	if (#JS.'msg.str' ) {
+		#JS.console.log(msg.str as #JS.Any)
+		return
+	}
 	#JS.console.log(msg as #JS.Any)
 }
 
-pub fun eprintln(msg #JS.String) {
-	#JS.console.error(msg as #JS.Any)
+pub fun eprintln(msg string) {
+	if (#JS.'msg.str' ) {
+		#JS.console.error(msg.str as #JS.Any)
+		return
+	}
+	#JS.console.log(msg as #JS.Any)
 }
 
 pub fun exit(code i32) {

@@ -5,6 +5,7 @@ package js
 import bait.ast
 import bait.token
 import bait.util
+import bait.errors
 import os
 
 fun (mut g Gen) expr(expr ast.Expr) {
@@ -142,7 +143,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 	}
 	if ['println', 'eprintln'].contains(node.name) {
 		g.write('(')
-		g.expr_to_jsstring(node.args[0].expr, node.args[0].typ)
+		g.expr_to_string(node.args[0].expr, node.args[0].typ)
 		g.write(')')
 		return
 	}
@@ -339,8 +340,8 @@ fun (mut g Gen) map_init(node ast.MapInit) {
 	g.write('new map({ data: new Map([')
 	for i, key in node.keys {
 		g.write('[')
-		g.expr_to_jsstring(key, node.key_type)
-		g.write(', ')
+		g.expr_to_string(key, node.key_type)
+		g.write('.str, ')
 		g.expr(node.vals[i])
 		g.write(']')
 		if i < node.keys.length - 1 {
@@ -368,10 +369,9 @@ fun (mut g Gen) match_expr(node ast.MatchExpr){
 		} else {
 			for i, e in b.exprs {
 				g.write("case ")
+				g.expr(e)
 				if node.cond_type == ast.STRING_TYPE {
-					g.expr_to_jsstring(e, b.expr_types[i])
-				} else {
-					g.expr(e)
+					g.write('.str')
 				}
 				g.writeln(":")
 			}
@@ -447,8 +447,8 @@ fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
 		g.write(util.escape_char(val, `\``))
 		if i < node.exprs.length {
 			g.write('\${')
-			g.expr_to_jsstring(node.exprs[i], node.expr_types[i])
-			g.write('}')
+			g.expr_to_string(node.exprs[i], node.expr_types[i])
+			g.write('.str}')
 		}
 	}
 	g.write('`)')
@@ -459,11 +459,10 @@ fun (mut g Gen) type_of(node ast.TypeOf) {
 	g.write('from_js_string("' + sym.name + '")')
 }
 
-fun (mut g Gen) expr_to_jsstring(expr ast.Expr, typ ast.Type) {
+fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 	sym := g.table.get_sym(typ)
 	if sym.kind == .string {
 		g.expr(expr)
-		g.write('.str')
 		return
 	}
 
@@ -473,10 +472,12 @@ fun (mut g Gen) expr_to_jsstring(expr ast.Expr, typ ast.Type) {
 		mut name := js_name(final_sym.name)
 		g.write('${name}_str(')
 		g.expr(expr)
-		g.write(').str')
+		g.write(')')
 		return
 	}
 
+	// TODO change iinto error like C backend
+	g.write('from_js_string(')
 	g.expr(expr)
-	g.write('.toString()')
+	g.write('.toString())')
 }
