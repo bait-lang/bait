@@ -1,5 +1,8 @@
 Usage:
   bait self [options]
 
+Example:
+  bait self -o bait2.js
+
 Options:
   All options are passed down to the build command.

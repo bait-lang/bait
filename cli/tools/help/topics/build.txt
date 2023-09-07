@@ -2,7 +2,7 @@ Usage:
   bait ["build"] [options] <file.bt|directory>
 
 Options:
-  -o, --out <file>  Output file name (default: "out.js").
+  -o, --out <file>  Output to a custom file name.
 
   -b, --backend <backend>
     Specifies the backend for compiling the executable.
@@ -10,7 +10,7 @@ Options:
     * js  Output JS source code that can be run with NodeJS.
     * c   [EXPERIMENTAL] Output C source code, which is passed to a C compiler.
 
-  --library  Generate as a library, that does not have the main function.
+  --library  Generate as a shared library without the main function.
 
   -w         Hide all warnings.
   -W         Treat warnings as errors.

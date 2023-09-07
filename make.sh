@@ -86,4 +86,4 @@ download_baitjs
 bootstrap
 check_success true
 cleanup
-echo "Run './bait symlink' to add Bait to your path."
+echo "Run 'sudo ./bait symlink' to add Bait to your path."
