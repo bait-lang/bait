@@ -4,6 +4,15 @@ All notable changes will be documented in this file.
 > Right now Bait is in an Alpha State (`0.0.x`). Breaking changes might occur anytime.
 
 
+## 0.0.6
+_unreleased_
+
+### Other Changes
+- Interop: Support for declaring JS structs, methods, enums and type aliases
+- Various refactorings
+- Documentation improvements
+
+
 ## 0.0.5
 _27 August 2023_
 

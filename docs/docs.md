@@ -5,36 +5,55 @@ This Documentation is subject to the terms of the Mozilla Public License 2.0.
 # Bait Documentation
 > Documentation of the standard library is :construction:
 
-## Comments
+## Entry Point
+The entry point of any program is the `main` function. It is automatically called when the program starts.
 ```bait
-// Line comment
+fun main() {
+	println('hello world')
+}
 ```
-> Multiline comments are not yet implemented.
 
 ## Functions
 ```bait
-fun main() {
-    println(add(30, 12))
-}
-
 fun add(a i32, b i32) i32 {
     return a + b
 }
 ```
 
+The return type can be omitted, if the function returns nothing.
+```bait
+fun print_monday() {
+    println('monday')
+}
+```
+
 ## Variables
+Variables are declared with the `:=` operator.
 ```bait
 greeting := 'hello'
 num := 17
+```
 
+By default variables are immutable. Use the `mut` keyword if their value has to change.
+```bait
 mut count := 2
 count = 3
 ```
 
 ## Constants
+Constants can only be in the top level scope and are declared with the `const` keyword.
 ```bait
 const ANSWER := 42
 ```
+
+## Comments
+Use `//` to start a comment.
+```bait
+// Line comment
+x := true // Inline comment
+```
+
+Unlike many other languages, Bait does not support block comments.
 
 ## Types
 ### Primitive Types

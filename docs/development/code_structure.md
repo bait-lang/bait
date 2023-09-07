@@ -1,10 +1,11 @@
 # Code Structure
-## Compiler
+## Entry Point
 The entry point is `cli/bait.bt:
 - Calls `preference` to parse arguments and options
 - Initiates launch of external tool for most commands
 - Calls `builder` to compile or run tests
 
+## Compiler
 Compiler packages are located in `lib/bait/`. The main stages are:
 - `builder`: Collect files, resolve imports and run all compilation stages
 - `tokenizer`: Break source code into tokens
