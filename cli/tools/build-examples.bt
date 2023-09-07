@@ -6,6 +6,7 @@ import os
 import bait.util.testing
 
 fun main() {
+	println('Building examples...')
 	examples_dir := os.join_path($BAITDIR, ['examples'])
 	mut r := testing.BuildRunner{
 		root = examples_dir
@@ -14,7 +15,7 @@ fun main() {
 
 	r.build_all_in_root()
 
-	// Building hello_world.bt from a different directory
+	println('Building hello world from a different directory...')
 	os.chdir(os.home_dir())
 	r.build_single('hello_world.bt')
 

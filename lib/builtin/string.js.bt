@@ -8,12 +8,6 @@ pub:
 	length i32
 }
 
-#JS.'string.prototype = {
-	toString: function() {
-		return this.str
-	}
-}'
-
 fun (s string) get(i i32) u8 {
 	return u8(s.str.charCodeAt(i as #JS.Number) as #JS.Any)
 }

@@ -3,19 +3,11 @@
 package builtin
 
 pub fun println(msg string) {
-	if (#JS.'msg.str' ) {
-		#JS.console.log(msg.str as #JS.Any)
-		return
-	}
-	#JS.console.log(msg as #JS.Any)
+	#JS.console.log(msg.str as #JS.Any)
 }
 
 pub fun eprintln(msg string) {
-	if (#JS.'msg.str' ) {
-		#JS.console.error(msg.str as #JS.Any)
-		return
-	}
-	#JS.console.log(msg as #JS.Any)
+	#JS.console.error(msg.str as #JS.Any)
 }
 
 pub fun exit(code i32) {

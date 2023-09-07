@@ -6,6 +6,7 @@ import os
 import bait.util.testing
 
 fun main() {
+	println('Building tools...')
 	mut r := testing.BuildRunner{
 		root = os.join_path($BAITDIR, ['cli', 'tools'])
 	}
