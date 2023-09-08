@@ -23,6 +23,11 @@ fun (g Gen) equality_fun(typ ast.Type) string {
 		return ''
 	}
 
+	// Generics types don't need an equality function
+	if sym.kind == .generic {
+		return ''
+	}
+
 	errors.generic_error('cannot generate equality function for type ${sym.name}')
 	exit(1)
 }
