@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/generics/concrete_types_not_match.in.bt:6:3 error: type bool not matches string in argument 2

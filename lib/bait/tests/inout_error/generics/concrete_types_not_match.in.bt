@@ -1,0 +1,6 @@
+fun add[Z](a Z, b Z) Z {
+	return a + b
+}
+
+add(1, 2)
+add('a', false)
