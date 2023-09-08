@@ -175,7 +175,7 @@ fun (mut g Gen) index_expr(node ast.IndexExpr) {
 
 fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 	// Overloading
-	lsym := g.table.get_sym(node.left_type)
+	lsym := g.concrete_sym(node.left_type)
 	if lsym.overloads.contains(node.op.c_repr()) {
 		overload := lsym.overloads[node.op.c_repr()]
 		g.write(c_name(lsym.name + '_' + overload.name))

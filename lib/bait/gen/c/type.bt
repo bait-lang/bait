@@ -4,6 +4,15 @@ package c
 
 import bait.ast
 
+fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
+	sym := g.table.get_sym(typ)
+	if g.cur_concrete_types.length == 0 {
+		return sym
+	}
+
+	return g.table.get_sym(g.cur_concrete_types[sym.name])
+}
+
 fun (g Gen) typ(typ ast.Type) string {
 	sym := g.table.get_sym(typ)
 	if sym.kind == .generic {
