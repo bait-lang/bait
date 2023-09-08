@@ -111,7 +111,13 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 	} else if node.lang != .bait{
 		name = node.name.replace('C.', '')
 	}
+
+	if node.concrete_types.length > 0 {
+		name = g.generic_fun_name(name, node.concrete_types)
+	}
+
 	g.write(name)
+
 	if ['println', 'eprintln'].contains(node.name) {
 		g.write('(')
 		g.expr_to_string(node.args[0].expr, node.args[0].typ)
