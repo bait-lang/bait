@@ -76,7 +76,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 		return ast.VOID_TYPE
 	}
 
-	def := c.table.fun_decls[node.name]
+	mut def := c.table.fun_decls[node.name]
 	if not def.is_pub and def.pkg != c.pkg {
 		c.error('function ${def.name} is private', node.pos)
 	}
@@ -104,7 +104,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 	c.call_args(def, mut node)
 
 	if node.concrete_types.length > 0 {
-		c.table.generic_fun_types[node.name].push(node.concrete_types)
+		def.concrete_types.push(node.concrete_types)
 
 		ret_sym := c.table.get_sym(node.return_type)
 		if ret_sym.kind == .generic {
@@ -119,7 +119,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	left_expr_type := c.expr(node.left)
 	left_sym := c.table.get_sym(left_expr_type)
 	final_sym := c.table.get_final_sym(left_expr_type)
-	def := c.table.get_method(left_sym, node.name)
+	mut def := c.table.get_method(left_sym, node.name)
 	if def.name.length == 0 {
 		c.error('method ${node.name} not found on type ${left_sym.name}', node.pos)
 		return ast.VOID_TYPE
@@ -189,6 +189,15 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	// Array methods with return type `array`
 	if left_sym.kind == .array and ['filter', 'reverse', 'slice', 'copy', 'from_js_arr'].contains(node.name) {
 		return left_expr_type
+	}
+
+	if node.concrete_types.length > 0 {
+		def.concrete_types.push(node.concrete_types)
+
+		ret_sym := c.table.get_sym(node.return_type)
+		if ret_sym.kind == .generic {
+			node.return_type = node.concrete_types[def.generic_names.index(ret_sym.name)]
+		}
 	}
 
 	return node.return_type

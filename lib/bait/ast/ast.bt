@@ -109,6 +109,7 @@ global:
 	is_method bool
 	stmts []Stmt
 	generic_names []string
+	concrete_types [][]Type // Array of concrete used concrete types. Populated in checker
 }
 
 pub struct Param{

@@ -10,7 +10,7 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	}
 
 	if node.generic_names.length > 0 and g.cur_concrete_types.length == 0 {
-		for conc_types in g.table.generic_fun_types[node.name] {
+		for conc_types in node.concrete_types {
 			for i, gn in node.generic_names {
 				g.cur_concrete_types[gn] = conc_types[i]
 			}
@@ -23,12 +23,12 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 
 	type_str := g.typ(node.return_type)
 	mut name := c_name(node.name)
-	if g.cur_concrete_types.length > 0 {
-		name = g.generic_fun_name(node.name, g.cur_concrete_types.values())
-	}
 	if node.is_method {
 		sym := g.table.get_sym(node.params[0].typ)
 		name = c_name(sym.name + '_' + node.name)
+	}
+    if g.cur_concrete_types.length > 0 {
+		name = g.generic_fun_name(name, g.cur_concrete_types.values())
 	}
 	s := '${type_str} ${name}('
 
