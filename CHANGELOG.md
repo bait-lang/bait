@@ -7,6 +7,9 @@ All notable changes will be documented in this file.
 ## 0.0.6
 _unreleased_
 
+### Generics
+- Check concrete types for one generic match
+
 ### Other Changes
 - Interop: Support for declaring JS structs, methods, enums and type aliases
 - Various refactorings

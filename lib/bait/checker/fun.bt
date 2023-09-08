@@ -208,6 +208,10 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr) {
 
 		c.expected_type = param_type
 		arg.typ = c.expr(arg.expr)
+		if arg.typ == ast.VOID_TYPE and not arg.expr is ast.CallExpr {
+			// Another error was already raised
+			continue
+		}
 
 		if save_as_concrete {
 			node.concrete_types.push(arg.typ)
