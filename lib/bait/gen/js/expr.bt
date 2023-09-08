@@ -119,66 +119,6 @@ fun (mut g Gen) bool_literal(node ast.BoolLiteral){
 	}
 }
 
-fun (mut g Gen) call_expr(node ast.CallExpr) {
-	if node.is_method and node.lang != .bait {
-		g.expr(node.left)
-		g.write('.' + node.name + '(')
-		g.call_args(node.args)
-		g.write(')')
-		return
-	}
-
-	if node.is_method {
-		sym := g.table.get_sym(node.left_type)
-		if sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.name) {
-			g.gen_array_method(node.name, node, sym)
-			return
-		}
-
-		g.write(js_name(sym.name + '_' + node.name))
-	} else if node.lang == .bait{
-		g.write(js_name(node.name))
-	} else {
-		g.write(node.name)
-	}
-	if ['println', 'eprintln'].contains(node.name) {
-		g.write('(')
-		g.expr_to_string(node.args[0].expr, node.args[0].typ)
-		g.write(')')
-		return
-	}
-	g.write('(')
-	if node.is_method {
-		g.expr(node.left)
-		if node.args.length > 0 {
-			g.write(', ')
-		}
-	}
-	g.call_args(node.args)
-	g.write(')')
-}
-
-fun (mut g Gen) call_args(args []ast.CallArg) {
-	for i, a in args {
-		g.expr(a.expr)
-		if i < args.length - 1 {
-			g.write(", ")
-		}
-	}
-}
-
-fun (mut g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol) {
-	g.write('array_${name}(')
-	g.expr(node.left)
-	g.write(', ')
-	g.expr(node.args[0].expr)
-	for i := 1; i < node.args.length; i += 1 {
-		g.write(', ')
-		g.expr(node.args[i].expr)
-	}
-	g.write(')')
-}
-
 fun (mut g Gen) char_literal(node ast.CharLiteral) {
 	g.write('u8("')
 	g.write(util.escape_char(node.val, `\"`))
