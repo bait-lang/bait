@@ -9,6 +9,7 @@ _unreleased_
 
 ### Generics
 - Check concrete types for one generic match
+- Fix invalid error that a generic type is private
 
 ### Other Changes
 - Interop: Support for declaring JS structs, methods, enums and type aliases

@@ -133,8 +133,8 @@ fun (mut p Parser) generic_type_names() []string {
 		if idx == 0 {
 			p.table.register_sym(ast.TypeSymbol{
 				name = name
-				pkg = p.pkg_name
 				kind = .generic
+				is_pub = true
 			})
 		}
 

@@ -1,6 +1,6 @@
 struct Foo{}
 
-fun (f Foo) stuff[X](x X, y X) {}
+fun (f Foo) stuff[T](x T, y T) {}
 
 fun add[Z](a Z, b Z) Z {
 	return a + b
