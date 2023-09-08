@@ -102,6 +102,10 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 	// Check argument types
 	c.call_args(def, mut node)
 
+	if node.concrete_types.length > 0 {
+		c.table.generic_fun_types[node.name].push(node.concrete_types)
+	}
+
 	return node.return_type
 }
 

@@ -6,6 +6,10 @@ import bait.ast
 
 fun (g Gen) typ(typ ast.Type) string {
 	sym := g.table.get_sym(typ)
+	if sym.kind == .generic {
+		return g.typ(g.cur_concrete_types[sym.name])
+	}
+
 	name := sym.name.replace('[]', 'array_').replace('C.', '').replace('.', '__')
 	ptrs := '*'.repeat(typ.get_nr_amp())
 	return name + ptrs
