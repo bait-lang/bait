@@ -100,37 +100,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 
 
 	// Check argument types
-	should_resolve_generics := def.generic_names.length != node.concrete_types.length
-	mut save_as_concrete := false
-	for i, mut arg in node.args {
-		mut param_type := def.params[i].typ
-		psym := c.table.get_sym(param_type)
-
-		if should_resolve_generics and psym.kind == .generic {
-			gi := def.generic_names.index(psym.name)
-			if gi < node.concrete_types.length {
-				param_type = node.concrete_types[gi]
-			} else {
-				save_as_concrete = true
-			}
-		}
-
-		c.expected_type = param_type
-		arg.typ = c.expr(arg.expr)
-		if arg.typ == ast.VOID_TYPE and not arg.expr is ast.CallExpr {
-			// Another error was already raised
-			continue
-		}
-
-		if save_as_concrete {
-			node.concrete_types.push(arg.typ)
-			save_as_concrete = false
-		}
-
-		if not c.check_types(arg.typ, param_type) {
-			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
-		}
-	}
+	c.call_args(def, mut node)
 
 	return node.return_type
 }
@@ -204,14 +174,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	// Check argument types
-	for i, mut arg in node.args {
-		param_type := def.params[i + 1].typ
-		c.expected_type = param_type
-		arg.typ = c.expr(arg.expr)
-		if not c.check_types(arg.typ, param_type) {
-			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
-		}
-	}
+	c.call_args(def, mut node)
 
 	// Array methods with return type `array`
 	if left_sym.kind == .array and ['filter', 'reverse', 'slice', 'copy', 'from_js_arr'].contains(node.name) {
@@ -219,4 +182,40 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	return node.return_type
+}
+
+fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr) {
+	should_resolve_generics := def.generic_names.length != node.concrete_types.length
+	mut save_as_concrete := false
+
+	mut poffset := 0
+	if node.is_method {
+		poffset = 1
+	}
+
+	for i, mut arg in node.args {
+		mut param_type := def.params[i + poffset].typ
+		psym := c.table.get_sym(param_type)
+
+		if should_resolve_generics and psym.kind == .generic {
+			gi := def.generic_names.index(psym.name)
+			if gi < node.concrete_types.length {
+				param_type = node.concrete_types[gi]
+			} else {
+				save_as_concrete = true
+			}
+		}
+
+		c.expected_type = param_type
+		arg.typ = c.expr(arg.expr)
+
+		if save_as_concrete {
+			node.concrete_types.push(arg.typ)
+			save_as_concrete = false
+		}
+
+		if not c.check_types(arg.typ, param_type) {
+			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
+		}
+	}
 }

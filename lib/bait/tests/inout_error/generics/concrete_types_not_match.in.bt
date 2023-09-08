@@ -1,6 +1,14 @@
+struct Foo{}
+
+fun (f Foo) stuff[X](x X, y X) {}
+
 fun add[Z](a Z, b Z) Z {
 	return a + b
 }
+
+f := Foo{}
+f.stuff([1, 2], 7)
+f.stuff('f', 'oo')
 
 add(1, 2)
 add('a', false)
