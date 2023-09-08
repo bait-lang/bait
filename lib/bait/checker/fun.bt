@@ -81,6 +81,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 		c.error('function ${def.name} is private', node.pos)
 	}
 	node.return_type = def.return_type
+
 	c.check_fun_attrs_on_call(node, def)
 
 	// Check argument count
@@ -104,6 +105,11 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 
 	if node.concrete_types.length > 0 {
 		c.table.generic_fun_types[node.name].push(node.concrete_types)
+
+		ret_sym := c.table.get_sym(node.return_type)
+		if ret_sym.kind == .generic {
+			node.return_type = node.concrete_types[def.generic_names.index(ret_sym.name)]
+		}
 	}
 
 	return node.return_type
