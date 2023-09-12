@@ -1,0 +1,158 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package c
+
+import bait.ast
+
+fun (mut g Gen) fun_decl(node ast.FunDecl) {
+	if node.lang != .bait {
+		return
+	}
+
+	if node.generic_names.length > 0 and g.cur_concrete_types.length == 0 {
+		for conc_types in node.concrete_types {
+			for i, gn in node.generic_names {
+				g.cur_concrete_types[gn] = conc_types[i]
+			}
+			g.fun_decl(node)
+		}
+
+		g.cur_concrete_types = map[string]ast.Type
+		return
+	}
+
+	type_str := g.typ(node.return_type)
+	mut name := c_name(node.name)
+	if node.is_method {
+		sym := g.table.get_sym(node.params[0].typ)
+		name = c_name(sym.name + '_' + node.name)
+	}
+	if g.cur_concrete_types.length > 0 {
+		name = g.generic_fun_name(name, g.cur_concrete_types.values())
+	}
+	s := '${type_str} ${name}('
+
+	g.fun_decls_out += s
+	g.write(s)
+	g.fun_params(node.params)
+	g.fun_decls_out += ');\n'
+	g.writeln(') {')
+	g.stmts(node.stmts)
+	g.writeln('};\n')
+}
+
+fun (mut g Gen) fun_params(params []ast.Param){
+	for i, p in params {
+		type_str := g.typ(p.typ)
+		s := '${type_str} ${c_name(p.name)}'
+
+		g.fun_decls_out += s
+		g.write(s)
+
+		if i < params.length - 1 {
+			g.fun_decls_out += ", "
+			g.write(", ")
+		}
+	}
+}
+
+fun (mut g Gen) call_expr(node ast.CallExpr) {
+	mut name := c_name(node.name)
+	if node.is_method {
+		sym := g.table.get_sym(node.left_type)
+		final_sym := g.table.get_final_sym(node.left_type)
+		if final_sym.kind == .array {
+			if name == 'push' {
+				g.gen_array_method(name, node, final_sym, true)
+				return
+			}
+			if name == 'push_many_with_len' {
+				g.gen_array_method(name, node, final_sym, false)
+				return
+			}
+			if name == 'push_many' {
+				g.gen_array_push_many(node)
+				return
+			}
+		}
+
+		name = c_name(sym.name + '_' + node.name)
+	} else if node.lang != .bait{
+		name = node.name.replace('C.', '')
+	}
+
+	if node.concrete_types.length > 0 {
+		name = g.generic_fun_name(name, node.concrete_types)
+	}
+
+	g.write(name)
+
+	if ['println', 'eprintln'].contains(node.name) {
+		g.write('(')
+		g.expr_to_string(node.args[0].expr, node.args[0].typ)
+		g.write(')')
+		return
+	}
+	g.write('(')
+	if node.is_method {
+		g.expr(node.left)
+		if node.args.length > 0 {
+			g.write(', ')
+		}
+	}
+	g.call_args(node.args)
+	g.write(')')
+}
+
+fun (mut g Gen) call_args(args []ast.CallArg) {
+	for i, a in args {
+		g.expr(a.expr)
+		if i < args.length - 1 {
+			g.write(", ")
+		}
+	}
+}
+
+// TODO fix elem_type (it's placeholder for array but should be the actual type)
+// this should not interfer with JS or be applied to both
+fun (mut g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSymbol, cast bool) {
+	g.write('array_${name}(')
+	if node.left_type.get_nr_amp() == 0 {
+		g.write('&')
+	}
+	g.expr(node.left)
+	if cast {
+		info := sym.info as ast.ArrayInfo
+		type_str := g.typ(info.elem_type)
+		g.write(', (${type_str}[]){')
+		g.expr(node.args[0].expr)
+		g.write('}')
+	} else {
+		g.write(', ')
+		g.expr(node.args[0].expr)
+	}
+	for i := 1; i < node.args.length; i += 1 {
+		g.write(', ')
+		g.expr(node.args[i].expr)
+	}
+	g.write(')')
+}
+
+fun (mut g Gen) gen_array_push_many(node ast.CallExpr) {
+	g.write('array_push_many(')
+	if node.left_type.get_nr_amp() == 0 {
+		g.write('&')
+	}
+	g.expr(node.left)
+	g.write(', &')
+	g.expr(node.args[0].expr)
+	g.write(')')
+}
+
+fun (g Gen) generic_fun_name(name string, concrete_types []ast.Type) string {
+	mut full_name := name
+	for t in concrete_types {
+		full_name += '_' + g.table.get_sym(t).name
+	}
+	return full_name
+}

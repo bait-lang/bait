@@ -25,6 +25,7 @@ mut:
 	foreign_imports []string // C header files
 	generated_eq_funs []ast.Type
 	tmp_counter i32
+	cur_concrete_types map[string]ast.Type
 	is_lhs_assign bool
 	is_array_map_set bool
 	is_for_loop_head bool
@@ -35,8 +36,10 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		pref = pref
 		table = table
 	}
+
 	g.write_types()
 	g.gen_equality_funs()
+
 	for file in files {
 		g.path = file.path
 		g.pkg = file.pkg_decl.full_name

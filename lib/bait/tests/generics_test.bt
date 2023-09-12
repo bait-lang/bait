@@ -1,0 +1,23 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+fun add[T](a T, b T) T {
+	return a + b
+}
+
+fun test_generic_function() {
+	assert add(1, 2) == 3
+	assert add('x', 'y') == 'xy'
+}
+
+struct Foo{}
+
+fun (f Foo) madd[T](a T, b T) T {
+	return a + b
+}
+
+fun test_generic_method() {
+	f := Foo{}
+	assert f.madd(1, 2) == 3
+	assert f.madd('x', 'y') == 'xy'
+}

@@ -33,3 +33,7 @@ pub fun (m map) contains(key string) bool {
 pub fun (m map) keys() []string {
 	return from_js_string_arr(#JS.'Array.from(m.data.keys())' as #JS.Array)
 }
+
+pub fun (m map) values() []any {
+	return from_js_string_arr(#JS.'Array.from(m.data.values())' as #JS.Array)
+}
