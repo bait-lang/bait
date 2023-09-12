@@ -9,15 +9,33 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 		return
 	}
 
+	if node.generic_names.length > 0 and g.cur_concrete_types.length == 0 {
+		for conc_types in node.concrete_types {
+			for i, gn in node.generic_names {
+				g.cur_concrete_types[gn] = conc_types[i]
+			}
+			g.fun_decl(node)
+		}
+
+		g.cur_concrete_types = map[string]ast.Type
+		return
+	}
+
 	g.cur_fun = node
 	g.write('function ')
+
+	mut name := ''
 	if node.is_method {
 		sym := g.table.get_sym(node.params[0].typ)
-		g.write(js_name(sym.name + '_' + node.name))
+		name = js_name(sym.name + '_' + node.name)
 	} else {
-		g.write(js_name(node.name))
+		name = js_name(node.name)
 	}
-	g.write('(')
+	if g.cur_concrete_types.length > 0 {
+		name = g.generic_fun_name(name, g.cur_concrete_types.values())
+	}
+
+	g.write('${name}(')
 	g.fun_params(node.params)
 	g.writeln(') {')
 	g.stmts(node.stmts)
@@ -49,6 +67,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 		return
 	}
 
+	mut name := node.name
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
 		if sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.name) {
@@ -56,12 +75,17 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 			return
 		}
 
-		g.write(js_name(sym.name + '_' + node.name))
+		name = js_name(sym.name + '_' + node.name)
 	} else if node.lang == .bait{
-		g.write(js_name(node.name))
-	} else {
-		g.write(node.name)
+		name = js_name(node.name)
 	}
+
+	if node.concrete_types.length > 0 {
+		name = g.generic_fun_name(name, node.concrete_types)
+	}
+
+	g.write(name)
+
 	if ['println', 'eprintln'].contains(node.name) {
 		g.write('(')
 		g.expr_to_string(node.args[0].expr, node.args[0].typ)
@@ -98,4 +122,12 @@ fun (mut g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSym
 		g.expr(node.args[i].expr)
 	}
 	g.write(')')
+}
+
+fun (g Gen) generic_fun_name(name string, concrete_types []ast.Type) string {
+	mut full_name := name
+	for t in concrete_types {
+		full_name += '_' + g.table.get_sym(t).name
+	}
+	return full_name
 }

@@ -24,6 +24,7 @@ mut:
 	empty_line bool
 	foreign_imports map[string]string // alias: name
 	tmp_counter i32
+	cur_concrete_types map[string]ast.Type
 	cur_fun ast.FunDecl
 	is_for_loop_head bool
 	is_lhs_assign bool
@@ -159,6 +160,15 @@ fun (mut g Gen) write_default_value(typ ast.Type) {
 			}
 		}
 	}
+}
+
+fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
+	sym := g.table.get_sym(typ)
+	if g.cur_concrete_types.length == 0 {
+		return sym
+	}
+
+	return g.table.get_sym(g.cur_concrete_types[sym.name])
 }
 
 fun js_name(n string) string {
