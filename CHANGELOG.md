@@ -9,6 +9,7 @@ _unreleased_
 
 ### Generics
 - Check concrete types for one generic match
+- Generate concrete functions for both backends
 - Fix invalid error that a generic type is private
 
 ### Other Changes
