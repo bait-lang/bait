@@ -219,7 +219,7 @@ fun (mut c Checker) if_expr(node ast.IfExpr) ast.Type {
 	for i, b in node.branches {
 		if not node.has_else or i < node.branches.length - 1 {
 			cond_type := c.expr(b.cond)
-			if not cond_type == ast.BOOL_TYPE {
+			if cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
 				c.warn('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
 			}
 		}
