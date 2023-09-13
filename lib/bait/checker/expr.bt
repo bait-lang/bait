@@ -203,7 +203,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	}
 	obj = c.table.global_scope.get(node.name)
 	if obj.typ == ast.PLACEHOLDER_TYPE {
-		c.error('undefined variable ${node.name}', node.pos)
+		c.error('undefined identifier ${node.name}', node.pos)
 	}
 
 	// unresolved constant

@@ -14,7 +14,8 @@ _unreleased_
 
 ### Error Checks
 - Reduce noisy errors in the following cases
-  - Assign to undefined variable
+  - Assign to undefined ident
+  - Method call on undefined ident
 
 ### Other Changes
 - Interop: Support for declaring JS structs, methods, enums and type aliases

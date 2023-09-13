@@ -117,6 +117,12 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 
 fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	left_expr_type := c.expr(node.left)
+
+	if left_expr_type == ast.PLACEHOLDER_TYPE {
+		// Another error was already raised
+		return ast.VOID_TYPE
+	}
+
 	left_sym := c.table.get_sym(left_expr_type)
 	final_sym := c.table.get_final_sym(left_expr_type)
 	mut def := c.table.get_method(left_sym, node.name)

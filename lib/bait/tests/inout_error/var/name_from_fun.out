@@ -1,1 +1,1 @@
-lib/bait/tests/inout_error/var/name_from_fun.in.bt:3:10 error: undefined variable foo_fun
+lib/bait/tests/inout_error/var/name_from_fun.in.bt:3:10 error: undefined identifier foo_fun
