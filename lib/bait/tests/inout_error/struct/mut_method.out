@@ -1,1 +1,0 @@
-lib/bait/tests/inout_error/struct/mut_method.in.bt:6:5 error: method requires an mutable receiver
