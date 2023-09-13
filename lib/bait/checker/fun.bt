@@ -10,6 +10,10 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 		return
 	}
 
+	if c.scope.is_known(node.name) {
+		c.error('redefinition of ${node.name}', node.pos)
+	}
+
 	c.cur_fun = node
 	c.check_fun_attrs(node)
 	c.open_scope()

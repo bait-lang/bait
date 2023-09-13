@@ -1,0 +1,6 @@
+const foo := 1
+
+fun foo() {
+	same := 123
+	same := true
+}

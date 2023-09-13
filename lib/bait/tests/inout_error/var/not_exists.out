@@ -1,3 +1,0 @@
-lib/bait/tests/inout_error/var/not_exists.in.bt:1:11 error: undefined identifier bad_name
-lib/bait/tests/inout_error/var/not_exists.in.bt:3:5 error: undefined identifier where
-lib/bait/tests/inout_error/var/not_exists.in.bt:5:2 error: undefined identifier os

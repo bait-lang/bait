@@ -1,0 +1,2 @@
+lib/bait/tests/inout_error/ident/redefinition.in.bt:2:3 error: redefinition of foo
+lib/bait/tests/inout_error/ident/redefinition.in.bt:5:8 error: redefinition of same
