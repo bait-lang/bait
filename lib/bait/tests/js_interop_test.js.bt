@@ -3,6 +3,8 @@
 
 import 'fs' as #JS.fs
 
+const #JS.name := #JS.String
+
 fun #JS.fs.existsSync(path #JS.String) #JS.Boolean
 
 fun test_js_interop(){
@@ -11,4 +13,8 @@ fun test_js_interop(){
 
 	bres := jres as bool
 	assert bres
+}
+
+fun test_typeof() {
+	assert typeof(#JS.name) == 'JS.String'
 }
