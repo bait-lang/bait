@@ -12,6 +12,15 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 
 	if c.scope.is_known(node.name) {
 		c.error('redefinition of ${node.name}', node.pos)
+	} else if not node.is_method {
+		mut param_types := []ast.Type
+		for param in node.params {
+			param_types.push(param.typ)
+		}
+		c.scope.register(node.name, ast.ScopeObject{
+			typ = c.table.find_or_register_fun(param_types, node.return_type)
+			kind = .function
+		})
 	}
 
 	c.cur_fun = node
