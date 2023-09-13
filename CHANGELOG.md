@@ -13,6 +13,7 @@ _unreleased_
 - Fix invalid error that a generic type is private
 
 ### Error Checks
+- If conditions must be of type bool
 - Prevent redefinition of ident by a function name
 - Reduce noisy errors in the following cases
   - Assign to undefined ident

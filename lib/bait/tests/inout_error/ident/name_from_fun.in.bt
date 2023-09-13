@@ -1,3 +1,0 @@
-fun foo_fun() {}
-
-if foo_fun {}

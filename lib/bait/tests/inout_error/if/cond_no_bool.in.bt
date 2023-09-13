@@ -1,0 +1,6 @@
+fun foo() {}
+
+fun main() {
+	if foo {}
+	if 123 {}
+}

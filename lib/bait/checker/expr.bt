@@ -218,7 +218,10 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 fun (mut c Checker) if_expr(node ast.IfExpr) ast.Type {
 	for i, b in node.branches {
 		if not node.has_else or i < node.branches.length - 1 {
-			c.expr(b.cond)
+			cond_type := c.expr(b.cond)
+			if cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
+				c.warn('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
+			}
 		}
 		c.open_scope()
 		c.stmts(b.stmts)
