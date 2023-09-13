@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/fun/param_assign.in.bt:2:2 error: cannot assign to immutable variable "a"

@@ -25,5 +25,5 @@ fun test_pub_works(){
 	s2 := UsesPub{}
 	assert typeof(s2.p) == 'bait.tests.packages.pubpriv.PubAlias'
 
-	// TODO test Bait-interfaces, once they are implemented
+	// TODO test Bait-interfaces once they are implemented
 }

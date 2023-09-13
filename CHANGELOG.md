@@ -12,6 +12,10 @@ _unreleased_
 - Generate concrete functions for both backends
 - Fix invalid error that a generic type is private
 
+### Error Checks
+- Reduce noisy errors in the following cases
+  - Assign to undefined variable
+
 ### Other Changes
 - Interop: Support for declaring JS structs, methods, enums and type aliases
 - Various refactorings

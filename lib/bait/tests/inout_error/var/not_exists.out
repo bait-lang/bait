@@ -1,1 +1,2 @@
-lib/bait/tests/inout_error/var/not_exists.in.bt:3:14 error: undefined variable my_var_name
+lib/bait/tests/inout_error/var/not_exists.in.bt:1:11 error: undefined variable bad_name
+lib/bait/tests/inout_error/var/not_exists.in.bt:3:5 error: undefined variable where
