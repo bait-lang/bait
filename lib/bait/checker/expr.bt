@@ -220,7 +220,7 @@ fun (mut c Checker) if_expr(node ast.IfExpr) ast.Type {
 		if not node.has_else or i < node.branches.length - 1 {
 			cond_type := c.expr(b.cond)
 			if cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
-				c.warn('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
+				c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
 			}
 		}
 		c.open_scope()
