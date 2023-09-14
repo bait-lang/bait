@@ -11,6 +11,7 @@ import os
 // List of commands implemented as tool
 const TOOLS := [
 	'ast',
+	'init',
 	'self',
 	'up',
 	'symlink',

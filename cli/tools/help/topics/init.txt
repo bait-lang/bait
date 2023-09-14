@@ -1,0 +1,5 @@
+Usage:
+  bait init [name]
+
+If name is given, set up a new Bait project in a new directory of that name.
+Otherwise use the current directory.

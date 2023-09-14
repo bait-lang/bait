@@ -1,0 +1,60 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package main
+
+import os
+
+const ROOT := os.dir($FILE) + '/templates'
+
+// TODO add support to let user choose template
+fun main() {
+	args := os.user_args()
+	if args.length == 0 {
+		create_git_repo('.')
+		copy_template('hello_world', '.')
+		return
+	}
+
+	name := args[0]
+	copy_template('hello_world', name)
+	create_git_repo(name)
+}
+
+fun create_git_repo(dir string) {
+	if not os.is_dir('${dir}/.git') {
+		res := os.exec('git init ${dir}')
+		if res.code != 0 {
+			eprintln('Failed to create git repository')
+			exit(1)
+		}
+	}
+}
+
+fun copy_template(template string, dest string) {
+	copy_files(os.join_path(ROOT, [template]), dest)
+}
+
+fun copy_files(src string, dest string) {
+	os.mkdir(dest)
+
+	for file in os.ls(src) {
+		path := '${src}/${file}'
+		if os.is_dir(path) {
+			copy_files(path, '${dest}/${file}')
+			continue
+		}
+
+		content := render_template(os.read_file(path), map{
+			'name': dest
+		})
+		os.write_file('${dest}/${file}', content)
+	}
+}
+
+fun render_template(text string, data map[string]string) string {
+	mut res := text
+	for key, value in data {
+		res = res.replace('\${${key}}', value)
+	}
+	return res
+}

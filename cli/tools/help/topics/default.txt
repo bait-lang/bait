@@ -14,6 +14,8 @@ Important Commands:
   run <path>    Build and execute files or projects. Delete the executable afterwards.
   test <dir>    Run all tests in the given directory.
 
+  init          Prepare the file and folder structure for a new project.
+
   self          Recompile bait.
   up            Update to the latest git commit.
   version       Print the version text.
@@ -26,4 +28,4 @@ General Options:
 
 Use "bait help other" to see less often used commands.
 Use "bait help <command>" for more information about some commands.
-Right now only build, run, self and up have detailed help.
+Right now only build, run, init, self and up have detailed help.
