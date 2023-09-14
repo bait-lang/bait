@@ -1,6 +1,10 @@
 struct Foo {}
 
-fun bar(arg string){}
+fun call_me(arg string){}
 
-f := Foo{}
-bar(f.whatever)
+fun main() {
+	f := Foo{}
+	call_me(f.bad1)
+
+	if 123 == f.bad2 {}
+}

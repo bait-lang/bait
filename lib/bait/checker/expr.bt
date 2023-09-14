@@ -353,7 +353,7 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
 			c.error('${sym.name} has no field ${node.field_name}', node.pos)
-			return ast.VOID_TYPE
+			return ast.PLACEHOLDER_TYPE
 		}
 
 		if not field.is_pub and sym.pkg != c.pkg {

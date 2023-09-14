@@ -1,1 +1,2 @@
-lib/bait/tests/inout_error/struct/no_field.in.bt:6:6 error: Foo has no field whatever
+lib/bait/tests/inout_error/struct/no_field.in.bt:7:11 error: Foo has no field bad1
+lib/bait/tests/inout_error/struct/no_field.in.bt:9:13 error: Foo has no field bad2

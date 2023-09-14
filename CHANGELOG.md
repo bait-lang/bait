@@ -18,6 +18,7 @@ _unreleased_
 - Reduce noisy errors in the following cases
   - Assign to undefined ident
   - Method call on undefined ident
+  - Use of unknown struct field in infix
 
 ### Standard Library
 - builtin:
