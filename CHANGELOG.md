@@ -19,6 +19,12 @@ _unreleased_
   - Assign to undefined ident
   - Method call on undefined ident
 
+### Standard Library
+- builtin:
+  - New map method `values()`
+- os:
+  - `is_dir(path)`: Return false if path does not exist
+
 ### Other Changes
 - Interop: Support for declaring JS structs, methods, enums and type aliases
 - Various refactorings

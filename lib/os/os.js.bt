@@ -80,6 +80,10 @@ pub fun dir(path string) string {
 }
 
 pub fun is_dir(path string) bool {
+	if not exists(path) {
+		return false
+	}
+
 	return #JS.'JS.fs.lstatSync(path.str).isDirectory()' as bool
 }
 
