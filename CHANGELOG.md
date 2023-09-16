@@ -23,6 +23,11 @@ _unreleased_
 ### CLI and Tooling
 - Add `init` tool to setup new projects
 
+### Testing
+- `bait.util.testing`: Many BuildRunner improvements
+  - New field `oks` to check number of successful runs
+  - Add capbility to use `build_all_in_root` for directories
+
 ### Standard Library
 - builtin:
   - New map method `values()`

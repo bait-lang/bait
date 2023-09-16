@@ -7,7 +7,10 @@ import os
 pub struct BuildRunner{
 	root string
 pub mut:
+	oks i32
 	fails i32
+	only_dirs bool
+	dir_suffix string
 global:
 	cmd_options string
 }
@@ -18,6 +21,7 @@ pub fun (mut runner BuildRunner) build_single(name string) {
 
 	if code == 0 {
 		println('OK ${name}')
+		runner.oks += 1
 		return
 	}
 
@@ -26,12 +30,16 @@ pub fun (mut runner BuildRunner) build_single(name string) {
 }
 
 pub fun (mut runner BuildRunner) build_all_in_root() {
-	files := os.ls(runner.root)
-	for file in files {
-		if not file.ends_with('.bt') {
-			continue
-		}
+	paths := os.ls(runner.root)
+	for path in paths {
+		if path.ends_with('.bt') {
+			if runner.only_dirs {
+				continue
+			}
 
-		runner.build_single(file)
+			runner.build_single(path)
+		} else if runner.only_dirs {
+			runner.build_single(path + runner.dir_suffix)
+		}
 	}
 }
