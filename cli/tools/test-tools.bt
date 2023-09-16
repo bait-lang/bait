@@ -1,0 +1,17 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package main
+
+import os
+
+const DIR := os.dir($FILE)
+
+fun main() {
+	mut fails := 0
+
+	fails += os.system('node ${$BAITEXE} test ${DIR}')
+
+	if fails > 0 {
+		exit(1)
+	}
+}

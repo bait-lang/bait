@@ -22,6 +22,7 @@ _unreleased_
 
 ### CLI and Tooling
 - Add `init` tool to setup new projects
+- Add `test-tools` to run all tool tests
 
 ### Testing
 - `bait.util.testing`: Many BuildRunner improvements
