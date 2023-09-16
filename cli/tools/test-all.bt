@@ -4,7 +4,7 @@ package main
 
 import os
 
-const TOOLS := ['build-examples', 'build-tools', 'test-lib']
+const TOOLS := ['build-examples', 'build-tools', 'test-lib', 'test-tools']
 
 const TOOLS_WITH_ARGS := map{
 	'check-md': ['docs/docs.md', 'README.md']
@@ -12,6 +12,7 @@ const TOOLS_WITH_ARGS := map{
 
 fun main() {
 	mut fails := 0
+
 	for tool in TOOLS {
 		cmd := 'node ${$BAITEXE} ${tool}'
 		code := os.system(cmd)
@@ -19,6 +20,7 @@ fun main() {
 			fails += 1
 		}
 	}
+
 	for tool, args in TOOLS_WITH_ARGS {
 		for arg_string in args {
 			cmd := 'node ${$BAITEXE} ${tool} ${arg_string}'
@@ -28,6 +30,7 @@ fun main() {
 			}
 		}
 	}
+
 	if fails > 0 {
 		exit(1)
 	}

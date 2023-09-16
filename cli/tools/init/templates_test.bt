@@ -1,0 +1,15 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+import os
+import bait.util.testing
+
+fun test_templates_compile() {
+	mut runner := testing.BuildRunner{
+		root = os.dir($FILE) + '/templates'
+		only_dirs = true
+		dir_suffix = '/src'
+	}
+	runner.build_all_in_root()
+	assert runner.oks == 1
+}

@@ -8,8 +8,8 @@ All notable changes will be documented in this file.
 _unreleased_
 
 ### Generics
-- Check concrete types for one generic match
-- Generate concrete functions for both backends
+- Check that concrete types for each generic type match
+- Generate concrete functions on both backends
 - Fix invalid error that a generic type is private
 
 ### Error Checks
@@ -19,6 +19,15 @@ _unreleased_
   - Assign to undefined ident
   - Method call on undefined ident
   - Use of unknown struct field in infix
+
+### CLI and Tooling
+- Add `init` tool to setup new projects
+- Add `test-tools` to run all tool tests
+
+### Testing
+- `bait.util.testing`: Many BuildRunner improvements
+  - New field `oks` to check number of successful runs
+  - Add capbility to use `build_all_in_root` for directories
 
 ### Standard Library
 - builtin:
