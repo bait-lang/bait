@@ -70,6 +70,8 @@ pub fun compile(prefs preference.Prefs) i32 {
 	// Get and parse all imports. Use classic for, as new elements are added to `files`
 	for i:=0; i<files.length; i+=1 {
 		f := files[i]
+		fdir := os.dir(f.path)
+
 		for imp in f.imports {
 			if imp.lang != .bait {
 				continue
@@ -79,7 +81,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 
 			// Get all imported files and filter out already parsed ones
 			// TODO possible perf improvement: prefilter against list of parsed packages before file collection
-			import_dir := resolve_import(imp.name.replace('.', os.PATH_SEP))
+			import_dir := resolve_import(fdir, imp.name.replace('.', os.PATH_SEP))
 			mut imp_paths := b.collect_bait_files(import_dir)
 			if imp_paths.length == 0 {
 				errors.generic_error('package ${imp.name} contains no Bait files')
@@ -235,9 +237,16 @@ fun (b Builder) print_errors_and_warnings() bool {
 	return nr_errors > 0 or (b.prefs.warn_is_error and nr_warns > 0)
 }
 
-fun resolve_import(pkg string) string {
-	// Usually the exe and lib have the same root dir
-	dir := os.resource_abs_path(os.join_path("lib", [pkg]))
+// Resolve an import to absolute file path
+fun resolve_import(base_dir string, pkg string) string {
+	// Search next to the current file
+	mut dir := os.join_path(base_dir, [pkg])
+	if os.exists(dir) {
+		return dir
+	}
+
+	// Search in std lib
+	dir = os.resource_abs_path(os.join_path("lib", [pkg]))
 	if os.exists(dir) {
 		return dir
 	}

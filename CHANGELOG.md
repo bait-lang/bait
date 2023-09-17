@@ -37,6 +37,7 @@ _unreleased_
   - `is_dir(path)`: Return false if path does not exist
 
 ### Other Changes
+- Imports: Look for imports next to the respective file first
 - Interop: Support for declaring JS structs, methods, enums and type aliases
 - Various refactorings
 - Documentation improvements
