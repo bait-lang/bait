@@ -33,6 +33,7 @@ _unreleased_
 - builtin:
   - New map method `values()`
 - os:
+  - Add `input(prompt) string` function _[JS backend]_
   - `is_dir(path)`: Return false if path does not exist
 
 ### Other Changes
@@ -62,7 +63,7 @@ _27 August 2023_
 
 ### Standard Library
 - builtin:
-  - New string methods `split(delim)`, `trim_left(cutset)`, `trim_right(cutset)`  _[JS backend]_
+  - New string methods `split(delim)`, `trim_left(cutset)`, `trim_right(cutset)` _[JS backend]_
   - New array method `last()`
 - `os`
   - Add `PATH_SEP` constant

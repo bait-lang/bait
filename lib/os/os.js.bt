@@ -167,6 +167,15 @@ pub fun platform() string {
 	return from_js_string(#JS.process.platform)
 }
 
+pub fun input(prompt string) string {
+	#JS.'const fd = JS.fs.openSync("/dev/stdin", "rs")
+	JS.process.stdout.write(prompt.str)
+	const buf = Buffer.alloc(1024)
+	const bytesRead = JS.fs.readSync(fd, buf, 0, buf.length)
+	const input = buf.slice(0, bytesRead).toString()'
+	return from_js_string(#JS.'input' as #JS.String)
+}
+
 pub struct Result {
 pub:
 	code i32
