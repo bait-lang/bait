@@ -75,6 +75,14 @@ pub fun (n u64) str() string {
 	return from_js_string(#JS.'n.toString()' as #JS.String)
 }
 
+pub fun (n f32) str() string {
+	return from_js_string(#JS.'n.toString()' as #JS.String)
+}
+
+pub fun (n f64) str() string {
+	return from_js_string(#JS.'n.toString()' as #JS.String)
+}
+
 pub fun (c u8) is_capital() bool {
 	return c >= `A` and c <= `Z`
 }
