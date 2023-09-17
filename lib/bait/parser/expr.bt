@@ -413,11 +413,23 @@ fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
 	return p.ident(lang)
 }
 
-fun (mut p Parser) number_literal()ast.IntegerLiteral{
+fun (mut p Parser) number_literal() ast.Expr {
 	pos := p.tok.pos
 	p.next()
-	return ast.IntegerLiteral{
-		val = p.prev_tok.val
+
+	if p.tok.kind != .dot {
+		return ast.IntegerLiteral{
+			val = p.prev_tok.val
+			pos = pos
+		}
+	}
+
+	mut val := p.prev_tok.val + '.'
+	p.next()
+	p.check(.number)
+	val += p.prev_tok.val
+	return ast.FloatLiteral{
+		val = val
 		pos = pos
 	}
 }

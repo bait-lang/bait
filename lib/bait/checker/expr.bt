@@ -22,6 +22,8 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 		return c.comp_time_var(expr)
 	} else if expr is ast.EnumVal {
 		return c.enum_val(expr)
+	} else if expr is ast.FloatLiteral {
+		return ast.F64_TYPE
 	} else if expr is ast.HashExpr {
 		return c.hash_expr(expr)
 	} else if expr is ast.Ident {

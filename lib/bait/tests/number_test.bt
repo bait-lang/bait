@@ -1,0 +1,7 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Codeubject to the terms of the Mozilla Public License 2.0.
+
+fun test_floats() {
+	f := 1.23
+	assert f == 1.23
+}

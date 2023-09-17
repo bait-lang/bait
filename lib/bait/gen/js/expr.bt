@@ -25,6 +25,8 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		g.comp_time_var(expr)
 	} else if expr is ast.EnumVal {
 		g.enum_val(expr)
+	} else if expr is ast.FloatLiteral {
+		g.float_literal(expr)
 	} else if expr is ast.HashExpr {
 		g.hash_expr(expr)
 	} else if expr is ast.Ident {
@@ -55,7 +57,10 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		g.struct_init(expr)
 	} else if expr is ast.TypeOf {
 		g.type_of(expr)
-	} else {}
+	} else {
+		errors.error(g.path, expr.pos, 'cannot gen ${expr}')
+		exit(1)
+	}
 }
 
 fun (mut g Gen) expr_string(expr ast.Expr) string {
@@ -143,6 +148,10 @@ fun (mut g Gen) comp_time_var(node ast.CompTimeVar){
 
 fun (mut g Gen) enum_val(node ast.EnumVal) {
 	g.write(js_name(node.name) + '.' + node.val)
+}
+
+fun (mut g Gen) float_literal(node ast.FloatLiteral){
+	g.write(node.val)
 }
 
 fun (mut g Gen) hash_expr(node ast.HashExpr) {
