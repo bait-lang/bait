@@ -28,6 +28,7 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 
 // x is Variant
 fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
+	// Smartcast variable
 	if node.left is ast.Ident {
 		mut right := node.right as ast.Ident
 		if not right.name.contains('.') and right.pkg != 'main' {
@@ -39,6 +40,7 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 		return ast.BOOL_TYPE
 	}
 
+	// Smartcast struct field
 	if node.left is ast.SelectorExpr {
 		mut right := node.right as ast.Ident
 		if not right.name.contains('.') and right.pkg != 'main' {
