@@ -39,7 +39,8 @@ _unreleased_
 
 ### Other Changes
 - Add support for float literals _[JS backend]_
-- Smartcast: Fix scope of if conditions
+- checker: Fix scope of smartcasted if conditions
+- gen: Escape reserved JS keywords in the `for ... in` loop
 - Imports: Look for imports next to the respective file first
 - Interop: Support for declaring JS structs, methods, enums and type aliases
 - Various refactorings
