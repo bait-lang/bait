@@ -46,14 +46,14 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	const space = " ".repeat(indent * 4)
 	let s = "${sym.name}{"\n'
 		if info.fields.length > 0 {
-			g.fun_decls_out += 's += "\\n"\n'
+			g.fun_decls_out += '\ts += "\\n"\n'
 		}
 		for field in info.fields {
 			str_fun_name := g.get_str_fun(field.typ)
-			g.fun_decls_out += 's += space + "    ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
+			g.fun_decls_out += '\ts += space + "    ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
 		}
-		g.fun_decls_out += 'return from_js_string(s + space + "}")
-}\n'
+		g.fun_decls_out += '\treturn from_js_string(s + space + "}")
+}\n\n'
 		return
 	}
 
@@ -79,7 +79,20 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		return
 	}
 
-	errors.generic_error('cannot convert ${sym.name} to string')
-	// exit(1)
+	if sym.kind == .sum_type {
+		info := sym.info as ast.SumTypeInfo
+		g.fun_decls_out += 'function ${name}(it, indent) {\n'
+		for var in info.variants {
+			var_sym := g.table.get_sym(var)
+			g.fun_decls_out += '\tif (it instanceof ${var_sym.name}) {
+		return ${g.get_str_fun(var)}(it, indent)
+	}
+'
+		}
+		g.fun_decls_out += '}\n\n'
 	return
+	}
+
+	errors.generic_error('cannot convert ${sym.name} to string')
+	exit(1)
 }

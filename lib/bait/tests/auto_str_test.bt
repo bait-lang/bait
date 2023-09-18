@@ -39,3 +39,16 @@ fun test_nested_struct() {
     }
 }'
 }
+
+type Sum := Foo | Bar
+
+fun sum() Sum{
+	return Bar{}
+}
+
+fun test_sumtype() {
+	s := sum()
+	assert s.str() == 'Bar{
+    f = 0
+}'
+}
