@@ -426,8 +426,8 @@ fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 		return
 	}
 
-	// TODO change iinto error like C backend
-	g.write('from_js_string(')
+	name := g.get_str_fun(typ)
+	g.write('${name}(')
 	g.expr(expr)
-	g.write('.toString())')
+	g.write(')')
 }
