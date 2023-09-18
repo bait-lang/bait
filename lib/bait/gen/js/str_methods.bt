@@ -6,7 +6,7 @@ import bait.ast
 import bait.errors
 
 fun (mut g Gen) get_str_fun(typ ast.Type) string {
-	g.needed_str_funs.push(typ)
+	g.table.needed_str_funs.push(typ)
 	sym := g.table.get_sym(typ)
 	return js_name('${sym.name}_str')
 }

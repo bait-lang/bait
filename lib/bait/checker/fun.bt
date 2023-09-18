@@ -144,6 +144,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 				return ast.STRING_TYPE
 			}
 
+			c.table.needed_str_funs.push(left_expr_type)
 			node.return_type = ast.STRING_TYPE
 			node.left_type = left_expr_type
 			return node.return_type

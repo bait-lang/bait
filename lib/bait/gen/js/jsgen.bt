@@ -24,7 +24,6 @@ mut:
 	indent i32
 	empty_line bool
 	foreign_imports map[string]string // alias: name
-	needed_str_funs []ast.Type
 	generated_str_funs []ast.Type
 	tmp_counter i32
 	cur_concrete_types map[string]ast.Type
@@ -58,7 +57,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.main_call()
 	}
 
-	for typ in g.needed_str_funs {
+	for typ in g.table.needed_str_funs {
 		g.generate_str_fun(typ)
 	}
 
