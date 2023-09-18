@@ -40,19 +40,19 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		return
 	}
 
-	// TODO fix indent
 	if sym.kind == .struct_ {
 		info := sym.info as ast.StructInfo
-		g.fun_decls_out += 'function ${name}(it) {
-let s = "${sym.name}{"\n'
+		g.fun_decls_out += 'function ${name}(it, indent) {
+	const space = " ".repeat(indent * 4)
+	let s = "${sym.name}{"\n'
 		if info.fields.length > 0 {
 			g.fun_decls_out += 's += "\\n"\n'
 		}
 		for field in info.fields {
 			str_fun_name := g.get_str_fun(field.typ)
-			g.fun_decls_out += 's += "    ${field.name}: " + ${str_fun_name}(it.${field.name}).str + "\\n"\n'
+			g.fun_decls_out += 's += space + "    ${field.name}: " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
 		}
-		g.fun_decls_out += 'return from_js_string(s + "}")
+		g.fun_decls_out += 'return from_js_string(s + space + "}")
 }\n'
 		return
 	}

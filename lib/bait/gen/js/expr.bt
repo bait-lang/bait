@@ -429,5 +429,5 @@ fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 	name := g.get_str_fun(typ)
 	g.write('${name}(')
 	g.expr(expr)
-	g.write(')')
+	g.write(', 0)')
 }
