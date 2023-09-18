@@ -105,10 +105,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 
 	// Handle special builtin functions
 	if node.name == 'println' or node.name == 'eprintln' {
-		// TODO check arg can be printed
-		for mut arg in node.args {
-			arg.typ = c.expr(arg.expr)
-		}
+		node.args[0].typ = c.expr(node.args[0].expr)
 		return ast.VOID_TYPE
 	}
 
