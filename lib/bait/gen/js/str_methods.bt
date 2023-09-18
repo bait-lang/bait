@@ -57,6 +57,28 @@ let s = "${sym.name}{"\n'
 		return
 	}
 
+	if sym.kind == .map {
+		info := sym.info as ast.MapInfo
+		val_str := g.get_str_fun(info.val_type)
+
+		g.fun_decls_out += 'function ${name}(m) {
+	let s = "{"
+	let i = 0
+	for (const [k, v] of m.data.entries()) {
+		s += `\'\${k}\'`
+		s += ": "
+		s += ${val_str}(v).str
+
+		i++
+		if (i < m.length) {
+			s += ", "
+		}
+	}
+	return from_js_string(s + "}")
+}\n'
+		return
+	}
+
 	errors.generic_error('cannot convert ${sym.name} to string')
 	// exit(1)
 	return
