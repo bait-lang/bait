@@ -22,3 +22,10 @@ pub fun panic(msg string) {
 fun js_stacktrace() string {
 	return from_js_string(#JS.'new Error().stack' as #JS.String)
 }
+
+fun (b bool) str() string {
+	if b {
+		return 'true'
+	}
+	return 'false'
+}

@@ -36,20 +36,7 @@ fun (mut g Gen) struct_decl(node ast.StructDecl){
 	}
 	g.indent -= 1
 	g.writeln('}')
-	g.writeln('${jsname}.prototype = {')
-	g.indent += 1
-	// TODO fix indent of nested structs
-	g.writeln('toString() {')
-	g.write('\treturn \`${jsname}{\n')
-	for field in node.fields {
-		g.write('    ${field.name} = \$')
-		g.write('{this.${field.name}.toString()}\n')
-	}
-	g.writeln('}\`}')
-	g.indent -= 1
-	g.writeln('}')
 }
-
 
 fun (mut g Gen) struct_init(node ast.StructInit) {
 	g.write('new ' + js_name(node.name) + '({')
