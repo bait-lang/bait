@@ -50,7 +50,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		}
 		for field in info.fields {
 			str_fun_name := g.get_str_fun(field.typ)
-			g.fun_decls_out += 's += space + "    ${field.name}: " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
+			g.fun_decls_out += 's += space + "    ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
 		}
 		g.fun_decls_out += 'return from_js_string(s + space + "}")
 }\n'
