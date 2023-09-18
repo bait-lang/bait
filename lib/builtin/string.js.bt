@@ -176,6 +176,10 @@ pub fun (s string) toF64() f64 {
 	return #JS.'parseFloat(s.str)' as f64
 }
 
+fun (s string) str() string {
+	return s
+}
+
 @overload: '+'
 fun (a string) add (b string) string {
 	return from_js_string(a.str + b.str)

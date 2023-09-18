@@ -11,16 +11,16 @@ fun (mut g Gen) get_str_fun(typ ast.Type) string {
 	return js_name('${sym.name}_str')
 }
 
-fun (mut g Gen) generate_str_fun(typ ast.Type) string {
+fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	sym := g.table.get_sym(typ)
 	name := js_name('${sym.name}_str')
 	if g.generated_str_funs.contains(typ) {
-		return name
+		return
 	}
 
 	str_def := g.table.get_method(sym, 'str')
 	if str_def.name.length > 0 {
-		return name
+		return
 	}
 
 	if sym.kind == .array {
@@ -36,11 +36,28 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) string {
 		}
 	}
 	return from_js_string(s + "]")
-}'
-		return name
+}\n'
+		return
+	}
+
+	// TODO fix indent
+	if sym.kind == .struct_ {
+		info := sym.info as ast.StructInfo
+		g.fun_decls_out += 'function ${name}(it) {
+let s = "${sym.name}{"\n'
+		if info.fields.length > 0 {
+			g.fun_decls_out += 's += "\\n"\n'
+		}
+		for field in info.fields {
+			str_fun_name := g.get_str_fun(field.typ)
+			g.fun_decls_out += 's += "    ${field.name}: " + ${str_fun_name}(it.${field.name}).str + "\\n"\n'
+		}
+		g.fun_decls_out += 'return from_js_string(s + "}")
+}\n'
+		return
 	}
 
 	errors.generic_error('cannot convert ${sym.name} to string')
 	// exit(1)
-	return ''
+	return
 }
