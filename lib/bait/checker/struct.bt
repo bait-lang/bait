@@ -38,11 +38,11 @@ fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 	sym := c.table.get_sym(node.typ)
 	if sym.kind == .placeholder {
 		c.error('undefined struct ${node.name}', node.pos)
-		return ast.VOID_TYPE
+		return ast.PLACEHOLDER_TYPE
 	}
 	if not sym.is_pub and sym.name.contains('.') and sym.pkg != c.pkg {
 		c.error('struct ${sym.name} is private', node.pos)
-		return ast.VOID_TYPE
+		return ast.PLACEHOLDER_TYPE
 	}
 
 	c.check_init_field_values(node, sym.info as ast.StructInfo)

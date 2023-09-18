@@ -14,6 +14,7 @@ _unreleased_
 
 ### Error Checks
 - If conditions must be of type bool
+- Cannot assign from a void function call
 - Prevent redefinition of ident by a function name
 - Reduce noisy errors in the following cases
   - Assign to undefined ident

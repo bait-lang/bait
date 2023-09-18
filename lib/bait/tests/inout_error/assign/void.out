@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/assign/void.in.bt:3:4 error: cannot assign void to variable
