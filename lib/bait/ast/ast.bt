@@ -5,7 +5,7 @@ package ast
 import bait.token
 import bait.errors
 
-type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt
+type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | EmptyStmt
 
 type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | CompTimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
 
@@ -403,6 +403,11 @@ pub:
 }
 
 pub struct EmptyExpr{
+pub:
+	pos token.Pos
+}
+
+pub struct EmptyStmt{
 pub:
 	pos token.Pos
 }

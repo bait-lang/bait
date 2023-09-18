@@ -43,7 +43,8 @@ fun (mut c Checker) stmt(stmt ast.Stmt){
 	} else if stmt is ast.TypeDecl {
 		c.type_decl(stmt)
 	} else {
-		c.error('unexpected stmt: ${stmt}', stmt.pos)
+		s := stmt as ast.EmptyStmt
+		c.error('unexpected stmt: ${s}', s.pos)
 	}
 	c.expected_type = ast.VOID_TYPE
 }
@@ -70,7 +71,8 @@ fun (mut c Checker) expr_stmt(node ast.ExprStmt) {
 	if expr is ast.CallExpr or expr is ast.IfExpr or expr is ast.MatchExpr or expr is ast.HashExpr {
 		return
 	}
-	c.error('expression evaluated but not used', expr.pos)
+	e := expr as ast.EmptyExpr
+	c.error('expression evaluated but not used', e.pos)
 }
 
 fun (c Checker) enum_decl(node ast.EnumDecl) {

@@ -1,0 +1,30 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+type Sum := Foo | Bar
+
+struct Foo{}
+struct Bar{}
+
+fun get_sum_foo() Sum {
+	return Foo{}
+}
+
+fun test_if_cond_scope() {
+	mut c := 0
+	f := get_sum_foo()
+
+	if f is Bar {
+		assert false
+	} else {
+		c += 1
+		assert typeof(f) == 'Sum'
+	}
+
+	if f is Foo {
+		c += 1
+		assert typeof(f) == 'Foo'
+	}
+
+	assert c == 2
+}

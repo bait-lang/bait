@@ -55,7 +55,8 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 	} else if expr is ast.TypeOf {
 		return c.type_of(expr)
 	} else {
-		c.error('unexpected expr: ${expr}', expr.pos)
+		e := expr as ast.EmptyExpr
+		c.error('unexpected expr: ${e}', e.pos)
 	}
 }
 
@@ -219,13 +220,13 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 
 fun (mut c Checker) if_expr(node ast.IfExpr) ast.Type {
 	for i, b in node.branches {
+		c.open_scope()
 		if not node.has_else or i < node.branches.length - 1 {
 			cond_type := c.expr(b.cond)
 			if cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
 				c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
 			}
 		}
-		c.open_scope()
 		c.stmts(b.stmts)
 		c.close_scope()
 	}
