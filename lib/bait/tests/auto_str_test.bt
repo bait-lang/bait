@@ -52,3 +52,17 @@ fun test_sumtype() {
     f = 0
 }'
 }
+
+enum Color{
+	red
+	green
+	blue
+}
+
+fun test_enum() {
+	c := Color.red
+	assert c.str() == 'red'
+
+	c2 := Color.blue
+	assert c2.str() == 'blue'
+}

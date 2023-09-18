@@ -93,6 +93,18 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	return
 	}
 
+	if sym.kind == .enum_ {
+		g.fun_decls_out += 'function ${name}(it) {
+	switch(it) {\n'
+		info := sym.info as ast.EnumInfo
+		for val in info.vals {
+			g.fun_decls_out += '\t\tcase ${sym.name}.${val}: return from_js_string("${val}")\n'
+		}
+		g.fun_decls_out += '\t}
+}\n\n'
+		return
+	}
+
 	errors.generic_error('cannot convert ${sym.name} to string')
 	exit(1)
 }
