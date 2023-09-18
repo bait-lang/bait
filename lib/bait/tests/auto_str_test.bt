@@ -1,0 +1,41 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+fun test_array() {
+	a := [true, false, true]
+	assert a.str() == "[true, false, true]"
+}
+
+fun test_map() {
+	m := map{
+		'foo': 62
+		'bar': 31
+	}
+	assert m.str() == "{'foo': 62, 'bar': 31}"
+}
+
+struct Bar {
+	f f64
+}
+
+struct Foo {
+	b Bar
+}
+
+fun test_struct() {
+	b := Bar {
+		f = 3.14
+	}
+	assert b.str() == 'Bar{
+    f = 3.14
+}'
+}
+
+fun test_nested_struct() {
+	f := Foo {}
+	assert f.str() == 'Foo{
+    b = Bar{
+        f = 0
+    }
+}'
+}
