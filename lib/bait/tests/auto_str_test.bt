@@ -26,18 +26,12 @@ fun test_struct() {
 	b := Bar {
 		f = 3.14
 	}
-	assert b.str() == 'Bar{
-    f = 3.14
-}'
+	assert b.str() == 'Bar{\n    f = 3.14\n}'
 }
 
 fun test_nested_struct() {
 	f := Foo {}
-	assert f.str() == 'Foo{
-    b = Bar{
-        f = 0
-    }
-}'
+	assert f.str() == 'Foo{\n    b = Bar{\n        f = 0\n    }\n}'
 }
 
 type StructAlias := Bar
@@ -45,9 +39,7 @@ type I32Alias := i32
 
 fun test_alias() {
 	x := Bar{} as StructAlias
-	assert x.str() == 'Bar{
-    f = 0
-}'
+	assert x.str() == 'Bar{\n    f = 0\n}'
 
 	y := 42 as I32Alias
 	assert y.str() == '42'
@@ -61,9 +53,7 @@ fun bar_sum() Sum {
 
 fun test_sumtype() {
 	b := bar_sum()
-	assert b.str() == 'Bar{
-    f = 0
-}'
+	assert b.str() == 'Bar{\n    f = 0\n}'
 }
 
 enum Color{
@@ -94,11 +84,7 @@ fun var_sum() SumLoop {
 
 fun test_sumtype_variant_loop() {
 	v := var_sum()
-	assert v.str() == 'Var{
-    s = Bar{
-        f = 0
-    }
-}'
+	assert v.str() == 'Var{\n    s = Bar{\n        f = 0\n    }\n}'
 }
 
 struct SelfRef {
@@ -107,7 +93,5 @@ struct SelfRef {
 
 fun test_recursive_struct() {
 	sr := SelfRef{}
-	assert sr.str() == 'SelfRef{
-    sr = SelfRef{...}
-}'
+	assert sr.str() == 'SelfRef{\n    sr = SelfRef{...}\n}'
 }

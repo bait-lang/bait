@@ -58,8 +58,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 			str_fun_name := g.get_str_fun(field.typ)
 			g.fun_decls_out += '\ts += space + "    ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
 		}
-		g.fun_decls_out += '\treturn from_js_string(s + space + "}")
-}\n\n'
+		g.fun_decls_out += '\treturn from_js_string(s + space + "}")\n}\n\n'
 		return
 	}
 
@@ -115,8 +114,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		for val in info.vals {
 			g.fun_decls_out += '\t\tcase ${js_name(sym.name)}.${val}: return from_js_string("${val}")\n'
 		}
-		g.fun_decls_out += '\t}
-}\n\n'
+		g.fun_decls_out += '\t}\n}\n\n'
 		return
 	}
 
