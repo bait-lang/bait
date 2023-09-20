@@ -18,8 +18,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		return
 	}
 
-	str_def := g.table.get_method(sym, 'str')
-	if str_def.name.length > 0 {
+	if sym.has_method('str') {
 		return
 	}
 
@@ -114,7 +113,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	switch(it) {\n'
 		info := sym.info as ast.EnumInfo
 		for val in info.vals {
-			g.fun_decls_out += '\t\tcase ${sym.name}.${val}: return from_js_string("${val}")\n'
+			g.fun_decls_out += '\t\tcase ${js_name(sym.name)}.${val}: return from_js_string("${val}")\n'
 		}
 		g.fun_decls_out += '\t}
 }\n\n'
