@@ -19,10 +19,12 @@ mut:
 	pkg string
 	type_defs_out string
 	global_out string
+	fun_decls_out string
 	out string
 	indent i32
 	empty_line bool
 	foreign_imports map[string]string // alias: name
+	generated_str_funs []ast.Type
 	tmp_counter i32
 	cur_concrete_types map[string]ast.Type
 	cur_fun ast.FunDecl
@@ -39,6 +41,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		empty_line = true
 		tmp_counter = -1
 	}
+
 	for file in files {
 		g.path = file.path
 		g.pkg = file.pkg_decl.full_name
@@ -46,14 +49,19 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.stmts(file.stmts)
 		g.out += "\n"
 	}
+
 	if pref.is_test {
 		g.gen_test_main()
 	}
 	if not pref.is_library {
 		g.main_call()
 	}
-	headers := g.headers()
-	return headers + g.type_defs_out + g.global_out + '\n' + g.out
+
+	for typ in g.table.needed_str_funs {
+		g.generate_str_fun(typ)
+	}
+
+	return g.headers() + g.type_defs_out + g.global_out + '\n' + g.fun_decls_out + g.out
 }
 
 fun (mut g Gen) process_imports(imports []ast.Import) {
@@ -172,7 +180,7 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 }
 
 fun js_name(n string) string {
-	name := n.replace('.', '__').replace('[]', 'array_')
+	name := n.replace('.', '__').replace('[]', 'array_').replace('[', '_').replace(']', '_')
 	if JS_RESERVED.contains(name) {
 		return 'bait_${name}'
 	}

@@ -1,0 +1,123 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+package js
+
+import bait.ast
+import bait.errors
+
+fun (mut g Gen) get_str_fun(typ ast.Type) string {
+	g.table.needed_str_funs.push(typ)
+	sym := g.table.get_sym(typ)
+	return js_name('${sym.name}_str')
+}
+
+fun (mut g Gen) generate_str_fun(typ ast.Type) {
+	sym := g.table.get_sym(typ)
+	name := js_name('${sym.name}_str')
+	if g.generated_str_funs.contains(typ) {
+		return
+	}
+
+	if sym.has_method('str') {
+		return
+	}
+
+	g.generated_str_funs.push(typ)
+
+	if sym.kind == .array {
+		info := sym.info as ast.ArrayInfo
+		el_str := g.get_str_fun(info.elem_type)
+
+		g.fun_decls_out += 'function ${name}(a) {
+	let s = "["
+	for (let i = 0; i < a.length; i++) {
+		s += ${el_str}(a.data[i]).str
+		if (i < a.length - 1) {
+			s += ", "
+		}
+	}
+	return from_js_string(s + "]")
+}\n'
+		return
+	}
+
+	if sym.kind == .struct_ {
+		info := sym.info as ast.StructInfo
+		g.fun_decls_out += 'function ${name}(it, indent) {
+	const space = " ".repeat(indent * 4)
+	let s = "${sym.name}{"\n'
+		if info.fields.length > 0 {
+			g.fun_decls_out += '\ts += "\\n"\n'
+		}
+		for field in info.fields {
+			if typ == field.typ {
+				g.fun_decls_out += '\ts += space + "    ${field.name} = ${sym.name}{...}\\n"\n'
+				continue
+			}
+
+			str_fun_name := g.get_str_fun(field.typ)
+			g.fun_decls_out += '\ts += space + "    ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
+		}
+		g.fun_decls_out += '\treturn from_js_string(s + space + "}")\n}\n\n'
+		return
+	}
+
+	if sym.kind == .map {
+		info := sym.info as ast.MapInfo
+		val_str := g.get_str_fun(info.val_type)
+
+		g.fun_decls_out += 'function ${name}(m) {
+	let s = "{"
+	let i = 0
+	for (const [k, v] of m.data.entries()) {
+		s += `\'\${k}\'`
+		s += ": "
+		s += ${val_str}(v).str
+
+		i++
+		if (i < m.length) {
+			s += ", "
+		}
+	}
+	return from_js_string(s + "}")
+}\n'
+		return
+	}
+
+	// TODO alias should print it's own name instead of the aliased type
+	if sym.kind == .alias_type {
+		par_fun_name := g.get_str_fun(sym.parent)
+		g.fun_decls_out += 'function ${name}(it, indent) {
+	return ${par_fun_name}(it, indent)
+}'
+		return
+	}
+
+	if sym.kind == .sum_type {
+		info := sym.info as ast.SumTypeInfo
+		g.fun_decls_out += 'function ${name}(it, indent) {\n'
+		for var in info.variants {
+			var_sym := g.table.get_sym(var)
+			g.fun_decls_out += '\tif (it instanceof ${js_name(var_sym.name)}) {
+		return ${g.get_str_fun(var)}(it, indent)
+	}
+'
+		}
+		g.fun_decls_out += '}\n\n'
+	return
+	}
+
+	if sym.kind == .enum_ {
+		g.fun_decls_out += 'function ${name}(it) {
+	switch(it) {\n'
+		info := sym.info as ast.EnumInfo
+		for val in info.vals {
+			g.fun_decls_out += '\t\tcase ${js_name(sym.name)}.${val}: return from_js_string("${val}")\n'
+		}
+		g.fun_decls_out += '\t}\n}\n\n'
+		return
+	}
+
+	errors.generic_error('cannot convert ${sym.name} to string')
+	exit(1)
+}

@@ -8,14 +8,6 @@ pub:
 	length i32
 }
 
-// For printing strings
-// TODO replace this with a method and attribute?
-#JS.'string.prototype = {
-	toString: function() {
-		return this.str
-	}
-}'
-
 fun (s string) get(i i32) u8 {
 	return u8(s.str.charCodeAt(i as #JS.Number) as #JS.Any)
 }
@@ -182,6 +174,10 @@ pub fun (s string) toI32() i32 {
 
 pub fun (s string) toF64() f64 {
 	return #JS.'parseFloat(s.str)' as f64
+}
+
+fun (s string) str() string {
+	return s
 }
 
 @overload: '+'

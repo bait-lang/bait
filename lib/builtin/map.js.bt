@@ -35,5 +35,5 @@ pub fun (m map) keys() []string {
 }
 
 pub fun (m map) values() []any {
-	return from_js_string_arr(#JS.'Array.from(m.data.values())' as #JS.Array)
+	return from_js_arr(#JS.'Array.from(m.data.values())' as #JS.Array)
 }

@@ -1,0 +1,97 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+
+fun test_array() {
+	a := [true, false, true]
+	assert a.str() == "[true, false, true]"
+}
+
+fun test_map() {
+	m := map{
+		'foo': 62
+		'bar': 31
+	}
+	assert m.str() == "{'foo': 62, 'bar': 31}"
+}
+
+struct Bar {
+	f f64
+}
+
+struct Foo {
+	b Bar
+}
+
+fun test_struct() {
+	b := Bar {
+		f = 3.14
+	}
+	assert b.str() == 'Bar{\n    f = 3.14\n}'
+}
+
+fun test_nested_struct() {
+	f := Foo {}
+	assert f.str() == 'Foo{\n    b = Bar{\n        f = 0\n    }\n}'
+}
+
+type StructAlias := Bar
+type I32Alias := i32
+
+fun test_alias() {
+	x := Bar{} as StructAlias
+	assert x.str() == 'Bar{\n    f = 0\n}'
+
+	y := 42 as I32Alias
+	assert y.str() == '42'
+}
+
+type Sum := Foo | Bar
+
+fun bar_sum() Sum {
+	return Bar{}
+}
+
+fun test_sumtype() {
+	b := bar_sum()
+	assert b.str() == 'Bar{\n    f = 0\n}'
+}
+
+enum Color{
+	red
+	green
+	blue
+}
+
+fun test_enum() {
+	c := Color.red
+	assert c.str() == 'red'
+
+	c2 := Color.blue
+	assert c2.str() == 'blue'
+}
+
+type SumLoop := Bar | Var
+
+struct Var {
+	s SumLoop
+}
+
+fun var_sum() SumLoop {
+	return Var {
+		s = Bar{}
+	}
+}
+
+fun test_sumtype_variant_loop() {
+	v := var_sum()
+	assert v.str() == 'Var{\n    s = Bar{\n        f = 0\n    }\n}'
+}
+
+struct SelfRef {
+	sr SelfRef
+}
+
+fun test_recursive_struct() {
+	sr := SelfRef{}
+	assert sr.str() == 'SelfRef{\n    sr = SelfRef{...}\n}'
+}
