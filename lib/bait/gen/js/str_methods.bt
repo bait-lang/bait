@@ -23,6 +23,8 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		return
 	}
 
+	g.generated_str_funs.push(typ)
+
 	if sym.kind == .array {
 		info := sym.info as ast.ArrayInfo
 		el_str := g.get_str_fun(info.elem_type)
@@ -84,7 +86,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		g.fun_decls_out += 'function ${name}(it, indent) {\n'
 		for var in info.variants {
 			var_sym := g.table.get_sym(var)
-			g.fun_decls_out += '\tif (it instanceof ${var_sym.name}) {
+			g.fun_decls_out += '\tif (it instanceof ${js_name(var_sym.name)}) {
 		return ${g.get_str_fun(var)}(it, indent)
 	}
 '
