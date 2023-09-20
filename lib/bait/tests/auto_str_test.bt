@@ -40,6 +40,19 @@ fun test_nested_struct() {
 }'
 }
 
+type StructAlias := Bar
+type I32Alias := i32
+
+fun test_alias() {
+	x := Bar{} as StructAlias
+	assert x.str() == 'Bar{
+    f = 0
+}'
+
+	y := 42 as I32Alias
+	assert y.str() == '42'
+}
+
 type Sum := Foo | Bar
 
 fun bar_sum() Sum {

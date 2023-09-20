@@ -86,6 +86,15 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		return
 	}
 
+	// TODO alias should print it's own name instead of the aliased type
+	if sym.kind == .alias_type {
+		par_fun_name := g.get_str_fun(sym.parent)
+		g.fun_decls_out += 'function ${name}(it, indent) {
+	return ${par_fun_name}(it, indent)
+}'
+		return
+	}
+
 	if sym.kind == .sum_type {
 		info := sym.info as ast.SumTypeInfo
 		g.fun_decls_out += 'function ${name}(it, indent) {\n'
