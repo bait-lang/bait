@@ -51,6 +51,11 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 			g.fun_decls_out += '\ts += "\\n"\n'
 		}
 		for field in info.fields {
+			if typ == field.typ {
+				g.fun_decls_out += '\ts += space + "    ${field.name} = ${sym.name}{...}\\n"\n'
+				continue
+			}
+
 			str_fun_name := g.get_str_fun(field.typ)
 			g.fun_decls_out += '\ts += space + "    ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
 		}

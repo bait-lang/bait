@@ -40,24 +40,16 @@ fun test_nested_struct() {
 }'
 }
 
-struct Baz {
-	s Sum
-}
+type Sum := Foo | Bar
 
-type Sum := Foo | Bar | Baz
-
-fun sum() Sum{
-	return Baz{
-		s = Bar{}
-	}
+fun bar_sum() Sum {
+	return Bar{}
 }
 
 fun test_sumtype() {
-	s := sum()
-	assert s.str() == 'Baz{
-    s = Bar{
-        f = 0
-    }
+	b := bar_sum()
+	assert b.str() == 'Bar{
+    f = 0
 }'
 }
 
@@ -73,4 +65,36 @@ fun test_enum() {
 
 	c2 := Color.blue
 	assert c2.str() == 'blue'
+}
+
+type SumLoop := Bar | Var
+
+struct Var {
+	s SumLoop
+}
+
+fun var_sum() SumLoop {
+	return Var {
+		s = Bar{}
+	}
+}
+
+fun test_sumtype_variant_loop() {
+	v := var_sum()
+	assert v.str() == 'Var{
+    s = Bar{
+        f = 0
+    }
+}'
+}
+
+struct SelfRef {
+	sr SelfRef
+}
+
+fun test_recursive_struct() {
+	sr := SelfRef{}
+	assert sr.str() == 'SelfRef{
+    sr = SelfRef{...}
+}'
 }
