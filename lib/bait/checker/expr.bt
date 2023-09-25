@@ -125,6 +125,13 @@ fun (mut c Checker) as_cast(mut node ast.AsCast) ast.Type {
 
 	// TODO check cast is possible (e.g. prevent string to i32, ...)
 
+	// Pointer casts
+	// TODO test
+	if expr_type.get_nr_amp() >= 1 and node.target.get_nr_amp() == 0 {
+		c.error('cannot cast to normal type from pointer', node.pos)
+		return expr_type
+	}
+
 	// Smartcast sumtypes
 	// TODO check if expr is part of target
 	if expr_sym.kind == .sum_type and node.expr is ast.Ident {
