@@ -206,7 +206,7 @@ fun (mut g Gen) loop_control_stmt(node ast.LoopControlStmt){
 
 fun (mut g Gen) write_label(label string){
 	if label.length > 0 {
-		g.writeln('${label}: ')
+		g.write('${label}: ')
 	}
 }
 
