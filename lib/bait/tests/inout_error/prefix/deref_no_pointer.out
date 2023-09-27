@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/prefix/deref_no_pointer.in.bt:2:6 error: cannot dereference string

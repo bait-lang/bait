@@ -50,7 +50,7 @@ fun (mut p Parser) expr(precedence i32) ast.Expr {
 		.key_mut {
 			node = p.ident(.bait)
 		}
-		.key_not, .minus {
+		.key_not, .minus, .caret {
 			node = p.prefix_expr()
 		}
 		.key_typeof {

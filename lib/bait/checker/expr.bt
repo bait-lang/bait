@@ -336,6 +336,28 @@ fun (mut c Checker) par_expr(node ast.ParExpr) ast.Type {
 
 fun (mut c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
 	typ := c.expr(node.right)
+	sym := c.table.get_sym(typ)
+
+	// TODO disallow on unsigned numbers too
+	if node.op == .minus and sym.kind != .number {
+		c.error('cannot negate ${c.table.type_name(typ)}', node.pos)
+		return ast.PLACEHOLDER_TYPE
+	}
+
+	if node.op == .key_not and typ != ast.BOOL_TYPE {
+		c.error('cannot use `not` on ${c.table.type_name(typ)}', node.pos)
+		return ast.PLACEHOLDER_TYPE
+	}
+
+	if node.op == .caret {
+		if typ.get_nr_amp() == 0 {
+			c.error('cannot dereference ${c.table.type_name(typ)}', node.pos)
+			return ast.PLACEHOLDER_TYPE
+		}
+
+		return typ.set_nr_amp(typ.get_nr_amp() - 1)
+	}
+
 	return typ
 }
 

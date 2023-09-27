@@ -16,6 +16,9 @@ _unreleased_
 - If conditions must be of type bool
 - Cannot assign from a void function call
 - Prevent redefinition of ident by a function name
+- Prevent invalid prefix exprs
+  - `-` on non-numeric types
+  - `not` on non-bool types
 - Reduce noisy errors in the following cases
   - Assign to undefined ident
   - Method call on undefined ident
@@ -39,6 +42,7 @@ _unreleased_
 
 ### Other Changes
 - Add support for float literals _[JS backend]_
+- Add pointer dereferencing: `^my_ptr`
 - checker: Fix scope of smartcasted if conditions
 - gen: Escape reserved JS keywords in the `for ... in` loop
 - Imports: Look for imports next to the respective file first

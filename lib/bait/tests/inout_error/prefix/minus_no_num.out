@@ -1,0 +1,2 @@
+lib/bait/tests/inout_error/prefix/minus_no_num.in.bt:1:6 error: cannot negate string
+lib/bait/tests/inout_error/prefix/minus_no_num.in.bt:6:6 error: cannot negate bool
