@@ -336,6 +336,13 @@ fun (mut c Checker) par_expr(node ast.ParExpr) ast.Type {
 
 fun (mut c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
 	typ := c.expr(node.right)
+	sym := c.table.get_sym(typ)
+
+	if node.op == .minus and sym.kind != .number {
+		c.error('cannot negate ${c.table.type_name(typ)}', node.pos)
+		return ast.PLACEHOLDER_TYPE
+	}
+
 	return typ
 }
 
