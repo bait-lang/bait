@@ -18,6 +18,7 @@ _unreleased_
 - Prevent redefinition of ident by a function name
 - Prevent invalid prefix exprs
   - `-` on non-numeric types
+  - `not` on non-bool types
 - Reduce noisy errors in the following cases
   - Assign to undefined ident
   - Method call on undefined ident
