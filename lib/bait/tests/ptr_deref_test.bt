@@ -1,0 +1,11 @@
+// Copyright (c) 2023-present Lukas Neubert.
+// This Source Codeubject to the terms of the Mozilla Public License 2.0.
+
+fun test_pointer_deref() {
+	n := 42
+	nptr := n as &i32
+
+	n2 := ^nptr
+	assert typeof(n2) == 'i32'
+	assert n2 == n
+}
