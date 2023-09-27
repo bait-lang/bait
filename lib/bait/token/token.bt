@@ -46,6 +46,7 @@ pub enum TokenKind {
 	lcur
 	rcur
 	amp
+	caret
 	pipe
 	dollar
 	hash
@@ -211,6 +212,7 @@ pub fun (kind TokenKind) js_repr() string {
 pub fun (kind TokenKind) c_repr() string {
 	match kind {
 		.amp { return '&' }
+		.caret { return '*' }
 	}
 	return kind.js_repr()
 }
@@ -252,6 +254,7 @@ pub fun (kind TokenKind) str() string {
 		.lcur { return 'lcur' }
 		.rcur { return 'rcur' }
 		.amp { return 'amp' }
+		.caret { return 'caret' }
 		.pipe { return 'pipe' }
 		.dollar { return 'dollar' }
 		.hash { return 'hash' }
