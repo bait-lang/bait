@@ -31,18 +31,18 @@ pub fun (mut a array) push_many(b array) {
 	a.length += b.length
 }
 
-pub fun (a array) index(val any) i32 {
+pub fun (a array) index[T](val T) i32 {
 	for i := 0; i < a.length; i += 1 {
-		if a.data[i] == val {
+		if a.get(i) as T == val {
 			return i
 		}
 	}
 	return -1
 }
 
-pub fun (a array) last_index(val any) i32 {
+pub fun (a array) last_index[T](val T) i32 {
 	for i := a.length - 1; i >= 0; i -= 1 {
-		if a.data[i] == val {
+		if a.get(i) as T == val {
 			return i
 		}
 	}

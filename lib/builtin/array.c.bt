@@ -82,6 +82,24 @@ pub fun (mut a array) push_many_with_len(data &void, len i32) {
 	a.length += len
 }
 
+pub fun (a array) index[T](val T) i32 {
+	for i := 0; i < a.length; i += 1 {
+		if ^(a.get(i) as &T) == val {
+			return i
+		}
+	}
+	return -1
+}
+
+pub fun (a array) last_index[T](val T) i32 {
+	for i := a.length - 1; i >= 0; i -= 1 {
+		if ^(a.get(i) as &T) == val {
+			return i
+		}
+	}
+	return -1
+}
+
 pub fun (a array) slice(start i32, end i32) array {
 	return array{
 		data = #C.'a.data + start * a.elem_size' as &void

@@ -40,6 +40,7 @@ _unreleased_
 ### Standard Library
 - builtin:
   - New map methods `values() []any` and `clear()`
+  - Implement array methods `index()` and `last_index()` on C backend too
 - os:
   - Add `input(prompt) string` function _[JS backend]_
   - `is_dir(path)`: Return false if path does not exist
