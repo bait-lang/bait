@@ -3,6 +3,7 @@
 package builtin
 
 struct map{
+mut:
 	data #JS.Map
 pub mut:
 	length i32
@@ -36,4 +37,9 @@ pub fun (m map) keys() []string {
 
 pub fun (m map) values() []any {
 	return from_js_arr(#JS.'Array.from(m.data.values())' as #JS.Array)
+}
+
+pub fun (mut m map) clear() {
+	m.length = 0
+	m.data = #JS.'new Map([])' as #JS.Map
 }

@@ -39,7 +39,7 @@ _unreleased_
 
 ### Standard Library
 - builtin:
-  - New map method `values()`
+  - New map methods `values() []any` and `clear()`
 - os:
   - Add `input(prompt) string` function _[JS backend]_
   - `is_dir(path)`: Return false if path does not exist

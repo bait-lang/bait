@@ -15,9 +15,9 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 				g.cur_concrete_types[gn] = conc_types[i]
 			}
 			g.fun_decl(node)
+			g.cur_concrete_types.clear()
 		}
 
-		g.cur_concrete_types = map[string]ast.Type
 		return
 	}
 
