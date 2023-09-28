@@ -108,7 +108,7 @@ fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) a
 	mut expr := ast.EmptyExpr{} as ast.Expr
 	if p.tok.kind == .decl_assign {
 		p.next()
-		expr = p.expr(0)
+		expr = p.expr(.lowest)
 	}
 	field := ast.StructField{
 		name = fname
@@ -151,7 +151,7 @@ fun (mut p Parser) struct_init_field() ast.StructInitField{
 
 	name := p.check_name()
 	p.check(.assign)
-	expr := p.expr(0)
+	expr := p.expr(.lowest)
 
 	return ast.StructInitField{
 		name = name

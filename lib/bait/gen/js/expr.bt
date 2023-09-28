@@ -406,7 +406,8 @@ fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
 
 fun (mut g Gen) type_of(node ast.TypeOf) {
 	sym := g.table.get_sym(node.typ)
-	g.write('from_js_string("' + sym.name + '")')
+	amp := '*'.repeat(node.typ.get_nr_amp())
+	g.write('from_js_string("' + amp + sym.name + '")')
 }
 
 fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {

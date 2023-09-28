@@ -16,7 +16,7 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 fun (g Gen) typ(typ ast.Type) string {
 	sym := g.table.get_sym(typ)
 	if sym.kind == .generic {
-		return g.typ(g.cur_concrete_types[sym.name])
+		return g.typ(g.cur_concrete_types[sym.name].set_nr_amp(typ.get_nr_amp()))
 	}
 
 	name := sym.name.replace('[]', 'array_').replace('C.', '').replace('.', '__')

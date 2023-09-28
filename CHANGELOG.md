@@ -24,6 +24,10 @@ _unreleased_
   - Method call on undefined ident
   - Use of unknown struct field in infix
 
+### Pointers
+- Add pointer dereferencing: `^my_ptr`
+- Fix `typeof()` for pointers
+
 ### CLI and Tooling
 - Add `init` tool to setup new projects
 - Add `test-tools` to run all tool tests
@@ -35,18 +39,18 @@ _unreleased_
 
 ### Standard Library
 - builtin:
-  - New map method `values()`
+  - New map methods `values() []any` and `clear()`
 - os:
   - Add `input(prompt) string` function _[JS backend]_
   - `is_dir(path)`: Return false if path does not exist
 
 ### Other Changes
 - Add support for float literals _[JS backend]_
-- Add pointer dereferencing: `^my_ptr`
 - checker: Fix scope of smartcasted if conditions
 - gen: Escape reserved JS keywords in the `for ... in` loop
 - Imports: Look for imports next to the respective file first
 - Interop: Support for declaring JS structs, methods, enums and type aliases
+- parser: Fix prefix expr precedence
 - Various refactorings
 - Documentation improvements
 

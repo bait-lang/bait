@@ -5,7 +5,7 @@ package parser
 import bait.ast
 import bait.token
 
-fun (mut p Parser) expr(precedence i32) ast.Expr {
+fun (mut p Parser) expr(precedence token.Precedence) ast.Expr {
 	mut node := ast.EmptyExpr{} as ast.Expr
 	match p.tok.kind {
 		.hash {
@@ -71,9 +71,9 @@ fun (mut p Parser) expr(precedence i32) ast.Expr {
 	return p.expr_with_left(node, precedence)
 }
 
-fun (mut p Parser) expr_with_left(left_ ast.Expr, precedence i32) ast.Expr {
+fun (mut p Parser) expr_with_left(left_ ast.Expr, precedence token.Precedence) ast.Expr {
 	mut left := left_
-	for precedence < p.tok.precedence() as i32 {
+	for precedence < p.tok.precedence() {
 		if p.tok.kind == .dot {
 			left = p.dot_expr(left)
 		} else if p.tok.kind == .lbr {
@@ -92,7 +92,7 @@ fun (mut p Parser) expr_with_left(left_ ast.Expr, precedence i32) ast.Expr {
 fun (mut p Parser) expr_list() []ast.Expr{
 	mut exprs := []ast.Expr
 	for true {
-		exprs.push(p.expr(0))
+		exprs.push(p.expr(.lowest))
 		if p.tok.kind != .comma {
 			break
 		}
@@ -119,7 +119,7 @@ fun (mut p Parser) array_init()ast.ArrayInit{
 			for p.tok.kind != .rcur {
 				key := p.check_name()
 				p.check(.assign)
-				expr := p.expr(0)
+				expr := p.expr(.lowest)
 
 				if key == 'length' {
 					length_expr = expr
@@ -144,7 +144,7 @@ fun (mut p Parser) array_init()ast.ArrayInit{
 	// Expressions init, e.g. `[1, 2, 3]`
 	mut exprs := []ast.Expr
 	for p.tok.kind != .rbr {
-		exprs.push(p.expr(0))
+		exprs.push(p.expr(.lowest))
 		if p.tok.kind == .comma {
 			p.next()
 		}
@@ -290,7 +290,7 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 		}
 		p.check(.key_if)
 		p.is_struct_possible = false
-		cond := p.expr(0)
+		cond := p.expr(.lowest)
 		p.is_struct_possible = true
 		stmts := p.parse_block()
 		branches.push(ast.IfBranch{cond = cond stmts = stmts})
@@ -308,7 +308,7 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 fun (mut p Parser) index_expr(left ast.Expr)ast.IndexExpr {
 	pos := p.tok.pos
 	p.check(.lbr)
-	index := p.expr(0)
+	index := p.expr(.lowest)
 	p.check(.rbr)
 	return ast.IndexExpr{
 		left = left
@@ -321,7 +321,7 @@ fun (mut p Parser) infix_expr(left ast.Expr)ast.InfixExpr{
 	pos := p.tok.pos
 	op_tok := p.tok
 	p.next()
-	right := p.expr(op_tok.precedence() as i32)
+	right := p.expr(op_tok.precedence())
 	return ast.InfixExpr{
 		left = left
 		right = right
@@ -344,9 +344,9 @@ fun (mut p Parser) map_init() ast.MapInit{
 	mut vals := []ast.Expr
 	p.check(.lcur)
 	for p.tok.kind != .rcur {
-		keys.push(p.expr(0))
+		keys.push(p.expr(.lowest))
 		p.check(.colon)
-		vals.push(p.expr(0))
+		vals.push(p.expr(.lowest))
 	}
 	p.next()
 	return ast.MapInit{
@@ -361,7 +361,7 @@ fun (mut p Parser) match_expr()ast.MatchExpr{
 	mut branches := []ast.MatchBranch
 	p.check(.key_match)
 	p.is_struct_possible = false
-	cond := p.expr(0)
+	cond := p.expr(.lowest)
 	p.is_struct_possible = true
 	p.check(.lcur)
 	for p.tok.kind != .rcur {
@@ -437,7 +437,7 @@ fun (mut p Parser) number_literal() ast.Expr {
 fun (mut p Parser) par_expr() ast.ParExpr {
 	pos := p.tok.pos
 	p.next()
-	expr := p.expr(0)
+	expr := p.expr(.lowest)
 	p.check(.rpar)
 	return ast.ParExpr{
 		expr = expr
@@ -449,7 +449,7 @@ fun (mut p Parser) prefix_expr()ast.PrefixExpr{
 	pos := p.tok.pos
 	op := p.tok.kind
 	p.next()
-	right := p.expr(0)
+	right := p.expr(.prefix)
 	return ast.PrefixExpr{
 		op = op
 		right = right
@@ -476,7 +476,7 @@ fun (mut p Parser) string_literal()ast.Expr{
 		}
 		p.next()
 		p.check(.lcur)
-		exprs.push(p.expr(0))
+		exprs.push(p.expr(.lowest))
 	}
 	return ast.StringInterLiteral{
 		vals = vals
@@ -489,7 +489,7 @@ fun (mut p Parser) typeof_expr() ast.TypeOf {
 	pos := p.tok.pos
 	p.check(.key_typeof)
 	p.check(.lpar)
-	expr := p.expr(0)
+	expr := p.expr(.lowest)
 	p.check(.rpar)
 	return ast.TypeOf{
 		expr = expr

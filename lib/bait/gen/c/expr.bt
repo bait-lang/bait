@@ -275,7 +275,8 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 
 fun (mut g Gen) type_of(node ast.TypeOf){
 	sym := g.table.get_sym(node.typ)
-	g.write('from_c_string("' + sym.name + '")')
+	amp := '*'.repeat(node.typ.get_nr_amp())
+	g.write('from_c_string("' + amp + sym.name + '")')
 }
 
 fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
@@ -292,6 +293,11 @@ fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 		g.write('${name}_str(')
 		g.expr(expr)
 		g.write(')')
+		return
+	}
+
+	if sym.kind == .generic {
+		g.expr_to_string(expr, g.cur_concrete_types[sym.name])
 		return
 	}
 
