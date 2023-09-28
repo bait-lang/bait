@@ -24,6 +24,10 @@ _unreleased_
   - Method call on undefined ident
   - Use of unknown struct field in infix
 
+### Pointers
+- Add pointer dereferencing: `^my_ptr`
+- Fix `typeof()` for pointers
+
 ### CLI and Tooling
 - Add `init` tool to setup new projects
 - Add `test-tools` to run all tool tests
@@ -42,7 +46,6 @@ _unreleased_
 
 ### Other Changes
 - Add support for float literals _[JS backend]_
-- Add pointer dereferencing: `^my_ptr`
 - checker: Fix scope of smartcasted if conditions
 - gen: Escape reserved JS keywords in the `for ... in` loop
 - Imports: Look for imports next to the respective file first

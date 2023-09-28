@@ -3,6 +3,7 @@
 !*.*
 !*/
 *.js
+*.out
 bin/
 
 node_modules/
