@@ -81,13 +81,13 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 		}
 
 		// Validate fields if present
-		if not node.length_expr is ast.EmptyExpr {
+		if not (node.length_expr is ast.EmptyExpr) {
 			typ := c.expr(node.length_expr)
 			if not c.check_types(typ, ast.I32_TYPE) {
 				c.error('expected i32, got ${c.table.type_name(typ)}', node.pos)
 			}
 		}
-		if not node.cap_expr is ast.EmptyExpr {
+		if not (node.cap_expr is ast.EmptyExpr) {
 			typ := c.expr(node.cap_expr)
 			if not c.check_types(typ, ast.I32_TYPE) {
 				c.error('expected i32, got ${c.table.type_name(typ)}', node.pos)

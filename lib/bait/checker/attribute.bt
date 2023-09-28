@@ -135,7 +135,7 @@ fun (c Checker) check_struct_field_attrs(node ast.StructDecl){
 				continue
 			}
 
-			if attr.name == 'required' and not field.expr is ast.EmptyExpr {
+			if attr.name == 'required' and not (field.expr is ast.EmptyExpr) {
 				c.error('@required on field with default value is redundant', attr.pos)
 			}
 		}

@@ -81,7 +81,7 @@ fun (c Checker) check_init_field_values(init ast.StructInit, info ast.StructInfo
 			continue
 		}
 
-		if not def_field.expr is ast.EmptyExpr {
+		if not (def_field.expr is ast.EmptyExpr) {
 			continue
 		}
 

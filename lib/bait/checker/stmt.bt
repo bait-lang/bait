@@ -100,7 +100,7 @@ fun (c Checker) enum_decl(node ast.EnumDecl) {
 			continue
 		}
 
-		if not field.expr is ast.IntegerLiteral {
+		if not (field.expr is ast.IntegerLiteral) {
 			c.error('enum field value must be an integer', field.pos)
 			continue
 		}

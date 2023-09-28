@@ -18,7 +18,7 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		return
 	}
 
-	if not node.left is ast.Ident {
+	if not (node.left is ast.Ident) {
 		c.error('cannot declare a variable with a non-identifier', node.pos)
 		return
 	}
@@ -51,7 +51,7 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 	c.expected_type = node.left_type
 	node.right_type = c.expr(node.right)
 
-	if node.left_type == ast.PLACEHOLDER_TYPE or (node.right_type == ast.VOID_TYPE and not node.right is ast.CallExpr) {
+	if node.left_type == ast.PLACEHOLDER_TYPE or (node.right_type == ast.VOID_TYPE and not (node.right is ast.CallExpr)) {
 		// Another error was already raised
 		return
 	}
