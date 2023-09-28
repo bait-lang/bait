@@ -18,7 +18,7 @@ fun (mut p Parser) for_loop(label string)ast.Stmt{
 	pos := p.prev_tok.pos
 
 	p.is_struct_possible = false
-	cond := p.expr(0)
+	cond := p.expr(.lowest)
 	p.is_struct_possible = true
 
 	stmts := p.parse_block()
@@ -38,7 +38,7 @@ fun (mut p Parser) for_classic_loop(label string) ast.ForClassicLoop {
 	init := p.assign_stmt()
 	p.is_for_init = false
 	p.check(.semicolon)
-	cond := p.expr(0)
+	cond := p.expr(.lowest)
 	p.check(.semicolon)
 	inc := p.stmt()
 
@@ -76,7 +76,7 @@ fun (mut p Parser) for_in_loop(label string) ast.ForInLoop {
 
 	p.check(.key_in)
 	p.is_struct_possible = false
-	expr := p.expr(0)
+	expr := p.expr(.lowest)
 	p.is_struct_possible = true
 
 	stmts := p.parse_block()

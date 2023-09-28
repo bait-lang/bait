@@ -50,6 +50,7 @@ _unreleased_
 - gen: Escape reserved JS keywords in the `for ... in` loop
 - Imports: Look for imports next to the respective file first
 - Interop: Support for declaring JS structs, methods, enums and type aliases
+- parser: Fix prefix expr precedence
 - Various refactorings
 - Documentation improvements
 
