@@ -154,6 +154,23 @@ fun (mut p Parser) generic_type_names() []string {
 	return names
 }
 
+fun (mut p Parser) concrete_types() []ast.Type {
+	if p.tok != .lsqr {
+		return []
+	}
+	p.next()
+
+	mut types := []ast.Type
+	for p.tok != .rsqr {
+		types.push(p.parse_type())
+		if p.tok != .rsqr {
+			p.check(.comma)
+		}
+	}
+	p.next()
+	return types
+}
+
 fun (p Parser) infer_expr_type(expr ast.Expr) ast.Type {
 	return match expr {
 		ast.BoolLiteral{ ast.BOOL_TYPE }

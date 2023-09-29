@@ -16,6 +16,8 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 		name = lang.prepend_to(name)
 	}
 
+	generic_names := p.generic_type_names()
+
 	mut mut_idx := -1
 	mut pub_idx := -1
 	mut pub_mut_idx := -1
@@ -97,6 +99,7 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 		typ = typ
 		fields = fields
 		pos = pos
+		generic_names = generic_names
 	}
 }
 
@@ -130,6 +133,8 @@ fun (mut p Parser) struct_init()ast.StructInit{
 	name := p.val
 	typ := p.parse_type()
 
+	conc_types := p.concrete_types()
+
 	p.check(.lcur)
 	mut fields := []ast.StructInitField
 	for p.tok != .rcur {
@@ -142,6 +147,7 @@ fun (mut p Parser) struct_init()ast.StructInit{
 		typ = typ
 		fields = fields
 		pos = pos
+		concrete_types = conc_types
 	}
 }
 
