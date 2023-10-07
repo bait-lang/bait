@@ -33,9 +33,11 @@ _unreleased_
 - Add `test-tools` to run all tool tests
 
 ### Testing
-- `bait.util.testing`: Many BuildRunner improvements
-  - New field `oks` to check number of successful runs
-  - Add capbility to use `build_all_in_root` for directories
+- `bait.util.testing`
+  - Many BuildRunner improvements
+    - New field `oks` to check number of successful runs
+    - Add capbility to use `build_all_in_root` for directories
+  - InOutRunner: Handle skips for lib tests
 
 ### Standard Library
 - builtin:
