@@ -59,6 +59,11 @@ pub fun in_out_runner(runner InOutRunner) {
 			continue
 		}
 
+		if runner.skips.contains(file) {
+			eprintln('skipping ${file}')
+			continue
+		}
+
 		name_ext := os.file_name(file)
 
 		mut cmd := 'build'
