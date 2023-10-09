@@ -2,7 +2,7 @@
 // This Source Code is subject to the terms of the Mozilla Public License 2.0.
 package builtin
 
-struct array{
+struct Array{
 pub mut:
 	data &void
 	length i32
@@ -10,12 +10,12 @@ pub mut:
 	elem_size i32
 }
 
-fun new_array(len i32, cap i32, elem_size i32) array {
+fun new_array(len i32, cap i32, elem_size i32) Array {
 	mut real_cap := cap
 	if cap < len {
 		real_cap = len
 	}
-	return array{
+	return Array{
 		data = #C.calloc(1, real_cap * elem_size) as &void
 		length = len
 		cap = real_cap
@@ -23,13 +23,13 @@ fun new_array(len i32, cap i32, elem_size i32) array {
 	}
 }
 
-fun new_array_from_c(len i32, cap i32, elem_size i32, carr &void) array {
+fun new_array_from_c(len i32, cap i32, elem_size i32, carr &void) Array {
 	mut a := new_array(len, cap, elem_size)
 	#C.memcpy(a.data, carr, len * elem_size)
 	return a
 }
 
-fun (mut a array) ensure_cap(min i32) {
+fun (mut a Array) ensure_cap(min i32) {
 	if min <= a.cap {
 		return
 	}
@@ -50,25 +50,25 @@ fun (mut a array) ensure_cap(min i32) {
 	a.cap = cap
 }
 
-pub fun (a &array) set(i i32, val &void) {
+pub fun (a &Array) set(i i32, val &void) {
 	#C.memcpy(#C.'a->data + i * a->elem_size' as &void, val, a.elem_size)
 }
 
-pub fun (a array) get(i i32) &void {
+pub fun (a Array) get(i i32) &void {
 	return #C.'a.data + i * a.elem_size' as &void
 }
 
-pub fun (a array) last() &void {
+pub fun (a Array) last() &void {
 	return a.get(a.length - 1)
 }
 
-pub fun (mut a array) push(val &void) {
+pub fun (mut a Array) push(val &void) {
 	a.ensure_cap(a.length + 1)
 	#C.memmove(#C.'a->data + a->elem_size * (a->length)' as &void, val, a.elem_size)
 	a.length += 1
 }
 
-pub fun (mut a array) push_many(vals &array) {
+pub fun (mut a Array) push_many(vals &Array) {
 	// TODO fix sym of &a not being found as vals.data is expected as placeholder
 	// a.push_many_with_len(vals.data, vals.length)
 	a.ensure_cap(a.length + vals.length)
@@ -76,13 +76,13 @@ pub fun (mut a array) push_many(vals &array) {
 	a.length += vals.length
 }
 
-pub fun (mut a array) push_many_with_len(data &void, len i32) {
+pub fun (mut a Array) push_many_with_len(data &void, len i32) {
 	a.ensure_cap(a.length + len)
 	#C.memmove(#C.'a->data + a->elem_size * (a->length)' as &void, data, a.elem_size * len)
 	a.length += len
 }
 
-pub fun (a array) index[T](val T) i32 {
+pub fun (a Array) index[T](val T) i32 {
 	for i := 0; i < a.length; i += 1 {
 		if ^(a.get(i) as &T) == val {
 			return i
@@ -91,7 +91,7 @@ pub fun (a array) index[T](val T) i32 {
 	return -1
 }
 
-pub fun (a array) last_index[T](val T) i32 {
+pub fun (a Array) last_index[T](val T) i32 {
 	for i := a.length - 1; i >= 0; i -= 1 {
 		if ^(a.get(i) as &T) == val {
 			return i
@@ -100,8 +100,8 @@ pub fun (a array) last_index[T](val T) i32 {
 	return -1
 }
 
-pub fun (a array) slice(start i32, end i32) array {
-	return array{
+pub fun (a Array) slice(start i32, end i32) Array {
+	return Array{
 		data = #C.'a.data + start * a.elem_size' as &void
 		length = end - start
 		cap = a.cap - start
