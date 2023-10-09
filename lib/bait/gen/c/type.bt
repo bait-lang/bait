@@ -19,7 +19,7 @@ fun (g Gen) typ(typ ast.Type) string {
 		return g.typ(g.cur_concrete_types[sym.name].set_nr_amp(typ.get_nr_amp()))
 	}
 
-	name := sym.name.replace('[]', 'array_').replace('C.', '').replace('.', '__')
+	name := sym.name.replace('[]', 'Array_').replace('C.', '').replace('.', '__')
 	ptrs := '*'.repeat(typ.get_nr_amp())
 	return name + ptrs
 }
@@ -42,7 +42,7 @@ fun (mut g Gen) write_types() {
 			}
 			g.type_impls_out += '};\n'
 		} else if sym.info is ast.ArrayInfo {
-			g.type_defs_out += 'typedef array ${cname};\n'
+			g.type_defs_out += 'typedef Array ${cname};\n'
 		} else {
 			match sym.kind {
 				.alias_type {

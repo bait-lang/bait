@@ -252,7 +252,7 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 	g.writeln('for (let ${i} = 0; ${i} < ${container}.length; ${i}++) {')
 	val_name := js_name(node.valvar.name)
 	if sym.kind == .array {
-		g.writeln('\tconst ${val_name} = array_get(${container}, ${i})')
+		g.writeln('\tconst ${val_name} = Array_get(${container}, ${i})')
 	} else if sym.kind == .string {
 		g.writeln('\tconst ${val_name} = string_get(${container}, ${i})')
 	} else {
@@ -268,7 +268,7 @@ fun (mut g Gen) for_in_map(node ast.ForInLoop){
 	g.writeln('const ${keys_var} = map_keys(${container})')
 	i := g.new_temp_var()
 	g.writeln('for (let ${i} = 0; ${i} < ${keys_var}.length; ${i}++) {')
-	g.writeln('\tconst ${js_name(node.idxvar)} = array_get(${keys_var}, ${i})')
+	g.writeln('\tconst ${js_name(node.idxvar)} = Array_get(${keys_var}, ${i})')
 	g.writeln('\tconst ${js_name(node.valvar.name)} = map_get(${container}, ${node.idxvar})')
 	g.stmts(node.stmts)
 	g.writeln('}')

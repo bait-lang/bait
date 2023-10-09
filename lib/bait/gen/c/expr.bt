@@ -143,13 +143,13 @@ fun (mut g Gen) index_expr(node ast.IndexExpr) {
 		elem_type_str := g.typ(info.elem_type)
 		if g.is_lhs_assign and not node.is_selector {
 			g.is_array_map_set = true
-			g.write('array_set(&')
+			g.write('Array_set(&')
 			g.expr(node.left)
 			g.write(', ')
 			g.expr(node.index)
 			g.write(', (${elem_type_str}[])')
 		} else {
-			g.write('(*(${elem_type_str}*)(array_get(')
+			g.write('(*(${elem_type_str}*)(Array_get(')
 			g.expr(node.left)
 			g.write(', ')
 			g.expr(node.index)

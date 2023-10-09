@@ -125,7 +125,7 @@ pub fun (t Table) register_builtins(){
 		kind = .string
 	})
 	t.register_sym(TypeSymbol{
-		name = 'array'
+		name = 'Array'
 		kind = .array
 	})
 	t.register_sym(TypeSymbol{
