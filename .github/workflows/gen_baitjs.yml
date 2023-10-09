@@ -27,7 +27,6 @@ jobs:
         id: genCommitPush
         continue-on-error: true
         run: ./bait run cli/tools/gen-baitjs.bt
-
       - name: Attempt to generate baitjs on breaking change
-        if: failure() && steps.genCommitPush.outcome == 'failure'
+        if: steps.genCommitPush.outcome == 'failure'
         run: node ~/.bait/baitjs/bait.js run cli/tools/gen-baitjs.bt
