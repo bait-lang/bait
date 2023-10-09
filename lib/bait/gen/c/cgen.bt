@@ -104,7 +104,7 @@ fun (mut g Gen) writeln (s string){
 }
 
 fun c_name(n string) string {
-	name := n.replace('.', '__').replace('[]', 'array_')
+	name := n.replace('.', '__').replace('[]', 'Array_')
 	if C_RESERVED.contains(name) {
 		return 'bait_${name}'
 	}

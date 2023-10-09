@@ -34,7 +34,7 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 	}
 
 	if exp_sym.kind == .array and got_sym.kind == .array {
-		if exp_sym.name == 'array' or got_sym.name == 'array' {
+		if exp_sym.name == 'Array' or got_sym.name == 'Array' {
 			return true
 		}
 		got_info := got_sym.info as ast.ArrayInfo
