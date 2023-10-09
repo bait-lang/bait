@@ -14,7 +14,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: Build baitjs
+      - name: Bootstrap (single pass)
+        run: ./make.sh --no-self
+      - name: Bootstrap
         run: |
           ./make.sh
           ./bait symlink
@@ -40,7 +42,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: Build baitjs
+      - name: Bootstrap
         run: |
           ./make.bat
           ./bait.bat symlink --ghci-win
