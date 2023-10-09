@@ -23,7 +23,6 @@ const TOOLS := [
 	'build-examples',
 	'build-tools',
 	'check-md',
-	'gen-baitjs',
 ]
 
 fun main() {

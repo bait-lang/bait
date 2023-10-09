@@ -13,6 +13,8 @@ jobs:
   gen-baitjs:
     if: github.repository == 'tiabeast/bait'
     runs-on: ubuntu-latest
+    env:
+      TIABEAST_BOT_TOKEN: ${{ secrets.TIABEAST_BOT_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -22,6 +24,10 @@ jobs:
         run: |
           ./make.sh --no-self
       - name: Generate, commit and push latest bait.js
-        env:
-          TIABEAST_BOT_TOKEN: ${{ secrets.TIABEAST_BOT_TOKEN }}
-        run: ./bait gen-baitjs
+        id: genCommitPush
+        continue-on-error: true
+        run: ./bait run cli/tools/gen-baitjs.bt
+
+      - name: Attempt to generate baitjs on breaking change
+        if: failure() && steps.genCommitPush.outcome == 'failure'
+        run: node ~/.bait/baitjs/bait.js run cli/tools/gen-baitjs.bt
