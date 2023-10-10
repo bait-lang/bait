@@ -153,6 +153,7 @@ pub:
 pub struct StructDecl{
 pub:
 	lang Language
+	pkg_prefix string
 	name string
 	typ Type
 	fields []StructField
