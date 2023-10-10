@@ -130,6 +130,20 @@ pub fun (s string) contains(substr string) bool {
 	return s.str.includes(substr.str) as bool
 }
 
+pub fun (s string) is_capital() bool {
+	if s.length == 0 or not s[0].is_capital() {
+		return false
+	}
+
+	for i := 1; i < s.length; i += 1 {
+		if s[i].is_capital() {
+			return false
+		}
+	}
+
+	return true
+}
+
 pub fun (s string) is_upper() bool {
 	return s.str == s.str.toUpperCase() and s.str != s.str.toLowerCase()
 }
