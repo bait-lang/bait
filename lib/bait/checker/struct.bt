@@ -7,9 +7,10 @@ import bait.token
 
 
 fun (mut c Checker) struct_decl(node ast.StructDecl) {
+	// TODO remove exceptions for string and map
 	// TODO error
 	// TODO test
-	if not node.name[0].is_capital() {
+	if not node.name[0].is_capital() and node.name != 'string' and node.name != 'map' {
 		c.warn('struct name `${node.name}` must start with a capital letter', node.pos)
 	}
 
