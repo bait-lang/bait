@@ -44,6 +44,7 @@ _unreleased_
 
 ### Standard Library
 - builtin:
+  - New string method `is_capital() bool`
   - New map methods `values() []any` and `clear()`
   - Implement array methods `index()` and `last_index()` on C backend too
 - os:
