@@ -41,7 +41,7 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 	}
 }
 
-fun (mut p Parser) match_expr(is_expr bool)ast.MatchExpr{
+fun (mut p Parser) match_expr()ast.MatchExpr{
 	pos := p.tok.pos
 	mut branches := []ast.MatchBranch
 	p.check(.key_match)
@@ -68,7 +68,6 @@ fun (mut p Parser) match_expr(is_expr bool)ast.MatchExpr{
 	}
 	p.check(.rcur)
 	return ast.MatchExpr{
-		is_expr = is_expr
 		cond = cond
 		branches = branches
 		pos = pos

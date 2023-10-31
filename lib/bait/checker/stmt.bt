@@ -36,6 +36,8 @@ fun (mut c Checker) stmt(stmt ast.Stmt){
 		c.interface_decl(stmt)
 	} else if stmt is ast.LoopControlStmt {
 		c.loop_control_stmt(stmt)
+	} else if stmt is ast.MatchExpr {
+		c.match_expr(stmt, false)
 	} else if stmt is ast.ReturnStmt {
 		c.return_stmt(stmt)
 	} else if stmt is ast.StructDecl {
