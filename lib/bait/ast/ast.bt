@@ -55,6 +55,8 @@ pub:
 pub struct ExprStmt{
 pub:
 	expr Expr
+global:
+	typ Type
 }
 
 pub struct ForLoop{
@@ -318,7 +320,9 @@ pub struct MatchExpr{
 global:
 	cond_type Type
 	is_sumtype bool
+	typ Type
 pub:
+	is_expr bool
 	cond Expr
 	branches []MatchBranch
 	pos token.Pos

@@ -65,10 +65,11 @@ fun (mut c Checker) const_decl(mut node ast.ConstDecl) {
 	c.table.global_scope.update_type(node.name, node.typ)
 }
 
-fun (mut c Checker) expr_stmt(node ast.ExprStmt) {
+fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
 	expr := node.expr
-	c.expr(expr)
-	if expr is ast.CallExpr or expr is ast.IfExpr or expr is ast.MatchExpr or expr is ast.HashExpr {
+	node.typ = c.expr(expr)
+
+	if c.is_match_expr or expr is ast.CallExpr or expr is ast.IfExpr or expr is ast.MatchExpr or expr is ast.HashExpr {
 		return
 	}
 	e := expr as ast.EmptyExpr
