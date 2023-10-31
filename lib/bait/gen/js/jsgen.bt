@@ -1,5 +1,5 @@
-// Copyright (c) 2023-present Lukas Neubert.
-// This Source Code is subject to the terms of the Mozilla Public License 2.0.
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
 package js
 
 import bait.preference

@@ -54,6 +54,6 @@ Due to the symlinked wrapper script, the compiler can be used like `bait run exa
 To update Bait to the latest commit, run `bait up`.
 
 ## License
-Bait is licensed under the Mozilla Public License (`MPL-2.0`).
-See [LICENSE.txt](./LICENSE.txt) for details.<br>
-Copyright is retained by the contributors.
+Bait is licensed under the Mozilla Public License (MPL-2.0).
+
+See [LICENSE](./LICENSE.txt) and [COPYRIGHT](./COPYRIGHT.txt) for details.

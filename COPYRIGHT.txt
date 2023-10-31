@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Source: https://github.com/tiabeast/bait
+Upstream-Name: Loki Language
+Upstream-Contact: Lukas Neubert <lukas.neubert@proton.me>
+
+Files: *
+Copyright: 2023-present Lukas Neubert
+License: MPL-2.0
