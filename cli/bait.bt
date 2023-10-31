@@ -27,7 +27,7 @@ const TOOLS := [
 
 fun main() {
 	// Parse arguments into Prefs struct
-	args := os.ARGS.slice(2, os.ARGS.length)
+	args := os.user_args()
 	mut prefs := preference.parse_args(args)
 	prefs.set_comptime_vars()
 

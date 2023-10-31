@@ -11,11 +11,12 @@ import bait.parser
 const PRINT_TOKENS := os.ARGS.contains('--tokens')
 
 fun main() {
-	if os.ARGS.length <= 2 {
+	args := os.user_args()
+	if args.length == 0 {
 		eprintln('error: please specify a file to print the ast')
 		exit(1)
 	}
-	file := os.ARGS[2]
+	file := args[0]
 	if not file.ends_with('.bt') {
 		eprintln('error: file must have ".bt" extension')
 		exit(1)

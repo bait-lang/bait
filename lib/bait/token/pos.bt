@@ -7,3 +7,7 @@ pub:
 	line i32
 	col i32
 }
+
+pub fun (p Pos) str() string {
+	return '{ line = ${p.line}, col = ${p.col} }'
+}
