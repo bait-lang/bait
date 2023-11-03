@@ -27,6 +27,14 @@ fun (mut g Gen) match_expr(node ast.MatchExpr, is_expr bool){
 		return
 	}
 
+	tmp := g.new_temp_var()
+	mut cut := ''
+	if is_expr {
+		cut = g.cut_before(`\n`).trim_left('\t')
+		g.writeln('')
+		g.writeln('let ${tmp} = undefined')
+	}
+
 	g.write('switch (')
 	g.expr(node.cond)
 	if node.cond_type == ast.STRING_TYPE {
@@ -50,12 +58,25 @@ fun (mut g Gen) match_expr(node ast.MatchExpr, is_expr bool){
 		g.indent += 1
 		g.writeln("{")
 		g.stmts(b.stmts)
+
+		if is_expr {
+			mut branch_cut := g.cut_before(`\n`)
+			branch_cut = g.cut_before(`\t`)
+			g.empty_line = false
+			g.writeln('\t${tmp} = ${branch_cut}')
+		}
+
 		g.writeln("\tbreak")
 		g.writeln("}")
 		g.indent -= 1
 	}
 	g.indent -= 1
 	g.writeln('}')
+
+	if is_expr {
+		g.write(cut)
+		g.write(tmp)
+	}
 }
 
 fun (mut g Gen) sumtype_match(node ast.MatchExpr){
