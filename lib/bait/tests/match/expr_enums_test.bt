@@ -1,0 +1,22 @@
+enum This {
+	foo
+	bar
+}
+
+enum That {
+	spam
+	eggs
+}
+
+fun perform(x This) That {
+	res := match x {
+		.foo { That.spam }
+		.bar { .eggs }
+	}
+	return res
+}
+
+fun test_short_enum_val() {
+	assert perform(.foo) == .spam
+	assert perform(.bar) == .eggs
+}

@@ -56,6 +56,11 @@ fun (mut c Checker) match_expr(mut node ast.MatchExpr, is_expr bool) ast.Type {
 				branch.expr_types.push(expr_type)
 			}
 		}
+
+		if is_expr {
+			c.expected_type = node.typ
+		}
+
 		c.stmts(branch.stmts)
 		c.close_scope()
 
