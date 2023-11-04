@@ -15,33 +15,33 @@ pub enum Precedence {
 }
 
 pub fun (t Token) precedence() Precedence {
-	match t.kind {
+	return match t.kind {
 		.lbr {
-			return .index
+			Precedence.index
 		}
 		.dot {
-			return .call
+			.call
 		}
 		.key_not, .caret {
-			return .prefix
+			.prefix
 		}
 		.mul, .div, .mod {
-			return .product
+			.product
 		}
 		.plus, .minus {
-			return .sum
+			.sum
 		}
 		.eq, .ne, .lt, .gt, .le, .ge {
-			return .compare
+			.compare
 		}
 		.key_as, .key_is {
-			return .as_is
+			.as_is
 		}
 		.key_and, .key_or {
-			return .cond
+			.cond
 		}
 		else {
-			return .lowest
+			.lowest
 		}
 	}
 }

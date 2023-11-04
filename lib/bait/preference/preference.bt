@@ -155,10 +155,12 @@ pub fun (mut p Prefs) set_comptime_vars() {
 }
 
 fun backend_from_string(s string) Backend {
-	match s {
-		'js' { return .js }
-		'c' { return .c }
+	return match s {
+		'js' { Backend.js }
+		'c' { .c }
+		else {
+			panic('Invalid backend: ${s}')
+			.js
+		}
 	}
-	// TODO error
-	return .js
 }

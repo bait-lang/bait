@@ -60,23 +60,22 @@ fun (mut p Parser) parse_name_type(lang ast.Language) ast.Type {
 	}
 
 	// Primitive types
-	match name{
-		'i8' { return ast.I8_TYPE }
-		'i16' { return ast.I16_TYPE }
-		'i32' { return ast.I32_TYPE }
-		'i64' { return ast.I64_TYPE }
-		'u8' { return ast.U8_TYPE }
-		'u16' { return ast.U16_TYPE }
-		'u32' { return ast.U32_TYPE }
-		'u64' { return ast.U64_TYPE }
-		'f32' { return ast.F32_TYPE }
-		'f64' { return ast.F64_TYPE }
-		'bool' { return ast.BOOL_TYPE }
-		'string' { return ast.STRING_TYPE }
-		'any' { return ast.ANY_TYPE }
-		else {}
+	return match name{
+		'i8' { ast.I8_TYPE }
+		'i16' { ast.I16_TYPE }
+		'i32' { ast.I32_TYPE }
+		'i64' { ast.I64_TYPE }
+		'u8' { ast.U8_TYPE }
+		'u16' { ast.U16_TYPE }
+		'u32' { ast.U32_TYPE }
+		'u64' { ast.U64_TYPE }
+		'f32' { ast.F32_TYPE }
+		'f64' { ast.F64_TYPE }
+		'bool' { ast.BOOL_TYPE }
+		'string' { ast.STRING_TYPE }
+		'any' { ast.ANY_TYPE }
+		else { p.table.find_type_or_add_placeholder(name) }
 	}
-	return p.table.find_type_or_add_placeholder(name)
 }
 
 fun (mut p Parser) parse_fun_type() ast.Type {

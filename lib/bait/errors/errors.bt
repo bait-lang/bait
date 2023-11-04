@@ -72,9 +72,9 @@ fun format_title(k Kind, title string) string {
 	if os.getenv('BAITCOLOR') == '0' {
 		return title
 	}
-	match k {
-		.info { return color.magenta(title) }
-		.warning { return color.yellow(title) }
-		.error { return color.red(title) }
+	return match k {
+		.info { color.magenta(title) }
+		.warning { color.yellow(title) }
+		.error { color.red(title) }
 	}
 }
