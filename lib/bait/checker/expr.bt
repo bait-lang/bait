@@ -39,7 +39,7 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 	} else if expr is ast.MapInit {
 		return c.map_init(expr)
 	} else if expr is ast.MatchExpr {
-		return c.match_expr(expr)
+		return c.match_expr(expr, true)
 	} else if expr is ast.ParExpr {
 		return c.par_expr(expr)
 	} else if expr is ast.PrefixExpr {
@@ -225,22 +225,6 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	return obj.typ
 }
 
-fun (mut c Checker) if_expr(node ast.IfExpr) ast.Type {
-	for i, b in node.branches {
-		c.open_scope()
-		if not node.has_else or i < node.branches.length - 1 {
-			cond_type := c.expr(b.cond)
-			if cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
-				c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
-			}
-		}
-		c.stmts(b.stmts)
-		c.close_scope()
-	}
-	// TODO make an actual expression
-	return ast.VOID_TYPE
-}
-
 fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 	node.left_type = c.expr(node.left)
 	c.expr(node.index)
@@ -297,44 +281,6 @@ fun (mut c Checker) map_init(mut node ast.MapInit) ast.Type {
 	}
 	node.typ = c.table.find_or_register_map(node.key_type, node.val_type)
 	return node.typ
-}
-
-fun (mut c Checker) match_expr(mut node ast.MatchExpr) ast.Type {
-	node.cond_type = c.expr(node.cond)
-	if node.branches.length == 0 {
-		c.error('match expression must have at least one branch', node.pos)
-		return ast.VOID_TYPE
-	}
-	sym := c.table.get_sym(node.cond_type)
-	node.is_sumtype = sym.kind == .sum_type
-	for branch in node.branches {
-		c.open_scope()
-		for e in branch.exprs {
-			if node.is_sumtype {
-				expr := e as ast.Ident
-				variant := c.table.get_idx(expr.name)
-				info := sym.info as ast.SumTypeInfo
-				if not info.variants.contains(variant) {
-					c.error('sum type ${sym.name} has no variant ${expr.name}', expr.pos)
-					continue
-				}
-				cond := node.cond as ast.Ident
-				c.scope.update_type(cond.name, variant)
-			} else {
-				c.expected_type = node.cond_type
-				expr_type := c.expr(e)
-				if not c.check_types(expr_type, node.cond_type) {
-					expr := e as ast.EmptyExpr
-					c.error('cannot match ${c.table.type_name(expr_type)} to ${sym.name}', expr.pos)
-				}
-				branch.expr_types.push(expr_type)
-			}
-		}
-		c.stmts(branch.stmts)
-		c.close_scope()
-	}
-	// TODO make an actual expression
-	return ast.VOID_TYPE
 }
 
 fun (mut c Checker) par_expr(node ast.ParExpr) ast.Type {

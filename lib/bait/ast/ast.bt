@@ -5,7 +5,7 @@ package ast
 import bait.token
 import bait.errors
 
-type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | EmptyStmt
+type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | EmptyStmt | MatchExpr
 
 type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | CompTimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
 
@@ -55,6 +55,8 @@ pub:
 pub struct ExprStmt{
 pub:
 	expr Expr
+global:
+	typ Type
 }
 
 pub struct ForLoop{
@@ -318,7 +320,9 @@ pub struct MatchExpr{
 global:
 	cond_type Type
 	is_sumtype bool
+	typ Type := VOID_TYPE
 pub:
+	is_expr bool
 	cond Expr
 	branches []MatchBranch
 	pos token.Pos

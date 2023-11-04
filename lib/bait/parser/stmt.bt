@@ -99,6 +99,9 @@ fun (mut p Parser) stmt() ast.Stmt {
 		.key_for {
 			return p.for_loop('')
 		}
+		.key_match {
+			return p.match_expr()
+		}
 		.key_return {
 			return p.return_stmt()
 		}

@@ -137,6 +137,17 @@ fun (mut g Gen) writeln (s string){
 	g.empty_line = true
 }
 
+fun (mut g Gen) cut_before(to u8) string {
+	for i := g.out.length - 1; i >= 0; i -= 1 {
+		if g.out[i] == to {
+			mut cut := g.out.substr(i + 1, g.out.length)
+			g.out = g.out.substr(0, i)
+			return cut
+		}
+	}
+	return g.out
+}
+
 fun (mut g Gen) gen_test_main() {
 	mut nr_test_funs := 0
 	g.writeln('function main() {')

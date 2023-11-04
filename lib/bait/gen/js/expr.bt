@@ -42,7 +42,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 	} else if expr is ast.MapInit {
 		g.map_init(expr)
 	} else if expr is ast.MatchExpr {
-		g.match_expr(expr)
+		g.match_expr(expr, true)
 	} else if expr is ast.ParExpr {
 		g.par_expr(expr)
 	} else if expr is ast.PrefixExpr {
@@ -168,23 +168,6 @@ fun (mut g Gen) ident(node ast.Ident) {
 	g.write(js_name(node.name))
 }
 
-fun (mut g Gen) if_expr(node ast.IfExpr){
-	for i, b in node.branches {
-		if i > 0 {
-			g.write("} else ")
-		}
-		if node.has_else and i == node.branches.length - 1 {
-			g.writeln("{")
-		} else {
-			g.write("if (")
-			g.expr(b.cond)
-			g.writeln(") {")
-		}
-		g.stmts(b.stmts)
-	}
-	g.writeln('}')
-}
-
 fun (mut g Gen) integer_literal(node ast.IntegerLiteral){
 	g.write(node.val)
 }
@@ -299,66 +282,6 @@ fun (mut g Gen) map_init(node ast.MapInit) {
 		}
 	}
 	g.write(']), length: ${node.keys.length} })')
-}
-
-fun (mut g Gen) match_expr(node ast.MatchExpr){
-	if node.is_sumtype {
-		g.sumtype_match(node)
-		return
-	}
-	g.write('switch (')
-	g.expr(node.cond)
-	if node.cond_type == ast.STRING_TYPE {
-		g.write('.str')
-	}
-	g.writeln(') {')
-	g.indent += 1
-	for b in node.branches {
-		if b.exprs.length == 0 {
-			g.writeln("default:")
-		} else {
-			for i, e in b.exprs {
-				g.write("case ")
-				g.expr(e)
-				if node.cond_type == ast.STRING_TYPE {
-					g.write('.str')
-				}
-				g.writeln(":")
-			}
-		}
-		g.indent += 1
-		g.writeln("{")
-		g.stmts(b.stmts)
-		g.writeln("\tbreak")
-		g.writeln("}")
-		g.indent -= 1
-	}
-	g.indent -= 1
-	g.writeln('}')
-}
-
-fun (mut g Gen) sumtype_match(node ast.MatchExpr){
-	cond := g.expr_string(node.cond)
-	for i, b in node.branches {
-		if i >= 1 {
-			g.write("} else ")
-		}
-		if b.exprs.length == 0 {
-			g.writeln("{")
-		} else {
-			g.write("if (")
-			for j, e in b.exprs {
-				expr := e as ast.Ident
-				g.write("${cond} instanceof ${js_name(expr.name)}")
-				if j < b.exprs.length - 1 {
-					g.write(" || ")
-				}
-			}
-			g.writeln(") {")
-		}
-		g.stmts(b.stmts)
-	}
-	g.writeln('}')
 }
 
 fun (mut g Gen) par_expr(node ast.ParExpr){

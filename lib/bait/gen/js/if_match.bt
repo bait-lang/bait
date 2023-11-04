@@ -1,0 +1,104 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package js
+
+import bait.ast
+
+fun (mut g Gen) if_expr(node ast.IfExpr){
+	for i, b in node.branches {
+		if i > 0 {
+			g.write("} else ")
+		}
+		if node.has_else and i == node.branches.length - 1 {
+			g.writeln("{")
+		} else {
+			g.write("if (")
+			g.expr(b.cond)
+			g.writeln(") {")
+		}
+		g.stmts(b.stmts)
+	}
+	g.writeln('}')
+}
+
+fun (mut g Gen) match_expr(node ast.MatchExpr, is_expr bool){
+	if node.is_sumtype {
+		g.sumtype_match(node)
+		return
+	}
+
+	tmp := g.new_temp_var()
+	mut cut := ''
+	if is_expr {
+		cut = g.cut_before(`\n`).trim_left('\t')
+		g.writeln('')
+		g.writeln('let ${tmp} = undefined')
+	}
+
+	g.write('switch (')
+	g.expr(node.cond)
+	if node.cond_type == ast.STRING_TYPE {
+		g.write('.str')
+	}
+	g.writeln(') {')
+	g.indent += 1
+	for b in node.branches {
+		if b.exprs.length == 0 {
+			g.writeln("default:")
+		} else {
+			for i, e in b.exprs {
+				g.write("case ")
+				g.expr(e)
+				if node.cond_type == ast.STRING_TYPE {
+					g.write('.str')
+				}
+				g.writeln(":")
+			}
+		}
+		g.indent += 1
+		g.writeln("{")
+		g.stmts(b.stmts)
+
+		if is_expr {
+			mut branch_cut := g.cut_before(`\n`)
+			branch_cut = g.cut_before(`\t`)
+			g.empty_line = false
+			g.writeln('\t${tmp} = ${branch_cut}')
+		}
+
+		g.writeln("\tbreak")
+		g.writeln("}")
+		g.indent -= 1
+	}
+	g.indent -= 1
+	g.writeln('}')
+
+	if is_expr {
+		g.write(cut)
+		g.write(tmp)
+	}
+}
+
+fun (mut g Gen) sumtype_match(node ast.MatchExpr){
+	cond := g.expr_string(node.cond)
+	for i, b in node.branches {
+		if i >= 1 {
+			g.write("} else ")
+		}
+		if b.exprs.length == 0 {
+			g.writeln("{")
+		} else {
+			g.write("if (")
+			for j, e in b.exprs {
+				expr := e as ast.Ident
+				g.write("${cond} instanceof ${js_name(expr.name)}")
+				if j < b.exprs.length - 1 {
+					g.write(" || ")
+				}
+			}
+			g.writeln(") {")
+		}
+		g.stmts(b.stmts)
+	}
+	g.writeln('}')
+}

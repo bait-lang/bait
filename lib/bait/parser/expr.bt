@@ -267,42 +267,6 @@ fun (mut p Parser) ident(lang ast.Language)ast.Ident{
 	}
 }
 
-fun (mut p Parser) if_expr()ast.IfExpr{
-	pos := p.tok.pos
-	mut branches := []ast.IfBranch
-	mut has_else := false
-	for true {
-		bpos := p.tok.pos
-		if p.tok.kind == .key_else{
-			p.next()
-			if p.tok.kind == .lcur{
-				has_else = true
-				stmts := p.parse_block()
-				branches.push(ast.IfBranch{
-					cond = ast.EmptyExpr{}
-					stmts = stmts
-					pos = bpos
-				})
-				break
-			}
-		}
-		p.check(.key_if)
-		p.is_struct_possible = false
-		cond := p.expr(.lowest)
-		p.is_struct_possible = true
-		stmts := p.parse_block()
-		branches.push(ast.IfBranch{cond = cond stmts = stmts})
-		if p.tok.kind != .key_else{
-			break
-		}
-	}
-	return ast.IfExpr{
-		has_else = has_else
-		branches = branches
-		pos = pos
-	}
-}
-
 fun (mut p Parser) index_expr(left ast.Expr)ast.IndexExpr {
 	pos := p.tok.pos
 	p.check(.lbr)
@@ -350,39 +314,6 @@ fun (mut p Parser) map_init() ast.MapInit{
 	return ast.MapInit{
 		keys = keys
 		vals = vals
-		pos = pos
-	}
-}
-
-fun (mut p Parser) match_expr()ast.MatchExpr{
-	pos := p.tok.pos
-	mut branches := []ast.MatchBranch
-	p.check(.key_match)
-	p.is_struct_possible = false
-	cond := p.expr(.lowest)
-	p.is_struct_possible = true
-	p.check(.lcur)
-	for p.tok.kind != .rcur {
-		bpos := p.tok.pos
-		mut exprs := []ast.Expr
-		if p.tok.kind == .key_else {
-			p.next()
-		} else {
-			p.is_struct_possible = false
-			exprs = p.expr_list()
-			p.is_struct_possible = true
-		}
-		stmts := p.parse_block()
-		branches.push(ast.MatchBranch{
-			exprs = exprs
-			stmts = stmts
-			pos = pos
-		})
-	}
-	p.check(.rcur)
-	return ast.MatchExpr{
-		cond = cond
-		branches = branches
 		pos = pos
 	}
 }

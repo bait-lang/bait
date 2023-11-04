@@ -1,0 +1,80 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package checker
+
+import bait.ast
+
+fun (mut c Checker) if_expr(node ast.IfExpr) ast.Type {
+	for i, b in node.branches {
+		c.open_scope()
+		if not node.has_else or i < node.branches.length - 1 {
+			cond_type := c.expr(b.cond)
+			if cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
+				c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
+			}
+		}
+		c.stmts(b.stmts)
+		c.close_scope()
+	}
+	// TODO make an actual expression
+	return ast.VOID_TYPE
+}
+
+fun (mut c Checker) match_expr(mut node ast.MatchExpr, is_expr bool) ast.Type {
+	node.cond_type = c.expr(node.cond)
+	if node.branches.length == 0 {
+		c.error('match expression must have at least one branch', node.pos)
+		return ast.VOID_TYPE
+	}
+
+	if is_expr {
+		c.is_match_expr = true
+	}
+
+	sym := c.table.get_sym(node.cond_type)
+	node.is_sumtype = sym.kind == .sum_type
+	for branch in node.branches {
+		c.open_scope()
+		for e in branch.exprs {
+			if node.is_sumtype {
+				expr := e as ast.Ident
+				variant := c.table.get_idx(expr.name)
+				info := sym.info as ast.SumTypeInfo
+				if not info.variants.contains(variant) {
+					c.error('sum type ${sym.name} has no variant ${expr.name}', expr.pos)
+					continue
+				}
+				cond := node.cond as ast.Ident
+				c.scope.update_type(cond.name, variant)
+			} else {
+				c.expected_type = node.cond_type
+				expr_type := c.expr(e)
+				if not c.check_types(expr_type, node.cond_type) {
+					expr := e as ast.EmptyExpr
+					c.error('cannot match ${c.table.type_name(expr_type)} to ${sym.name}', expr.pos)
+				}
+				branch.expr_types.push(expr_type)
+			}
+		}
+		c.stmts(branch.stmts)
+		c.close_scope()
+
+		if is_expr {
+			last := branch.stmts.last()
+			if not (last is ast.ExprStmt) or (last as ast.ExprStmt).typ == ast.VOID_TYPE {
+				c.error('branch does not return a value', branch.pos)
+				continue
+			}
+
+			typ := (last as ast.ExprStmt).typ
+			if node.typ == ast.VOID_TYPE {
+				node.typ = typ
+			} else if not c.check_types(typ, node.typ) {
+				c.error('branch returns ${c.table.type_name(typ)}, expected ${c.table.type_name(node.typ)}', branch.pos)
+			}
+		}
+	}
+
+	c.is_match_expr = false
+	return node.typ
+}
