@@ -1,0 +1,7 @@
+fun foo() i32 {
+	return match 'two' {
+		'one' { 1 }
+		'two' { }
+		else { 0 }
+	}
+}
