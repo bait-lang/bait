@@ -5,31 +5,18 @@ package tokenizer
 import bait.token
 import bait.errors
 
-struct Tokenizer {
-	path string
-	text string
+pub struct Tokenizer {
+	path string // TODO @required
+	text string // TODO @required
 mut:
-	pos i32
-	line i32
-	last_nl_pos i32
+	pos i32 := -1
+	line i32 := 1
+	last_nl_pos i32 := -1
 	is_string_inter bool
 	str_quote u8
 	should_abort bool
 pub mut:
 	errors []errors.Message
-}
-
-// TODO remove once these things are implemented
-//   - default struct values
-//   - field required attribute
-pub fun new_tokenizer(text string, path string) Tokenizer {
-	return Tokenizer{
-		path = path
-		text = text
-		pos = -1
-		line = 1
-		last_nl_pos = -1
-	}
 }
 
 pub fun (mut t Tokenizer) tokenize() []token.Token {

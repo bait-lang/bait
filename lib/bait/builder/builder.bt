@@ -45,7 +45,10 @@ fun (b Builder) get_user_files(path string) []string {
 
 fun (b Builder) parse_source_file(path string) ast.File {
 	text := os.read_file(path)
-	mut t := tokenizer.new_tokenizer(text, path)
+	mut t := tokenizer.Tokenizer{
+		path = path
+		text = text
+	}
 	tokens := t.tokenize()
 	t.errors.print_and_exit()
 
