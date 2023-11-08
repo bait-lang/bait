@@ -32,7 +32,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 	} else if expr is ast.Ident {
 		g.ident(expr)
 	} else if expr is ast.IfExpr {
-		g.if_expr(expr)
+		g.if_expr(expr, true)
 	} else if expr is ast.IndexExpr {
 		g.index_expr(expr)
 	} else if expr is ast.InfixExpr {

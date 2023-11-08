@@ -20,7 +20,7 @@ mut:
 	cur_fun ast.FunDecl
 	expected_type ast.Type
 	is_lhs_assign bool
-	is_match_expr bool
+	is_if_match_expr bool
 	export_names []string
 pub mut:
 	infos []errors.Message
