@@ -52,7 +52,7 @@ _unreleased_
   - `is_dir(path)`: Return false if path does not exist
 
 ### Other Changes
-- Implement real `match` expressions _[JS]_
+- Implement real `if` and `match` expressions _[JS]_
 - Add support for float literals _[JS backend]_
 - checker: Fix scope of smartcasted if conditions
 - gen: Escape reserved JS keywords in the `for ... in` loop
