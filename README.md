@@ -10,13 +10,13 @@ fun main() {
 ```
 
 ## Key Features
-> **Note** Bait is in an alpha state. Incomplete features are marked with :construction:. Breaking changes may occur.
+> **Note:** Bait is in an alpha state. Incomplete features are marked with :construction:. Breaking changes may occur.
 
 - Clean, simple and consistent syntax
 - Type and memory safety with immutability by default
-- JavaScript backend (NodeJS)
-- Cross-platform support (Linux, Windows)
+- JavaScript backend (NodeJS, :construction: Web)
 - :construction: C backend
+- Cross-platform support (Linux, Windows)
 
 ## Documentation
 - [Language Overview](docs/docs.md)
