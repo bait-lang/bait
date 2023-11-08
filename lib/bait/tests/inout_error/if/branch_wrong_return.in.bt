@@ -1,0 +1,1 @@
+x := if false { 'string' } else { 123 }

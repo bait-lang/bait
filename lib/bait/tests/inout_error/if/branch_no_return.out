@@ -1,0 +1,1 @@
+lib/bait/tests/inout_error/if/branch_no_return.in.bt:2:26 error: branch does not return a value

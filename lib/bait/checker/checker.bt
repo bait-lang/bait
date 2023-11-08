@@ -8,7 +8,7 @@ import bait.preference
 import bait.token
 
 pub struct Checker{
-	pref preference.Prefs
+	prefs preference.Prefs
 	table ast.Table
 mut:
 	scope ast.Scope
@@ -20,19 +20,12 @@ mut:
 	cur_fun ast.FunDecl
 	expected_type ast.Type
 	is_lhs_assign bool
-	is_match_expr bool
+	is_if_match_expr bool
 	export_names []string
 pub mut:
 	infos []errors.Message
 	warnings []errors.Message
 	errors []errors.Message
-}
-
-pub fun new_checker(table ast.Table, pref preference.Prefs) Checker {
-	return Checker{
-		pref = pref
-		table = table
-	}
 }
 
 pub fun (mut c Checker) check_files(files []ast.File) {
@@ -49,7 +42,7 @@ pub fun (mut c Checker) check_files(files []ast.File) {
 	}
 
 	// no main function needed for libraries, tests and script mode
-	if c.pref.is_library or c.pref.is_test or c.pref.is_script {
+	if c.prefs.is_library or c.prefs.is_test or c.prefs.is_script {
 		return
 	}
 

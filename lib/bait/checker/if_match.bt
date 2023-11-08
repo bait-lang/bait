@@ -4,20 +4,40 @@ package checker
 
 import bait.ast
 
-fun (mut c Checker) if_expr(node ast.IfExpr) ast.Type {
-	for i, b in node.branches {
+fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
+	if is_expr {
+		c.is_if_match_expr = true
+	}
+
+	for i, branch in node.branches {
 		c.open_scope()
 		if not node.has_else or i < node.branches.length - 1 {
-			cond_type := c.expr(b.cond)
+			cond_type := c.expr(branch.cond)
 			if cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
 				c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
 			}
 		}
-		c.stmts(b.stmts)
+		c.stmts(branch.stmts)
 		c.close_scope()
+
+		if is_expr {
+			last := branch.stmts.last()
+			if not (last is ast.ExprStmt) or (last as ast.ExprStmt).typ == ast.VOID_TYPE {
+				c.error('branch does not return a value', branch.pos)
+				continue
+			}
+
+			typ := (last as ast.ExprStmt).typ
+			if node.typ == ast.VOID_TYPE {
+				node.typ = typ
+			} else if not c.check_types(typ, node.typ) {
+				c.error('branch returns ${c.table.type_name(typ)}, expected ${c.table.type_name(node.typ)}', branch.pos)
+			}
+		}
 	}
-	// TODO make an actual expression
-	return ast.VOID_TYPE
+
+	c.is_if_match_expr = false
+	return node.typ
 }
 
 fun (mut c Checker) match_expr(mut node ast.MatchExpr, is_expr bool) ast.Type {
@@ -28,7 +48,7 @@ fun (mut c Checker) match_expr(mut node ast.MatchExpr, is_expr bool) ast.Type {
 	}
 
 	if is_expr {
-		c.is_match_expr = true
+		c.is_if_match_expr = true
 	}
 
 	sym := c.table.get_sym(node.cond_type)
@@ -80,6 +100,6 @@ fun (mut c Checker) match_expr(mut node ast.MatchExpr, is_expr bool) ast.Type {
 		}
 	}
 
-	c.is_match_expr = false
+	c.is_if_match_expr = false
 	return node.typ
 }

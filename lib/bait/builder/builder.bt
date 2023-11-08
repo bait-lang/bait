@@ -139,7 +139,10 @@ pub fun compile(prefs preference.Prefs) i32 {
 
 	// Run the type resolver and checker
 	b.parsed_files = sorted_files
-	b.checker = checker.new_checker(b.table, b.prefs)
+	b.checker = checker.Checker{
+		prefs = b.prefs
+		table = b.table
+	}
 	b.checker.check_files(sorted_files)
 
 	if b.check_redefined_functions() {
