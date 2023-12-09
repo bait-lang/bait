@@ -33,7 +33,7 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 	c.close_scope()
 
 	if node.return_type != ast.VOID_TYPE and not has_toplevel_return(node.stmts) and not c.returns {
-		c.warn('missing return statement', node.pos)
+		c.error('missing return statement', node.pos)
 	}
 }
 
