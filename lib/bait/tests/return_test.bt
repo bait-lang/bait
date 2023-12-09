@@ -1,0 +1,24 @@
+fun if_return(x i32) i32 {
+	if x < 10 {
+		return x
+	} else {
+		return 10
+	}
+}
+
+fun if_expr_return(x i32) i32 {
+	return if x < 10 { x } else { 10 }
+}
+
+fun match_return(x i32) string {
+	match x {
+		1 { return 'one' }
+		else { return 'other' }
+	}
+}
+
+fun test_returns() {
+	assert if_return(5) == 5
+	assert if_expr_return(2) == 2
+	assert match_return(1) == 'one'
+}

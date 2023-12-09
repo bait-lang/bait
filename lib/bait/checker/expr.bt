@@ -57,6 +57,7 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 	} else {
 		e := expr as ast.EmptyExpr
 		c.error('unexpected expr: ${e}', e.pos)
+		return ast.PLACEHOLDER_TYPE
 	}
 }
 
