@@ -29,6 +29,10 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 	c.fun_params(node.params)
 	c.stmts(node.stmts)
 	c.close_scope()
+
+	if node.return_type != ast.VOID_TYPE and not has_toplevel_return(node.stmts) {
+		c.warn('missing return statement', node.pos)
+	}
 }
 
 fun (c Checker) fun_params(params []ast.Param){
@@ -270,4 +274,13 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr) {
 			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
 		}
 	}
+}
+
+fun has_toplevel_return(stmts []ast.Stmt) bool {
+	for stmt in stmts {
+		if stmt is ast.ReturnStmt {
+			return true
+		}
+	}
+	return false
 }
