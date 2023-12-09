@@ -9,6 +9,7 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 		c.is_if_match_expr = true
 	}
 
+	mut nr_branches_return := 0
 	for i, branch in node.branches {
 		c.open_scope()
 		if not node.has_else or i < node.branches.length - 1 {
@@ -33,9 +34,12 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 			} else if not c.check_types(typ, node.typ) {
 				c.error('branch returns ${c.table.type_name(typ)}, expected ${c.table.type_name(node.typ)}', branch.pos)
 			}
+		} else if has_toplevel_return(branch.stmts) {
+			nr_branches_return += 1
 		}
 	}
 
+	c.returns = nr_branches_return == node.branches.length
 	c.is_if_match_expr = false
 	return node.typ
 }
@@ -51,6 +55,7 @@ fun (mut c Checker) match_expr(mut node ast.MatchExpr, is_expr bool) ast.Type {
 		c.is_if_match_expr = true
 	}
 
+	mut nr_branches_return := 0
 	sym := c.table.get_sym(node.cond_type)
 	node.is_sumtype = sym.kind == .sum_type
 	for branch in node.branches {
@@ -97,8 +102,12 @@ fun (mut c Checker) match_expr(mut node ast.MatchExpr, is_expr bool) ast.Type {
 			} else if not c.check_types(typ, node.typ) {
 				c.error('branch returns ${c.table.type_name(typ)}, expected ${c.table.type_name(node.typ)}', branch.pos)
 			}
+		} else if has_toplevel_return(branch.stmts) {
+			nr_branches_return += 1
 		}
 	}
+
+	c.returns = nr_branches_return == node.branches.length
 
 	c.is_if_match_expr = false
 	return node.typ

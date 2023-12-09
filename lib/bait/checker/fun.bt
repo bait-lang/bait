@@ -10,6 +10,8 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 		return
 	}
 
+	c.returns = false
+
 	if c.scope.is_known(node.name) {
 		c.error('redefinition of ${node.name}', node.pos)
 	} else if not node.is_method {
@@ -30,7 +32,7 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 	c.stmts(node.stmts)
 	c.close_scope()
 
-	if node.return_type != ast.VOID_TYPE and not has_toplevel_return(node.stmts) {
+	if node.return_type != ast.VOID_TYPE and not has_toplevel_return(node.stmts) and not c.returns {
 		c.warn('missing return statement', node.pos)
 	}
 }

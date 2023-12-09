@@ -21,6 +21,7 @@ mut:
 	expected_type ast.Type
 	is_lhs_assign bool
 	is_if_match_expr bool
+	returns bool
 	export_names []string
 pub mut:
 	infos []errors.Message
