@@ -1,3 +1,0 @@
-lib/bait/tests/inout_error/attributes/other.in.bt:1:9 warning: unknown attribute "xyz_attr"
-lib/bait/tests/inout_error/attributes/other.in.bt:4:17 error: attribute "deprecated_after" requires a value
-lib/bait/tests/inout_error/attributes/other.in.bt:8:10 error: attribute "required" does not take a value

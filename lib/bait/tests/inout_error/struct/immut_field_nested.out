@@ -1,1 +1,0 @@
-lib/bait/tests/inout_error/struct/immut_field_nested.in.bt:11:2 error: field `Alpha.b` is immutable

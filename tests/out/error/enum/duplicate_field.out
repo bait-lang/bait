@@ -1,0 +1,1 @@
+tests/out/error/enum/duplicate_field.in.bt:3:4 error: duplicate field name foo

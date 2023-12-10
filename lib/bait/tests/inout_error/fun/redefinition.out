@@ -1,4 +1,0 @@
-error: redfinition of function "foo"
-lib/bait/tests/inout_error/fun/redefinition.in.bt:1:3 conflict: fun foo(a string)
-lib/bait/tests/inout_error/fun/redefinition.in.bt:3:3 conflict: fun foo(b bool)
-lib/bait/tests/inout_error/fun/redefinition.in.bt:5:3 conflict: fun foo(c i32, d i32)

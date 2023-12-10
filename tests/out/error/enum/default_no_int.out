@@ -1,0 +1,1 @@
+tests/out/error/enum/default_no_int.in.bt:2:6 error: enum field value must be an integer

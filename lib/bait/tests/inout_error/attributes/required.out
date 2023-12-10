@@ -1,1 +1,0 @@
-lib/bait/tests/inout_error/attributes/required.in.bt:2:10 error: @required on field with default value is redundant

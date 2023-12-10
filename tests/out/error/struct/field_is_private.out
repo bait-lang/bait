@@ -1,0 +1,2 @@
+tests/out/error/struct/field_is_private.in.bt:4:10 error: field bait.tests.packages.struct_mod.Foo.a is private
+tests/out/error/struct/field_is_private.in.bt:5:10 error: field bait.tests.packages.struct_mod.Foo.b is private

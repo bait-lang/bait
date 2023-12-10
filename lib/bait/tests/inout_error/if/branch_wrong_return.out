@@ -1,1 +1,0 @@
-lib/bait/tests/inout_error/if/branch_wrong_return.in.bt:1:31 error: branch returns i32, expected string

@@ -1,4 +1,0 @@
-lib/bait/tests/inout_error/struct/field_is_immutable.in.bt:10:2 error: field `bait.tests.packages.struct_mod.Foo.c` is immutable
-lib/bait/tests/inout_error/struct/field_is_immutable.in.bt:11:2 error: field `bait.tests.packages.struct_mod.Foo.d` is immutable
-lib/bait/tests/inout_error/struct/field_is_immutable.in.bt:14:2 error: field `Spam.a` is immutable
-lib/bait/tests/inout_error/struct/field_is_immutable.in.bt:15:2 error: field `Spam.b` is immutable
