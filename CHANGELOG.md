@@ -30,6 +30,7 @@ _unreleased_
 
 ### CLI and Tooling
 - Add `init` tool to setup new projects
+- `up`: Fix make on windows
 - Add `test-tools` to run all tool tests
 - `gen-baitjs`
   - Remove from builtin tools as it's designed for CI only

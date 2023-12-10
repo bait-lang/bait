@@ -35,7 +35,12 @@ fun main() {
 
 	// In case of failure, try make
 	println('"bait self" failed, running make...')
-	make_res := os.system('./make.sh')
+	make_cmd := if os.platform() == 'linux' { 
+		'./make.sh' 
+	} else {
+		'./make.bat'
+	}
+	make_res := os.system(make_cmd)
 	if make_res != 0 {
 		exit(1)
 	}
