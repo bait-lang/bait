@@ -43,9 +43,9 @@ pub fun (runner InOutRunner) test_all_in_root() {
 
 fun (runner InOutRunner) compare_expected(res os.Result, expected string) {
 	if runner.check_stdout {
-		assert expected == res.stdout
+		assert normalize(res.stdout) == expected
 	} else {
-		assert expected == res.stderr
+		assert normalize(res.stderr) == expected
 	}
 }
 
@@ -89,4 +89,8 @@ fun read_out_file(in_file_path string) string {
 	}
 
 	return os.read_file(out_file)
+}
+
+fun normalize(s string) string {
+	return s.replace('\\', '/')
 }
