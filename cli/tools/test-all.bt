@@ -4,7 +4,7 @@ package main
 
 import os
 
-const TOOLS := ['build-examples', 'build-tools', 'test-lib', 'test-tools']
+const TOOLS := ['build-examples', 'build-tools', 'test-self', 'test-tools']
 
 const TOOLS_WITH_ARGS := map{
 	'check-md': ['docs/docs.md', 'README.md']

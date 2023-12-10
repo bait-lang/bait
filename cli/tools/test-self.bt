@@ -5,11 +5,11 @@ package main
 import os
 
 const WIN_SKIP := [
-	'lib\\bait\\tests\\inout_runner_test.bt'
+	'tests\\inout_runner_test.bt'
 ]
 
 fun main() {
-	mut test_files := os.walk_ext('lib', '.bt').filter(fun (f string) bool {
+	mut test_files := os.walk_ext('tests', '.bt').filter(fun (f string) bool {
 		return f.contains('_test.') and not f.contains('.in.')
 	}) as []string
 	mut fails := 0

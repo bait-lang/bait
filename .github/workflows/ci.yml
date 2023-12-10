@@ -26,8 +26,8 @@ jobs:
         run: |
           bait build-examples -b js
           bait build-examples -b c
-      - name: Run lib and compiler tests
-        run: bait test-lib
+      - name: Run compiler tests
+        run: bait test-self
       - name: Run tool tests
         run: bait test-tools
       - name: Check markdown code blocks
@@ -50,8 +50,8 @@ jobs:
         run: bait build-tools
       - name: Build examples
         run: bait build-examples
-      - name: Run lib and compiler tests
-        run: bait test-lib
+      - name: Run compiler tests
+        run: bait test-self
       - name: Run tool tests
         run: bait test-tools
       - name: Check markdown code blocks
