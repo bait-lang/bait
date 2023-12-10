@@ -1,0 +1,10 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun test_for_cond() {
+	mut a := 2
+	for a < 4 {
+		a += 1
+	}
+	assert a == 4
+}

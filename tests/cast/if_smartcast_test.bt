@@ -10,7 +10,7 @@ fun get_sum_foo() Sum {
 	return Foo{}
 }
 
-fun test_if_cond_scope() {
+fun test_smartcast_scope() {
 	mut c := 0
 	f := get_sum_foo()
 

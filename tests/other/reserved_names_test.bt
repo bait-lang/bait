@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
 
-fun test_reserved_var_names() {
+fun test_for_in_loop() {
 	arr := [1, 2, 3]
 	// Use JS reserved names as var names
 	for this, var in arr {
-		assert this + 1== var
+		assert this + 1 == var
 	}
 }
