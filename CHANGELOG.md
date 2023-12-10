@@ -7,6 +7,11 @@ All notable changes will be documented in this file.
 ## 0.0.6
 _unreleased_
 
+### Breaking
+- Remove tool `test-lib`
+  - All standard library tests can be run with `bait test lib`
+  - Compiler tests can be run with `bait test-self`
+
 ### Generics
 - Check that concrete types for each generic type match
 - Generate concrete functions on both backends
@@ -40,7 +45,9 @@ _unreleased_
   - Many BuildRunner improvements
     - New field `oks` to check number of successful runs
     - Add capbility to use `build_all_in_root` for directories
-  - InOutRunner: Handle skips for lib tests
+  - InOutRunner
+    - Output tests work on windows now (internal path and line break normalization)
+    - Handle skips for lib tests
 
 ### Standard Library
 - builtin:
@@ -59,6 +66,7 @@ _unreleased_
 - Imports: Look for imports next to the respective file first
 - Interop: Support for declaring JS structs, methods, enums and type aliases
 - parser: Fix prefix expr precedence
+- Move compiler tests from `lib/bait/tests/` into `tests/`
 - Various refactorings
 - Documentation improvements
 
