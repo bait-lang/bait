@@ -92,5 +92,5 @@ fun read_out_file(in_file_path string) string {
 }
 
 fun normalize(s string) string {
-	return s.replace('\\', '/')
+	return s.replace('\\', '/').replace('\r\n', '\n')
 }
