@@ -1,0 +1,1 @@
+tests/out/error/other/method_redefinition.in.bt:5:30 error: Method "mymethod" already exists on type "Foo"

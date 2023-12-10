@@ -1,2 +1,0 @@
-lib/bait/tests/inout_error/if/cond_no_bool.in.bt:4:3 error: expected bool, got fun__void
-lib/bait/tests/inout_error/if/cond_no_bool.in.bt:5:3 error: expected bool, got i32

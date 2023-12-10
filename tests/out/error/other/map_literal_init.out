@@ -1,0 +1,2 @@
+tests/out/error/other/map_literal_init.in.bt:3:11 error: expected value type string, got i32
+tests/out/error/other/map_literal_init.in.bt:4:5 error: expected key type string, got bool

@@ -1,0 +1,1 @@
+tests/out/error/other/stmt_after_script_mode.in.bt:5:6 error: invalid expression: kind = key_struct

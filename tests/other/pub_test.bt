@@ -1,0 +1,29 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+import bait.test_pkgs.pubpriv
+
+struct UsesPub{
+	p pubpriv.PubAlias
+}
+
+fun test_pub_works(){
+	s := pubpriv.PubStruct{}
+	assert s.pub_method()
+
+	e := pubpriv.PubEnum.a
+	assert e as i32 == 0
+
+	e2 := 0 as pubpriv.PubEnum
+	assert e2 == .a
+
+	c := pubpriv.PUB_CONST
+	assert c == 3
+
+	assert pubpriv.pub_fun()
+
+	s2 := UsesPub{}
+	assert typeof(s2.p) == 'bait.test_pkgs.pubpriv.PubAlias'
+
+	// TODO test Bait-interfaces once they are implemented
+}

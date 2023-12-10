@@ -1,1 +1,0 @@
-lib/bait/tests/inout_error/loop/label_redefined.in.bt:3:10 error: redefinition of "outer"

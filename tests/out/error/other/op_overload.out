@@ -1,0 +1,4 @@
+tests/out/error/other/op_overload.in.bt:1:9 warning: operator overloading can only be used on methods
+tests/out/error/other/op_overload.in.bt:13:9 error: "+" was overloaded twice for type "Foo"
+tests/out/error/other/op_overload.in.bt:18:9 error: cannot overload "!=", ">", "<=" and ">=" as they are generated from "==" and "<"
+tests/out/error/other/op_overload.in.bt:23:9 error: cannot overload "+="

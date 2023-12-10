@@ -1,0 +1,8 @@
+import bait.test_pkgs.structs
+
+f := structs.Foo{}
+println(f.priv_f) // error
+println(f.mut_f) // error
+println(f.pub_f)
+println(f.pub_mut_f)
+println(f.global_f)

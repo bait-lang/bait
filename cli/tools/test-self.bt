@@ -1,0 +1,30 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package main
+
+import os
+
+const WIN_SKIP := [
+	'tests\\inout_runner_test.bt'
+]
+
+fun main() {
+	mut test_files := os.walk_ext('tests', '.bt').filter(fun (f string) bool {
+		return f.contains('_test.') and not f.contains('.in.')
+	}) as []string
+	mut fails := 0
+
+	if os.platform() == 'win32' {
+		test_files = test_files.filter(fun (f string) bool {
+			return not WIN_SKIP.contains(f)
+		}) as []string
+	}
+
+	for file in test_files {
+		fails += os.system('node ${$BAITEXE} test ${file}')
+	}
+
+	if fails > 0 {
+		exit(1)
+	}
+}

@@ -1,0 +1,21 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+import bait.test_pkgs.structs
+
+fun test_struct_modifiers(){
+	mut f := structs.Foo{}
+	assert f.get_priv() == 1
+	assert f.pub_f == 3
+	assert f.pub_mut_f == 4
+
+	f.add_to_mut(8)
+	assert f.get_mut() == 10
+
+	f.sub_from_pub_mut(3)
+	assert f.pub_mut_f == 1
+
+	assert f.global_f == 5
+	f.global_f = 6
+	f.global_f -= 3
+	assert f.global_f == 3
+}

@@ -1,0 +1,2 @@
+tests/out/error/array/expr_init.in.bt:1:8 error: expected element type string, got i32
+tests/out/error/array/expr_init.in.bt:1:8 error: expected element type string, got bool

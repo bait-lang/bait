@@ -1,1 +1,0 @@
-lib/bait/tests/inout_error/struct/immutable_assign.in.bt:7:5 error: cannot assign to field of immutable variable `f`

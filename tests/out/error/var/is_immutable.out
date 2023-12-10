@@ -1,0 +1,1 @@
+tests/out/error/var/is_immutable.in.bt:2:1 error: cannot assign to immutable variable "x"

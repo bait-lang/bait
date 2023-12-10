@@ -1,0 +1,1 @@
+tests/out/opts/warn_error/warns_are_error.in.bt:1:8 error: unknown attribute "unknown"

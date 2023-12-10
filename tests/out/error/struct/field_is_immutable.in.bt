@@ -1,0 +1,19 @@
+import bait.test_pkgs.structs
+
+struct Spam{
+	priv_f i32
+pub:
+	pub_f i32
+pub mut:
+	pub_mut_f i32
+}
+
+mut f := structs.Foo{}
+f.pub_f = 5 // error
+f.pub_mut_f = 10 // error
+f.global_f = 0
+
+mut s := Spam{}
+s.priv_f = 1 // error
+s.pub_f = 2 // error
+s.pub_mut_f = 3

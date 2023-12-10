@@ -1,1 +1,0 @@
-lib/bait/tests/inout_error/bad_toplevel.in.bt:3:1 error: bad toplevel token: kind = name, val = x

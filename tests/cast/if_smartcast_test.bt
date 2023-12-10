@@ -1,0 +1,30 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+type Sum := Foo | Bar
+
+struct Foo{}
+struct Bar{}
+
+fun get_sum_foo() Sum {
+	return Foo{}
+}
+
+fun test_smartcast_scope() {
+	mut c := 0
+	f := get_sum_foo()
+
+	if f is Bar {
+		assert false
+	} else {
+		c += 1
+		assert typeof(f) == 'Sum'
+	}
+
+	if f is Foo {
+		c += 1
+		assert typeof(f) == 'Foo'
+	}
+
+	assert c == 2
+}
