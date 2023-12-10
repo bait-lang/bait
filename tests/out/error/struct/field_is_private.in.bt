@@ -1,8 +1,8 @@
-import bait.tests.packages.struct_mod
+import bait.test_pkgs.structs
 
-f := struct_mod.Foo{}
-println(f.a)
-println(f.b)
-
-println(f.c)
-println(f.d)
+f := structs.Foo{}
+println(f.priv_f) // error
+println(f.mut_f) // error
+println(f.pub_f)
+println(f.pub_mut_f)
+println(f.global_f)

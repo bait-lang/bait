@@ -1,0 +1,31 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package structs
+
+pub struct Foo {
+	priv_f i32 := 1
+mut:
+	mut_f i32 := 2
+pub:
+	pub_f i32 := 3
+pub mut:
+	pub_mut_f i32 := 4
+global:
+	global_f i32 := 5
+}
+
+pub fun (f Foo) get_priv() i32 {
+	return f.priv_f
+}
+
+pub fun (f Foo) get_mut() i32 {
+	return f.mut_f
+}
+
+pub fun (mut f Foo) add_to_mut(n i32) {
+	f.mut_f += n
+}
+
+pub fun (mut f Foo) sub_from_pub_mut(n i32) {
+	f.pub_mut_f -= n
+}

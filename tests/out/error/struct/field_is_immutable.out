@@ -1,4 +1,4 @@
-tests/out/error/struct/field_is_immutable.in.bt:10:2 error: field `bait.tests.packages.struct_mod.Foo.c` is immutable
-tests/out/error/struct/field_is_immutable.in.bt:11:2 error: field `bait.tests.packages.struct_mod.Foo.d` is immutable
-tests/out/error/struct/field_is_immutable.in.bt:14:2 error: field `Spam.a` is immutable
-tests/out/error/struct/field_is_immutable.in.bt:15:2 error: field `Spam.b` is immutable
+tests/out/error/struct/field_is_immutable.in.bt:12:2 error: field `bait.test_pkgs.structs.Foo.pub_f` is immutable
+tests/out/error/struct/field_is_immutable.in.bt:13:2 error: field `bait.test_pkgs.structs.Foo.pub_mut_f` is immutable
+tests/out/error/struct/field_is_immutable.in.bt:17:2 error: field `Spam.priv_f` is immutable
+tests/out/error/struct/field_is_immutable.in.bt:18:2 error: field `Spam.pub_f` is immutable

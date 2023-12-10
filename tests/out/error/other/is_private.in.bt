@@ -1,4 +1,4 @@
-import bait.tests.packages.pubpriv
+import bait.test_pkgs.pubpriv
 
 struct UsesPriv{
 	ps pubpriv.PrivStruct

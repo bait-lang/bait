@@ -1,8 +1,8 @@
-tests/out/error/other/is_private.in.bt:4:3 error: type bait.tests.packages.pubpriv.PrivStruct is private
-tests/out/error/other/is_private.in.bt:5:3 error: type bait.tests.packages.pubpriv.PrivStruct is private
-tests/out/error/other/is_private.in.bt:8:23 error: struct bait.tests.packages.pubpriv.PrivStruct is private
-tests/out/error/other/is_private.in.bt:10:21 error: enum bait.tests.packages.pubpriv.PrivEnum is private
-tests/out/error/other/is_private.in.bt:11:10 error: type bait.tests.packages.pubpriv.PrivEnum is private
-tests/out/error/other/is_private.in.bt:13:23 error: const bait.tests.packages.pubpriv.PRIV_CONST is private
-tests/out/error/other/is_private.in.bt:15:16 error: function bait.tests.packages.pubpriv.priv_fun is private
+tests/out/error/other/is_private.in.bt:4:3 error: type bait.test_pkgs.pubpriv.PrivStruct is private
+tests/out/error/other/is_private.in.bt:5:3 error: type bait.test_pkgs.pubpriv.PrivStruct is private
+tests/out/error/other/is_private.in.bt:8:23 error: struct bait.test_pkgs.pubpriv.PrivStruct is private
+tests/out/error/other/is_private.in.bt:10:21 error: enum bait.test_pkgs.pubpriv.PrivEnum is private
+tests/out/error/other/is_private.in.bt:11:10 error: type bait.test_pkgs.pubpriv.PrivEnum is private
+tests/out/error/other/is_private.in.bt:13:23 error: const bait.test_pkgs.pubpriv.PRIV_CONST is private
+tests/out/error/other/is_private.in.bt:15:16 error: function bait.test_pkgs.pubpriv.priv_fun is private
 tests/out/error/other/is_private.in.bt:18:14 error: method priv_method is private
