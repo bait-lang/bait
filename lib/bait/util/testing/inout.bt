@@ -30,7 +30,7 @@ pub fun (runner InOutRunner) test_dir(dir string) {
 		return
 	}
 
-	expected := read_out_file('${abs_dir}/expected.out').replace('\r\n', '\n')
+	expected := read_out_file('${abs_dir}/expected.out')
 	runner.compare_expected(res, expected)
 }
 
@@ -43,9 +43,11 @@ pub fun (runner InOutRunner) test_all_in_root() {
 
 fun (runner InOutRunner) compare_expected(res os.Result, expected string) {
 	if runner.check_stdout {
-		assert expected == res.stdout
+		text := normalize(res.stdout)
+		assert text == expected
 	} else {
-		assert expected == res.stderr
+		text := normalize(res.stderr)
+		assert text == expected
 	}
 }
 
@@ -59,7 +61,7 @@ pub fun in_out_runner(runner InOutRunner) {
 			continue
 		}
 
-		if runner.skips.contains(file) {
+		if runner.skips.contains(normalize(file)) {
 			eprintln('skipping ${file}')
 			continue
 		}
@@ -88,5 +90,9 @@ fun read_out_file(in_file_path string) string {
 		return ''
 	}
 
-	return os.read_file(out_file)
+	return normalize(os.read_file(out_file))
+}
+
+fun normalize(s string) string {
+	return s.replace('\\', '/').replace('\r\n', '\n')
 }
