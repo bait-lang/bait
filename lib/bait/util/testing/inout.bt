@@ -43,11 +43,11 @@ pub fun (runner InOutRunner) test_all_in_root() {
 
 fun (runner InOutRunner) compare_expected(res os.Result, expected string) {
 	if runner.check_stdout {
-		res := normalize(res.stdout)
-		assert res == expected
+		text := normalize(res.stdout)
+		assert text == expected
 	} else {
-		res := normalize(res.stderr)
-		assert res == expected
+		text := normalize(res.stderr)
+		assert text == expected
 	}
 }
 
