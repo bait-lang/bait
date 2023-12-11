@@ -308,7 +308,7 @@ fun (mut g Gen) selector_expr(node ast.SelectorExpr) {
 }
 
 fun (mut g Gen) string_literal(node ast.StringLiteral) {
-	val := util.escape_char(node.val.replace('\n', '\\n'), `\"`)
+	val := util.escape_char(util.escape_linebreak(node.val), `\"`)
 	g.write('from_js_string("')
 	g.write(val)
 	g.write('")')

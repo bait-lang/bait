@@ -26,12 +26,18 @@ fun test_struct() {
 	b := Bar {
 		f = 3.14
 	}
-	assert b.str() == 'Bar{\n  f = 3.14\n}'
+	assert b.str() == 'Bar{
+  f = 3.14
+}'
 }
 
 fun test_nested_struct() {
 	f := Foo {}
-	assert f.str() == 'Foo{\n  b = Bar{\n    f = 0\n  }\n}'
+	assert f.str() == 'Foo{
+  b = Bar{
+    f = 0
+  }
+}'
 }
 
 type StructAlias := Bar
@@ -39,7 +45,9 @@ type I32Alias := i32
 
 fun test_alias() {
 	x := Bar{} as StructAlias
-	assert x.str() == 'Bar{\n  f = 0\n}'
+	assert x.str() == 'Bar{
+  f = 0
+}'
 
 	y := 42 as I32Alias
 	assert y.str() == '42'
@@ -53,7 +61,9 @@ fun bar_sum() Sum {
 
 fun test_sumtype() {
 	b := bar_sum()
-	assert b.str() == 'Bar{\n  f = 0\n}'
+	assert b.str() == 'Bar{
+  f = 0
+}'
 }
 
 struct ArrStruct{

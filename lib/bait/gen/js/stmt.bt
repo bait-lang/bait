@@ -5,6 +5,7 @@ package js
 import bait.ast
 import bait.errors
 import bait.token
+import bait.util
 
 fun (mut g Gen) stmts(stmts []ast.Stmt) {
 	g.indent += 1
@@ -89,7 +90,7 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 		g.integer_literal(node)
 	} else if node is ast.StringLiteral {
 		g.write("'")
-		g.write(node.val.replace('\n', '\\n'))
+		g.write(util.escape_linebreak(node.val))
 		g.write("'")
 	} else if node is ast.CharLiteral {
 		g.write("`")
