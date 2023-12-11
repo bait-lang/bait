@@ -1,0 +1,15 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun fun_first(){}
+
+struct Foo{}
+fun (f Foo) fun_first(){}
+fun (f Foo) method_first(){}
+
+fun method_first(){}
+
+fun test_placeholder() {
+	// Above code just has to compile
+	assert true
+}

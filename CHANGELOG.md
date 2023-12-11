@@ -18,13 +18,14 @@ _unreleased_
 - Generate concrete functions on both backends
 - Fix invalid error that a generic type is private
 
-### Error Checks
+### Error and Type Checks
 - If conditions must be of type bool
 - Cannot assign from a void function call
 - Prevent redefinition of ident by a function name
 - Prevent invalid prefix exprs
   - `-` on non-numeric types
   - `not` on non-bool types
+- Fix false-positive error if a method shares a name with a function defined before
 - Reduce noisy errors in the following cases
   - Assign to undefined ident
   - Method call on undefined ident
