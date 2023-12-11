@@ -21,7 +21,9 @@ _unreleased_
 ### Error and Type Checks
 - If conditions must be of type bool
 - Cannot assign from a void function call
-- Prevent redefinition of ident by a function name
+- Prevent some cases of identifier redefinition
+  - Any identifier by a function name
+  - Function argument by a variable
 - Prevent invalid prefix exprs
   - `-` on non-numeric types
   - `not` on non-bool types

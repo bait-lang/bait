@@ -55,6 +55,7 @@ fun (c Checker) fun_params(params []ast.Param){
 			c.scope.register(p.name, ast.ScopeObject{
 				typ = p.typ
 				is_mut = p.is_mut
+				kind = .variable
 			})
 		}
 	}
