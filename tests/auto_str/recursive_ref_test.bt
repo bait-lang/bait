@@ -1,0 +1,32 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+struct SelfRef {
+	sr SelfRef
+}
+
+fun test_recursive_struct() {
+	sr := SelfRef{}
+	assert sr.str() == 'SelfRef{\n  sr = SelfRef{...}\n}'
+}
+
+type SumRec := Bar | Var
+
+struct Bar {
+	f i32
+}
+
+struct Var {
+	s SumRec
+}
+
+fun var_sum() SumRec {
+	return Var {
+		s = Bar{}
+	}
+}
+
+fun test_recursive_sumtype() {
+	v := var_sum()
+	assert v.str() == 'Var{\n  s = Bar{\n    f = 0\n  }\n}'
+}

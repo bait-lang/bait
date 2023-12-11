@@ -1,0 +1,101 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun test_array() {
+	a := [true, false, true]
+	assert a.str() == "[true, false, true]"
+}
+
+fun test_map() {
+	m := map{
+		'foo': 62
+		'bar': 31
+	}
+	assert m.str() == "{'foo': 62, 'bar': 31}"
+}
+
+struct Bar {
+	f f64
+}
+
+struct Foo {
+	b Bar
+}
+
+fun test_struct() {
+	b := Bar {
+		f = 3.14
+	}
+	assert b.str() == 'Bar{\n  f = 3.14\n}'
+}
+
+fun test_nested_struct() {
+	f := Foo {}
+	assert f.str() == 'Foo{\n  b = Bar{\n    f = 0\n  }\n}'
+}
+
+type StructAlias := Bar
+type I32Alias := i32
+
+fun test_alias() {
+	x := Bar{} as StructAlias
+	assert x.str() == 'Bar{\n  f = 0\n}'
+
+	y := 42 as I32Alias
+	assert y.str() == '42'
+}
+
+type Sum := Foo | Bar
+
+fun bar_sum() Sum {
+	return Bar{}
+}
+
+fun test_sumtype() {
+	b := bar_sum()
+	assert b.str() == 'Bar{\n  f = 0\n}'
+}
+
+struct ArrStruct{
+	arr []Bar
+}
+
+fun test_array_of_struct() {
+	a := ArrStruct {
+		arr = [Bar{}, Bar{}]
+	}
+	assert a.str() == 'ArrStruct{
+  arr = [Bar{
+      f = 0
+    }, Bar{
+      f = 0
+    }]
+}'
+}
+
+struct NestedArrs{
+	nest []ArrStruct
+}
+
+fun test_nested_array_structs() {
+	a := NestedArrs {
+		nest = [ArrStruct {
+			arr = [Bar{}, Bar{}]
+		}, ArrStruct {
+			arr = [Bar{}]
+		}]
+	}
+	assert a.str() == 'NestedArrs{
+  nest = [ArrStruct{
+      arr = [Bar{
+          f = 0
+        }, Bar{
+          f = 0
+        }]
+    }, ArrStruct{
+      arr = [Bar{
+          f = 0
+        }]
+    }]
+}'
+}

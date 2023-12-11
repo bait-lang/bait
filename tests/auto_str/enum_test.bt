@@ -1,0 +1,16 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+enum Color{
+	red
+	green
+	blue
+}
+
+fun test_enum() {
+	c := Color.red
+	assert c.str() == 'red'
+
+	c2 := Color.blue
+	assert c2.str() == 'blue'
+}

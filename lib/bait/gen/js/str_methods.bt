@@ -28,10 +28,10 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		info := sym.info as ast.ArrayInfo
 		el_str := g.get_str_fun(info.elem_type)
 
-		g.fun_decls_out += 'function ${name}(a) {
+		g.fun_decls_out += 'function ${name}(a, indent) {
 	let s = "["
 	for (let i = 0; i < a.length; i++) {
-		s += ${el_str}(a.data[i]).str
+		s += ${el_str}(a.data[i], indent + 1).str
 		if (i < a.length - 1) {
 			s += ", "
 		}
@@ -44,19 +44,19 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	if sym.kind == .struct_ {
 		info := sym.info as ast.StructInfo
 		g.fun_decls_out += 'function ${name}(it, indent) {
-	const space = " ".repeat(indent * 4)
+	const space = " ".repeat(indent * 2)
 	let s = "${sym.name}{"\n'
 		if info.fields.length > 0 {
 			g.fun_decls_out += '\ts += "\\n"\n'
 		}
 		for field in info.fields {
 			if typ == field.typ {
-				g.fun_decls_out += '\ts += space + "    ${field.name} = ${sym.name}{...}\\n"\n'
+				g.fun_decls_out += '\ts += space + "  ${field.name} = ${sym.name}{...}\\n"\n'
 				continue
 			}
 
 			str_fun_name := g.get_str_fun(field.typ)
-			g.fun_decls_out += '\ts += space + "    ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
+			g.fun_decls_out += '\ts += space + "  ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
 		}
 		g.fun_decls_out += '\treturn from_js_string(s + space + "}")\n}\n\n'
 		return
