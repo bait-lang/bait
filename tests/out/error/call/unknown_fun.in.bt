@@ -1,0 +1,5 @@
+struct Foo{}
+f := Foo{}
+
+a := not_exists()
+b := f.bad_method()

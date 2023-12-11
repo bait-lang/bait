@@ -32,6 +32,7 @@ _unreleased_
   - Assign to undefined ident
   - Method call on undefined ident
   - Use of unknown struct field in infix
+  - Assign from unknown function or method
 
 ### Pointers
 - Add pointer dereferencing: `^my_ptr`

@@ -94,7 +94,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 	}
 	if not found {
 		c.error('unknown function ${node.name}', node.pos)
-		return ast.VOID_TYPE
+		return ast.PLACEHOLDER_TYPE
 	}
 
 	mut def := c.table.fun_decls[node.name]
@@ -138,7 +138,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 
 	if left_expr_type == ast.PLACEHOLDER_TYPE {
 		// Another error was already raised
-		return ast.VOID_TYPE
+		return ast.PLACEHOLDER_TYPE
 	}
 
 	left_sym := c.table.get_sym(left_expr_type)
@@ -159,7 +159,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		}
 
 		c.error('method ${node.name} not found on type ${left_sym.name}', node.pos)
-		return ast.VOID_TYPE
+		return ast.PLACEHOLDER_TYPE
 	}
 	if not def.is_pub and left_sym.pkg != c.pkg {
 		c.error('method ${def.name} is private', node.pos)
