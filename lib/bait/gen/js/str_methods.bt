@@ -2,8 +2,11 @@
 // SPDX-License-Identifier: MPL-2.0
 package js
 
+import os
 import bait.ast
 import bait.errors
+
+const LB := if os.platform() == 'win32' { '\\r\\n' } else { '\\n' }
 
 fun (mut g Gen) get_str_fun(typ ast.Type) string {
 	g.table.needed_str_funs.push(typ)
@@ -47,16 +50,16 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	const space = " ".repeat(indent * 2)
 	let s = "${sym.name}{"\n'
 		if info.fields.length > 0 {
-			g.fun_decls_out += '\ts += "\\n"\n'
+			g.fun_decls_out += '\ts += "${LB}"\n'
 		}
 		for field in info.fields {
 			if typ == field.typ {
-				g.fun_decls_out += '\ts += space + "  ${field.name} = ${sym.name}{...}\\n"\n'
+				g.fun_decls_out += '\ts += space + "  ${field.name} = ${sym.name}{...}${LB}"\n'
 				continue
 			}
 
 			str_fun_name := g.get_str_fun(field.typ)
-			g.fun_decls_out += '\ts += space + "  ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "\\n"\n'
+			g.fun_decls_out += '\ts += space + "  ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "${LB}"\n'
 		}
 		g.fun_decls_out += '\treturn from_js_string(s + space + "}")\n}\n\n'
 		return

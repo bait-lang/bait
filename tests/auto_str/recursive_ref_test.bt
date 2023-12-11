@@ -7,7 +7,9 @@ struct SelfRef {
 
 fun test_recursive_struct() {
 	sr := SelfRef{}
-	assert sr.str() == 'SelfRef{\n  sr = SelfRef{...}\n}'
+	assert sr.str() == 'SelfRef{
+  sr = SelfRef{...}
+}'
 }
 
 type SumRec := Bar | Var
@@ -28,5 +30,9 @@ fun var_sum() SumRec {
 
 fun test_recursive_sumtype() {
 	v := var_sum()
-	assert v.str() == 'Var{\n  s = Bar{\n    f = 0\n  }\n}'
+	assert v.str() == 'Var{
+  s = Bar{
+    f = 0
+  }
+}'
 }
