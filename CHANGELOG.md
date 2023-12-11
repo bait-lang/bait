@@ -8,9 +8,10 @@ All notable changes will be documented in this file.
 _unreleased_
 
 ### Breaking
-- Remove tool `test-lib`
+- Remove tools `test-lib` and `test-tools`
   - All standard library tests can be run with `bait test lib`
-  - Compiler tests can be run with `bait test-self`
+  - Compiler tests can be run with `bait test tests`
+  - Tool tests can be run with `bait test cli/tools`
 
 ### Generics
 - Check that concrete types for each generic type match
@@ -42,6 +43,7 @@ _unreleased_
   - Various fixes related to breaking compiler changes
 
 ### Testing
+- builder: Fix testing a directory with multiple test files
 - `bait.util.testing`
   - Many BuildRunner improvements
     - New field `oks` to check number of successful runs
@@ -289,7 +291,7 @@ _10 May 2023_
 - `build` command (it can be omitted)
 - `run`, `version` and `doctor` commands
 - move `help`, `self` and `up` into tools
-- build-examples`, `build-tools`, `check-md`, `test-self` and `test-all` tools
+- `build-examples`, `build-tools`, `check-md`, `test-self` and `test-all` tools
 - `build`: add `--script` option to enable script mode, where no main function is required
 - `self`: backup the bait.js file
 

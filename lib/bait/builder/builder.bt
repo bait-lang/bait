@@ -65,6 +65,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	mut paths := b.get_user_files(prefs.command)
 	mut files := []ast.File
 	for p in paths {
+		b.prefs.expected_pkg = ''
 		files.push(b.parse_source_file(p))
 	}
 
