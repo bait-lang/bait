@@ -285,6 +285,14 @@ fun has_toplevel_return(stmts []ast.Stmt) bool {
 		if stmt is ast.ReturnStmt {
 			return true
 		}
+		if stmt is ast.ExprStmt {
+			if stmt.expr is ast.CallExpr {
+				expr := stmt.expr as ast.CallExpr
+				if not expr.is_method and ['panic', 'exit'].contains(expr.name) {
+					return true
+				}
+			}
+		}
 	}
 	return false
 }
