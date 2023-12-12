@@ -3,3 +3,6 @@ if bad_name {}
 where = 1
 
 os.import_missing()
+
+_ := xyz == 23
+_ := 45 != qwe

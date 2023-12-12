@@ -7,7 +7,7 @@ import os
 const TOOLS := ['build-examples', 'build-tools']
 
 const TOOLS_WITH_ARGS := map{
-	'test': ['tools', 'lib', 'tests']
+	'test': ['cli/tools', 'lib', 'tests']
 	'check-md': ['docs/docs.md', 'README.md']
 }
 
