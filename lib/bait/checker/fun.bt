@@ -36,6 +36,10 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 	if node.return_type != ast.VOID_TYPE and not has_toplevel_return(node.stmts) and not c.returns {
 		c.error('missing return statement', node.pos)
 	}
+
+	c.cur_fun = ast.FunDecl{
+		return_type = ast.VOID_TYPE
+	}
 }
 
 fun (c Checker) fun_params(params []ast.Param){

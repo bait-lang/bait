@@ -7,6 +7,7 @@ import bait.ast
 fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 	if is_expr {
 		c.is_if_match_expr = true
+		node.typ = c.cur_fun.return_type
 	}
 
 	mut nr_branches_return := 0
@@ -18,6 +19,11 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 				c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
 			}
 		}
+
+		if is_expr {
+			c.expected_type = node.typ
+		}
+
 		c.stmts(branch.stmts)
 		c.close_scope()
 
@@ -53,6 +59,7 @@ fun (mut c Checker) match_expr(mut node ast.MatchExpr, is_expr bool) ast.Type {
 
 	if is_expr {
 		c.is_if_match_expr = true
+		node.typ = c.cur_fun.return_type
 	}
 
 	mut nr_branches_return := 0

@@ -1,0 +1,12 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun my_cond() bool {
+	return true
+}
+
+const FOO := if my_cond() { 'foo' } else { 'bar' }
+
+fun test_toplevel_ternary() {
+	assert FOO == 'foo'
+}

@@ -1,0 +1,23 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+enum Number {
+	one
+	two
+}
+
+enum Color {
+	red
+	green
+}
+
+fun get_color_by_num(n Number) Color {
+	return match n {
+		.one { .red }
+		.two { .green }
+	}
+}
+
+fun test_enum_type_infer() {
+	assert get_color_by_num(.one) == .red
+}
