@@ -34,6 +34,9 @@ _unreleased_
   - Use of unknown struct field in infix
   - Assign from unknown function or method
 
+### Language Interoperability
+- _[JS]_ Implement native strings `js'my str'`
+
 ### Pointers
 - Add pointer dereferencing: `^my_ptr`
 - Fix `typeof()` for pointers

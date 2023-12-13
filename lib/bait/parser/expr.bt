@@ -50,7 +50,7 @@ fun (mut p Parser) single_expr() ast.Expr {
 			return p.number_literal()
 		}
 		.string {
-			return p.string_literal()
+			return p.string_literal(.bait)
 		}
 		.key_fun {
 			return p.anon_fun()
@@ -241,7 +241,7 @@ fun (mut p Parser) hash_expr()ast.Expr{
 		return p.name_expr(lang)
 	}
 
-	str_node := p.string_literal() as ast.StringLiteral
+	str_node := p.string_literal(.bait) as ast.StringLiteral
 	return ast.HashExpr{
 		lang = lang
 		val = str_node.val
@@ -340,6 +340,12 @@ fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
 	if p.next_tok.kind == .dot and p.tok.val[0].is_capital() and not p.tok.val.is_upper() {
 		return p.enum_val(true)
 	}
+
+	if p.next_tok.kind == .string and p.tok.val == 'js' {
+		p.next()
+		return p.string_literal(.js)
+	}
+
 	return p.ident(lang)
 }
 
@@ -387,11 +393,12 @@ fun (mut p Parser) prefix_expr()ast.PrefixExpr{
 	}
 }
 
-fun (mut p Parser) string_literal()ast.Expr{
+fun (mut p Parser) string_literal(lang ast.Language)ast.Expr{
 	pos := p.tok.pos
 	if p.next_tok.kind != .dollar {
 		p.next()
 		return ast.StringLiteral{
+			lang = lang
 			val = p.prev_tok.val
 			pos = pos
 		}

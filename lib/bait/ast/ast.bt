@@ -372,6 +372,7 @@ pub:
 
 pub struct StringLiteral{
 pub:
+	lang Language
 	val string
 	pos token.Pos
 }

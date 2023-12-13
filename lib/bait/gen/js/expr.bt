@@ -309,9 +309,16 @@ fun (mut g Gen) selector_expr(node ast.SelectorExpr) {
 
 fun (mut g Gen) string_literal(node ast.StringLiteral) {
 	val := util.escape_char(util.escape_linebreak(node.val), `\"`)
-	g.write('from_js_string("')
-	g.write(val)
-	g.write('")')
+
+	if node.lang == .js {
+		g.write('"')
+		g.write(val)
+		g.write('"')
+	} else {
+		g.write('from_js_string("')
+		g.write(val)
+		g.write('")')
+	}
 }
 
 fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
