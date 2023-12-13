@@ -27,6 +27,7 @@ _unreleased_
 - Prevent invalid prefix exprs
   - `-` on non-numeric types
   - `not` on non-bool types
+- Clean error if imported package does not exist
 - Fix false-positive error if a method shares a name with a function defined before
 - Reduce noisy errors in the following cases
   - Assign to undefined ident

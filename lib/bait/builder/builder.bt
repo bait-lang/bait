@@ -86,6 +86,10 @@ pub fun compile(prefs preference.Prefs) i32 {
 			// Get all imported files and filter out already parsed ones
 			// TODO possible perf improvement: prefilter against list of parsed packages before file collection
 			import_dir := resolve_import(fdir, imp.name.replace('.', os.PATH_SEP))
+			if not os.exists(import_dir) {
+				errors.generic_error('package ${imp.name} not found')
+				continue
+			}
 			mut imp_paths := b.collect_bait_files(import_dir)
 			if imp_paths.length == 0 {
 				errors.generic_error('package ${imp.name} contains no Bait files')
