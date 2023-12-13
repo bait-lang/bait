@@ -47,9 +47,7 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 
 	// Validate the files package name actually matches the desired import
 	if p.pref.expected_pkg.length > 0 and pkg_decl.full_name != p.pref.expected_pkg {
-		return ast.File{
-			path = path
-		}
+		return ast.File{}
 	}
 
 	imports := p.import_stmts()
@@ -90,6 +88,9 @@ fun (mut p Parser) package_decl() ast.PackageDecl {
 	if full_name != 'main' and p.path.contains(lib_part) {
 		rel_path := p.path.substr(p.path.index(lib_part) + lib_part.length, p.path.length)
 		full_name = rel_path.substr(0, rel_path.last_index(os.PATH_SEP)).replace(os.PATH_SEP, '.')
+		if not full_name.ends_with(name) {
+			return ast.PackageDecl{}
+		}
 	}
 	p.pkg_name = full_name
 	return ast.PackageDecl{
