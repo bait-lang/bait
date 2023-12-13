@@ -50,6 +50,13 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 		return ast.File{}
 	}
 
+	// Do not parse assert.bt outside of tests
+	if not p.pref.is_test and pkg_decl.name == 'builtin' and path.ends_with('assert.bt') {
+		return ast.File{
+			path = path
+		}
+	}
+
 	imports := p.import_stmts()
 
 	mut stmts := []ast.Stmt
