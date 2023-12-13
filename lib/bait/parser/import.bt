@@ -17,13 +17,6 @@ fun (p Parser) add_builtin_imports() []ast.Import {
 		alias = 'builtin'
 	})
 
-	if p.pref.is_test and p.pkg_name != 'builtin.testing' {
-		imports.push(ast.Import{
-			name = 'builtin.testing'
-			alias = 'testing'
-		})
-	}
-
 	return imports
 }
 

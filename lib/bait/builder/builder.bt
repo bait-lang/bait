@@ -95,16 +95,26 @@ pub fun compile(prefs preference.Prefs) i32 {
 				errors.generic_error('package ${imp.name} contains no Bait files')
 				continue
 			}
-			imp_paths = imp_paths.filter(fun (p string) bool {
+			filtered_paths := imp_paths.filter(fun (p string) bool {
 				return not paths.contains(p)
 			})
 
 			// Parse the imported files
-			for p in imp_paths {
-				paths.push(p)
+			mut nr_newly_parsed := 0
+			for p in filtered_paths {
 				parsed_file := b.parse_source_file(p)
 
+				if parsed_file.path.length == 0 {
+					continue
+				}
+
+				nr_newly_parsed += 1
+				paths.push(p)
 				files.push(parsed_file)
+			}
+
+			if nr_newly_parsed == 0 and filtered_paths.length > 0 {
+				errors.generic_error('no files belong to package ${imp.name}')
 			}
 		}
 	}

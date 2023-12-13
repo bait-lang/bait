@@ -157,11 +157,11 @@ fun (mut g Gen) gen_test_main() {
 			nr_test_funs += 1
 			name := js_name(func.name)
 			esc_path := g.path.replace('\\', '\\\\')
-			g.writeln('builtin__testing__TestRunner_set_test_info(builtin__testing__test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))')
+			g.writeln('TestRunner_set_test_info(test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))')
 			g.writeln('${name}()')
 		}
 	}
-	g.writeln('exit(builtin__testing__TestRunner_exit_code(builtin__testing__test_runner))')
+	g.writeln('exit(TestRunner_exit_code(test_runner))')
 	g.indent -= 1
 	g.writeln('}')
 
