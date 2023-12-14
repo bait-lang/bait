@@ -306,7 +306,12 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 	is_pub := p.check_pub()
 	p.check(.key_interface)
 	lang := p.parse_lang()
-	name := lang.prepend_to(p.check_name())
+	mut name := lang.prepend_to(p.check_name())
+	if lang != .bait and p.tok.kind == .dot {
+		name += '.'
+		p.next()
+		name += p.check_name()
+	}
 
 	// TODO investigate why registration of the sym after loop with methods as struct field does not work
 	mut tsym := ast.TypeSymbol{
