@@ -327,8 +327,7 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 		sym = c.table.get_sym(sym.parent)
 	}
 
-	// TODO interface (especially JS)
-	if [ast.TypeKind.struct_, .array, .string, .map].contains(sym.kind) {
+	if [ast.TypeKind.struct_, .interface_, .array, .string, .map].contains(sym.kind) {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
 			c.error('${sym.name} has no field ${node.field_name}', node.pos)
