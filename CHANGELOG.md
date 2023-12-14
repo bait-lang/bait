@@ -27,7 +27,9 @@ _unreleased_
 - Prevent invalid prefix exprs
   - `-` on non-numeric types
   - `not` on non-bool types
-- Clean error if imported package does not exist
+- Import related errors in case of
+  - Imported package does not exist
+  - No files belong to imported package
 - Fix false-positive error if a method shares a name with a function defined before
 - Reduce noisy errors in the following cases
   - Assign to undefined ident
@@ -37,6 +39,7 @@ _unreleased_
 
 ### Language Interoperability
 - _[JS]_ Implement native strings `js'my str'`
+- _[JS]_Various fixes related to interfaces
 
 ### Pointers
 - Add pointer dereferencing: `^my_ptr`
