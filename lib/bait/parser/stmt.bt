@@ -306,7 +306,12 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 	is_pub := p.check_pub()
 	p.check(.key_interface)
 	lang := p.parse_lang()
-	name := lang.prepend_to(p.check_name())
+	mut name := lang.prepend_to(p.check_name())
+	if lang != .bait and p.tok.kind == .dot {
+		name += '.'
+		p.next()
+		name += p.check_name()
+	}
 
 	// TODO investigate why registration of the sym after loop with methods as struct field does not work
 	mut tsym := ast.TypeSymbol{
@@ -317,10 +322,66 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 	}
 	typ := p.table.register_sym(tsym)
 
+	mut mut_idx := -1
+	mut pub_idx := -1
+	mut pub_mut_idx := -1
+	mut global_idx := -1
+	mut field_is_mut := false
+	mut field_is_pub := false
+	mut field_is_global := false
+
 	mut methods := []ast.FunDecl
 	mut fields := []ast.StructField
+
 	p.check(.lcur)
 	for p.tok.kind != .rcur {
+		if p.tok.kind == .key_mut {
+			if mut_idx != -1 {
+				p.error('redefinition of "mut" section')
+				return ast.InterfaceDecl{}
+			}
+			p.next()
+			p.check(.colon)
+			mut_idx = fields.length
+			field_is_mut = true
+			field_is_pub = false
+			field_is_global = false
+		} else if p.tok.kind == .key_pub {
+			p.next()
+			if p.tok.kind == .key_mut {
+				if pub_mut_idx != -1 {
+					p.error('redefinition of "pub mut" section')
+					return ast.InterfaceDecl{}
+				}
+				p.next()
+				pub_mut_idx = fields.length
+				field_is_mut = true
+				field_is_pub = true
+				field_is_global = false
+			} else {
+				if pub_idx != -1 {
+					p.error('redefinition of "pub" section')
+					return ast.InterfaceDecl{}
+				}
+				pub_idx = fields.length
+				field_is_mut = false
+				field_is_pub = true
+				field_is_global = false
+			}
+			p.check(.colon)
+		} else if p.tok.kind == .key_global {
+			if global_idx != -1 {
+				p.error('redefinition of "global" section')
+				return ast.InterfaceDecl{}
+			}
+			p.next()
+			p.check(.colon)
+			global_idx = fields.length
+			field_is_mut = true
+			field_is_pub = true
+			field_is_global = true
+		}
+
 		fname := p.check_name()
 		if p.tok.kind == .lpar {
 			m := p.interface_method(fname, typ)
@@ -332,6 +393,9 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 		fields.push(ast.StructField{
 			name = fname
 			typ = p.parse_type()
+			is_mut = field_is_mut
+			is_pub = field_is_pub
+			is_global = field_is_global
 		})
 	}
 	p.next()
