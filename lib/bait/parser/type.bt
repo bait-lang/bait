@@ -50,9 +50,15 @@ fun (mut p Parser) parse_name_type(lang ast.Language) ast.Type {
 
 	// Build full name and handle imported types
 	if p.tok.kind == .dot {
-		pkg := p.import_aliases[name]
-		p.next()
-		name = pkg + '.' + p.check_name()
+		if lang == .js {
+			p.next()
+			name += '.' + p.check_name()
+		} else {
+			pkg := p.import_aliases[name]
+			p.next()
+			name = pkg + '.' + p.check_name()
+		}
+
 	} else if p.expr_pkg.length > 0 {
 		name = p.prepend_expr_pkg(name)
 	} else if not name.contains('.') and not p.table.type_idxs.contains(name) {
