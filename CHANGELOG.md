@@ -27,6 +27,7 @@ _unreleased_
 - Prevent invalid prefix exprs
   - `-` on non-numeric types
   - `not` on non-bool types
+- Respect return type of overloaded methods
 - Import related errors in case of
   - Imported package does not exist
   - No files belong to imported package

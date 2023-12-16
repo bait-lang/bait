@@ -1,0 +1,21 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+struct Point{
+	x i32
+}
+
+@overload: '-'
+fun (p Point) minus_x(p2 Point) i32 {
+	return p.x - p2.x
+}
+
+fun test_ret_type() {
+	a := Point{
+		x = 3
+	}
+	b := Point{
+		x = 1
+	}
+	assert a - b == 2
+}
