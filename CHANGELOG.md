@@ -65,6 +65,7 @@ _unreleased_
     - Handle skips for lib tests
 
 ### Standard Library
+- Add absolutly minimal `time` package
 - builtin:
   - New string method `is_capital() bool`
   - New map methods `values() []any` and `clear()`
@@ -72,6 +73,7 @@ _unreleased_
 - os:
   - Add `input(prompt) string` function _[JS backend]_
   - `is_dir(path)`: Return false if path does not exist
+  - Fix js error with `mkdir()` and `mkdir_all()` if path already exists
 
 ### Other Changes
 - Implement real `if` and `match` expressions _[JS]_

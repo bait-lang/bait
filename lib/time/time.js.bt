@@ -1,0 +1,35 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package time
+
+struct Time {
+pub:
+	year i32
+	month i32
+	day i32
+	hour i32
+	minute i32
+	second i32
+	millisecond i32
+	unix i64
+}
+
+pub fun now() Time {
+	mut res := Time{}
+	#JS.'
+	const date = new Date()
+	res.year = date.getFullYear()
+	res.month = date.getMonth() + 1
+	res.day = date.getDate()
+	res.hour = date.getHours()
+	res.minute = date.getMinutes()
+	res.second = date.getSeconds()
+	res.millisecond = date.getMilliseconds()
+	res.unix = date.getTime()'
+	return res
+}
+
+@overload: '-'
+fun (a Time) minus (b Time) i64 {
+	return a.unix - b.unix
+}

@@ -88,10 +88,16 @@ pub fun is_dir(path string) bool {
 }
 
 pub fun mkdir(dir string) {
+	if exists(dir) {
+		return
+	}
 	#JS.fs.mkdirSync(dir.str)
 }
 
 pub fun mkdir_all(dir string) {
+	if exists(dir) {
+		return
+	}
 	#JS.'JS.fs.mkdirSync(dir.str, { recursive: true })'
 }
 
