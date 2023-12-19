@@ -113,6 +113,17 @@ fun (c Checker) does_type_exist(sym ast.TypeSymbol, pos token.Pos) bool {
 		return true
 	}
 
+	if sym.kind == .fun_ {
+		info := sym.info as ast.FunInfo
+		for param_type in info.param_types {
+			param_sym := c.table.get_sym(param_type)
+			if not c.does_type_exist(param_sym, pos) {
+				return false
+			}
+		}
+		return c.does_type_exist(c.table.get_sym(info.return_type), pos)
+	}
+
 	c.error('type ${sym.name} is private', pos)
 	return false
 }

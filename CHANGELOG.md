@@ -38,6 +38,7 @@ _unreleased_
   - `-` on non-numeric types
   - `not` on non-bool types
 - Respect return type of overloaded methods
+- Fix invalid error for struct fields with a function type
 - Fix false-positive error if a method shares a name with a function defined before
 - Reduce noisy errors in the following cases
   - Assign to undefined ident
@@ -47,6 +48,7 @@ _unreleased_
 
 ### Language Interoperability
 - _[JS]_ Implement native strings `js'my str'`
+- _[JS]_ Add support for declaring structs, methods, enums and type aliases
 - _[JS]_ Various fixes related to interfaces
 
 ### Pointers
@@ -73,6 +75,7 @@ _unreleased_
     - Output tests work on windows now (internal path and line break normalization)
     - Fix checking stderr of a directory
     - Handle skips for lib tests
+- Move compiler tests from `lib/bait/tests/` into `tests/`
 
 ### Standard Library
 - Add quite minimal `time` package
@@ -85,6 +88,7 @@ _unreleased_
   - Add `input(prompt) string` function _[JS]_
   - Add `exists_dir(path)` that checks if path exists and is a directory _[JS]_
   - Fix js error with `mkdir()` and `mkdir_all()` if path already exists
+- Add absolutly minimal `time` package
 
 ### Other Changes
 - Complete tokenizer rewrite and rename to `lexer`
