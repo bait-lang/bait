@@ -12,7 +12,17 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 
 	c.returns = false
 
-	if not node.is_method {
+	if node.is_method {
+		sym := c.table.get_sym(node.params[0].typ)
+		if sym.info is ast.StructInfo {
+			field := sym.find_field(node.name, c.table)
+			if field.name.length > 0 {
+				if c.table.get_sym(field.typ).kind == .fun_ {
+					c.error('struct has a field and method named ${node.name}', node.pos)
+				}
+			}
+		}
+	} else {
 		if c.scope.is_known(node.name) {
 			c.error('redefinition of ${node.name}', node.pos)
 		}

@@ -38,7 +38,6 @@ _unreleased_
   - `-` on non-numeric types
   - `not` on non-bool types
 - Respect return type of overloaded methods
-- Fix invalid error for struct fields with a function type
 - Fix false-positive error if a method shares a name with a function defined before
 - Reduce noisy errors in the following cases
   - Assign to undefined ident
@@ -96,6 +95,7 @@ _unreleased_
 - _[JS]_ Implement real `match` expression
 - Add support for float literals _[JS]_
 - checker: Fix scope of smartcasted if conditions
+- Some fixes regarding struct fields with function type
 - gen: Escape reserved JS keywords in the `for ... in` loop
 - Interop: Support for declaring JS structs, methods, enums and type aliases
 - parser: Fix prefix expr precedence
