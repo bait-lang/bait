@@ -26,7 +26,7 @@ pub fun (mut w Stopwatch) restart() {
 }
 
 pub fun (mut w Stopwatch) elapsed() u64 {
-	if w.start > 0 as u64 {
+	if w.start > 0 as u64 and w.end == 0 as u64 {
 		return w.elapsed + (#JS.'performance.now()' as u64 - w.start)
 	}
 

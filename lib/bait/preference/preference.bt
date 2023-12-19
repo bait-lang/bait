@@ -23,6 +23,7 @@ pub mut:
 
 	should_run bool
 	is_verbose bool
+	show_timings bool
 	backend Backend
 
 	// Compile mode
@@ -92,6 +93,9 @@ pub fun parse_args(args []string) Prefs {
 			}
 			'--script' {
 				p.is_script = true
+			}
+			'--timings' {
+				p.show_timings = true
 			}
 			'--' {
 				after_double_dash = true

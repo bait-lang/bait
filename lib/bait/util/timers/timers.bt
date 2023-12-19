@@ -7,7 +7,9 @@ import time
 global g_timers := Timers{}
 
 struct Timers{
+mut:
 	watches map[string]time.Stopwatch
+	show bool := true
 }
 
 pub fun start(name string) {
@@ -15,5 +17,12 @@ pub fun start(name string) {
 }
 
 pub fun show(name string) {
+	if not g_timers.show {
+		return
+	}
 	println('${name}: ${g_timers.watches[name].elapsed()}ms')
+}
+
+pub fun enable_show(state bool) {
+	g_timers.show = state
 }

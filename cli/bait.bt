@@ -5,6 +5,7 @@ package main
 import bait.preference
 import bait.builder
 import bait.util
+import bait.util.timers
 import bait.util.tools
 import os
 
@@ -26,8 +27,11 @@ const TOOLS := [
 fun main() {
 	// Parse arguments into Prefs struct
 	args := os.user_args()
+	timers.start('PREFS')
 	mut prefs := preference.parse_args(args)
 	prefs.set_comptime_vars()
+	timers.enable_show(prefs.show_timings)
+	timers.show('PREFS')
 
 	// Handle tool commands
 	if TOOLS.contains(prefs.command) {

@@ -8,7 +8,7 @@ All notable changes will be documented in this file.
 _unreleased_
 
 ### Breaking
-- Remove tools `test-lib` and `test-tools`
+- Remove tools `test-lib`
   - All standard library tests can be run with `bait test lib`
   - Compiler tests can be run with `bait test tests`
   - Tool tests can be run with `bait test cli/tools`
@@ -49,7 +49,7 @@ _unreleased_
 ### CLI and Tooling
 - Add `init` tool to setup new projects
 - `up`: Fix make on windows
-- Add `test-tools` to run all tool tests
+- Add option `--timings` to show time needed for all compiler stages
 - `gen-baitjs`
   - Remove from builtin tools as it's designed for CI only
   - Various fixes related to breaking compiler changes

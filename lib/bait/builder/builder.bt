@@ -11,7 +11,7 @@ import bait.gen.js as jsgen
 import bait.gen.c as cgen
 import bait.preference
 import bait.tokenizer
-
+import bait.util.timers
 
 struct Builder {
 	table ast.Table
@@ -62,6 +62,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	}
 
 	// Tokenize and parse all specified files
+	timers.start('PARSE')
 	mut paths := b.get_user_files(prefs.command)
 	mut files := []ast.File
 	for p in paths {
@@ -119,6 +120,8 @@ pub fun compile(prefs preference.Prefs) i32 {
 		}
 	}
 
+	timers.show('PARSE')
+
 	b.parsed_files = files
 	if b.print_errors_and_warnings() {
 		return 1
@@ -126,6 +129,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 
 	// TODO move whole depgraph build and resolve into pkg
 
+	timers.start('DEPGRAPH')
 	// Build a dependency map for each file
 	mut deps := map[string][]string
 	for f in files {
@@ -152,13 +156,17 @@ pub fun compile(prefs preference.Prefs) i32 {
 		}
 	}
 
+	timers.show('DEPGRAPH')
+
 	// Run the type resolver and checker
+	timers.start('CHECK')
 	b.parsed_files = sorted_files
 	b.checker = checker.Checker{
 		prefs = b.prefs
 		table = b.table
 	}
 	b.checker.check_files(sorted_files)
+	timers.show('CHECK')
 
 	if b.check_redefined_functions() {
 		return 1
@@ -176,9 +184,11 @@ pub fun compile(prefs preference.Prefs) i32 {
 
 fun (b Builder) code_gen_js() i32 {
 	// Run JSGen and write it to the outfile
+	timers.start('GEN')
 	res := jsgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
 	ensure_dir_exists(os.dir(b.prefs.out_name))
 	os.write_file(b.prefs.out_name, res)
+	timers.show('GEN')
 
 	// Execute the resulting file with NodeJS if required
 	if b.prefs.should_run{
@@ -194,6 +204,7 @@ fun (b Builder) code_gen_js() i32 {
 }
 
 fun (mut b Builder) code_gen_c() i32 {
+	timers.start('GEN')
 	res := cgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
 
 	if os.exists(b.prefs.out_name) and os.is_dir(b.prefs.out_name) {
@@ -204,6 +215,7 @@ fun (mut b Builder) code_gen_c() i32 {
 	tmp_c_path := os.join_path(os.tmp_dir(), [os.file_name(b.prefs.out_name) + '.c'])
 	os.write_file(tmp_c_path, res)
 	comp_res := os.system('cc ${tmp_c_path} -o ${b.prefs.out_name}')
+	timers.show('GEN')
 	if comp_res != 0 {
 		return comp_res
 	}

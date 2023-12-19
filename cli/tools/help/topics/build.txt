@@ -17,3 +17,4 @@ Options:
 
   --nocolor  Prevent the use of colors in error messages.
   --script   Enable script mode, which does not require the main function.
+  --timings  Show the time each compiler stage needed.

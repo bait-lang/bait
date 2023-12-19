@@ -291,6 +291,7 @@ fun (mut p Parser) global_decl()ast.GlobalDecl{
 	expr := p.expr(.lowest)
 	typ := p.infer_expr_type(expr)
 	p.table.global_scope.register(name, ast.ScopeObject{
+		is_mut = true
 		typ = typ
 		kind = .global_
 	})
