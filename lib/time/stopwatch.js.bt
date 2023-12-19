@@ -1,0 +1,34 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package time
+
+pub struct Stopwatch{
+mut:
+	start u64
+	end u64
+	elapsed u64
+}
+
+pub fun (mut w Stopwatch) start() {
+	w.start = #JS.'performance.now()' as u64
+	w.end = 0 as u64
+}
+
+pub fun (mut w Stopwatch) stop() {
+	w.end = #JS.'performance.now()' as u64
+	w.elapsed += w.end - w.start
+}
+
+pub fun (mut w Stopwatch) restart() {
+	w.start = #JS.'performance.now()' as u64
+	w.end = 0 as u64
+	w.elapsed = 0 as u64
+}
+
+pub fun (mut w Stopwatch) elapsed() u64 {
+	if w.start > 0 as u64 {
+		return w.elapsed + (#JS.'performance.now()' as u64 - w.start)
+	}
+
+	return w.elapsed
+}

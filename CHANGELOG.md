@@ -65,7 +65,8 @@ _unreleased_
     - Handle skips for lib tests
 
 ### Standard Library
-- Add absolutly minimal `time` package
+- Add quite minimal `time` package
+- Add `bait.util.timers` to aid with performance measurements
 - builtin:
   - New string method `is_capital() bool`
   - New map methods `values() []any` and `clear()`

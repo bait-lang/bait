@@ -1,0 +1,19 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package timers
+
+import time
+
+global g_timers := Timers{}
+
+struct Timers{
+	watches map[string]time.Stopwatch
+}
+
+pub fun start(name string) {
+	g_timers.watches[name].start()
+}
+
+pub fun show(name string) {
+	println('${name}: ${g_timers.watches[name].elapsed()}ms')
+}

@@ -6,10 +6,6 @@ import os
 
 const VERBOSE := os.ARGS.contains('--verbose') or os.ARGS.contains('-v')
 
-// TODO implement check if recompile can be skipped
-//   - exe exists
-//   - AND mime time of source is older than exe
-//   - AND mime time of imports (recursive!) are older than exe
 // TODO prepare for C backend (respect -b option)
 
 pub fun launch_tool(name string, args []string) i32 {
