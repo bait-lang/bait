@@ -1,1 +1,1 @@
-tests/out/error/parser/missing_rpar.in.bt:2:-5 error: unexpected eof, expecting rpar
+tests/out/error/parser/missing_rpar.in.bt:2:0 error: unexpected eof, expecting rpar
