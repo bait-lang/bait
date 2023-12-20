@@ -45,7 +45,6 @@ pub fun parse(text string, path string, table ast.Table, pref preference.Prefs) 
 
 	p.lexer.init(text)
 
-	// p.next()
 	p.next()
 
 	pkg_decl := p.package_decl()

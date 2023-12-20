@@ -171,6 +171,7 @@ pub fun (kind TokenKind) c_repr() string {
 
 pub fun (kind TokenKind) str() string {
 	return match kind {
+		.unknown { 'unknown' }
 		.eof { 'eof' }
 		.attr { 'attr' }
 		.name { 'name' }

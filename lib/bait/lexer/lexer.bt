@@ -38,6 +38,7 @@ pub fun (mut l Lexer) next() token.TokenKind {
 
 	c := l.text[l.pos]
 	l.pos += 1
+	l.insert_semi = false
 
 	if is_name_start_char(c) {
 		return l.name_or_key()
@@ -179,10 +180,12 @@ pub fun (mut l Lexer) next() token.TokenKind {
 			return .dollar
 		}
 		`#` {
+			l.pos += 1
 			l.name_val()
 			return .hash
 		}
 		`@` {
+			l.pos += 1
 			l.name_val()
 			return .attr
 		}
