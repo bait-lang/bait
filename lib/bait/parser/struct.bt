@@ -129,8 +129,8 @@ fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) a
 fun (mut p Parser) struct_init()ast.StructInit{
 	pos := p.tok.pos
 
+	name := p.tok.val
 	typ := p.parse_type()
-	name := p.prev_tok.val
 
 	p.check(.lcur)
 	mut fields := []ast.StructInitField

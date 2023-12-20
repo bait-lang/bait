@@ -4,23 +4,24 @@ package lexer
 
 import bait.token
 
-struct Lexer {
+pub struct Lexer {
 mut:
 	text string
 	start i32
 	line_starts []i32
 	pos i32
 	val string
+	insert_semi bool
 	is_str_interpol bool
 	str_quote u8
 }
 
-fun (mut l Lexer) init(text string) {
+pub fun (mut l Lexer) init(text string) {
 	l.text = text
 	l.line_starts = [0]
 }
 
-fun (mut l Lexer) next() token.TokenKind {
+pub fun (mut l Lexer) next() token.TokenKind {
 	l.skip_whitespace()
 
 	if l.pos >= l.text.length {
@@ -38,6 +39,9 @@ fun (mut l Lexer) next() token.TokenKind {
 	}
 
 	match c {
+		`\n` {
+			return .semicolon
+		}
 		`'`, `"` {
 			return l.string_val(c)
 		}
@@ -138,10 +142,11 @@ fun (mut l Lexer) next() token.TokenKind {
 			return .rpar
 		}
 		`[` {
-			return .lbr // TODO lsqr
+			return .lsqr
 		}
 		`]` {
-			return .rbr // TODO rsqr
+			l.insert_semi = true
+			return .rsqr
 		}
 		`{` {
 			return .lcur
@@ -255,6 +260,10 @@ fun (mut l Lexer) skip_whitespace() {
 		if c == `\n` {
 			l.pos += 1
 			l.line_starts.push(l.pos)
+			if l.insert_semi {
+				l.insert_semi = false
+				return
+			}
 		} else if c == ` ` or c == `\t` or c == `\r` {
 			l.pos += 1
 		} else {

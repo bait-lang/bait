@@ -16,7 +16,7 @@ pub enum Precedence {
 
 pub fun (t Token) precedence() Precedence {
 	return match t.kind {
-		.lbr {
+		.lsqr {
 			Precedence.index
 		}
 		.dot {

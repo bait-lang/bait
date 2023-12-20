@@ -214,7 +214,7 @@ fun (mut p Parser) loop_control_stmt()ast.LoopControlStmt{
 	p.next()
 
 	mut label := ''
-	if p.tok.kind == .name and p.tok.pos.line == p.prev_tok.pos.line {
+	if p.tok.kind == .name and p.tok.pos.line == pos.line {
 		label = p.check_name()
 	}
 
@@ -423,9 +423,10 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) ast.FunDecl 
 		typ = rec_type
 	}]
 	params = params.concat(p.fun_params())
+	par_line := p.tok.pos.line
 	p.check(.rpar)
 	mut return_type := ast.VOID_TYPE
-	if p.tok.pos.line == p.prev_tok.pos.line {
+	if p.tok.pos.line == par_line {
 		return_type = p.parse_type()
 	}
 	return ast.FunDecl{

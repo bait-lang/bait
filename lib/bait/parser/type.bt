@@ -14,9 +14,9 @@ fun (mut p Parser) parse_type() ast.Type {
 	}
 
 	// Array type
-	if p.tok.kind == .lbr{
+	if p.tok.kind == .lsqr{
 		p.next()
-		p.check(.rbr)
+		p.check(.rsqr)
 		elem_type := p.parse_type()
 		return p.table.find_or_register_array(elem_type)
 	}
@@ -95,9 +95,10 @@ fun (mut p Parser) parse_fun_type() ast.Type {
 			p.check(.comma)
 		}
 	}
+	par_line := p.tok.pos.line
 	p.check(.rpar)
 	mut return_type := ast.VOID_TYPE
-	if p.tok.pos.line == p.prev_tok.pos.line {
+	if p.tok.pos.line == par_line {
 		return_type = p.parse_type()
 	}
 	return p.table.find_or_register_fun(param_types, return_type)
@@ -107,18 +108,18 @@ fun (mut p Parser) parse_map_type() ast.Type {
 	if p.tok.kind == .rpar and p.pkg_name == 'builtin' {
 		return ast.MAP_TYPE
 	}
-	p.check(.lbr)
+	p.check(.lsqr)
 	key_type := p.parse_type()
 	if key_type != ast.STRING_TYPE {
 		p.error('map key type must be string')
 	}
-	p.check(.rbr)
+	p.check(.rsqr)
 	val_type := p.parse_type()
 	return p.table.find_or_register_map(key_type, val_type)
 }
 
 fun (mut p Parser) generic_type_names() []string {
-	if p.tok.kind != .lbr {
+	if p.tok.kind != .lsqr {
 		return []
 	}
 	p.next()
@@ -143,7 +144,7 @@ fun (mut p Parser) generic_type_names() []string {
 			})
 		}
 
-		if p.tok.kind == .rbr {
+		if p.tok.kind == .rsqr {
 			break
 		}
 		p.check(.comma)

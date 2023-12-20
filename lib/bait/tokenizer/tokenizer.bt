@@ -158,10 +158,10 @@ fun (mut t Tokenizer) next_token() token.Token {
 				return t.new_token(.rpar, "")
 			}
 			`[` {
-				return t.new_token(.lbr, "")
+				return t.new_token(.lsqr, "")
 			}
 			`]` {
-				return t.new_token(.rbr, "")
+				return t.new_token(.rsqr, "")
 			}
 			`{` {
 				return t.new_token(.lcur, "")

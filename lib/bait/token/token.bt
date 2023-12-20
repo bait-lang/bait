@@ -41,8 +41,8 @@ pub enum TokenKind {
 	ge
 	lpar
 	rpar
-	lbr
-	rbr
+	lsqr
+	rsqr
 	lcur
 	rcur
 	amp
@@ -201,8 +201,8 @@ pub fun (kind TokenKind) str() string {
 		.ge { 'ge' }
 		.lpar { 'lpar' }
 		.rpar { 'rpar' }
-		.lbr { 'lbr' }
-		.rbr { 'rbr' }
+		.lsqr { 'lsqr' }
+		.rsqr { 'rsqr' }
 		.lcur { 'lcur' }
 		.rcur { 'rcur' }
 		.amp { 'amp' }

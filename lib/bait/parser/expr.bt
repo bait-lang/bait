@@ -10,7 +10,7 @@ fun (mut p Parser) expr(precedence token.Precedence) ast.Expr {
 	for precedence < p.tok.precedence() {
 		if p.tok.kind == .dot {
 			node = p.dot_expr(node)
-		} else if p.tok.kind == .lbr {
+		} else if p.tok.kind == .lsqr {
 			node = p.index_expr(node)
 		} else if p.tok.kind == .key_as {
 			node = p.as_cast(node)
@@ -37,7 +37,7 @@ fun (mut p Parser) single_expr() ast.Expr {
 		.dot {
 			return p.enum_val(false)
 		}
-		.lbr {
+		.lsqr {
 			return p.array_init()
 		}
 		.lpar {
@@ -102,10 +102,10 @@ fun (mut p Parser) expr_list() []ast.Expr{
 
 fun (mut p Parser) array_init()ast.ArrayInit{
 	pos := p.tok.pos
-	p.check(.lbr)
+	p.check(.lsqr)
 
 	// Type init, e.g. `[]i32`
-	if p.tok.kind == .rbr {
+	if p.tok.kind == .rsqr {
 		p.next()
 		elem_type := p.parse_type()
 		typ := p.table.find_or_register_array(elem_type)
@@ -142,13 +142,13 @@ fun (mut p Parser) array_init()ast.ArrayInit{
 
 	// Expressions init, e.g. `[1, 2, 3]`
 	mut exprs := []ast.Expr
-	for p.tok.kind != .rbr {
+	for p.tok.kind != .rsqr {
 		exprs.push(p.expr(.lowest))
 		if p.tok.kind == .comma {
 			p.next()
 		}
 	}
-	p.check(.rbr)
+	p.check(.rsqr)
 	return ast.ArrayInit{
 		exprs = exprs
 		pos = pos
@@ -178,9 +178,10 @@ fun (mut p Parser) bool_literal()ast.BoolLiteral{
 
 fun (mut p Parser) char_literal()ast.CharLiteral{
 	pos := p.tok.pos
+	val := p.tok.val
 	p.next()
 	return ast.CharLiteral{
-		val = p.prev_tok.val
+		val = val
 		pos = pos
 	}
 }
@@ -270,9 +271,9 @@ fun (mut p Parser) ident(lang ast.Language)ast.Ident{
 
 fun (mut p Parser) index_expr(left ast.Expr)ast.IndexExpr {
 	pos := p.tok.pos
-	p.check(.lbr)
+	p.check(.lsqr)
 	index := p.expr(.lowest)
-	p.check(.rbr)
+	p.check(.rsqr)
 	return ast.IndexExpr{
 		left = left
 		index = index
@@ -296,7 +297,7 @@ fun (mut p Parser) infix_expr(left ast.Expr)ast.InfixExpr{
 fun (mut p Parser) map_init() ast.MapInit{
 	pos := p.tok.pos
 	p.next()
-	if p.tok.kind == .lbr{
+	if p.tok.kind == .lsqr{
 		map_type := p.parse_map_type()
 		return ast.MapInit{
 			typ = map_type
@@ -351,19 +352,20 @@ fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
 
 fun (mut p Parser) number_literal() ast.Expr {
 	pos := p.tok.pos
+	mut val := p.tok.val
+
 	p.next()
 
 	if p.tok.kind != .dot {
 		return ast.IntegerLiteral{
-			val = p.prev_tok.val
+			val = val
 			pos = pos
 		}
 	}
 
-	mut val := p.prev_tok.val + '.'
 	p.next()
+	val += '.' + p.tok.val
 	p.check(.number)
-	val += p.prev_tok.val
 	return ast.FloatLiteral{
 		val = val
 		pos = pos
@@ -396,10 +398,11 @@ fun (mut p Parser) prefix_expr()ast.PrefixExpr{
 fun (mut p Parser) string_literal(lang ast.Language)ast.Expr{
 	pos := p.tok.pos
 	if p.next_tok.kind != .dollar {
+		val := p.tok.val
 		p.next()
 		return ast.StringLiteral{
 			lang = lang
-			val = p.prev_tok.val
+			val = val
 			pos = pos
 		}
 	}

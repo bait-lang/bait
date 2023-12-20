@@ -6,6 +6,7 @@ import os
 import bait.preference
 import bait.errors
 import bait.ast
+import bait.lexer
 import bait.token
 
 pub struct Parser {
@@ -115,8 +116,8 @@ fun (mut p Parser) parse_attributes() {
 		mut value := ''
 		if p.tok.kind == .colon {
 			p.next()
+			value = p.tok.val
 			p.check(.string)
-			value = p.prev_tok.val
 		}
 		p.attributes.push(ast.Attribute{
 			name = name
@@ -147,8 +148,9 @@ fun (mut p Parser) check (expected token.TokenKind) {
 }
 
 fun (mut p Parser) check_name() string {
+	val := p.tok.val
 	p.check(.name)
-	return p.prev_tok.val
+	return val
 }
 
 fun (mut p Parser) check_pub() bool {
