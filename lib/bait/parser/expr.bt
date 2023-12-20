@@ -149,6 +149,7 @@ fun (mut p Parser) array_init()ast.ArrayInit{
 		}
 	}
 	p.check(.rsqr)
+	p.skip(.semicolon)
 	return ast.ArrayInit{
 		exprs = exprs
 		pos = pos
@@ -274,6 +275,7 @@ fun (mut p Parser) index_expr(left ast.Expr)ast.IndexExpr {
 	p.check(.lsqr)
 	index := p.expr(.lowest)
 	p.check(.rsqr)
+	p.skip(.semicolon)
 	return ast.IndexExpr{
 		left = left
 		index = index

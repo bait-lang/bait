@@ -443,9 +443,10 @@ fun (mut p Parser) return_stmt()ast.ReturnStmt{
 	pos := p.pos
 	p.check(.key_return)
 	mut expr := ast.EmptyExpr{} as ast.Expr
-	if p.pos.line == pos.line {
+	if p.tok != .semicolon {
 		expr = p.expr(.lowest)
 	}
+	p.skip(.semicolon)
 	return ast.ReturnStmt{
 		expr = expr
 		pos = pos

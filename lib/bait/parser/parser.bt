@@ -143,6 +143,12 @@ fun (mut p Parser) parse_block() []ast.Stmt {
 	return bstmts
 }
 
+fun (mut p Parser) skip(tok token.TokenKind) {
+	if p.tok == tok {
+		p.next()
+	}
+}
+
 fun (mut p Parser) check (expected token.TokenKind) {
 	if p.tok != expected {
 		p.error('unexpected ${p.tok}, expecting ${expected}')

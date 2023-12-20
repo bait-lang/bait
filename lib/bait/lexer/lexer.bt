@@ -49,6 +49,7 @@ pub fun (mut l Lexer) next() token.TokenKind {
 
 	match c {
 		`\n` {
+			l.line_starts.push(l.pos)
 			return .semicolon
 		}
 		`'`, `"` {
@@ -205,7 +206,11 @@ fun (mut l Lexer) name_val() {
 
 fun (mut l Lexer) name_or_key() token.TokenKind {
 	l.name_val()
-	return token.kind_from_string(l.val)
+	tok := token.kind_from_string(l.val)
+	if tok == .key_return {
+		l.insert_semi = true
+	}
+	return tok
 }
 
 fun (mut l Lexer) number() token.TokenKind {
@@ -269,12 +274,11 @@ fun (mut l Lexer) skip_whitespace() {
 	for l.pos < l.text.length {
 		c := l.text[l.pos]
 		if c == `\n` {
-			l.pos += 1
-			l.line_starts.push(l.pos)
 			if l.insert_semi {
-				l.insert_semi = false
 				return
 			}
+			l.pos += 1
+			l.line_starts.push(l.pos)
 		} else if c == ` ` or c == `\t` or c == `\r` {
 			l.pos += 1
 		} else {

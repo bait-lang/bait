@@ -34,6 +34,7 @@ fun (mut p Parser) parse_type() ast.Type {
 
 	// Return placeholder or get name. Used for typeless array inits where type is known
 	if p.tok == .semicolon {
+		p.next()
 		return ast.PLACEHOLDER_TYPE
 	}
 
