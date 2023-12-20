@@ -5,7 +5,7 @@ package main
 import os
 import bait.preference
 import bait.ast
-import bait.tokenizer
+import bait.lexer
 import bait.parser
 
 const PRINT_TOKENS := os.ARGS.contains('--tokens')
@@ -23,19 +23,23 @@ fun main() {
 	}
 
 	text := os.read_file(file)
-	mut t := tokenizer.Tokenizer{
-		path = file
-		text = text
-	}
-	tokens := t.tokenize()
-	t.errors.print_and_exit()
 
 	if PRINT_TOKENS {
-		println(tokens)
-		exit(0)
+		mut l := lexer.Lexer{}
+		l.init(text)
+		mut tok := l.next()
+		for tok != .eof {
+			if tok == .name or tok == .string  {
+				println('${tok}: ${l.val}')
+			} else {
+				println(tok)
+			}
+			tok = l.next()
+		}
+		return
 	}
 
-	file_ast := parser.parse(tokens, file, ast.new_table(), preference.Prefs{})
+	file_ast := parser.parse(text, file, ast.new_table(), preference.Prefs{})
 	// TODO handle parser errors, warnings
 
 	println(file_ast)
