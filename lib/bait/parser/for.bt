@@ -6,7 +6,7 @@ import bait.ast
 import bait.token
 
 fun (mut p Parser) for_loop(label string)ast.Stmt{
-	pos := p.pos
+	pos := p.pos()
 	p.next()
 
 	if p.peek() == .decl_assign {
@@ -65,7 +65,7 @@ fun (mut p Parser) for_in_loop(label string, pos token.Pos) ast.ForInLoop {
 		p.next()
 	}
 	mut valvar := ast.Param{
-		pos = p.pos
+		pos = p.pos()
 		name = p.check_name()
 		is_mut = is_mut
 	}

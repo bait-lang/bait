@@ -1,5 +1,5 @@
-tests/out/error/ident/undefined.in.bt:1:11 error: undefined identifier bad_name
-tests/out/error/ident/undefined.in.bt:3:5 error: undefined identifier where
+tests/out/error/ident/undefined.in.bt:1:12 error: undefined identifier bad_name
+tests/out/error/ident/undefined.in.bt:3:6 error: undefined identifier where
 tests/out/error/ident/undefined.in.bt:5:2 error: undefined identifier os
-tests/out/error/ident/undefined.in.bt:7:8 error: undefined identifier xyz
-tests/out/error/ident/undefined.in.bt:8:14 error: undefined identifier qwe
+tests/out/error/ident/undefined.in.bt:7:9 error: undefined identifier xyz
+tests/out/error/ident/undefined.in.bt:9:-4 error: undefined identifier qwe

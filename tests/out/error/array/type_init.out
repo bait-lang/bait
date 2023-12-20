@@ -1,1 +1,1 @@
-tests/out/error/array/type_init.in.bt:1:6 error: expected i32, got bool
+tests/out/error/array/type_init.in.bt:1:5 error: expected i32, got bool

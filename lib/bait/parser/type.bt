@@ -96,10 +96,10 @@ fun (mut p Parser) parse_fun_type() ast.Type {
 			p.check(.comma)
 		}
 	}
-	par_line := p.pos.line
+	par_line := p.pos().line
 	p.check(.rpar)
 	mut return_type := ast.VOID_TYPE
-	if p.pos.line == par_line {
+	if p.pos().line == par_line {
 		return_type = p.parse_type()
 	}
 	return p.table.find_or_register_fun(param_types, return_type)

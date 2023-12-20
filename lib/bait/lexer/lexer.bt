@@ -25,7 +25,7 @@ pub fun (mut l Lexer) init(text string) {
 pub fun (l Lexer) get_pos() token.Pos {
 	return token.Pos{
 		line = l.line_starts.length
-		col = l.pos - l.line_starts.last()
+		col = l.start - l.line_starts.last()
 	}
 }
 
@@ -36,6 +36,7 @@ pub fun (mut l Lexer) next() token.TokenKind {
 		return .eof
 	}
 
+	l.start = l.pos
 	c := l.text[l.pos]
 	l.pos += 1
 	l.insert_semi = false
@@ -47,6 +48,7 @@ pub fun (mut l Lexer) next() token.TokenKind {
 		return l.number()
 	}
 
+	l.val = ''
 	match c {
 		`\n` {
 			l.line_starts.push(l.pos)

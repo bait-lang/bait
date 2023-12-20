@@ -1,1 +1,1 @@
-tests/out/error/enum/not_expecting_enum.in.bt:7:5 error: expected type is not an enum, got i32
+tests/out/error/enum/not_expecting_enum.in.bt:7:4 error: expected type is not an enum, got i32

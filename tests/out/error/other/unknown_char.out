@@ -1,0 +1,2 @@
+tests/out/error/other/unknown_char.in.bt:2:1 error: unknown char: €
+tests/out/error/other/unknown_char.in.bt:2:1 error: unexpected unknown, expecting rcur

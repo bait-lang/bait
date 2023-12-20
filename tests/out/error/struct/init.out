@@ -1,2 +1,2 @@
-tests/out/error/struct/init.in.bt:2:17 error: default value not matches field type i32
+tests/out/error/struct/init.in.bt:2:12 error: default value not matches field type i32
 tests/out/error/struct/init.in.bt:5:12 error: struct FooBar has no field spam_eggs

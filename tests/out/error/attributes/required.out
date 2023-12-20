@@ -1,1 +1,1 @@
-tests/out/error/attributes/required.in.bt:2:10 error: @required on field with default value is redundant
+tests/out/error/attributes/required.in.bt:2:2 error: @required on field with default value is redundant
