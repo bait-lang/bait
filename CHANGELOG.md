@@ -80,6 +80,7 @@ _unreleased_
   - Fix js error with `mkdir()` and `mkdir_all()` if path already exists
 
 ### Other Changes
+- Complete tokenizer rewrite and rename to `lexer`
 - Implement real `if` and `match` expressions _[JS]_
 - Add support for float literals _[JS backend]_
 - checker: Fix scope of smartcasted if conditions
