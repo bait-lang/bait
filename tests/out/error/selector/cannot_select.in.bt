@@ -1,0 +1,7 @@
+enum Color {
+	red
+	green
+}
+
+c := Color.red
+_ := c.my_field

@@ -164,7 +164,7 @@ fun backend_from_string(s string) Backend {
 		'c' { .c }
 		else {
 			panic('Invalid backend: ${s}')
-			.js
+			Backend.js // TODO remove once @noreturn works properly
 		}
 	}
 }

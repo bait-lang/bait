@@ -21,6 +21,7 @@ _unreleased_
 ### Error and Type Checks
 - If conditions must be of type bool
 - Cannot assign from a void function call
+- Prevent selecting fields of unsupported types (e.g. enums)
 - Prevent some cases of identifier redefinition
   - Any identifier by a function name
   - Function argument by a variable

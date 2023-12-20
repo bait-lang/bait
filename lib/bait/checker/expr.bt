@@ -347,7 +347,8 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 		return ast.VOID_TYPE
 	}
 
-	return ast.ANY_TYPE
+	c.error('cannot select from ${c.table.type_name(node.expr_type)}', node.pos)
+	return ast.PLACEHOLDER_TYPE
 }
 
 fun (c Checker) string_literal(node ast.StringLiteral) ast.Type {
