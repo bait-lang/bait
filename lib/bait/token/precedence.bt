@@ -14,8 +14,8 @@ pub enum Precedence {
 	index
 }
 
-pub fun (t Token) precedence() Precedence {
-	return match t.kind {
+pub fun (t TokenKind) precedence() Precedence {
+	return match t {
 		.lsqr {
 			Precedence.index
 		}

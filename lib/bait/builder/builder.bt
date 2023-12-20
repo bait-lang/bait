@@ -10,7 +10,6 @@ import bait.checker
 import bait.gen.js as jsgen
 import bait.gen.c as cgen
 import bait.preference
-import bait.tokenizer
 import bait.util.timers
 
 struct Builder {
@@ -45,14 +44,7 @@ fun (b Builder) get_user_files(path string) []string {
 
 fun (b Builder) parse_source_file(path string) ast.File {
 	text := os.read_file(path)
-	mut t := tokenizer.Tokenizer{
-		path = path
-		text = text
-	}
-	tokens := t.tokenize()
-	t.errors.print_and_exit()
-
-	return parser.parse(tokens, path, b.table, b.prefs)
+	return parser.parse(text, path, b.table, b.prefs)
 }
 
 pub fun compile(prefs preference.Prefs) i32 {

@@ -10,10 +10,11 @@ mut:
 	start i32
 	line_starts []i32
 	pos i32
-	val string
 	insert_semi bool
 	is_str_interpol bool
 	str_quote u8
+pub mut:
+	val string
 }
 
 pub fun (mut l Lexer) init(text string) {

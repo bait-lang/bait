@@ -28,8 +28,8 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 	mut fields := []ast.StructField
 
 	p.check(.lcur)
-	for p.tok.kind != .rcur {
-		if p.tok.kind == .key_mut {
+	for p.tok != .rcur {
+		if p.tok == .key_mut {
 			if mut_idx != -1 {
 				p.error('redefinition of "mut" section')
 				return ast.StructDecl{}
@@ -40,9 +40,9 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 			field_is_mut = true
 			field_is_pub = false
 			field_is_global = false
-		} else if p.tok.kind == .key_pub {
+		} else if p.tok == .key_pub {
 			p.next()
-			if p.tok.kind == .key_mut {
+			if p.tok == .key_mut {
 				if pub_mut_idx != -1 {
 					p.error('redefinition of "pub mut" section')
 					return ast.StructDecl{}
@@ -63,7 +63,7 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 				field_is_global = false
 			}
 			p.check(.colon)
-		} else if p.tok.kind == .key_global {
+		} else if p.tok == .key_global {
 			if global_idx != -1 {
 				p.error('redefinition of "global" section')
 				return ast.StructDecl{}
@@ -107,7 +107,7 @@ fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) a
 	fname := p.check_name()
 	ftyp := p.parse_type()
 	mut expr := ast.EmptyExpr{} as ast.Expr
-	if p.tok.kind == .decl_assign {
+	if p.tok == .decl_assign {
 		p.next()
 		expr = p.expr(.lowest)
 	}
@@ -129,12 +129,12 @@ fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) a
 fun (mut p Parser) struct_init()ast.StructInit{
 	pos := p.tok.pos
 
-	name := p.tok.val
+	name := p.val
 	typ := p.parse_type()
 
 	p.check(.lcur)
 	mut fields := []ast.StructInitField
-	for p.tok.kind != .rcur {
+	for p.tok != .rcur {
 		fields.push(p.struct_init_field())
 	}
 	p.check(.rcur)

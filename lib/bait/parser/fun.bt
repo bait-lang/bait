@@ -14,12 +14,12 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 	mut params := []ast.Param
 
 	// Method receiver
-	if p.tok.kind == .lpar {
+	if p.tok == .lpar {
 		is_method = true
 		p.next()
 
 		mut is_mut := false
-		if p.tok.kind == .key_mut {
+		if p.tok == .key_mut {
 			is_mut = true
 			p.next()
 		}
@@ -47,13 +47,13 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 	}
 
 	mut name := ''
-	if p.tok.kind == .hash {
+	if p.tok == .hash {
 		// language
 		lang = p.parse_lang()
 		name = lang.prepend_to(name)
 
 		// foreign package
-		if lang == .js and p.next_tok.kind == .dot {
+		if lang == .js and p.peek() == .dot {
 			name += p.check_name() + '.'
 			p.check(.dot)
 		}
@@ -74,7 +74,7 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 	p.check(.rpar)
 
 	mut return_type := ast.VOID_TYPE
-	if p.tok.kind != .lcur and pos.line == p.tok.pos.line {
+	if p.tok != .lcur and pos.line == p.tok.pos.line {
 		return_type = p.parse_type()
 	}
 
@@ -126,7 +126,7 @@ fun (mut p Parser) anon_fun()ast.AnonFun{
 	params := p.fun_params()
 	p.check(.rpar)
 	mut return_type := ast.VOID_TYPE
-	if p.tok.kind != .lcur {
+	if p.tok != .lcur {
 		return_type = p.parse_type()
 	}
 	mut param_types := []ast.Type
@@ -148,10 +148,10 @@ fun (mut p Parser) anon_fun()ast.AnonFun{
 
 fun (mut p Parser) fun_params() []ast.Param{
 	mut params := []ast.Param
-	for p.tok.kind != .rpar{
+	for p.tok != .rpar{
 		pos := p.tok.pos
 		mut is_mut := false
-		if p.tok.kind == .key_mut {
+		if p.tok == .key_mut {
 			is_mut = true
 			p.next()
 		}
@@ -162,7 +162,7 @@ fun (mut p Parser) fun_params() []ast.Param{
 			pos = pos
 		}
 		params.push(param)
-		if p.tok.kind != .rpar{
+		if p.tok != .rpar{
 			p.check(.comma)
 		}
 	}
@@ -203,11 +203,11 @@ fun (mut p Parser) method_call(left ast.Expr) ast.CallExpr {
 
 fun (mut p Parser) call_args() []ast.CallArg {
 	mut args := []ast.CallArg
-	for p.tok.kind != .rpar and not p.should_abort {
+	for p.tok != .rpar and not p.should_abort {
 		args.push(ast.CallArg{
 			expr = p.expr(.lowest)
 		})
-		if p.tok.kind != .rpar and p.tok.kind != .eof {
+		if p.tok != .rpar and p.tok != .eof {
 			p.check(.comma)
 		}
 	}

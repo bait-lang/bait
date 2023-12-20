@@ -11,9 +11,9 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 	mut has_else := false
 	for true {
 		bpos := p.tok.pos
-		if p.tok.kind == .key_else{
+		if p.tok == .key_else{
 			p.next()
-			if p.tok.kind == .lcur{
+			if p.tok == .lcur{
 				has_else = true
 				stmts := p.parse_block()
 				branches.push(ast.IfBranch{
@@ -30,7 +30,7 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 		p.is_struct_possible = true
 		stmts := p.parse_block()
 		branches.push(ast.IfBranch{cond = cond stmts = stmts})
-		if p.tok.kind != .key_else{
+		if p.tok != .key_else{
 			break
 		}
 	}
@@ -49,10 +49,10 @@ fun (mut p Parser) match_expr()ast.MatchExpr{
 	cond := p.expr(.lowest)
 	p.is_struct_possible = true
 	p.check(.lcur)
-	for p.tok.kind != .rcur {
+	for p.tok != .rcur {
 		bpos := p.tok.pos
 		mut exprs := []ast.Expr
-		if p.tok.kind == .key_else {
+		if p.tok == .key_else {
 			p.next()
 		} else {
 			p.is_struct_possible = false
