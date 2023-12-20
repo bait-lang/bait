@@ -80,9 +80,9 @@ pub enum TokenKind {
 	key_typeof
 }
 
-pub fun keyword_to_kind(name string) TokenKind {
+pub fun kind_from_string(name string) TokenKind {
 	return match name {
-		'and' { TokenKind.key_and }
+		'and' { .key_and }
 		'as' { .key_as }
 		'assert' { .key_assert }
 		'break' { .key_break }

@@ -206,7 +206,7 @@ fun (mut t Tokenizer) next_token() token.Token {
 
 fun (mut t Tokenizer) name_or_keyword() token.Token {
 	name := t.name_val()
-	kind := token.keyword_to_kind(name)
+	kind := token.kind_from_string(name)
 	if kind != .name {
 		return t.new_token(kind, '')
 	}
