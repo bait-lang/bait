@@ -6,23 +6,35 @@ import time
 
 global g_timers := Timers{}
 
-struct Timers{
+pub struct Timers{
 mut:
 	watches map[string]time.Stopwatch
 	show bool := true
 }
 
+pub fun (mut t Timers) start(name string) {
+	t.watches[name].start()
+}
+
+pub fun (mut t Timers) show(name string) {
+	if not t.show {
+		return
+	}
+	println('${name}: ${t.watches[name].elapsed()}ms')
+}
+
+pub fun (mut t Timers) set_show(state bool) {
+	t.show = state
+}
+
 pub fun start(name string) {
-	g_timers.watches[name].start()
+	g_timers.start(name)
 }
 
 pub fun show(name string) {
-	if not g_timers.show {
-		return
-	}
-	println('${name}: ${g_timers.watches[name].elapsed()}ms')
+	g_timers.show(name)
 }
 
-pub fun enable_show(state bool) {
-	g_timers.show = state
+pub fun set_show(state bool) {
+	g_timers.set_show(state)
 }

@@ -30,7 +30,7 @@ fun main() {
 	timers.start('PREFS')
 	mut prefs := preference.parse_args(args)
 	prefs.set_comptime_vars()
-	timers.enable_show(prefs.show_timings)
+	timers.set_show(prefs.show_timings)
 	timers.show('PREFS')
 
 	// Handle tool commands

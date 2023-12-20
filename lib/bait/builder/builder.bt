@@ -186,9 +186,9 @@ fun (b Builder) code_gen_js() i32 {
 	// Run JSGen and write it to the outfile
 	timers.start('GEN')
 	res := jsgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
+	timers.show('GEN')
 	ensure_dir_exists(os.dir(b.prefs.out_name))
 	os.write_file(b.prefs.out_name, res)
-	timers.show('GEN')
 
 	// Execute the resulting file with NodeJS if required
 	if b.prefs.should_run{
@@ -206,6 +206,7 @@ fun (b Builder) code_gen_js() i32 {
 fun (mut b Builder) code_gen_c() i32 {
 	timers.start('GEN')
 	res := cgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
+	timers.show('GEN')
 
 	if os.exists(b.prefs.out_name) and os.is_dir(b.prefs.out_name) {
 		b.prefs.out_name += '.exe'
@@ -215,7 +216,6 @@ fun (mut b Builder) code_gen_c() i32 {
 	tmp_c_path := os.join_path(os.tmp_dir(), [os.file_name(b.prefs.out_name) + '.c'])
 	os.write_file(tmp_c_path, res)
 	comp_res := os.system('cc ${tmp_c_path} -o ${b.prefs.out_name}')
-	timers.show('GEN')
 	if comp_res != 0 {
 		return comp_res
 	}
