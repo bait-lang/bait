@@ -1,1 +1,1 @@
-tests/out/error/match/branch_wrong_return.in.bt:1:10 error: branch returns bool, expected string
+tests/out/error/match/branch_wrong_return.in.bt:1:5 error: branch returns bool, expected string
