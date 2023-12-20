@@ -5,6 +5,7 @@ package testing
 import os
 
 pub struct InOutRunner {
+	fix_out_file bool // USE WITH CAUTION: Overwrite out files with the actual output
 	check_stdout bool // Compare expected to stdout instead of stderr
 global:
 	root string // Root directory to search tests in
@@ -30,8 +31,7 @@ pub fun (runner InOutRunner) test_dir(dir string) {
 		return
 	}
 
-	expected := read_out_file('${abs_dir}/expected.out')
-	runner.compare_expected(res, expected)
+	runner.check_result(res, '${abs_dir}/expected.out')
 }
 
 pub fun (runner InOutRunner) test_all_in_root() {
@@ -41,7 +41,17 @@ pub fun (runner InOutRunner) test_all_in_root() {
 	}
 }
 
-fun (runner InOutRunner) compare_expected(res os.Result, expected string) {
+fun (runner InOutRunner) check_result(res os.Result, exp_path string) {
+	if runner.fix_out_file {
+		if runner.check_stdout {
+			os.write_file(exp_path, res.stdout)
+		} else {
+			os.write_file(exp_path, res.stderr)
+		}
+		return
+	}
+
+	expected := read_out_file(exp_path)
 	if runner.check_stdout {
 		text := normalize(res.stdout)
 		assert text == expected
@@ -76,14 +86,13 @@ pub fun in_out_runner(runner InOutRunner) {
 			cmd = 'test'
 		}
 
-		expected := read_out_file(file)
 		res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} ${cmd} ${file}')
-		runner.compare_expected(res, expected)
+
+		runner.check_result(res, file.replace('.in.bt', '.out'))
 	}
 }
 
-fun read_out_file(in_file_path string) string {
-	out_file := in_file_path.replace('.in.bt', '.out')
+fun read_out_file(out_file string) string {
 	if not os.exists(out_file) {
 		eprintln('out file ${out_file} does not exist')
 		assert false

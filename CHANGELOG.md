@@ -51,6 +51,7 @@ _unreleased_
 - Add `init` tool to setup new projects
 - `up`: Fix make on windows
 - Add option `--timings` to show time needed for all compiler stages
+- `tests/output_test.bt`: Add `--fix` option
 - `gen-baitjs`
   - Remove from builtin tools as it's designed for CI only
   - Various fixes related to breaking compiler changes
@@ -62,6 +63,7 @@ _unreleased_
     - New field `oks` to check number of successful runs
     - Add capbility to use `build_all_in_root` for directories
   - InOutRunner
+    - Add `fix_out_file` field to overwrite out files with the actual output
     - Output tests work on windows now (internal path and line break normalization)
     - Handle skips for lib tests
 
