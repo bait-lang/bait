@@ -22,6 +22,13 @@ pub fun (mut l Lexer) init(text string) {
 	l.line_starts = [0]
 }
 
+pub fun (l Lexer) get_pos() token.Pos {
+	return token.Pos{
+		line = l.line_starts.length
+		col = l.pos - l.line_starts.last()
+	}
+}
+
 pub fun (mut l Lexer) next() token.TokenKind {
 	l.skip_whitespace()
 

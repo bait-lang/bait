@@ -5,7 +5,7 @@ package parser
 import bait.ast
 
 fun (mut p Parser) fun_decl()ast.FunDecl{
-	pos := p.tok.pos
+	pos := p.pos
 	is_pub := p.check_pub()
 	p.check(.key_fun)
 
@@ -74,7 +74,7 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 	p.check(.rpar)
 
 	mut return_type := ast.VOID_TYPE
-	if p.tok != .lcur and pos.line == p.tok.pos.line {
+	if p.tok != .lcur and pos.line == p.pos.line {
 		return_type = p.parse_type()
 	}
 
@@ -120,7 +120,7 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 }
 
 fun (mut p Parser) anon_fun()ast.AnonFun{
-	pos := p.tok.pos
+	pos := p.pos
 	p.check(.key_fun)
 	p.check(.lpar)
 	params := p.fun_params()
@@ -149,7 +149,7 @@ fun (mut p Parser) anon_fun()ast.AnonFun{
 fun (mut p Parser) fun_params() []ast.Param{
 	mut params := []ast.Param
 	for p.tok != .rpar{
-		pos := p.tok.pos
+		pos := p.pos
 		mut is_mut := false
 		if p.tok == .key_mut {
 			is_mut = true
@@ -170,7 +170,7 @@ fun (mut p Parser) fun_params() []ast.Param{
 }
 
 fun (mut p Parser) fun_call(lang ast.Language)ast.CallExpr{
-	pos := p.tok.pos
+	pos := p.pos
 	name := p.prepend_expr_pkg(p.check_name())
 	p.check(.lpar)
 	args := p.call_args()
@@ -186,7 +186,7 @@ fun (mut p Parser) fun_call(lang ast.Language)ast.CallExpr{
 }
 
 fun (mut p Parser) method_call(left ast.Expr) ast.CallExpr {
-	pos := p.tok.pos
+	pos := p.pos
 	name := p.check_name()
 	p.check(.lpar)
 	args := p.call_args()

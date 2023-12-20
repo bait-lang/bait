@@ -21,6 +21,7 @@ mut:
 	tok token.TokenKind
 	next_tok token.TokenKind
 	val string
+	pos token.Pos
 	pkg_name string
 	import_aliases map[string]string
 	attributes []ast.Attribute
@@ -113,7 +114,7 @@ fun (mut p Parser) package_decl() ast.PackageDecl {
 // Parses one or more attributes
 fun (mut p Parser) parse_attributes() {
 	for p.tok == .attr {
-		pos := p.tok.pos
+		pos := p.pos
 		name := p.val
 		p.next()
 		mut value := ''
@@ -198,6 +199,7 @@ fun (mut p Parser) next() {
 		p.next_tok = .unknown
 	}
 	p.val = p.lexer.val
+	p.pos = p.lexer.get_pos()
 }
 
 fun (mut p Parser) peek() token.TokenKind {
@@ -211,7 +213,7 @@ fun (p Parser) warn(msg string) {
 	p.warnings.push(errors.Message{
 		kind = .warning
 		path = p.path
-		pos = p.tok.pos
+		pos = p.pos
 		title = 'warning'
 		msg = msg
 	})
@@ -221,7 +223,7 @@ fun (mut p Parser) error(msg string){
 	p.errors.push(errors.Message{
 		kind = .error
 		path = p.path
-		pos = p.tok.pos
+		pos = p.pos
 		title = 'error'
 		msg = msg
 	})

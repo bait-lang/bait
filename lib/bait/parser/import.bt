@@ -66,7 +66,7 @@ fun (mut p Parser) bait_import() ast.Import {
 fun (mut p Parser) import_stmts() [] ast.Import{
 	mut imports := p.add_builtin_imports()
 	for p.tok == .key_import {
-		pos := p.tok.pos
+		pos := p.pos
 		p.next()
 
 		mut imp := ast.Import{}

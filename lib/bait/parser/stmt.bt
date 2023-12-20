@@ -134,7 +134,7 @@ fun (mut p Parser) stmt_with_name()ast.Stmt{
 
 fun (mut p Parser) assert_stmt() ast.AssertStmt{
 	p.next()
-	pos := p.tok.pos
+	pos := p.pos
 	expr := p.expr(.lowest)
 	return ast.AssertStmt{
 		expr = expr
@@ -143,13 +143,13 @@ fun (mut p Parser) assert_stmt() ast.AssertStmt{
 }
 
 fun (mut p Parser) assign_stmt() ast.AssignStmt {
-	pos := p.tok.pos
+	pos := p.pos
 	left := p.expr(.lowest)
 	return p.partial_assign_stmt(left)
 }
 
 fun (mut p Parser) partial_assign_stmt(left ast.Expr) ast.AssignStmt {
-	pos := p.tok.pos
+	pos := p.pos
 	op := p.tok
 	p.next()
 	right := p.expr(.lowest)
@@ -162,7 +162,7 @@ fun (mut p Parser) partial_assign_stmt(left ast.Expr) ast.AssignStmt {
 }
 
 fun (mut p Parser) const_decl()ast.ConstDecl{
-	pos := p.tok.pos
+	pos := p.pos
 	is_pub := p.check_pub()
 	p.next()
 
@@ -209,12 +209,12 @@ fun (mut p Parser) const_decl()ast.ConstDecl{
 }
 
 fun (mut p Parser) loop_control_stmt()ast.LoopControlStmt{
-	pos := p.tok.pos
+	pos := p.pos
 	kind := p.tok
 	p.next()
 
 	mut label := ''
-	if p.tok == .name and p.tok.pos.line == pos.line {
+	if p.tok == .name and p.pos.line == pos.line {
 		label = p.check_name()
 	}
 
@@ -233,7 +233,7 @@ fun (mut p Parser) expr_stmt()ast.ExprStmt{
 }
 
 fun (mut p Parser) enum_decl()ast.EnumDecl{
-	pos := p.tok.pos
+	pos := p.pos
 	is_pub := p.check_pub()
 	p.next()
 
@@ -249,7 +249,7 @@ fun (mut p Parser) enum_decl()ast.EnumDecl{
 	mut variants := []string
 	mut fields := []ast.EnumField
 	for p.tok != .rcur {
-		fpos := p.tok.pos
+		fpos := p.pos
 		fname := p.check_name()
 		mut expr := ast.EmptyExpr{} as ast.Expr
 		if p.tok == .decl_assign {
@@ -284,7 +284,7 @@ fun (mut p Parser) enum_decl()ast.EnumDecl{
 }
 
 fun (mut p Parser) global_decl()ast.GlobalDecl{
-	pos := p.tok.pos
+	pos := p.pos
 	p.check(.key_global)
 	name := p.prepend_pkg(p.check_name())
 	p.check(.decl_assign)
@@ -303,7 +303,7 @@ fun (mut p Parser) global_decl()ast.GlobalDecl{
 }
 
 fun (mut p Parser) interface_decl()ast.InterfaceDecl{
-	pos := p.tok.pos
+	pos := p.pos
 	is_pub := p.check_pub()
 	p.check(.key_interface)
 	lang := p.parse_lang()
@@ -423,10 +423,10 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) ast.FunDecl 
 		typ = rec_type
 	}]
 	params = params.concat(p.fun_params())
-	par_line := p.tok.pos.line
+	par_line := p.pos.line
 	p.check(.rpar)
 	mut return_type := ast.VOID_TYPE
-	if p.tok.pos.line == par_line {
+	if p.pos.line == par_line {
 		return_type = p.parse_type()
 	}
 	return ast.FunDecl{
@@ -440,10 +440,10 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) ast.FunDecl 
 }
 
 fun (mut p Parser) return_stmt()ast.ReturnStmt{
-	pos := p.tok.pos
+	pos := p.pos
 	p.check(.key_return)
 	mut expr := ast.EmptyExpr{} as ast.Expr
-	if p.tok.pos.line == pos.line {
+	if p.pos.line == pos.line {
 		expr = p.expr(.lowest)
 	}
 	return ast.ReturnStmt{
@@ -453,7 +453,7 @@ fun (mut p Parser) return_stmt()ast.ReturnStmt{
 }
 
 fun (mut p Parser) type_decl() ast.TypeDecl {
-	pos := p.tok.pos
+	pos := p.pos
 	is_pub := p.check_pub()
 	p.next()
 

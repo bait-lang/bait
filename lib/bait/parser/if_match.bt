@@ -6,11 +6,11 @@ import bait.ast
 
 
 fun (mut p Parser) if_expr()ast.IfExpr{
-	pos := p.tok.pos
+	pos := p.pos
 	mut branches := []ast.IfBranch
 	mut has_else := false
 	for true {
-		bpos := p.tok.pos
+		bpos := p.pos
 		if p.tok == .key_else{
 			p.next()
 			if p.tok == .lcur{
@@ -42,7 +42,7 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 }
 
 fun (mut p Parser) match_expr()ast.MatchExpr{
-	pos := p.tok.pos
+	pos := p.pos
 	mut branches := []ast.MatchBranch
 	p.check(.key_match)
 	p.is_struct_possible = false
@@ -50,7 +50,7 @@ fun (mut p Parser) match_expr()ast.MatchExpr{
 	p.is_struct_possible = true
 	p.check(.lcur)
 	for p.tok != .rcur {
-		bpos := p.tok.pos
+		bpos := p.pos
 		mut exprs := []ast.Expr
 		if p.tok == .key_else {
 			p.next()
