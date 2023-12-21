@@ -5,16 +5,17 @@ package lexer
 import bait.token
 
 pub struct Lexer {
+pub mut:
+	val string // Value of the current token
 mut:
 	text string
-	start i32
 	line_starts []i32
-	pos i32
-	insert_semi bool
+	start i32 // Start of the current token
+	pos i32 // Position of the next char
+	insert_semi bool // Insert a semicolon on \n
+	// String interpolation
 	is_str_interpol bool
 	str_quote u8
-pub mut:
-	val string
 }
 
 pub fun (mut l Lexer) init(text string) {
@@ -34,7 +35,8 @@ pub fun (mut l Lexer) next() token.Token {
 
 	l.start = l.pos
 
-	if l.pos >= l.text.length {
+	// End of file
+	if l.pos == l.text.length {
 		return .eof
 	}
 
@@ -42,24 +44,55 @@ pub fun (mut l Lexer) next() token.Token {
 	l.pos += 1
 	l.insert_semi = false
 
+	// Name or keyword
 	if is_name_start_char(c) {
 		return l.name_or_key()
 	}
+
+	// Number literal
 	if is_digit(c) {
 		return l.number()
 	}
 
-	l.val = ''
+	// String literal or interpolation
+	if c == `'` or c == `"` {
+		return l.string_val(c)
+	}
+	if l.is_str_interpol and c == `}` {
+		l.is_str_interpol = false
+		return l.string_val(l.str_quote)
+	}
+
+	// Char
+	if c == `\`` {
+		return l.char_val()
+	}
+
+	// Interoperability (e.g. '#JS')
+	if c == `#` {
+		l.pos += 1
+		l.name_val()
+		return .hash
+	}
+
+	// Attribute
+	if c == `@` {
+		l.pos += 1
+		l.name_val()
+		return .attr
+	}
+
+	// Simple tokens
+	return l.simple_token(c)
+}
+
+fun (mut l Lexer) simple_token(c u8) token.Token {
+	l.val = '' // The following tokens are directly converted to string
 	match c {
 		`\n` {
+			// This is only reached if l.insert_semi was set to true
 			l.line_starts.push(l.pos)
 			return .semicolon
-		}
-		`'`, `"` {
-			return l.string_val(c)
-		}
-		`\`` {
-			return l.char_val()
 		}
 		`.` {
 			return .dot
@@ -98,6 +131,7 @@ pub fun (mut l Lexer) next() token.Token {
 
 			if c2 == `/` {
 				l.skip_line()
+				// TODO use a non-recursive approch to prevent a growing call stack
 				return l.next()
 			}
 
@@ -165,10 +199,6 @@ pub fun (mut l Lexer) next() token.Token {
 			return .lcur
 		}
 		`}` {
-			if l.is_str_interpol {
-				l.is_str_interpol = false
-				return l.string_val(l.str_quote)
-			}
 			return .rcur
 		}
 		`&` {
@@ -182,16 +212,6 @@ pub fun (mut l Lexer) next() token.Token {
 		}
 		`$` {
 			return .dollar
-		}
-		`#` {
-			l.pos += 1
-			l.name_val()
-			return .hash
-		}
-		`@` {
-			l.pos += 1
-			l.name_val()
-			return .attr
 		}
 		else {
 			return l.unknown_char(c)
@@ -233,16 +253,20 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 		c := l.text[l.pos]
 		l.pos += 1
 
+		// End of string
 		if c == quote {
 			l.val = l.text.substr(l.start, l.pos - 1)
 			return .string
 		}
 
 		if c == `\n` {
+			// Properly track line count
 			l.line_starts.push(l.pos)
 		} else if c == `\\` {
+			// Escape sequence
 			l.pos += 1
 		} else if not is_foreign and c == `$` and l.text[l.pos] == `{` {
+			// Start of interpolated expr
 			l.is_str_interpol = true
 			l.str_quote = quote
 
@@ -252,6 +276,7 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 		}
 	}
 
+	// Unclosed string
 	l.start = l.pos
 	l.val = 'unclosed string literal'
 	return .unknown
