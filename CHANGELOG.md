@@ -41,7 +41,7 @@ _unreleased_
 
 ### Language Interoperability
 - _[JS]_ Implement native strings `js'my str'`
-- _[JS]_Various fixes related to interfaces
+- _[JS]_ Various fixes related to interfaces
 
 ### Pointers
 - Add pointer dereferencing: `^my_ptr`
