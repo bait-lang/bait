@@ -13,11 +13,11 @@ import bait.preference
 import bait.util.timers
 
 struct Builder {
-	table ast.Table
 mut:
 	prefs preference.Prefs
 	parsed_files []ast.File
 	checker checker.Checker
+	parser parser.Parser
 }
 
 // Returns the absolute paths to all bait files in a directory that should be compiled
@@ -44,13 +44,13 @@ fun (b Builder) get_user_files(path string) []string {
 
 fun (b Builder) parse_source_file(path string) ast.File {
 	text := os.read_file(path)
-	return parser.parse(text, path, b.table, b.prefs)
+	return b.parser.parse(text, path)
 }
 
 pub fun compile(prefs preference.Prefs) i32 {
 	mut b := Builder{
 		prefs = prefs
-		table = ast.new_table()
+		parser = parser.new(ast.new_table(), prefs)
 	}
 
 	// Tokenize and parse all specified files
@@ -155,7 +155,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	b.parsed_files = sorted_files
 	b.checker = checker.Checker{
 		prefs = b.prefs
-		table = b.table
+		table = b.parser.table
 	}
 	b.checker.check_files(sorted_files)
 	timers.show('CHECK')
@@ -177,7 +177,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 fun (b Builder) code_gen_js() i32 {
 	// Run JSGen and write it to the outfile
 	timers.start('GEN')
-	res := jsgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
+	res := jsgen.gen(b.parsed_files, b.parser.table, b.prefs) + '\n'
 	timers.show('GEN')
 	ensure_dir_exists(os.dir(b.prefs.out_name))
 	os.write_file(b.prefs.out_name, res)
@@ -197,7 +197,7 @@ fun (b Builder) code_gen_js() i32 {
 
 fun (mut b Builder) code_gen_c() i32 {
 	timers.start('GEN')
-	res := cgen.gen(b.parsed_files, b.table, b.prefs) + '\n'
+	res := cgen.gen(b.parsed_files, b.parser.table, b.prefs) + '\n'
 	timers.show('GEN')
 
 	if os.exists(b.prefs.out_name) and os.is_dir(b.prefs.out_name) {

@@ -21,6 +21,7 @@ mut:
 pub fun (mut l Lexer) init(text string) {
 	l.text = text
 	l.line_starts = [0]
+	l.pos = 0
 }
 
 pub fun (l Lexer) get_pos() token.Pos {

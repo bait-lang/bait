@@ -39,7 +39,8 @@ fun main() {
 		return
 	}
 
-	file_ast := parser.parse(text, file, ast.new_table(), preference.Prefs{})
+	mut p := parser.new(ast.new_table(), preference.Prefs{})
+	file_ast := p.parse(text, file)
 	// TODO handle parser errors, warnings
 
 	println(file_ast)

@@ -11,12 +11,9 @@ import bait.token
 
 pub struct Parser {
 	pref preference.Prefs
-	path string
-	table ast.Table
-	lexer lexer.Lexer
 mut:
+	path string
 	eofs i32
-	idx i32
 	tok token.Token
 	next_tok token.Token
 	val string
@@ -28,23 +25,32 @@ mut:
 	is_struct_possible bool
 	should_abort bool
 pub mut:
+	table ast.Table
+	lexer lexer.Lexer
 	warnings []errors.Message
 	errors []errors.Message
 }
 
-pub fun parse(text string, path string, table ast.Table, pref preference.Prefs) ast.File {
-	mut p := Parser{
-		lexer = lexer.Lexer{}
-		pref = pref
-		path = path
+pub fun new(table ast.Table, pref preference.Prefs) Parser {
+	return Parser{
 		table = table
-		is_struct_possible = true
+		pref = pref
 	}
+}
 
+pub fun (mut p Parser) parse(text string, path string) ast.File {
+	// Init Parser
 	p.lexer.init(text)
-
+	p.path = path
+	p.eofs = 0
+	p.import_aliases = map[string]string
+	p.expr_pkg = ''
+	p.is_for_init = false
+	p.is_struct_possible = true
+	p.should_abort = false
 	p.next()
 
+	// Start Parsing
 	pkg_decl := p.package_decl()
 
 	// Validate the files package name actually matches the desired import
