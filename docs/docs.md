@@ -1,9 +1,10 @@
 <!--
-Copyright (c) 2023-present Lukas Neubert.
-This Documentation is subject to the terms of the Mozilla Public License 2.0.
+SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+SPDX-License-Identifier: MPL-2.0
 -->
+
 # Bait Documentation
-> Documentation of the standard library is :construction:
+> Documentation of the standard library is work in progress :construction:
 
 ## Entry Point
 The entry point of any program is the `main` function. It is automatically called when the program starts.
@@ -424,27 +425,29 @@ struct FooBar {
 | ----------- | ------------------------------------------- | ------ |
 | `@required` | The field must be initialized with a value. | _none_ |
 
+
 ## Conditional Compilation
 ### Compile Time Pseudo Variables
-Bait supports a few pseudo variables of `string` type.
-They are replaced with the actual value during compilation.
+Bait supports a few pseudo variables, which are replaced by their actual values during compilation.
+They are all of the type `string`.
 
-| Variable     | Description                         | Example                 |
-| ------------ | ----------------------------------- | ----------------------- |
-| `$PKG`       | Name of the current package.        | `main`                  |
-| `$FILE`      | Relative path of the source file.   | `lib/builtin/file.bt`   |
-| `$ABS_FILE`  | Absolute path of the source file.   | `/path/to/file.bt`      |
-| `$LINE`      | Line number of it's appearance.     | `123`                   |
-| `$FILE_LINE` | Relative path followed by the line. | `tests/my_test.bt:27`   |
-| `$FUN`       | Name of the current function.       | `test_read_line`        |
-| `$BAITEXE`   | Absolut path to the Bait compiler.  | `/path/to/bait/bait.js` |
-| `$BAITDIR`   | Directory where the compiler is in. | `/path/to/bait`         |
-| `$BAITHASH`  | Short commit hash of the compiler.  | `5e7fd6e`               |
+| Variable     | Description                       | Example                 |
+| ------------ | --------------------------------- | ----------------------- |
+| `$PKG`       | Current package name              | `main`                  |
+| `$ABS_FILE`  | Absolute source file path         | `/path/to/file.bt`      |
+| `$FILE`      | Relative source file path         | `lib/builtin/file.bt`   |
+| `$LINE`      | Line number where it is used      | `123`                   |
+| `$FILE_LINE` | Relative path and the line        | `tests/my_test.bt:27`   |
+| `$FUN`       | Current function name             | `test_read_line`        |
+| `$BAITEXE`   | Absolut path to the Bait compiler | `/path/to/bait/bait.js` |
+| `$BAITDIR`   | Directory of the compiler         | `/path/to/bait`         |
+| `$BAITHASH`  | The compiler's short commit hash  | `5e7fd6e`               |
 
 They are useful for running external tools or debugging. For example:
 ```bait
 eprintln('error in file ${$FILE}, line ${$LINE}, function ${$PKG}.${$FUN}')
 ```
+
 
 ## Global Variables
 While the use of global variables is discouraged, they are important in some cases.
