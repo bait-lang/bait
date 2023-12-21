@@ -7,7 +7,7 @@ import bait.errors
 
 type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | EmptyStmt | MatchExpr | IfExpr
 
-type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | CompTimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
+type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
 
 pub struct AssertStmt {
 pub:
@@ -237,7 +237,7 @@ pub:
 	pos token.Pos
 }
 
-pub struct CompTimeVar{
+pub struct ComptimeVar{
 pub:
 	name string
 	pos token.Pos

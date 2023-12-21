@@ -35,11 +35,6 @@ pub mut:
 	// Error related
 	hide_warnings bool
 	warn_is_error bool
-
-	// Values for compile time pseudo variables
-	baitexe string
-	baitdir string
-	baithash string
 }
 
 pub fun parse_args(args []string) Prefs {
@@ -150,12 +145,6 @@ pub fun parse_args(args []string) Prefs {
 	}
 
 	return p
-}
-
-pub fun (mut p Prefs) set_comptime_vars() {
-	p.baitexe = os.executable().replace('\\', '\\\\')
-	p.baitdir = os.dir(p.baitexe).trim_right('\\')
-	p.baithash = os.exec('git -C ${p.baitdir} rev-parse --short HEAD').stdout.trim_space()
 }
 
 fun backend_from_string(s string) Backend {

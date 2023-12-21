@@ -21,8 +21,8 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		g.call_expr(expr)
 	} else if expr is ast.CharLiteral {
 		g.char_literal(expr)
-	} else if expr is ast.CompTimeVar {
-		g.comp_time_var(expr)
+	} else if expr is ast.ComptimeVar {
+		g.comptime_var(expr)
 	} else if expr is ast.EnumVal {
 		g.enum_val(expr)
 	} else if expr is ast.FloatLiteral {
@@ -128,22 +128,6 @@ fun (mut g Gen) bool_literal(node ast.BoolLiteral){
 fun (mut g Gen) char_literal(node ast.CharLiteral) {
 	g.write('u8("')
 	g.write(util.escape_char(node.val, `\"`))
-	g.write('")')
-}
-
-fun (mut g Gen) comp_time_var(node ast.CompTimeVar){
-	g.write('from_js_string("')
-	match node.name{
-		'PKG' {g.write(g.pkg)}
-		'FILE' {g.write(g.path.replace('\\', '\\\\'))}
-		'ABS_FILE' {g.write(os.abs_path(g.path).replace('\\', '\\\\'))}
-		'LINE' {g.write('${node.pos.line}')}
-		'FILE_LINE' {g.write('${g.path.replace('\\', '\\\\')}:${node.pos.line}')}
-		'FUN' {g.write(g.cur_fun.name)}
-		'BAITEXE' {g.write(g.pref.baitexe)}
-		'BAITDIR' {g.write(g.pref.baitdir)}
-		'BAITHASH' {g.write(g.pref.baithash)}
-	}
 	g.write('")')
 }
 

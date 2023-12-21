@@ -63,6 +63,10 @@ mut:
 	is_for_loop_head bool
 	is_lhs_assign bool
 	is_array_map_set bool
+	// Cached comptime variables
+	baitexe string
+	baitdir string
+	baithash string
 }
 
 pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
