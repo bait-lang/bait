@@ -29,7 +29,7 @@ pub fun (l Lexer) get_pos() token.Pos {
 	}
 }
 
-pub fun (mut l Lexer) next() token.TokenKind {
+pub fun (mut l Lexer) next() token.Token {
 	l.skip_whitespace()
 
 	l.start = l.pos
@@ -132,7 +132,7 @@ pub fun (mut l Lexer) next() token.TokenKind {
 				l.pos += 1
 				return .ne
 			}
-			return l.unknown(c)
+			return l.unknown_char(c)
 		}
 		`<` {
 			if l.text[l.pos] == `=` {
@@ -194,7 +194,7 @@ pub fun (mut l Lexer) next() token.TokenKind {
 			return .attr
 		}
 		else {
-			return l.unknown(c)
+			return l.unknown_char(c)
 		}
 	}
 }
@@ -207,7 +207,7 @@ fun (mut l Lexer) name_val() {
 	l.val = l.text.substr(l.start, l.pos)
 }
 
-fun (mut l Lexer) name_or_key() token.TokenKind {
+fun (mut l Lexer) name_or_key() token.Token {
 	l.name_val()
 	tok := token.kind_from_string(l.val)
 	if tok == .key_return {
@@ -216,7 +216,7 @@ fun (mut l Lexer) name_or_key() token.TokenKind {
 	return tok
 }
 
-fun (mut l Lexer) number() token.TokenKind {
+fun (mut l Lexer) number() token.Token {
 	l.start = l.pos - 1
 	for l.pos < l.text.length and is_digit(l.text[l.pos]) {
 		l.pos += 1
@@ -225,15 +225,19 @@ fun (mut l Lexer) number() token.TokenKind {
 	return .number
 }
 
-fun (mut l Lexer) string_val(quote u8) token.TokenKind {
+fun (mut l Lexer) string_val(quote u8) token.Token {
 	is_foreign := l.text[l.pos - 2] == `.` // E.g. #JS.'eval()'
 	l.start = l.pos
+
 	for l.pos < l.text.length {
 		c := l.text[l.pos]
 		l.pos += 1
+
 		if c == quote {
-			break
+			l.val = l.text.substr(l.start, l.pos - 1)
+			return .string
 		}
+
 		if c == `\n` {
 			l.line_starts.push(l.pos)
 		} else if c == `\\` {
@@ -246,13 +250,13 @@ fun (mut l Lexer) string_val(quote u8) token.TokenKind {
 			l.val = l.text.substr(l.start, l.pos)
 			return .string
 		}
-
 	}
-	l.val = l.text.substr(l.start, l.pos - 1)
-	return .string
+
+	l.val = 'unclosed string literal'
+	return .unknown
 }
 
-fun (mut l Lexer) char_val() token.TokenKind {
+fun (mut l Lexer) char_val() token.Token {
 	l.start = l.pos
 	for l.pos < l.text.length {
 		c := l.text[l.pos]
@@ -268,8 +272,8 @@ fun (mut l Lexer) char_val() token.TokenKind {
 	return .char
 }
 
-fun (mut l Lexer) unknown(c u8) token.TokenKind {
-	l.val = c.ascii()
+fun (mut l Lexer) unknown_char(c u8) token.Token {
+	l.val = 'unknown char ${c.ascii()}'
 	return .unknown
 }
 

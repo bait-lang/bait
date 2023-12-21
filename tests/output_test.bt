@@ -7,7 +7,6 @@ import bait.util.testing
 const ERR_SKIP := [
 	// Known fail due to regression
 	'tests/out/error/array/magic_methods.in.bt',
-	'tests/out/error/other/unfinished_string.in.bt',
 ]
 
 const DIR := os.dir($FILE)

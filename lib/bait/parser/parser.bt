@@ -14,12 +14,11 @@ pub struct Parser {
 	path string
 	table ast.Table
 	lexer lexer.Lexer
-	// tokens []token.Token
 mut:
 	eofs i32
 	idx i32
-	tok token.TokenKind
-	next_tok token.TokenKind
+	tok token.Token
+	next_tok token.Token
 	val string
 	pkg_name string
 	import_aliases map[string]string
@@ -132,7 +131,7 @@ fun (mut p Parser) parse_attributes() {
 fun (mut p Parser) parse_block() []ast.Stmt {
 	p.check(.lcur)
 	mut bstmts := []ast.Stmt
-	for not [token.TokenKind.eof, .rcur].contains(p.tok) {
+	for not [token.Token.eof, .rcur].contains(p.tok) {
 		bstmts.push(p.stmt())
 		if p.should_abort {
 			break
@@ -142,13 +141,13 @@ fun (mut p Parser) parse_block() []ast.Stmt {
 	return bstmts
 }
 
-fun (mut p Parser) skip(tok token.TokenKind) {
+fun (mut p Parser) skip(tok token.Token) {
 	if p.tok == tok {
 		p.next()
 	}
 }
 
-fun (mut p Parser) check (expected token.TokenKind) {
+fun (mut p Parser) check (expected token.Token) {
 	if p.tok != expected {
 		p.error('unexpected ${p.tok}, expecting ${expected}')
 	}
@@ -209,7 +208,7 @@ fun (mut p Parser) next() {
 	p.val = p.lexer.val
 }
 
-fun (mut p Parser) peek() token.TokenKind {
+fun (mut p Parser) peek() token.Token {
 	if p.next_tok == .unknown {
 		p.next_tok = p.lexer.next()
 	}

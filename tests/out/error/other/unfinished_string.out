@@ -1,1 +1,1 @@
-tests/out/error/other/unfinished_string.in.bt:1:1 error: unfinished string literal
+tests/out/error/other/unfinished_string.in.bt:4:1 error: unclosed string literal

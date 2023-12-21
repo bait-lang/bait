@@ -251,6 +251,7 @@ fun (b Builder) print_errors_and_warnings() bool {
 
 		for err in f.errors {
 			err.print()
+			return true
 		}
 	}
 
