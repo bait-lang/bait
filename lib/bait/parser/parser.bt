@@ -6,19 +6,20 @@ import os
 import bait.preference
 import bait.errors
 import bait.ast
+import bait.lexer
 import bait.token
 
 pub struct Parser {
 	pref preference.Prefs
 	path string
 	table ast.Table
-	tokens []token.Token
+	lexer lexer.Lexer
 mut:
 	eofs i32
 	idx i32
-	prev_tok token.Token
 	tok token.Token
 	next_tok token.Token
+	val string
 	pkg_name string
 	import_aliases map[string]string
 	attributes []ast.Attribute
@@ -31,16 +32,17 @@ pub mut:
 	errors []errors.Message
 }
 
-pub fun parse(tokens []token.Token, path string, table ast.Table, pref preference.Prefs) ast.File {
+pub fun parse(text string, path string, table ast.Table, pref preference.Prefs) ast.File {
 	mut p := Parser{
+		lexer = lexer.Lexer{}
 		pref = pref
 		path = path
 		table = table
-		tokens = tokens
 		is_struct_possible = true
 	}
 
-	p.next()
+	p.lexer.init(text)
+
 	p.next()
 
 	pkg_decl := p.package_decl()
@@ -60,7 +62,7 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 	imports := p.import_stmts()
 
 	mut stmts := []ast.Stmt
-	for p.tok.kind != .eof {
+	for p.tok != .eof {
 		p.parse_attributes()
 		stmts.push(p.toplevel_stmt())
 		if p.should_abort {
@@ -80,7 +82,7 @@ pub fun parse(tokens []token.Token, path string, table ast.Table, pref preferenc
 
 fun (mut p Parser) package_decl() ast.PackageDecl {
 	// Implicit main package
-	if p.tok.kind != .key_package {
+	if p.tok != .key_package {
 		p.pkg_name = "main"
 		return ast.PackageDecl{
 			name = "main"
@@ -108,15 +110,15 @@ fun (mut p Parser) package_decl() ast.PackageDecl {
 
 // Parses one or more attributes
 fun (mut p Parser) parse_attributes() {
-	for p.tok.kind == .attr {
-		pos := p.tok.pos
-		name := p.tok.val
+	for p.tok == .attr {
+		pos := p.pos()
+		name := p.val
 		p.next()
 		mut value := ''
-		if p.tok.kind == .colon {
+		if p.tok == .colon {
 			p.next()
+			value = p.val
 			p.check(.string)
-			value = p.prev_tok.val
 		}
 		p.attributes.push(ast.Attribute{
 			name = name
@@ -129,7 +131,7 @@ fun (mut p Parser) parse_attributes() {
 fun (mut p Parser) parse_block() []ast.Stmt {
 	p.check(.lcur)
 	mut bstmts := []ast.Stmt
-	for not [token.TokenKind.eof, .rcur].contains(p.tok.kind) {
+	for not [token.Token.eof, .rcur].contains(p.tok) {
 		bstmts.push(p.stmt())
 		if p.should_abort {
 			break
@@ -139,20 +141,27 @@ fun (mut p Parser) parse_block() []ast.Stmt {
 	return bstmts
 }
 
-fun (mut p Parser) check (expected token.TokenKind) {
-	if p.tok.kind != expected {
-		p.error('unexpected ${p.tok.kind}, expecting ${expected}')
+fun (mut p Parser) skip(tok token.Token) {
+	if p.tok == tok {
+		p.next()
+	}
+}
+
+fun (mut p Parser) check (expected token.Token) {
+	if p.tok != expected {
+		p.error('unexpected ${p.tok}, expecting ${expected}')
 	}
 	p.next()
 }
 
 fun (mut p Parser) check_name() string {
+	val := p.val
 	p.check(.name)
-	return p.prev_tok.val
+	return val
 }
 
 fun (mut p Parser) check_pub() bool {
-	if p.tok.kind == .key_pub {
+	if p.tok == .key_pub {
 		p.next()
 		return true
 	}
@@ -160,10 +169,10 @@ fun (mut p Parser) check_pub() bool {
 }
 
 fun (mut p Parser) parse_lang() ast.Language {
-	if p.tok.kind != .hash {
+	if p.tok != .hash {
 		return .bait
 	}
-	lang := ast.prefix_to_lang(p.tok.val)
+	lang := ast.prefix_to_lang(p.val)
 	p.next()
 	p.check(.dot)
 	return lang
@@ -185,26 +194,32 @@ fun (mut p Parser) prepend_expr_pkg(val string) string {
 	return res
 }
 
+fun (p Parser) pos() token.Pos {
+	return p.lexer.get_pos()
+}
+
 fun (mut p Parser) next() {
-	p.prev_tok = p.tok
-	p.tok = p.next_tok
-	if p.idx < p.tokens.length {
-		p.next_tok = p.tokens[p.idx]
-		p.idx += 1
+	if p.next_tok == .unknown {
+		p.tok = p.lexer.next()
 	} else {
-		p.eofs += 1
-		if p.eofs > 10 {
-			panic('parser is stuck at end of file ${p.path}')
-		}
-		p.next_tok = p.tokens.last()
+		p.tok = p.next_tok
+		p.next_tok = .unknown
 	}
+	p.val = p.lexer.val
+}
+
+fun (mut p Parser) peek() token.Token {
+	if p.next_tok == .unknown {
+		p.next_tok = p.lexer.next()
+	}
+	return p.next_tok
 }
 
 fun (p Parser) warn(msg string) {
 	p.warnings.push(errors.Message{
 		kind = .warning
 		path = p.path
-		pos = p.tok.pos
+		pos = p.pos()
 		title = 'warning'
 		msg = msg
 	})
@@ -214,7 +229,7 @@ fun (mut p Parser) error(msg string){
 	p.errors.push(errors.Message{
 		kind = .error
 		path = p.path
-		pos = p.tok.pos
+		pos = p.pos()
 		title = 'error'
 		msg = msg
 	})

@@ -3,19 +3,19 @@
 package parser
 
 import bait.ast
+import bait.token
 
 fun (mut p Parser) for_loop(label string)ast.Stmt{
+	pos := p.pos()
 	p.next()
 
-	if p.next_tok.kind == .decl_assign {
-		return p.for_classic_loop(label)
+	if p.peek() == .decl_assign {
+		return p.for_classic_loop(label, pos)
 	}
 
-	if p.next_tok.kind == .key_in or p.next_tok.kind == .comma or p.tok.kind == .key_mut {
-		return p.for_in_loop(label)
+	if p.peek() == .key_in or p.peek() == .comma or p.tok == .key_mut {
+		return p.for_in_loop(label, pos)
 	}
-
-	pos := p.prev_tok.pos
 
 	p.is_struct_possible = false
 	cond := p.expr(.lowest)
@@ -31,9 +31,7 @@ fun (mut p Parser) for_loop(label string)ast.Stmt{
 	}
 }
 
-fun (mut p Parser) for_classic_loop(label string) ast.ForClassicLoop {
-	pos := p.prev_tok.pos
-
+fun (mut p Parser) for_classic_loop(label string, pos token.Pos) ast.ForClassicLoop {
 	p.is_for_init = true
 	init := p.assign_stmt()
 	p.is_for_init = false
@@ -54,22 +52,20 @@ fun (mut p Parser) for_classic_loop(label string) ast.ForClassicLoop {
 	}
 }
 
-fun (mut p Parser) for_in_loop(label string) ast.ForInLoop {
-	pos := p.prev_tok.pos
-
+fun (mut p Parser) for_in_loop(label string, pos token.Pos) ast.ForInLoop {
 	mut idxvar := ''
-	if p.next_tok.kind == .comma {
+	if p.peek() == .comma {
 		idxvar = p.check_name()
 		p.next()
 	}
 
 	mut is_mut := false
-	if p.tok.kind == .key_mut {
+	if p.tok == .key_mut {
 		is_mut = true
 		p.next()
 	}
 	mut valvar := ast.Param{
-		pos = p.tok.pos
+		pos = p.pos()
 		name = p.check_name()
 		is_mut = is_mut
 	}

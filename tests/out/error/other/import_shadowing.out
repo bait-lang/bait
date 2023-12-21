@@ -1,2 +1,2 @@
-tests/out/error/other/import_shadowing.in.bt:3:10 error: cannot shadow import "os"
-tests/out/error/other/import_shadowing.in.bt:5:5 error: redefinition of os
+tests/out/error/other/import_shadowing.in.bt:3:8 error: cannot shadow import "os"
+tests/out/error/other/import_shadowing.in.bt:5:3 error: redefinition of os

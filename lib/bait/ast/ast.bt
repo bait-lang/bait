@@ -20,7 +20,7 @@ global:
 	left_type Type
 	right_type Type
 pub:
-	op token.TokenKind
+	op token.Token
 	left Expr
 	right Expr
 	pos token.Pos
@@ -124,7 +124,7 @@ pub:
 
 pub struct LoopControlStmt{
 pub:
-	kind token.TokenKind
+	kind token.Token
 	label string
 	pos token.Pos
 }
@@ -308,7 +308,7 @@ global:
 pub:
 	left Expr
 	right Expr
-	op token.TokenKind
+	op token.Token
 	pos token.Pos
 }
 
@@ -356,7 +356,7 @@ pub:
 
 pub struct PrefixExpr{
 pub:
-	op token.TokenKind
+	op token.Token
 	right Expr
 	pos token.Pos
 }

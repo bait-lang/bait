@@ -1,0 +1,341 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package lexer
+
+import bait.token
+
+pub struct Lexer {
+pub mut:
+	val string // Value of the current token
+mut:
+	text string
+	line_starts []i32
+	start i32 // Start of the current token
+	pos i32 // Position of the next char
+	insert_semi bool // Insert a semicolon on \n
+	// String interpolation
+	is_str_interpol bool
+	str_quote u8
+}
+
+pub fun (mut l Lexer) init(text string) {
+	l.text = text
+	l.line_starts = [0]
+}
+
+pub fun (l Lexer) get_pos() token.Pos {
+	return token.Pos{
+		line = l.line_starts.length
+		col = l.start - l.line_starts.last()
+	}
+}
+
+pub fun (mut l Lexer) next() token.Token {
+	l.skip_whitespace()
+
+	l.start = l.pos
+
+	// End of file
+	if l.pos == l.text.length {
+		return .eof
+	}
+
+	c := l.text[l.pos]
+	l.pos += 1
+	l.insert_semi = false
+
+	// Name or keyword
+	if is_name_start_char(c) {
+		return l.name_or_key()
+	}
+
+	// Number literal
+	if is_digit(c) {
+		return l.number()
+	}
+
+	// String literal or interpolation
+	if c == `'` or c == `"` {
+		return l.string_val(c)
+	}
+	if l.is_str_interpol and c == `}` {
+		l.is_str_interpol = false
+		return l.string_val(l.str_quote)
+	}
+
+	// Char
+	if c == `\`` {
+		return l.char_val()
+	}
+
+	// Interoperability (e.g. '#JS')
+	if c == `#` {
+		l.pos += 1
+		l.name_val()
+		return .hash
+	}
+
+	// Attribute
+	if c == `@` {
+		l.pos += 1
+		l.name_val()
+		return .attr
+	}
+
+	// Simple tokens
+	return l.simple_token(c)
+}
+
+fun (mut l Lexer) simple_token(c u8) token.Token {
+	l.val = '' // The following tokens are directly converted to string
+	match c {
+		`\n` {
+			// This is only reached if l.insert_semi was set to true
+			l.line_starts.push(l.pos)
+			return .semicolon
+		}
+		`.` {
+			return .dot
+		}
+		`,` {
+			return .comma
+		}
+		`+` {
+			if l.text[l.pos] == `=` {
+				l.pos += 1
+				return .plus_assign
+			}
+			return .plus
+		}
+		`-` {
+			if l.text[l.pos] == `=` {
+				l.pos += 1
+				return .minus_assign
+			}
+			return .minus
+		}
+		`*` {
+			if l.text[l.pos] == `=` {
+				l.pos += 1
+				return .mul_assign
+			}
+			return .mul
+		}
+		`/` {
+			c2 := l.text[l.pos]
+
+			if c2 == `=` {
+				l.pos += 1
+				return .div_assign
+			}
+
+			if c2 == `/` {
+				l.skip_line()
+				// TODO use a non-recursive approch to prevent a growing call stack
+				return l.next()
+			}
+
+			return .div
+		}
+		`%` {
+			if l.text[l.pos] == `=` {
+				l.pos += 1
+				return .mod_assign
+			}
+			return .mod
+		}
+		`=` {
+			if l.text[l.pos] == `=` {
+				l.pos += 1
+				return .eq
+			}
+			return .assign
+		}
+		`:` {
+			if l.text[l.pos] == `=` {
+				l.pos += 1
+				return .decl_assign
+			}
+			return .colon
+		}
+		`;` {
+			return .semicolon
+		}
+		`!` {
+			if l.text[l.pos] == `=` {
+				l.pos += 1
+				return .ne
+			}
+			return l.unknown_char(c)
+		}
+		`<` {
+			if l.text[l.pos] == `=` {
+				l.pos += 1
+				return .le
+			}
+			return .lt
+		}
+		`>` {
+			if l.text[l.pos] == `=` {
+				l.pos += 1
+				return .ge
+			}
+			return .gt
+		}
+		`(` {
+			return .lpar
+		}
+		`)` {
+			return .rpar
+		}
+		`[` {
+			return .lsqr
+		}
+		`]` {
+			l.insert_semi = true
+			return .rsqr
+		}
+		`{` {
+			return .lcur
+		}
+		`}` {
+			return .rcur
+		}
+		`&` {
+			return .amp
+		}
+		`|` {
+			return .pipe
+		}
+		`^` {
+			return .caret
+		}
+		`$` {
+			return .dollar
+		}
+		else {
+			return l.unknown_char(c)
+		}
+	}
+}
+
+fun (mut l Lexer) name_val() {
+	l.start = l.pos - 1
+	for l.pos < l.text.length and is_name_char(l.text[l.pos]) {
+		l.pos += 1
+	}
+	l.val = l.text.substr(l.start, l.pos)
+}
+
+fun (mut l Lexer) name_or_key() token.Token {
+	l.name_val()
+	tok := token.kind_from_string(l.val)
+	if tok == .key_return {
+		l.insert_semi = true
+	}
+	return tok
+}
+
+fun (mut l Lexer) number() token.Token {
+	l.start = l.pos - 1
+	for l.pos < l.text.length and is_digit(l.text[l.pos]) {
+		l.pos += 1
+	}
+	l.val = l.text.substr(l.start, l.pos)
+	return .number
+}
+
+fun (mut l Lexer) string_val(quote u8) token.Token {
+	is_foreign := l.text[l.pos - 2] == `.` // E.g. #JS.'eval()'
+	l.start = l.pos
+
+	for l.pos < l.text.length {
+		c := l.text[l.pos]
+		l.pos += 1
+
+		// End of string
+		if c == quote {
+			l.val = l.text.substr(l.start, l.pos - 1)
+			return .string
+		}
+
+		if c == `\n` {
+			// Properly track line count
+			l.line_starts.push(l.pos)
+		} else if c == `\\` {
+			// Escape sequence
+			l.pos += 1
+		} else if not is_foreign and c == `$` and l.text[l.pos] == `{` {
+			// Start of interpolated expr
+			l.is_str_interpol = true
+			l.str_quote = quote
+
+			l.pos -= 1
+			l.val = l.text.substr(l.start, l.pos)
+			return .string
+		}
+	}
+
+	// Unclosed string
+	l.start = l.pos
+	l.val = 'unclosed string literal'
+	return .unknown
+}
+
+fun (mut l Lexer) char_val() token.Token {
+	l.start = l.pos
+	for l.pos < l.text.length {
+		c := l.text[l.pos]
+		l.pos += 1
+		if c == `\`` {
+			break
+		}
+		if c == `\\` {
+			l.pos += 1
+		}
+	}
+	l.val = l.text.substr(l.start, l.pos - 1)
+	return .char
+}
+
+fun (mut l Lexer) unknown_char(c u8) token.Token {
+	l.val = 'unknown char ${c.ascii()}'
+	return .unknown
+}
+
+fun (mut l Lexer) skip_whitespace() {
+	for l.pos < l.text.length {
+		c := l.text[l.pos]
+		if c == `\n` {
+			if l.insert_semi {
+				return
+			}
+			l.pos += 1
+			l.line_starts.push(l.pos)
+		} else if c == ` ` or c == `\t` or c == `\r` {
+			l.pos += 1
+		} else {
+			break
+		}
+	}
+}
+
+fun (mut l Lexer) skip_line() {
+	for l.pos < l.text.length and l.text[l.pos] != `\n` {
+		l.pos += 1
+	}
+	l.pos += 1
+	l.line_starts.push(l.pos)
+}
+
+fun is_name_start_char(c u8) bool {
+	return c >= `a` and c <= `z` or c >= `A` and c <= `Z` or c == `_`
+}
+
+fun is_name_char(c u8) bool {
+	return is_name_start_char(c) or is_digit(c)
+}
+
+fun is_digit(c u8) bool {
+	return c >= `0` and c <= `9`
+}

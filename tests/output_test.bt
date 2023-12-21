@@ -4,17 +4,19 @@
 import os
 import bait.util.testing
 
-const DIR := os.dir($FILE)
-
 const ERR_SKIP := [
 	// Known fail due to regression
-	'tests/out/error/array/magic_methods.in.bt'
+	'tests/out/error/array/magic_methods.in.bt',
 ]
+
+const DIR := os.dir($FILE)
+const ENABLE_FIX := os.ARGS.contains('--fix')
 
 fun test_in_outs() {
 	testing.in_out_runner(testing.InOutRunner{
 		root = '${DIR}/out/ok'
 		check_stdout = true
+		fix_out_file = ENABLE_FIX
 	})
 }
 
@@ -23,6 +25,7 @@ fun test_error_in_outs() {
 		root = '${DIR}/out/error'
 		cmd_options = '--script'
 		skips = ERR_SKIP
+		fix_out_file = ENABLE_FIX
 	})
 }
 
@@ -31,15 +34,18 @@ fun test_in_outs_with_options() {
 
 	testing.in_out_runner(testing.InOutRunner{
 		root = '${root}/no_script'
+		fix_out_file = ENABLE_FIX
 	})
 
 	testing.in_out_runner(testing.InOutRunner{
 		root = '${root}/warn_error'
 		cmd_options = '--script -W'
+		fix_out_file = ENABLE_FIX
 	})
 
 	testing.in_out_runner(testing.InOutRunner{
 		root = '${root}/no_warn'
 		cmd_options = '--script -w'
+		fix_out_file = ENABLE_FIX
 	})
 }

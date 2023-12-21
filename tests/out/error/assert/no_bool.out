@@ -1,1 +1,1 @@
-tests/out/error/assert/no_bool.in.bt:1:16 error: assert must be of type bool
+tests/out/error/assert/no_bool.in.bt:1:8 error: assert must be of type bool

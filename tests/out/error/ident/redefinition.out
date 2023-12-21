@@ -1,2 +1,2 @@
-tests/out/error/ident/redefinition.in.bt:3:3 error: redefinition of foo
-tests/out/error/ident/redefinition.in.bt:5:8 error: redefinition of same
+tests/out/error/ident/redefinition.in.bt:3:0 error: redefinition of foo
+tests/out/error/ident/redefinition.in.bt:5:6 error: redefinition of same

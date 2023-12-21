@@ -1,3 +1,3 @@
-tests/out/error/attributes/other.in.bt:1:9 warning: unknown attribute "xyz_attr"
-tests/out/error/attributes/other.in.bt:4:17 error: attribute "deprecated_after" requires a value
-tests/out/error/attributes/other.in.bt:8:10 error: attribute "required" does not take a value
+tests/out/error/attributes/other.in.bt:1:1 warning: unknown attribute "xyz_attr"
+tests/out/error/attributes/other.in.bt:4:1 error: attribute "deprecated_after" requires a value
+tests/out/error/attributes/other.in.bt:8:2 error: attribute "required" does not take a value

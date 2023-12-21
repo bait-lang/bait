@@ -6,7 +6,7 @@ import bait.ast
 import bait.token
 
 fun (mut p Parser) toplevel_stmt() ast.Stmt {
-	match p.tok.kind {
+	match p.tok {
 		.key_pub{
 			return p.pub_stmt()
 		}
@@ -38,14 +38,14 @@ fun (mut p Parser) toplevel_stmt() ast.Stmt {
 			if p.pkg_name == 'main' {
 				return p.script_mode_main()
 			}
-			p.error('bad toplevel token: kind = ${p.tok.kind}, val = ${p.tok.val}')
+			p.error('bad toplevel token: kind = ${p.tok}, val = ${p.val}')
 			return ast.EmptyStmt{}
 		}
 	}
 }
 
 fun (mut p Parser) pub_stmt() ast.Stmt {
-	match p.next_tok.kind {
+	match p.peek() {
 		.key_const{
 			return p.const_decl()
 		}
@@ -62,7 +62,7 @@ fun (mut p Parser) pub_stmt() ast.Stmt {
 			return p.struct_decl()
 		}
 		else{
-			p.error('cannot use pub keyword before ${p.next_tok.kind}')
+			p.error('cannot use pub keyword before ${p.peek()}')
 			return ast.EmptyStmt{}
 		}
 	}
@@ -73,7 +73,7 @@ fun (mut p Parser) script_mode_main() ast.FunDecl {
 		p.warn('declare the main function or use the --script option')
 	}
 	mut stmts := []ast.Stmt
-	for not p.should_abort and p.tok.kind != .eof {
+	for not p.should_abort and p.tok != .eof {
 		stmts.push(p.stmt())
 	}
 	mut node := ast.FunDecl{
@@ -86,7 +86,7 @@ fun (mut p Parser) script_mode_main() ast.FunDecl {
 }
 
 fun (mut p Parser) stmt() ast.Stmt {
-	match p.tok.kind {
+	match p.tok {
 		.name {
 			return p.stmt_with_name()
 		}
@@ -118,15 +118,15 @@ fun (mut p Parser) stmt() ast.Stmt {
 }
 
 fun (mut p Parser) stmt_with_name()ast.Stmt{
-	if p.next_tok.kind == .colon {
-		label := p.tok.val
+	if p.peek() == .colon {
+		label := p.val
 		p.next()
 		p.next()
 		return p.for_loop(label)
 	}
 
 	left := p.expr(.lowest)
-	if p.tok.kind.is_assign() {
+	if p.tok.is_assign() {
 		return p.partial_assign_stmt(left)
 	}
 	return ast.ExprStmt{expr = left}
@@ -134,7 +134,7 @@ fun (mut p Parser) stmt_with_name()ast.Stmt{
 
 fun (mut p Parser) assert_stmt() ast.AssertStmt{
 	p.next()
-	pos := p.tok.pos
+	pos := p.pos()
 	expr := p.expr(.lowest)
 	return ast.AssertStmt{
 		expr = expr
@@ -143,26 +143,24 @@ fun (mut p Parser) assert_stmt() ast.AssertStmt{
 }
 
 fun (mut p Parser) assign_stmt() ast.AssignStmt {
-	pos := p.tok.pos
 	left := p.expr(.lowest)
 	return p.partial_assign_stmt(left)
 }
 
 fun (mut p Parser) partial_assign_stmt(left ast.Expr) ast.AssignStmt {
-	pos := p.tok.pos
-	op := p.tok.kind
+	op := p.tok
 	p.next()
 	right := p.expr(.lowest)
 	return ast.AssignStmt{
 		op = op
 		left = left
 		right = right
-		pos = pos
+		pos = (left as ast.EmptyExpr).pos
 	}
 }
 
 fun (mut p Parser) const_decl()ast.ConstDecl{
-	pos := p.tok.pos
+	pos := p.pos()
 	is_pub := p.check_pub()
 	p.next()
 
@@ -170,7 +168,7 @@ fun (mut p Parser) const_decl()ast.ConstDecl{
 	mut name := ''
 
 	// foreign package
-	if lang == .js and p.next_tok.kind == .dot {
+	if lang == .js and p.peek() == .dot {
 		name = p.check_name() + '.'
 		p.next()
 	}
@@ -209,12 +207,12 @@ fun (mut p Parser) const_decl()ast.ConstDecl{
 }
 
 fun (mut p Parser) loop_control_stmt()ast.LoopControlStmt{
-	pos := p.tok.pos
-	kind := p.tok.kind
+	pos := p.pos()
+	kind := p.tok
 	p.next()
 
 	mut label := ''
-	if p.tok.kind == .name and p.tok.pos.line == p.prev_tok.pos.line {
+	if p.tok == .name and p.pos().line == pos.line {
 		label = p.check_name()
 	}
 
@@ -233,7 +231,7 @@ fun (mut p Parser) expr_stmt()ast.ExprStmt{
 }
 
 fun (mut p Parser) enum_decl()ast.EnumDecl{
-	pos := p.tok.pos
+	pos := p.pos()
 	is_pub := p.check_pub()
 	p.next()
 
@@ -248,11 +246,11 @@ fun (mut p Parser) enum_decl()ast.EnumDecl{
 	p.check(.lcur)
 	mut variants := []string
 	mut fields := []ast.EnumField
-	for p.tok.kind != .rcur {
-		fpos := p.tok.pos
+	for p.tok != .rcur {
+		fpos := p.pos()
 		fname := p.check_name()
 		mut expr := ast.EmptyExpr{} as ast.Expr
-		if p.tok.kind == .decl_assign {
+		if p.tok == .decl_assign {
 			p.next()
 			expr = p.expr(.lowest)
 		}
@@ -284,7 +282,7 @@ fun (mut p Parser) enum_decl()ast.EnumDecl{
 }
 
 fun (mut p Parser) global_decl()ast.GlobalDecl{
-	pos := p.tok.pos
+	pos := p.pos()
 	p.check(.key_global)
 	name := p.prepend_pkg(p.check_name())
 	p.check(.decl_assign)
@@ -303,12 +301,12 @@ fun (mut p Parser) global_decl()ast.GlobalDecl{
 }
 
 fun (mut p Parser) interface_decl()ast.InterfaceDecl{
-	pos := p.tok.pos
+	pos := p.pos()
 	is_pub := p.check_pub()
 	p.check(.key_interface)
 	lang := p.parse_lang()
 	mut name := lang.prepend_to(p.check_name())
-	if lang != .bait and p.tok.kind == .dot {
+	if lang != .bait and p.tok == .dot {
 		name += '.'
 		p.next()
 		name += p.check_name()
@@ -335,8 +333,8 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 	mut fields := []ast.StructField
 
 	p.check(.lcur)
-	for p.tok.kind != .rcur {
-		if p.tok.kind == .key_mut {
+	for p.tok != .rcur {
+		if p.tok == .key_mut {
 			if mut_idx != -1 {
 				p.error('redefinition of "mut" section')
 				return ast.InterfaceDecl{}
@@ -347,9 +345,9 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 			field_is_mut = true
 			field_is_pub = false
 			field_is_global = false
-		} else if p.tok.kind == .key_pub {
+		} else if p.tok == .key_pub {
 			p.next()
-			if p.tok.kind == .key_mut {
+			if p.tok == .key_mut {
 				if pub_mut_idx != -1 {
 					p.error('redefinition of "pub mut" section')
 					return ast.InterfaceDecl{}
@@ -370,7 +368,7 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 				field_is_global = false
 			}
 			p.check(.colon)
-		} else if p.tok.kind == .key_global {
+		} else if p.tok == .key_global {
 			if global_idx != -1 {
 				p.error('redefinition of "global" section')
 				return ast.InterfaceDecl{}
@@ -384,7 +382,7 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 		}
 
 		fname := p.check_name()
-		if p.tok.kind == .lpar {
+		if p.tok == .lpar {
 			m := p.interface_method(fname, typ)
 			methods.push(m)
 			tsym.methods.push(m)
@@ -423,9 +421,10 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) ast.FunDecl 
 		typ = rec_type
 	}]
 	params = params.concat(p.fun_params())
+	par_line := p.pos().line
 	p.check(.rpar)
 	mut return_type := ast.VOID_TYPE
-	if p.tok.pos.line == p.prev_tok.pos.line {
+	if p.pos().line == par_line {
 		return_type = p.parse_type()
 	}
 	return ast.FunDecl{
@@ -439,12 +438,13 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) ast.FunDecl 
 }
 
 fun (mut p Parser) return_stmt()ast.ReturnStmt{
-	pos := p.tok.pos
+	pos := p.pos()
 	p.check(.key_return)
 	mut expr := ast.EmptyExpr{} as ast.Expr
-	if p.tok.pos.line == pos.line {
+	if p.tok != .semicolon {
 		expr = p.expr(.lowest)
 	}
+	p.skip(.semicolon)
 	return ast.ReturnStmt{
 		expr = expr
 		pos = pos
@@ -452,7 +452,7 @@ fun (mut p Parser) return_stmt()ast.ReturnStmt{
 }
 
 fun (mut p Parser) type_decl() ast.TypeDecl {
-	pos := p.tok.pos
+	pos := p.pos()
 	is_pub := p.check_pub()
 	p.next()
 
@@ -465,7 +465,7 @@ fun (mut p Parser) type_decl() ast.TypeDecl {
 	}
 
 	p.check(.decl_assign)
-	is_fun_type := p.tok.kind == .key_fun
+	is_fun_type := p.tok == .key_fun
 	mut variants := []ast.Type
 	variants.push(p.parse_type())
 
@@ -488,7 +488,7 @@ fun (mut p Parser) type_decl() ast.TypeDecl {
 	}
 
 	// Alias type
-	if p.tok.kind != .pipe {
+	if p.tok != .pipe {
 		typ := p.table.register_sym(ast.TypeSymbol{
 			kind = .alias_type
 			name = name
@@ -505,7 +505,7 @@ fun (mut p Parser) type_decl() ast.TypeDecl {
 	}
 
 	// Sum type
-	for p.tok.kind == .pipe {
+	for p.tok == .pipe {
 		p.next()
 		variants.push(p.parse_type())
 	}

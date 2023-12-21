@@ -1,4 +1,4 @@
 error: redfinition of function "foo"
-tests/out/error/fun/redefinition.in.bt:1:3 conflict: fun foo(a string)
-tests/out/error/fun/redefinition.in.bt:3:3 conflict: fun foo(b bool)
-tests/out/error/fun/redefinition.in.bt:5:3 conflict: fun foo(c i32, d i32)
+tests/out/error/fun/redefinition.in.bt:1:0 conflict: fun foo(a string)
+tests/out/error/fun/redefinition.in.bt:3:0 conflict: fun foo(b bool)
+tests/out/error/fun/redefinition.in.bt:5:0 conflict: fun foo(c i32, d i32)

@@ -21,7 +21,7 @@ fun (p Parser) add_builtin_imports() []ast.Import {
 }
 
 fun (mut p Parser) foreign_import() ast.Import {
-	name := p.tok.val
+	name := p.val
 	p.next()
 	p.check(.key_as)
 
@@ -45,14 +45,14 @@ fun (mut p Parser) foreign_import() ast.Import {
 fun (mut p Parser) bait_import() ast.Import {
 	mut name_parts := []string
 	name_parts.push(p.check_name())
-	for p.tok.kind == .dot {
+	for p.tok == .dot {
 		p.next()
 		name_parts.push(p.check_name())
 	}
 	name := name_parts.join('.')
 
 	mut alias := name_parts[name_parts.length - 1]
-	if p.tok.kind == .key_as {
+	if p.tok == .key_as {
 		p.next()
 		alias = p.check_name()
 	}
@@ -65,12 +65,12 @@ fun (mut p Parser) bait_import() ast.Import {
 
 fun (mut p Parser) import_stmts() [] ast.Import{
 	mut imports := p.add_builtin_imports()
-	for p.tok.kind == .key_import {
-		pos := p.tok.pos
+	for p.tok == .key_import {
+		pos := p.pos()
 		p.next()
 
 		mut imp := ast.Import{}
-		if p.tok.kind == .string {
+		if p.tok == .string {
 			imp = p.foreign_import()
 		} else {
 			imp = p.bait_import()

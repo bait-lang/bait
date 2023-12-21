@@ -2,14 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 package token
 
-pub struct Token {
-pub:
-	kind TokenKind
-	val string
-	pos Pos
-}
-
-pub enum TokenKind {
+pub enum Token {
 	unknown
 	eof
 	attr
@@ -41,8 +34,8 @@ pub enum TokenKind {
 	ge
 	lpar
 	rpar
-	lbr
-	rbr
+	lsqr
+	rsqr
 	lcur
 	rcur
 	amp
@@ -80,9 +73,9 @@ pub enum TokenKind {
 	key_typeof
 }
 
-pub fun keyword_to_kind(name string) TokenKind {
+pub fun kind_from_string(name string) Token {
 	return match name {
-		'and' { TokenKind.key_and }
+		'and' { .key_and }
 		'as' { .key_as }
 		'assert' { .key_assert }
 		'break' { .key_break }
@@ -114,25 +107,25 @@ pub fun keyword_to_kind(name string) TokenKind {
 	}
 }
 
-const COMPARE_KINDS := [TokenKind.eq, .ne, .lt, .gt, .le, .ge, .key_is]
-const MATH_KINDS := [TokenKind.plus, .minus, .mul, .div, .mod]
-const OTHER_INFIXES := [TokenKind.key_and, .key_or]
+const COMPARE_KINDS := [Token.eq, .ne, .lt, .gt, .le, .ge, .key_is]
+const MATH_KINDS := [Token.plus, .minus, .mul, .div, .mod]
+const OTHER_INFIXES := [Token.key_and, .key_or]
 
-pub fun (kind TokenKind) is_compare() bool {
+pub fun (kind Token) is_compare() bool {
 	return COMPARE_KINDS.contains(kind)
 }
 
-pub fun (kind TokenKind) is_infix() bool {
+pub fun (kind Token) is_infix() bool {
 	return kind.is_compare() or MATH_KINDS.contains(kind) or OTHER_INFIXES.contains(kind)
 }
 
-const ASSIGN_KINDS := [TokenKind.decl_assign, .assign, .plus_assign, .minus_assign, .mul_assign, .div_assign, .mod_assign]
+const ASSIGN_KINDS := [Token.decl_assign, .assign, .plus_assign, .minus_assign, .mul_assign, .div_assign, .mod_assign]
 
-pub fun (kind TokenKind) is_assign() bool {
+pub fun (kind Token) is_assign() bool {
 	return ASSIGN_KINDS.contains(kind)
 }
 
-pub fun (kind TokenKind) js_repr() string {
+pub fun (kind Token) js_repr() string {
 	return match kind {
 		.key_break { "break" }
 		.key_continue { "continue" }
@@ -161,7 +154,7 @@ pub fun (kind TokenKind) js_repr() string {
 	}
 }
 
-pub fun (kind TokenKind) c_repr() string {
+pub fun (kind Token) c_repr() string {
 	return match kind {
 		.amp { '&' }
 		.caret { '*' }
@@ -169,8 +162,9 @@ pub fun (kind TokenKind) c_repr() string {
 	}
 }
 
-pub fun (kind TokenKind) str() string {
+pub fun (kind Token) str() string {
 	return match kind {
+		.unknown { 'unknown' }
 		.eof { 'eof' }
 		.attr { 'attr' }
 		.name { 'name' }
@@ -201,8 +195,8 @@ pub fun (kind TokenKind) str() string {
 		.ge { 'ge' }
 		.lpar { 'lpar' }
 		.rpar { 'rpar' }
-		.lbr { 'lbr' }
-		.rbr { 'rbr' }
+		.lsqr { 'lsqr' }
+		.rsqr { 'rsqr' }
 		.lcur { 'lcur' }
 		.rcur { 'rcur' }
 		.amp { 'amp' }
