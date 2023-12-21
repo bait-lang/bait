@@ -7,7 +7,7 @@ fun test_comptime_vars() {
 	assert $PKG == 'main'
 	assert $FILE == 'tests/other/comptime_vars_test.bt'.replace('/', os.PATH_SEP)
 	assert $LINE == '9'
-	assert $FILE_LINE == 'tests/other/comptime_vars_test.bt:11'.replace('/', os.PATH_SEP)
+	assert $FILE_LINE == 'tests/other/comptime_vars_test.bt:10'.replace('/', os.PATH_SEP)
 	assert $FUN == 'test_comptime_vars'
 
 	// The following vars are hard to test
