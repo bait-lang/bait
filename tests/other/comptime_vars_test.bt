@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
 
+import os
+
 fun test_comptime_vars() {
 	assert $PKG == 'main'
-	assert $FILE == 'tests/other/comptime_vars_test.bt'
+	assert $FILE == 'tests/other/comptime_vars_test.bt'.replace('/', os.PATH_SEP)
 	assert $LINE == '7'
-	assert $FILE_LINE == 'tests/other/comptime_vars_test.bt:8'
+	assert $FILE_LINE == 'tests/other/comptime_vars_test.bt:8'.replace('/', os.PATH_SEP)
 	assert $FUN == 'test_comptime_vars'
 
 	// The following vars are hard to test
