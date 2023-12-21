@@ -115,7 +115,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	timers.show('PARSE')
 
 	b.parsed_files = files
-	if b.print_errors_and_warnings() {
+	if b.print_errors_and_warnings(true) {
 		return 1
 	}
 
@@ -163,7 +163,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	if b.check_redefined_functions() {
 		return 1
 	}
-	if b.print_errors_and_warnings() {
+	if b.print_errors_and_warnings(false) {
 		return 1
 	}
 
@@ -224,7 +224,7 @@ fun (mut b Builder) code_gen_c() i32 {
 	return 0
 }
 
-fun (b Builder) print_errors_and_warnings() bool {
+fun (b Builder) print_errors_and_warnings(parser_errs bool) bool {
 	mut nr_warns := 0
 	mut nr_errors := 0
 
@@ -251,7 +251,9 @@ fun (b Builder) print_errors_and_warnings() bool {
 
 		for err in f.errors {
 			err.print()
-			return true
+			if parser_errs {
+				return true
+			}
 		}
 	}
 
