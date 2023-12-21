@@ -29,7 +29,6 @@ fun main() {
 	args := os.user_args()
 	timers.start('PREFS')
 	mut prefs := preference.parse_args(args)
-	prefs.set_comptime_vars()
 	timers.set_show(prefs.show_timings)
 	timers.show('PREFS')
 

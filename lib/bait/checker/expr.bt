@@ -18,8 +18,8 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 		return c.call_expr(expr)
 	} else if expr is ast.CharLiteral {
 		return ast.U8_TYPE
-	} else if expr is ast.CompTimeVar {
-		return c.comp_time_var(expr)
+	} else if expr is ast.ComptimeVar {
+		return c.comptime_var(expr)
 	} else if expr is ast.EnumVal {
 		return c.enum_val(expr)
 	} else if expr is ast.FloatLiteral {
@@ -155,7 +155,7 @@ const SUPPORTED_COMPTIME_VARS := [
 	'BAITHASH',
 ]
 
-fun (mut c Checker) comp_time_var(node ast.CompTimeVar) ast.Type {
+fun (mut c Checker) comptime_var(node ast.ComptimeVar) ast.Type {
 	if not SUPPORTED_COMPTIME_VARS.contains(node.name) {
 		c.error('unsupported comptime var "${node.name}"', node.pos)
 	}

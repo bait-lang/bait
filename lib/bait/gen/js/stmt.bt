@@ -124,6 +124,9 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 	} else if node is ast.SelectorExpr {
 		g.assert_side_expr(node.expr)
 		g.write('.${node.field_name}')
+	} else if node is ast.ComptimeVar {
+		g.write('$')
+		g.write(node.name)
 	} else {
 		g.write('UNHANDLED EXPR')
 	}
