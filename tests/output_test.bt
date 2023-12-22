@@ -49,3 +49,10 @@ fun test_in_outs_with_options() {
 		fix_out_file = ENABLE_FIX
 	})
 }
+
+fun test_directories() {
+	runner := testing.InOutRunner{
+		root = '${DIR}/out/dirs'
+	}
+	runner.test_all_in_root()
+}
