@@ -19,7 +19,8 @@ _unreleased_
 - Fix invalid error that a generic type is private
 
 ### Package and Import System
-- Import resolving: Search for imports next to the importer first
+- Import resolving order: Search for imports next to the importer first
+- Significantly improve performance of import resolving
 - Show builder error when
   - Imported package does not exist
   - No files belong to a imported package

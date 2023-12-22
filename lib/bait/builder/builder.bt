@@ -16,6 +16,7 @@ struct Builder {
 mut:
 	prefs preference.Prefs
 	parsed_files []ast.File
+	parsed_pkgs []string
 	checker checker.Checker
 	parser parser.Parser
 }
@@ -59,49 +60,52 @@ pub fun compile(prefs preference.Prefs) i32 {
 		parser = parser.new(ast.new_table(), prefs)
 	}
 
+	// Collect files for compilation
 	mut paths := b.collect_user_files(prefs.command)
-
 	if paths.length == 0 {
 		errors.generic_error('directory ${prefs.command} contains no Bait files')
 		return 1
 	}
 
-	// Tokenize and parse all specified files
+	// Tokenize and parse files
 	timers.start('PARSE')
 	mut ast_files := []ast.File
 	for p in paths {
 		ast_files.push(b.parse_file(p, ''))
 	}
 
-	// Get and parse all imports. Use classic for, as new elements are added to `ast_files`
-	for i:=0; i<ast_files.length; i+=1 {
-		f := ast_files[i]
-		fdir := os.dir(f.path)
+	// Resolve and parse imports. New elements are dynamically added to `ast_files`
+	for i := 0; i < ast_files.length; i += 1 {
+		file := ast_files[i]
 
-		for imp in f.imports {
+		for imp in file.imports {
 			if imp.lang != .bait {
 				continue
 			}
 
-			// Get all imported files and filter out already parsed ones
-			// TODO possible perf improvement: prefilter against list of parsed packages before file collection
-			import_dir := resolve_import(fdir, imp.name.replace('.', os.PATH_SEP))
+			// Skip already parsed packages
+			if b.parsed_pkgs.contains(imp.name) {
+				// FIXME possible problem if two imports share the same name but would resolve to different paths
+				continue
+			}
+
+			// Resolve import path
+			import_dir := resolve_import(os.dir(file.path), imp.name)
 			if not os.exists(import_dir) {
 				errors.generic_error('package ${imp.name} not found')
 				continue
 			}
+
+			// Collect files
 			mut imp_paths := b.bait_files_in_dir(import_dir)
 			if imp_paths.length == 0 {
 				errors.generic_error('package ${imp.name} contains no Bait files')
 				continue
 			}
-			filtered_paths := imp_paths.filter(fun (p string) bool {
-				return not paths.contains(p)
-			})
 
-			// Parse the imported files
+			// Parse files
 			mut nr_newly_parsed := 0
-			for p in filtered_paths {
+			for p in imp_paths {
 				parsed_file := b.parse_file(p, imp.name)
 
 				if parsed_file.path.length == 0 {
@@ -113,9 +117,11 @@ pub fun compile(prefs preference.Prefs) i32 {
 				ast_files.push(parsed_file)
 			}
 
-			if nr_newly_parsed == 0 and filtered_paths.length > 0 {
+			if nr_newly_parsed == 0 and imp_paths.length > 0 {
 				errors.generic_error('no files belong to package ${imp.name}')
 			}
+
+			b.parsed_pkgs.push(imp.name)
 		}
 	}
 
@@ -274,21 +280,23 @@ fun (b Builder) print_errors_and_warnings(parser_errs bool) bool {
 }
 
 // Resolve an import to absolute file path
-fun resolve_import(base_dir string, pkg string) string {
+fun resolve_import(base_dir string, name string) string {
+	name_as_path := name.replace('.', os.PATH_SEP)
+
 	// Search next to the current file
-	mut dir := os.join_path(base_dir, [pkg])
+	mut dir := os.join_path(base_dir, [name_as_path])
 	if os.exists(dir) {
 		return dir
 	}
 
 	// Search in std lib
-	dir = os.resource_abs_path(os.join_path("lib", [pkg]))
+	dir = os.resource_abs_path(os.join_path("lib", [name_as_path]))
 	if os.exists(dir) {
 		return dir
 	}
 
 	// When running make, lib is in the working dir
-	return os.join_path(os.getwd(), ["lib", pkg])
+	return os.join_path(os.getwd(), ["lib", name_as_path])
 }
 
 fun order_pkgs(mut ordered []string, pkg string, deps map[string][]string, mut looked []string) {
