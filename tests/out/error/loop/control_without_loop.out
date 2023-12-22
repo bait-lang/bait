@@ -1,0 +1,1 @@
+tests/out/error/loop/control_without_loop.in.bt:2:1 error: break and continue must be inside a loop

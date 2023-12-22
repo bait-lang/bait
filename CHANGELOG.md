@@ -33,6 +33,7 @@ _unreleased_
 - Prevent some cases of identifier redefinition
   - Any identifier by a function name
   - Function argument by a variable
+- Show an error if `break` or `continue` are not inside a loop
 - Prevent invalid prefix exprs
   - `-` on non-numeric types
   - `not` on non-bool types

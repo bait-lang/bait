@@ -139,7 +139,10 @@ fun (mut c Checker) for_loop(node ast.ForLoop) {
 	c.open_scope()
 	c.register_label(node.label, node.pos)
 	c.expr(node.cond)
+	loop_safe := c.is_loop
+	c.is_loop = true
 	c.stmts(node.stmts)
+	c.is_loop = loop_safe
 	c.close_scope()
 }
 
@@ -149,7 +152,10 @@ fun (mut c Checker) for_classic_loop(node ast.ForClassicLoop) {
 	c.stmt(node.init)
 	c.expr(node.cond)
 	c.stmt(node.inc)
+	loop_safe := c.is_loop
+	c.is_loop = true
 	c.stmts(node.stmts)
+	c.is_loop = loop_safe
 	c.close_scope()
 }
 
@@ -180,7 +186,10 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 		typ = val_type
 		is_mut = node.valvar.is_mut
 	})
+	loop_safe := c.is_loop
+	c.is_loop = true
 	c.stmts(node.stmts)
+	c.is_loop = loop_safe
 	c.close_scope()
 }
 
@@ -189,9 +198,15 @@ fun (mut c Checker) global_decl(node ast.GlobalDecl){
 	c.table.global_scope.update_type(node.name, typ)
 }
 
-fun (c Checker) interface_decl(node ast.InterfaceDecl){}
+fun (c Checker) interface_decl(node ast.InterfaceDecl){
+	// Nothing to do
+}
 
 fun (c Checker) loop_control_stmt(node ast.LoopControlStmt) {
+	if not c.is_loop {
+		c.error('break and continue must be inside a loop', node.pos)
+	}
+
 	if node.label.length == 0 {
 		return
 	}
