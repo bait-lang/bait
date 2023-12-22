@@ -88,7 +88,8 @@ _unreleased_
 
 ### Other Changes
 - Complete tokenizer rewrite and rename to `lexer`
-- Implement real `if` and `match` expressions _[JS]_
+- Implement real `if` expression
+- _[JS]_ Implement real `match` expression
 - Add support for float literals _[JS]_
 - checker: Fix scope of smartcasted if conditions
 - gen: Escape reserved JS keywords in the `for ... in` loop

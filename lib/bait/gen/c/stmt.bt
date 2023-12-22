@@ -22,7 +22,9 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.ForClassicLoop { g.for_classic_loop(stmt) }
 		ast.ForInLoop { g.for_in_loop(stmt) }
 		ast.FunDecl { g.fun_decl(stmt) }
+		ast.IfExpr { g.if_expr(stmt, false) }
 		ast.InterfaceDecl { g.interface_decl(stmt) }
+		ast.MatchExpr { g.match_expr(stmt, false) }
 		ast.ReturnStmt { g.return_stmt(stmt) }
 		ast.StructDecl {} // see write_types()
 		ast.TypeDecl {} // see write_types()

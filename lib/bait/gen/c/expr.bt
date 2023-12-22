@@ -14,10 +14,11 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.CallExpr { g.call_expr(expr) }
 		ast.HashExpr { g.hash_expr(expr) }
 		ast.Ident { g.ident(expr) }
-		ast.IfExpr { g.if_expr(expr) }
+		ast.IfExpr { g.if_expr(expr, true) }
 		ast.IndexExpr { g.index_expr(expr) }
 		ast.InfixExpr { g.infix_expr(expr) }
 		ast.IntegerLiteral { g.integer_literal(expr) }
+		ast.MatchExpr { g.match_expr(expr, true) }
 		ast.ParExpr { g.par_expr(expr) }
 		ast.PrefixExpr { g.prefix_expr(expr)}
 		ast.SelectorExpr { g.selector_expr(expr) }
@@ -97,23 +98,6 @@ fun (mut g Gen) ident(node ast.Ident) {
 		return
 	}
 	g.write(node.name.replace('C.', ''))
-}
-
-fun (mut g Gen) if_expr(node ast.IfExpr) {
-	for i, b in node.branches {
-		if i > 0 {
-			g.write('} else ')
-		}
-		if node.has_else and i == node.branches.length - 1 {
-			g.writeln('{')
-		} else {
-			g.write('if (')
-			g.expr(b.cond)
-			g.writeln(') {')
-		}
-		g.stmts(b.stmts)
-	}
-	g.writeln('}')
 }
 
 fun (mut g Gen) index_expr(node ast.IndexExpr) {
