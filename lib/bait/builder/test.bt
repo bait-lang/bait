@@ -11,7 +11,7 @@ pub fun run_tests(prefs preference.Prefs) i32 {
 	for a in prefs.args {
 		if os.exists(a) and a.ends_with('.bt') and a.contains('_test.') {
 			files_to_test.push(a)
-		} else if os.is_dir(a){
+		} else if os.exists_dir(a){
 			t := os.walk_ext(a, '.bt').filter(fun (f string) bool {
 				return f.contains('_test.') and not f.contains('.in.')
 			})

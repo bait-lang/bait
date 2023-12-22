@@ -21,7 +21,7 @@ fun main() {
 }
 
 fun create_git_repo(dir string) {
-	if not os.is_dir('${dir}/.git') {
+	if not os.exists_dir('${dir}/.git') {
 		res := os.exec('git init ${dir}')
 		if res.code != 0 {
 			eprintln('Failed to create git repository')

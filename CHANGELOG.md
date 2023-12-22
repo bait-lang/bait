@@ -8,7 +8,7 @@ All notable changes will be documented in this file.
 _unreleased_
 
 ### Breaking
-- Remove tools `test-lib`
+- Remove tool `test-lib`
   - All standard library tests can be run with `bait test lib`
   - Compiler tests can be run with `bait test tests`
   - Tool tests can be run with `bait test cli/tools`
@@ -75,21 +75,21 @@ _unreleased_
   - New map methods `values() []any` and `clear()`
   - Implement array methods `index()` and `last_index()` on C backend too
 - os:
-  - Add `input(prompt) string` function _[JS backend]_
-  - `is_dir(path)`: Return false if path does not exist
+  - Add `input(prompt) string` function _[JS]_
+  - Add `exists_dir(path)` that checks if path exists and is a directory _[JS]_
   - Fix js error with `mkdir()` and `mkdir_all()` if path already exists
 
 ### Other Changes
 - Complete tokenizer rewrite and rename to `lexer`
 - Implement real `if` and `match` expressions _[JS]_
-- Add support for float literals _[JS backend]_
+- Add support for float literals _[JS]_
 - checker: Fix scope of smartcasted if conditions
 - gen: Escape reserved JS keywords in the `for ... in` loop
 - Imports: Look for imports next to the respective file first
 - Interop: Support for declaring JS structs, methods, enums and type aliases
 - parser: Fix prefix expr precedence
 - Move compiler tests from `lib/bait/tests/` into `tests/`
-- Various refactorings
+- Many refactorings and cleanups
 - Documentation improvements
 
 

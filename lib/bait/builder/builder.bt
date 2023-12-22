@@ -21,7 +21,7 @@ mut:
 }
 
 // Returns the absolute paths to all bait files in a directory that should be compiled
-fun (b Builder) collect_bait_files(dir string) []string {
+fun (b Builder) bait_files_in_dir(dir string) []string {
 	all_files := os.ls(dir)
 	mut files := []string
 	for f in all_files {
@@ -32,13 +32,17 @@ fun (b Builder) collect_bait_files(dir string) []string {
 	return files
 }
 
-fun (b Builder) get_user_files(path string) []string {
-	if os.is_dir(path) {
-		return b.collect_bait_files(path)
+fun (b Builder) collect_user_files(path string) []string {
+	if os.exists(path) {
+		if  path.ends_with('.bt') {
+			return [path]
+		}
+
+		if os.is_dir(path) {
+			return b.bait_files_in_dir(path)
+		}
 	}
-	if os.exists(path) and path.ends_with('.bt') {
-		return [path]
-	}
+
 	return []string
 }
 
@@ -53,9 +57,10 @@ pub fun compile(prefs preference.Prefs) i32 {
 		parser = parser.new(ast.new_table(), prefs)
 	}
 
+	mut paths := b.collect_user_files(prefs.command)
+
 	// Tokenize and parse all specified files
 	timers.start('PARSE')
-	mut paths := b.get_user_files(prefs.command)
 	mut files := []ast.File
 	for p in paths {
 		b.prefs.expected_pkg = ''
@@ -83,7 +88,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 				errors.generic_error('package ${imp.name} not found')
 				continue
 			}
-			mut imp_paths := b.collect_bait_files(import_dir)
+			mut imp_paths := b.bait_files_in_dir(import_dir)
 			if imp_paths.length == 0 {
 				errors.generic_error('package ${imp.name} contains no Bait files')
 				continue
@@ -200,10 +205,11 @@ fun (mut b Builder) code_gen_c() i32 {
 	res := cgen.gen(b.parsed_files, b.parser.table, b.prefs) + '\n'
 	timers.show('GEN')
 
-	if os.exists(b.prefs.out_name) and os.is_dir(b.prefs.out_name) {
+	if os.exists_dir(b.prefs.out_name) {
 		b.prefs.out_name += '.exe'
+	} else {
+		ensure_dir_exists(os.dir(b.prefs.out_name))
 	}
-	ensure_dir_exists(os.dir(b.prefs.out_name))
 
 	tmp_c_path := os.join_path(os.tmp_dir(), [os.file_name(b.prefs.out_name) + '.c'])
 	os.write_file(tmp_c_path, res)

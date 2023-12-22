@@ -20,7 +20,7 @@ pub fun (runner InOutRunner) test_dir(dir string) {
 	}
 
 	abs_dir := os.join_path(runner.root, [dir])
-	if not os.is_dir(abs_dir) {
+	if not os.exists_dir(abs_dir) {
 		return
 	}
 

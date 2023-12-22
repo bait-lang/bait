@@ -16,8 +16,8 @@ fun test_read_lines() {
 	assert lines[1] == '2'
 }
 
-fun test_is_dir() {
-	assert os.is_dir("${$BAITDIR}/lib")
-	assert not os.is_dir("${$BAITDIR}/README.md")
-	assert not os.is_dir('i/hope/this/never/exists/anywhere')
+fun test_exists_dir() {
+	assert os.exists_dir("${$BAITDIR}/lib")
+	assert not os.exists_dir("${$BAITDIR}/README.md")
+	assert not os.exists_dir('i/hope/this/never/exists/anywhere')
 }
