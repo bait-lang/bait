@@ -38,7 +38,7 @@ pub fun new(table ast.Table, pref preference.Prefs) Parser {
 	}
 }
 
-pub fun (mut p Parser) parse(text string, path string) ast.File {
+pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.File {
 	// Init Parser
 	p.lexer.init(text)
 	p.path = path
@@ -54,7 +54,7 @@ pub fun (mut p Parser) parse(text string, path string) ast.File {
 	pkg_decl := p.package_decl()
 
 	// Validate the files package name actually matches the desired import
-	if p.pref.expected_pkg.length > 0 and pkg_decl.full_name != p.pref.expected_pkg {
+	if expected_pkg.length > 0 and pkg_decl.full_name != expected_pkg {
 		return ast.File{}
 	}
 
