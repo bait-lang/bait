@@ -25,7 +25,7 @@ pub fun (runner InOutRunner) test_dir(dir string) {
 	}
 
 	res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} run ${abs_dir}')
-	if runner.check_stdout && res.code != 0 {
+	if runner.check_stdout and res.code != 0 {
 		eprintln('compilation failed: ${res.stderr}')
 		assert false
 		return
