@@ -14,7 +14,6 @@ pub struct Prefs {
 global:
 	command string
 	out_name string
-	expected_pkg string
 
 pub mut:
 	args []string

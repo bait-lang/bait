@@ -5,7 +5,7 @@ package testing
 import os
 
 pub struct InOutRunner {
-	fix_out_file bool // USE WITH CAUTION: Overwrite out files with the actual output
+	fix_out_file bool // CAUTION: Overwrites out files with the actual output
 	check_stdout bool // Compare expected to stdout instead of stderr
 global:
 	root string // Root directory to search tests in
@@ -25,7 +25,7 @@ pub fun (runner InOutRunner) test_dir(dir string) {
 	}
 
 	res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} run ${abs_dir}')
-	if res.code != 0 {
+	if runner.check_stdout and res.code != 0 {
 		eprintln('compilation failed: ${res.stderr}')
 		assert false
 		return
@@ -41,17 +41,26 @@ pub fun (runner InOutRunner) test_all_in_root() {
 	}
 }
 
-fun (runner InOutRunner) check_result(res os.Result, exp_path string) {
+fun (runner InOutRunner) check_result(res os.Result, out_path string) {
+	// Fix mode: just overwrite the out file
 	if runner.fix_out_file {
 		if runner.check_stdout {
-			os.write_file(exp_path, res.stdout)
+			os.write_file(out_path, res.stdout)
 		} else {
-			os.write_file(exp_path, res.stderr)
+			os.write_file(out_path, res.stderr)
 		}
 		return
 	}
 
-	expected := read_out_file(exp_path)
+	// Read out file
+	if not os.exists(out_path) {
+		eprintln('out file ${out_path} does not exist')
+		assert false
+		return
+	}
+	expected := normalize(os.read_file(out_path))
+
+	// Compare result
 	if runner.check_stdout {
 		text := normalize(res.stdout)
 		assert text == expected
@@ -90,16 +99,6 @@ pub fun in_out_runner(runner InOutRunner) {
 
 		runner.check_result(res, file.replace('.in.bt', '.out'))
 	}
-}
-
-fun read_out_file(out_file string) string {
-	if not os.exists(out_file) {
-		eprintln('out file ${out_file} does not exist')
-		assert false
-		return ''
-	}
-
-	return normalize(os.read_file(out_file))
 }
 
 fun normalize(s string) string {

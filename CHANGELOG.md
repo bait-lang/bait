@@ -18,6 +18,13 @@ _unreleased_
 - Generate concrete functions on both backends
 - Fix invalid error that a generic type is private
 
+### Package and Import System
+- Import resolving: Search for imports next to the importer first
+- Show builder error when
+  - Imported package does not exist
+  - No files belong to a imported package
+  - Compiled directory is empty
+
 ### Error and Type Checks
 - If conditions must be of type bool
 - Cannot assign from a void function call
@@ -29,9 +36,6 @@ _unreleased_
   - `-` on non-numeric types
   - `not` on non-bool types
 - Respect return type of overloaded methods
-- Import related errors in case of
-  - Imported package does not exist
-  - No files belong to imported package
 - Fix false-positive error if a method shares a name with a function defined before
 - Reduce noisy errors in the following cases
   - Assign to undefined ident
@@ -59,12 +63,13 @@ _unreleased_
 ### Testing
 - builder: Fix testing a directory with multiple test files
 - `bait.util.testing`
-  - Many BuildRunner improvements
+  - BuildRunner
     - New field `oks` to check number of successful runs
     - Add capbility to use `build_all_in_root` for directories
   - InOutRunner
     - Add `fix_out_file` field to overwrite out files with the actual output
     - Output tests work on windows now (internal path and line break normalization)
+    - Fix checking stderr of a directory
     - Handle skips for lib tests
 
 ### Standard Library
@@ -85,11 +90,10 @@ _unreleased_
 - Add support for float literals _[JS]_
 - checker: Fix scope of smartcasted if conditions
 - gen: Escape reserved JS keywords in the `for ... in` loop
-- Imports: Look for imports next to the respective file first
 - Interop: Support for declaring JS structs, methods, enums and type aliases
 - parser: Fix prefix expr precedence
 - Move compiler tests from `lib/bait/tests/` into `tests/`
-- Many refactorings and cleanups
+- Many refactorings, cleanups and performance enhancements
 - Documentation improvements
 
 

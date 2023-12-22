@@ -16,10 +16,11 @@ pub fun (prefs Prefs) should_compile_file(file string) bool {
 }
 
 pub fun (prefs Prefs) matches_backend(file string) bool {
-	if prefs.backend == .js and file.contains('.c.') {
+	// Note: This function in it's current state does not scale for > 2 backends
+	if prefs.backend == .js and file.ends_with('.c.bt') {
 		return false
 	}
-	if prefs.backend == .c and file.contains('.js.') {
+	if prefs.backend == .c and file.ends_with('.js.bt') {
 		return false
 	}
 
