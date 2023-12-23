@@ -217,6 +217,7 @@ global:
 	left_type Type
 	left Expr := EmptyExpr{}
 	concrete_types []Type
+	is_field bool
 pub:
 	args []CallArg
 	is_method bool
