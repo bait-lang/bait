@@ -47,6 +47,7 @@ _unreleased_
 
 ### Language Interoperability
 - _[JS]_ Implement native strings `js'my str'`
+- _[JS]_ Add support for declaring structs, methods, enums and type aliases
 - _[JS]_ Various fixes related to interfaces
 
 ### Pointers
@@ -92,8 +93,8 @@ _unreleased_
 - _[JS]_ Implement real `match` expression
 - Add support for float literals _[JS]_
 - checker: Fix scope of smartcasted if conditions
+- Support struct fields of function type that are callable like methods
 - gen: Escape reserved JS keywords in the `for ... in` loop
-- Interop: Support for declaring JS structs, methods, enums and type aliases
 - parser: Fix prefix expr precedence
 - Move compiler tests from `lib/bait/tests/` into `tests/`
 - Many refactorings, cleanups and performance enhancements

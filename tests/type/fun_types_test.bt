@@ -1,0 +1,11 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+struct Foo {
+	fun_field fun (string) i32
+}
+
+fun test_placeholder() {
+	// Above code just has to compile
+	assert true
+}

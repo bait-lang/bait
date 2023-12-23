@@ -1,0 +1,1 @@
+tests/out/error/method/field_and_method.in.bt:5:3 error: struct has a field and method named exec

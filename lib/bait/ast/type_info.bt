@@ -37,3 +37,11 @@ pub:
 }
 
 pub struct EmptyInfo{}
+
+pub fun (info FunInfo) to_params() []Param {
+	mut p := []Param
+	for typ in info.param_types {
+		p.push(Param{typ = typ})
+	}
+	return p
+}

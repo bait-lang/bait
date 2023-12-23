@@ -67,6 +67,16 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 		return
 	}
 
+	if node.is_field {
+		g.expr(node.left)
+		g.write('.')
+		g.write(node.name)
+		g.write('(')
+		g.call_args(node.args)
+		g.write(')')
+		return
+	}
+
 	mut name := node.name
 	if node.is_method {
 		if name == 'str' {

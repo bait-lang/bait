@@ -1,0 +1,16 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+struct Helpers{
+	num_to_str fun (i32) string
+}
+
+fun test_struct_field_method() {
+	h := Helpers{
+		num_to_str = fun (i i32) string {
+			return i.str()
+		}
+	}
+
+	assert h.num_to_str(42) == '42'
+}

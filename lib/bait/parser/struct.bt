@@ -12,9 +12,7 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 
 	lang := p.parse_lang()
 	mut name := p.check_name()
-	if lang == .bait {
-		// name = p.prepend_pkg(name)
-	} else {
+	if lang != .bait {
 		name = lang.prepend_to(name)
 	}
 
