@@ -74,7 +74,6 @@ _unreleased_
     - Output tests work on windows now (internal path and line break normalization)
     - Fix checking stderr of a directory
     - Handle skips for lib tests
-- Move compiler tests from `lib/bait/tests/` into `tests/`
 
 ### Standard Library
 - Add quite minimal `time` package
@@ -87,7 +86,6 @@ _unreleased_
   - Add `input(prompt) string` function _[JS]_
   - Add `exists_dir(path)` that checks if path exists and is a directory _[JS]_
   - Fix js error with `mkdir()` and `mkdir_all()` if path already exists
-- Add absolutly minimal `time` package
 
 ### Other Changes
 - Complete tokenizer rewrite and rename to `lexer`
@@ -95,9 +93,8 @@ _unreleased_
 - _[JS]_ Implement real `match` expression
 - Add support for float literals _[JS]_
 - checker: Fix scope of smartcasted if conditions
-- Some fixes regarding struct fields with function type
+- Support struct fields of function type that are callable like methods
 - gen: Escape reserved JS keywords in the `for ... in` loop
-- Interop: Support for declaring JS structs, methods, enums and type aliases
 - parser: Fix prefix expr precedence
 - Move compiler tests from `lib/bait/tests/` into `tests/`
 - Many refactorings, cleanups and performance enhancements
