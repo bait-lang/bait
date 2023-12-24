@@ -20,7 +20,7 @@ mut:
 	cur_fun ast.FunDecl
 	expected_type ast.Type
 	is_lhs_assign bool
-	is_if_match_expr bool
+	is_if_expr bool
 	is_sumtype_match bool
 	is_loop bool
 	returns bool
