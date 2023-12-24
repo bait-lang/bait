@@ -38,8 +38,6 @@ fun (mut c Checker) stmt(stmt ast.Stmt){
 		c.interface_decl(stmt)
 	} else if stmt is ast.LoopControlStmt {
 		c.loop_control_stmt(stmt)
-	} else if stmt is ast.MatchExpr {
-		c.match_expr(stmt, false)
 	} else if stmt is ast.ReturnStmt {
 		c.return_stmt(stmt)
 	} else if stmt is ast.StructDecl {
@@ -73,7 +71,7 @@ fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
 	expr := node.expr
 	node.typ = c.expr(expr)
 
-	if c.is_if_match_expr or expr is ast.CallExpr or expr is ast.IfExpr or expr is ast.MatchExpr or expr is ast.HashExpr {
+	if c.is_if_match_expr or expr is ast.CallExpr or expr is ast.IfExpr or expr is ast.HashExpr {
 		return
 	}
 	e := expr as ast.EmptyExpr

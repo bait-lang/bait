@@ -38,8 +38,6 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 		return ast.I32_TYPE
 	} else if expr is ast.MapInit {
 		return c.map_init(expr)
-	} else if expr is ast.MatchExpr {
-		return c.match_expr(expr, true)
 	} else if expr is ast.ParExpr {
 		return c.par_expr(expr)
 	} else if expr is ast.PrefixExpr {

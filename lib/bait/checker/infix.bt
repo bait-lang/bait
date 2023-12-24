@@ -13,6 +13,9 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 
 	c.table.needed_equality_funs.push(node.left_type)
 
+	if c.is_sumtype_match and node.op == .eq {
+		node.op = .key_is
+	}
 	if node.op == .key_is {
 		return c.is_sumtype_variant_infix(node)
 	}
