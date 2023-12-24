@@ -4,13 +4,15 @@ package parser
 
 import bait.ast
 
-
-fun (mut p Parser) if_expr()ast.IfExpr{
+fun (mut p Parser) if_expr() ast.IfExpr {
 	pos := p.pos()
+
 	mut branches := []ast.IfBranch
 	mut has_else := false
+
 	for true {
 		bpos := p.pos()
+
 		if p.tok == .key_else{
 			p.next()
 			if p.tok == .lcur{
@@ -24,16 +26,24 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 				break
 			}
 		}
+
 		p.check(.key_if)
 		p.is_struct_possible = false
 		cond := p.expr(.lowest)
 		p.is_struct_possible = true
 		stmts := p.parse_block()
-		branches.push(ast.IfBranch{cond = cond stmts = stmts})
+
+		branches.push(ast.IfBranch{
+			cond = cond
+			stmts = stmts
+			pos = bpos
+		})
+
 		if p.tok != .key_else{
 			break
 		}
 	}
+
 	return ast.IfExpr{
 		has_else = has_else
 		branches = branches
@@ -41,34 +51,81 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 	}
 }
 
-fun (mut p Parser) match_expr()ast.MatchExpr{
+fun (mut p Parser) match_as_if_expr() ast.IfExpr {
 	pos := p.pos()
-	mut branches := []ast.MatchBranch
+
+	mut has_else := false
+	mut branches := []ast.IfBranch
+
 	p.check(.key_match)
 	p.is_struct_possible = false
-	cond := p.expr(.lowest)
+	cond_left := p.expr(.lowest)
 	p.is_struct_possible = true
+
 	p.check(.lcur)
 	for p.tok != .rcur {
 		bpos := p.pos()
-		mut exprs := []ast.Expr
+
 		if p.tok == .key_else {
 			p.next()
-		} else {
-			p.is_struct_possible = false
-			exprs = p.expr_list()
-			p.is_struct_possible = true
+			has_else = true
+			stmts := p.parse_block()
+			branches.push(ast.IfBranch{
+				cond = ast.EmptyExpr{}
+				stmts = stmts
+				pos = bpos
+			})
+			break
 		}
+
+		p.is_struct_possible = false
+		cond_right_list := p.expr_list()
+		p.is_struct_possible = true
 		stmts := p.parse_block()
-		branches.push(ast.MatchBranch{
-			exprs = exprs
+
+		// TODO comment and attempt to improve this ugly shit
+		mut cond := ast.EmptyExpr{} as ast.Expr
+		if cond_right_list.length == 1 {
+			cond = ast.InfixExpr{
+				left = cond_left
+				op = .eq // For sumtypes op is changed to key_is by checker
+				right = cond_right_list[0]
+				pos = bpos
+			}
+		} else {
+			cond = ast.InfixExpr{
+				op = .eq
+				left = cond_left
+				right = cond_right_list.last()
+				pos = bpos
+			}
+			for i := cond_right_list.length - 2; i >= 0; i -= 1 {
+				cond = ast.InfixExpr{
+					op = .key_or
+					left = ast.InfixExpr{
+						op = .eq // For sumtypes op is changed to key_is by checker
+						left = cond_left
+						right = cond_right_list[i]
+						pos = bpos
+					}
+					right = cond
+					pos = bpos
+				}
+			}
+		}
+
+		branches.push(ast.IfBranch{
+			cond = cond
 			stmts = stmts
-			pos = pos
+			pos = bpos
 		})
+
 	}
 	p.check(.rcur)
-	return ast.MatchExpr{
-		cond = cond
+
+	return ast.IfExpr{
+		is_match = true
+		has_else = has_else
 		branches = branches
 		pos = pos
 	}
