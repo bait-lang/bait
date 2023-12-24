@@ -81,7 +81,7 @@ fun (mut p Parser) parse_name_type(lang ast.Language) ast.Type {
 		'bool' { ast.BOOL_TYPE }
 		'string' { ast.STRING_TYPE }
 		'any' { ast.ANY_TYPE }
-		else { p.table.find_type_or_add_placeholder(name) }
+		else { p.table.find_type_or_add_placeholder(name, p.pkg_name) }
 	}
 }
 

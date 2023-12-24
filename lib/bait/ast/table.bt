@@ -132,7 +132,7 @@ pub fun (t Table) fun_type_signature(param_types []Type, return_type Type) strin
 	return sig
 }
 
-pub fun (t Table) find_type_or_add_placeholder(name string) Type {
+pub fun (t Table) find_type_or_add_placeholder(name string, pkg string) Type {
 	idx := t.get_idx(name)
 	if idx > 0 as Type {
 		return idx
@@ -140,6 +140,7 @@ pub fun (t Table) find_type_or_add_placeholder(name string) Type {
 	return t.register_sym(TypeSymbol{
 		kind = .placeholder
 		name = name
+		pkg = pkg
 	})
 }
 

@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
 
+struct Container{
+	// Note: Foo must be used before definition
+	arr []Foo
+}
+
 struct Foo{}
 
 fun (arr []Foo) perform() i32 {
@@ -8,8 +13,11 @@ fun (arr []Foo) perform() i32 {
 }
 
 fun test_method_on_array_of_user_type() {
-	// Above code just has to compile
+	// This code just has to compile
 
 	f := [Foo{}, Foo{}]
 	assert f.perform() == 2
+
+	c := Container{}
+	assert c.arr.perform() == 0
 }
