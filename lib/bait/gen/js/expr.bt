@@ -41,8 +41,6 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		g.integer_literal(expr)
 	} else if expr is ast.MapInit {
 		g.map_init(expr)
-	} else if expr is ast.MatchExpr {
-		g.match_expr(expr, true)
 	} else if expr is ast.ParExpr {
 		g.par_expr(expr)
 	} else if expr is ast.PrefixExpr {

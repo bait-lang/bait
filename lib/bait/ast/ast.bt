@@ -5,9 +5,9 @@ package ast
 import bait.token
 import bait.errors
 
-type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | EmptyStmt | MatchExpr | IfExpr
+type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | EmptyStmt | IfExpr
 
-type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MatchExpr | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
+type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfExpr | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | EmptyExpr
 
 pub struct AssertStmt {
 pub:
@@ -280,6 +280,7 @@ pub struct IfExpr{
 global:
 	typ Type := VOID_TYPE
 pub:
+	is_match bool
 	has_else bool
 	branches []IfBranch
 	pos token.Pos
@@ -306,35 +307,16 @@ pub struct InfixExpr{
 global:
 	left_type Type
 	right_type Type
+	op token.Token
 pub:
 	left Expr
 	right Expr
-	op token.Token
 	pos token.Pos
 }
 
 pub struct IntegerLiteral{
 pub:
 	val string
-	pos token.Pos
-}
-
-pub struct MatchExpr{
-global:
-	cond_type Type
-	is_sumtype bool
-	typ Type := VOID_TYPE
-pub:
-	cond Expr
-	branches []MatchBranch
-	pos token.Pos
-}
-
-pub struct MatchBranch{
-pub:
-	exprs []Expr
-	expr_types []Type
-	stmts []Stmt
 	pos token.Pos
 }
 

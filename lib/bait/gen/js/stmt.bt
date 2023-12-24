@@ -45,8 +45,6 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		g.interface_decl(stmt)
 	} else if stmt is ast.LoopControlStmt {
 		g.loop_control_stmt(stmt)
-	} else if stmt is ast.MatchExpr {
-		g.match_expr(stmt, false)
 	} else if stmt is ast.ReturnStmt {
 		g.return_stmt(stmt)
 	} else if stmt is ast.StructDecl {

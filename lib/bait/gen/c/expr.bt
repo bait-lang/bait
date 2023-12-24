@@ -18,7 +18,6 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.IndexExpr { g.index_expr(expr) }
 		ast.InfixExpr { g.infix_expr(expr) }
 		ast.IntegerLiteral { g.integer_literal(expr) }
-		ast.MatchExpr { g.match_expr(expr, true) }
 		ast.ParExpr { g.par_expr(expr) }
 		ast.PrefixExpr { g.prefix_expr(expr)}
 		ast.SelectorExpr { g.selector_expr(expr) }
