@@ -28,7 +28,7 @@ _unreleased_
 
 ### Error and Type Checks
 - If conditions must be of type bool
-- Cannot assign from a void function call
+- Prevent assigning from a void function call
 - Prevent selecting fields of unsupported types (e.g. enums)
 - Prevent some cases of identifier redefinition
   - Any identifier by a function name
@@ -38,7 +38,6 @@ _unreleased_
   - `-` on non-numeric types
   - `not` on non-bool types
 - Respect return type of overloaded methods
-- Fix false-positive error if a method shares a name with a function defined before
 - Reduce noisy errors in the following cases
   - Assign to undefined ident
   - Method call on undefined ident
@@ -87,15 +86,20 @@ _unreleased_
   - Add `exists_dir(path)` that checks if path exists and is a directory _[JS]_
   - Fix js error with `mkdir()` and `mkdir_all()` if path already exists
 
+### General Fixes
+- `parser`: Fix precedence of PrefixExpr
+- `checker`
+  - Fix scope of smartcasted if conditions
+  - Fix error for methods defined on an array of a user defined type
+  - Fix error if a method shares a name with a function defined before
+- `gen.js`: Fix possible crash by escaping reserved JS keywords in the `for ... in` loop
+
 ### Other Changes
 - Complete tokenizer rewrite and rename to `lexer`
 - Implement real `if` expression
 - _[JS]_ Implement real `match` expression
-- Add support for float literals _[JS]_
-- checker: Fix scope of smartcasted if conditions
+- _[JS]_ Add support for float literals
 - Support struct fields of function type that are callable like methods
-- gen: Escape reserved JS keywords in the `for ... in` loop
-- parser: Fix prefix expr precedence
 - Move compiler tests from `lib/bait/tests/` into `tests/`
 - Many refactorings, cleanups and performance enhancements
 - Documentation improvements

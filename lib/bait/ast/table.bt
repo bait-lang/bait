@@ -76,9 +76,11 @@ pub fun (t Table) find_or_register_array(elem_type Type) Type {
 	if idx > 0 as Type {
 		return idx
 	}
+
 	return t.register_sym(TypeSymbol{
 		kind = .array
 		name = name
+		pkg = elem_sym.pkg
 		parent = ARRAY_TYPE
 		info = ArrayInfo{
 			elem_type = elem_type

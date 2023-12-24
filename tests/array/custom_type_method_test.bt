@@ -1,0 +1,15 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+struct Foo{}
+
+fun (arr []Foo) perform() i32 {
+	return arr.length
+}
+
+fun test_method_on_array_of_user_type() {
+	// Above code just has to compile
+
+	f := [Foo{}, Foo{}]
+	assert f.perform() == 2
+}
