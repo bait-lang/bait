@@ -13,6 +13,9 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 
 	c.table.needed_equality_funs.push(node.left_type)
 
+	if c.is_sumtype_match and node.op == .eq {
+		node.op = .key_is
+	}
 	if node.op == .key_is {
 		return c.is_sumtype_variant_infix(node)
 	}
@@ -20,7 +23,13 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 	c.expected_type = node.left_type
 	node.right_type = c.expr(node.right)
 	if not c.check_types(node.right_type, node.left_type) {
-		c.error('infix expr: types ${c.table.type_name(node.left_type)} and ${c.table.type_name(node.right_type)} do not match', node.pos)
+		mut err_msg := ''
+		if node.is_match {
+			err_msg = 'cannot match ${c.table.type_name(node.right_type)} to ${c.table.type_name(node.left_type)}'
+		} else {
+			err_msg = 'infix expr: types ${c.table.type_name(node.left_type)} and ${c.table.type_name(node.right_type)} do not match'
+		}
+		c.error(err_msg, node.pos)
 	}
 
 	if node.op.is_compare() {

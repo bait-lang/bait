@@ -93,6 +93,9 @@ fun (mut p Parser) stmt() ast.Stmt {
 		.key_assert {
 			return p.assert_stmt()
 		}
+		.key_match {
+			return p.match_as_if_expr()
+		}
 		.key_mut {
 			return p.assign_stmt()
 		}
@@ -104,9 +107,6 @@ fun (mut p Parser) stmt() ast.Stmt {
 		}
 		.key_if {
 			return p.if_expr()
-		}
-		.key_match {
-			return p.match_expr()
 		}
 		.key_return {
 			return p.return_stmt()

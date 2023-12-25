@@ -1,0 +1,20 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+struct Foo{}
+struct Bar{}
+type Sum := Foo | Bar
+
+fun test_sumtype_match() {
+	x := Foo{} as Sum
+	mut n := 0
+	match x {
+		Foo {
+			n += 1
+			assert true
+		}
+		Bar { assert false }
+		else { assert false }
+	}
+	assert n == 1
+}

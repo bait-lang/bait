@@ -3,14 +3,17 @@
 package parser
 
 import bait.ast
+import bait.token
 
-
-fun (mut p Parser) if_expr()ast.IfExpr{
+fun (mut p Parser) if_expr() ast.IfExpr {
 	pos := p.pos()
+
 	mut branches := []ast.IfBranch
 	mut has_else := false
+
 	for true {
 		bpos := p.pos()
+
 		if p.tok == .key_else{
 			p.next()
 			if p.tok == .lcur{
@@ -24,16 +27,24 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 				break
 			}
 		}
+
 		p.check(.key_if)
 		p.is_struct_possible = false
 		cond := p.expr(.lowest)
 		p.is_struct_possible = true
 		stmts := p.parse_block()
-		branches.push(ast.IfBranch{cond = cond stmts = stmts})
+
+		branches.push(ast.IfBranch{
+			cond = cond
+			stmts = stmts
+			pos = bpos
+		})
+
 		if p.tok != .key_else{
 			break
 		}
 	}
+
 	return ast.IfExpr{
 		has_else = has_else
 		branches = branches
@@ -41,35 +52,86 @@ fun (mut p Parser) if_expr()ast.IfExpr{
 	}
 }
 
-fun (mut p Parser) match_expr()ast.MatchExpr{
+fun (mut p Parser) match_as_if_expr() ast.IfExpr {
 	pos := p.pos()
-	mut branches := []ast.MatchBranch
+
+	mut has_else := false
+	mut branches := []ast.IfBranch
+
 	p.check(.key_match)
 	p.is_struct_possible = false
-	cond := p.expr(.lowest)
+	cond_left := p.expr(.lowest)
 	p.is_struct_possible = true
+
 	p.check(.lcur)
 	for p.tok != .rcur {
 		bpos := p.pos()
-		mut exprs := []ast.Expr
+
 		if p.tok == .key_else {
 			p.next()
-		} else {
-			p.is_struct_possible = false
-			exprs = p.expr_list()
-			p.is_struct_possible = true
+			has_else = true
+			stmts := p.parse_block()
+			branches.push(ast.IfBranch{
+				cond = ast.EmptyExpr{}
+				stmts = stmts
+				pos = bpos
+			})
+			break
 		}
+
+		p.is_struct_possible = false
+		right_conds := p.expr_list()
+		p.is_struct_possible = true
 		stmts := p.parse_block()
-		branches.push(ast.MatchBranch{
-			exprs = exprs
+
+		branches.push(ast.IfBranch{
+			cond = p.cond_list_to_infix(cond_left, right_conds, bpos)
 			stmts = stmts
-			pos = pos
+			pos = bpos
 		})
+
 	}
 	p.check(.rcur)
-	return ast.MatchExpr{
-		cond = cond
+
+	return ast.IfExpr{
+		is_match = true
+		has_else = has_else
 		branches = branches
 		pos = pos
 	}
+}
+
+// Constructs a chained InfixExpr based on all match conditions of one branch.
+// E.g. take the following match:
+//   match x {
+//     1, 2, 3 { ... }
+//   }
+// It's internal representation is equivalent to:
+//   if x == 1 or x == 2 or x == 3 { ... }
+fun (p Parser) cond_list_to_infix(left ast.Expr, right_conds []ast.Expr, pos token.Pos) ast.InfixExpr {
+	mut cond := ast.InfixExpr{
+		op = .eq
+		left = left
+		right = right_conds.last()
+		is_match = true
+		pos = pos
+	}
+
+	// If we have only one cond, this loop never runs
+	for i := right_conds.length - 2; i >= 0; i -= 1 {
+		cond = ast.InfixExpr{
+			op = .key_or
+			left = ast.InfixExpr{
+				op = .eq // In case of sumtype, op is changed to key_is by checker
+				left = left
+				right = right_conds[i]
+				is_match = true
+				pos = pos
+			}
+			right = cond
+			pos = pos
+		}
+	}
+
+	return cond
 }

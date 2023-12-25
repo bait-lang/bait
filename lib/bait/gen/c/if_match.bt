@@ -41,8 +41,3 @@ fun (mut g Gen) if_expr(node ast.IfExpr, is_expr bool) {
 		g.write(tmp)
 	}
 }
-
-fun (mut g Gen) match_expr(node ast.MatchExpr, is_expr bool) {
-	// TODO
-	panic('not implemented')
-}
