@@ -1,0 +1,43 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package checker
+
+import bait.ast
+
+fun (mut c Checker) return_stmt(node ast.ReturnStmt) {
+	// without value
+	if node.expr is ast.EmptyExpr {
+		if c.cur_fun.return_type != ast.VOID_TYPE {
+			c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}', node.pos)
+		}
+		return
+	}
+
+	// with value
+	if c.cur_fun.return_type == ast.VOID_TYPE {
+		c.error('function ${c.cur_fun.name} does not return a value', node.pos)
+	}
+	c.expected_type = c.cur_fun.return_type
+	expr_type := c.expr(node.expr)
+	if not c.check_types(expr_type, c.cur_fun.return_type) {
+		c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}, got ${c.table.type_name(expr_type)}', node.pos)
+	}
+}
+
+fun has_toplevel_return(stmts []ast.Stmt) bool {
+	for stmt in stmts {
+		if stmt is ast.ReturnStmt or is_noreturn_call(stmt) {
+			return true
+		}
+	}
+	return false
+}
+
+fun is_noreturn_call(stmt ast.Stmt) bool {
+	if stmt is ast.ExprStmt {
+		if stmt.expr is ast.CallExpr {
+			return (stmt.expr as ast.CallExpr).noreturn
+		}
+	}
+	return false
+}

@@ -46,6 +46,10 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 
 		if is_expr {
 			last := branch.stmts.last()
+			if is_noreturn_call(last) {
+				continue
+			}
+
 			if not (last is ast.ExprStmt) or (last as ast.ExprStmt).typ == ast.VOID_TYPE {
 				c.error('branch does not return a value', branch.pos)
 				continue

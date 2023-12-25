@@ -109,6 +109,7 @@ pub:
 	pos token.Pos
 global:
 	is_method bool
+	noreturn bool
 	stmts []Stmt
 	generic_names []string
 	concrete_types [][]Type // Array of concrete used concrete types. Populated in checker
@@ -218,6 +219,7 @@ global:
 	left Expr := EmptyExpr{}
 	concrete_types []Type
 	is_field bool
+	noreturn bool
 pub:
 	args []CallArg
 	is_method bool
