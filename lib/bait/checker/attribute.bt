@@ -14,8 +14,10 @@ const FUN_ATTRS := map{
 	'deprecated': AttrValue.optional
 	'deprecated_after': .required
 	'export': .required
+	'noreturn': .none
 	'overload': .required
 }
+
 const STRUCT_FIELD_ATTRS := map{
 	'required': AttrValue.none
 }
@@ -41,7 +43,7 @@ fun (c Checker) check_attribute(attr ast.Attribute, known_list map[string]AttrVa
 	return true
 }
 
-fun (c Checker) check_fun_attrs(node ast.FunDecl){
+fun (c Checker) check_fun_attrs(mut node ast.FunDecl){
 	for attr in node.attrs {
 		if not c.check_attribute(attr, FUN_ATTRS) {
 			continue
@@ -51,6 +53,8 @@ fun (c Checker) check_fun_attrs(node ast.FunDecl){
 			c.attr_overload(node, attr)
 		} else if attr.name == 'export' {
 			c.attr_export(attr)
+		} else if attr.name == 'noreturn' {
+			node.noreturn = true
 		}
 	}
 }
