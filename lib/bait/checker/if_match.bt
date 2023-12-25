@@ -11,7 +11,14 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 	}
 
 	if node.is_match {
-		// TODO check at least one branch present that is not else
+		mut min_branches := 1
+		if node.has_else {
+			min_branches += 1
+		}
+		if node.branches.length < min_branches {
+			c.error('match expression needs at least one non-else branch', node.pos)
+			return ast.PLACEHOLDER_TYPE
+		}
 	}
 
 	// Are we in a sumtype match?

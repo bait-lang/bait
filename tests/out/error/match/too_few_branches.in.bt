@@ -1,0 +1,7 @@
+x := 1
+
+match x {}
+
+match x {
+	else {}
+}

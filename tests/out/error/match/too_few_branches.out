@@ -1,0 +1,2 @@
+tests/out/error/match/too_few_branches.in.bt:3:0 error: match expression needs at least one non-else branch
+tests/out/error/match/too_few_branches.in.bt:5:0 error: match expression needs at least one non-else branch
