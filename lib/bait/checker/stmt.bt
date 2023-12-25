@@ -215,24 +215,6 @@ fun (c Checker) loop_control_stmt(node ast.LoopControlStmt) {
 	}
 }
 
-fun (mut c Checker) return_stmt(node ast.ReturnStmt) {
-	// without value
-	if node.expr is ast.EmptyExpr {
-		if c.cur_fun.return_type != ast.VOID_TYPE {
-			c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}', node.pos)
-		}
-		return
-	}
-
-	// with value
-	if c.cur_fun.return_type == ast.VOID_TYPE {
-		c.error('function ${c.cur_fun.name} does not return a value', node.pos)
-	}
-	c.expected_type = c.cur_fun.return_type
-	expr_type := c.expr(node.expr)
-	if not c.check_types(expr_type, c.cur_fun.return_type) {
-		c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}, got ${c.table.type_name(expr_type)}', node.pos)
-	}
+fun (c Checker) type_decl(node ast.TypeDecl) {
+	// Nothing to do
 }
-
-fun (c Checker) type_decl(node ast.TypeDecl) {}
