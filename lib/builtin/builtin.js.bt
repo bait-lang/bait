@@ -10,10 +10,12 @@ pub fun eprintln(msg string) {
 	#JS.console.error(msg.str as #JS.Any)
 }
 
+@noreturn
 pub fun exit(code i32) {
 	#JS.process.exit(code as #JS.Number)
 }
 
+@noreturn
 pub fun panic(msg string) {
 	eprintln('Panic: ${msg}\n${js_stacktrace()}')
 	exit(1)
