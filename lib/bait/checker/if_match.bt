@@ -11,8 +11,7 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 	}
 
 	if node.is_match {
-	// TODO check at least one branch present that is not else
-
+		// TODO check at least one branch present that is not else
 	}
 
 	// Are we in a sumtype match?
@@ -25,11 +24,9 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 	mut nr_branches_return := 0
 	for i, branch in node.branches {
 		c.open_scope()
-		if c.is_sumtype_match {
-			c.expr(branch.cond)
-		} else if not node.has_else or i < node.branches.length - 1 {
+		if not node.has_else or i < node.branches.length - 1 {
 			cond_type := c.expr(branch.cond)
-			if cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
+			if not c.is_sumtype_match and cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
 				c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
 			}
 		}
