@@ -15,3 +15,16 @@ fun get_num() i32 {
 fun test_get_num() {
 	assert get_num() == 2
 }
+
+struct Foo{}
+struct Bar{}
+type Sum := Foo | Bar
+
+fun test_sumtype_expr() {
+	x := Bar{} as Sum
+	s := match x {
+		Foo { 'Foo' }
+		Bar { 'Bar' }
+	}
+	assert s == 'Bar'
+}
