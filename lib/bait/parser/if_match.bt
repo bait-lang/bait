@@ -3,6 +3,7 @@
 package parser
 
 import bait.ast
+import bait.token
 
 fun (mut p Parser) if_expr() ast.IfExpr {
 	pos := p.pos()
@@ -79,43 +80,12 @@ fun (mut p Parser) match_as_if_expr() ast.IfExpr {
 		}
 
 		p.is_struct_possible = false
-		cond_right_list := p.expr_list()
+		right_conds := p.expr_list()
 		p.is_struct_possible = true
 		stmts := p.parse_block()
 
-		// TODO comment and attempt to improve this ugly shit
-		mut cond := ast.EmptyExpr{} as ast.Expr
-		if cond_right_list.length == 1 {
-			cond = ast.InfixExpr{
-				left = cond_left
-				op = .eq // For sumtypes op is changed to key_is by checker
-				right = cond_right_list[0]
-				pos = bpos
-			}
-		} else {
-			cond = ast.InfixExpr{
-				op = .eq
-				left = cond_left
-				right = cond_right_list.last()
-				pos = bpos
-			}
-			for i := cond_right_list.length - 2; i >= 0; i -= 1 {
-				cond = ast.InfixExpr{
-					op = .key_or
-					left = ast.InfixExpr{
-						op = .eq // For sumtypes op is changed to key_is by checker
-						left = cond_left
-						right = cond_right_list[i]
-						pos = bpos
-					}
-					right = cond
-					pos = bpos
-				}
-			}
-		}
-
 		branches.push(ast.IfBranch{
-			cond = cond
+			cond = p.cond_list_to_infix(cond_left, right_conds, bpos)
 			stmts = stmts
 			pos = bpos
 		})
@@ -129,4 +99,37 @@ fun (mut p Parser) match_as_if_expr() ast.IfExpr {
 		branches = branches
 		pos = pos
 	}
+}
+
+// Constructs a chained InfixExpr based on all match conditions of one branch.
+// E.g. take the following match:
+//   match x {
+//     1, 2, 3 { ... }
+//   }
+// It's internal representation is equivalent to:
+//   if x == 1 or x == 2 or x == 3 { ... }
+fun (p Parser) cond_list_to_infix(left ast.Expr, right_conds []ast.Expr, pos token.Pos) ast.InfixExpr {
+	mut cond := ast.InfixExpr{
+		op = .eq
+		left = left
+		right = right_conds.last()
+		pos = pos
+	}
+
+	// If we have only one cond, this loop never runs
+	for i := right_conds.length - 2; i >= 0; i -= 1 {
+		cond = ast.InfixExpr{
+			op = .key_or
+			left = ast.InfixExpr{
+				op = .eq // In case of sumtype, op is changed to key_is by checker
+				left = left
+				right = right_conds[i]
+				pos = pos
+			}
+			right = cond
+			pos = pos
+		}
+	}
+
+	return cond
 }
