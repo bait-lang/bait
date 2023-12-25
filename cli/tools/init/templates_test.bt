@@ -7,7 +7,7 @@ import bait.util.testing
 fun test_templates_compile() {
 	mut runner := testing.BuildRunner{
 		root = os.dir($FILE) + '/templates'
-		only_dirs = true
+		targets = .dirs
 		dir_suffix = '/src'
 	}
 	runner.build_all_in_root()

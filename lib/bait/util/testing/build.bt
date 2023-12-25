@@ -4,12 +4,18 @@ package testing
 
 import os
 
+pub enum BuildTarget {
+	all
+	files
+	dirs
+}
+
 pub struct BuildRunner{
 	root string
 pub mut:
 	oks i32
 	fails i32
-	only_dirs bool
+	targets BuildTarget
 	dir_suffix string
 global:
 	cmd_options string
@@ -33,13 +39,13 @@ pub fun (mut runner BuildRunner) build_all_in_root() {
 	paths := os.ls(runner.root)
 	for path in paths {
 		if path.ends_with('.bt') {
-			if runner.only_dirs {
-				continue
+			if runner.targets != .dirs {
+				runner.build_single(path)
 			}
-
-			runner.build_single(path)
-		} else if runner.only_dirs {
-			runner.build_single(path + runner.dir_suffix)
+		} else if runner.targets != .files {
+			if os.is_dir(runner.root + '/' + path) {
+				runner.build_single(path + runner.dir_suffix)
+			}
 		}
 	}
 }

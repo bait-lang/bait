@@ -67,7 +67,8 @@ _unreleased_
 - `bait.util.testing`
   - BuildRunner
     - New field `oks` to check number of successful runs
-    - Add capbility to use `build_all_in_root` for directories
+    - `build_all_in_root()`: Add support for directories
+    - Add new field `targets` and enum `BuildTarget` to specify what to build (default is all)
   - InOutRunner
     - Add `fix_out_file` field to overwrite out files with the actual output
     - Output tests work on windows now (internal path and line break normalization)

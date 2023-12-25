@@ -40,7 +40,7 @@ fun main() {
 	}
 
 	mut p := parser.new(ast.new_table(), preference.Prefs{})
-	file_ast := p.parse(text, file)
+	file_ast := p.parse(text, file, '')
 	// TODO handle parser errors, warnings
 
 	println(file_ast)
