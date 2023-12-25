@@ -96,12 +96,12 @@ _unreleased_
 - `gen.js`: Fix possible crash by escaping reserved JS keywords in the `for ... in` loop
 
 ### Other Changes
-- Complete tokenizer rewrite and rename to `lexer`
-- Implement real `if` expression
-- _[JS]_ Implement real `match` expression
+- Implement real `if` and `match` expressions
+- Add attribute `@noreturn`
 - _[JS]_ Add support for float literals
 - Support struct fields of function type that are callable like methods
 - Move compiler tests from `lib/bait/tests/` into `tests/`
+- Complete tokenizer rewrite and rename to `lexer`
 - Many refactorings, cleanups and performance enhancements
 - Documentation improvements
 
