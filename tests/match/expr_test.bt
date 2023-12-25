@@ -1,0 +1,17 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun get_num() i32 {
+	x := match 1 {
+		2 { 'a'}
+		else {'b'}
+	}
+	return match x {
+		'a' { 1 }
+		'b' { 2 }
+	}
+}
+
+fun test_get_num() {
+	assert get_num() == 2
+}

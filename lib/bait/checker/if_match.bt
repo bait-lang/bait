@@ -7,10 +7,11 @@ import bait.ast
 fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 	if is_expr {
 		c.is_if_expr = true
-		node.typ = c.cur_fun.return_type
+		node.typ = c.expected_type
 	}
 
 	if node.is_match {
+		// Check branch count
 		mut min_branches := 1
 		if node.has_else {
 			min_branches += 1
@@ -19,10 +20,8 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 			c.error('match expression needs at least one non-else branch', node.pos)
 			return ast.PLACEHOLDER_TYPE
 		}
-	}
 
-	// Are we in a sumtype match?
-	if node.is_match {
+		// Are we in a sumtype match?
 		cond_type := c.expr((node.branches[0].cond as ast.InfixExpr).left)
 		sym := c.table.get_sym(cond_type)
 		c.is_sumtype_match = sym.kind == .sum_type
