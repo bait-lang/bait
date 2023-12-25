@@ -309,6 +309,7 @@ global:
 	right_type Type
 	op token.Token
 pub:
+	is_match bool
 	left Expr
 	right Expr
 	pos token.Pos

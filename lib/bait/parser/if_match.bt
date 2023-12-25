@@ -113,6 +113,7 @@ fun (p Parser) cond_list_to_infix(left ast.Expr, right_conds []ast.Expr, pos tok
 		op = .eq
 		left = left
 		right = right_conds.last()
+		is_match = true
 		pos = pos
 	}
 
@@ -124,6 +125,7 @@ fun (p Parser) cond_list_to_infix(left ast.Expr, right_conds []ast.Expr, pos tok
 				op = .eq // In case of sumtype, op is changed to key_is by checker
 				left = left
 				right = right_conds[i]
+				is_match = true
 				pos = pos
 			}
 			right = cond
