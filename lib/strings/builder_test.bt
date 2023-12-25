@@ -1,0 +1,19 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+import strings
+
+fun test_builder() {
+	mut b := strings.new_builder(50)
+
+	b.write([104 as u8, 101 as u8]) // FIXME second u8 cast should not be needed
+	assert b.str() == 'he'
+
+	b.write_str('llo')
+	assert b.str() == 'hello'
+
+	b.clear()
+	assert b.str().length == 0
+
+	b.write_str('world')
+	assert b.str() == 'world'
+}
