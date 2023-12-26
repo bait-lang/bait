@@ -85,8 +85,9 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 		}
 
 		sym := g.table.get_sym(node.left_type)
-		if sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.name) {
-			g.gen_array_method(node.name, node, sym)
+		final_sym := g.table.get_final_sym(node.left_type)
+		if final_sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.name) {
+			g.gen_array_method(node.name, node, final_sym)
 			return
 		}
 

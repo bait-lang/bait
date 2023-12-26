@@ -2,24 +2,30 @@
 // SPDX-License-Identifier: MPL-2.0
 package strings
 
-type Builder := string
+type Builder := []u8
 
 pub fun new_builder(initial_size i32) Builder {
-	return '' as Builder
+	return []u8 as Builder
 }
 
 pub fun (mut b Builder) clear() {
-	b.str = #JS.'""' as #JS.String
+	#JS.'b.data = []
+	b.length = 0'
 }
 
 pub fun (mut b Builder) write(data []u8) {
-	b.str += #JS.'String.fromCharCode(...data.data)' as #JS.String
+	b.push_many(data)
 }
 
 pub fun (mut b Builder) write_str(s string) {
-	b.str += s.str
+	for c in s {
+		b.push(c)
+	}
 }
 
 pub fun (b Builder) str() string {
-	return from_js_string(b.str)
+	return string{
+		str = #JS.'String.fromCharCode(...b.data)' as #JS.String
+		length = b.length
+	}
 }

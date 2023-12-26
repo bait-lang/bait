@@ -14,6 +14,6 @@ fun test_builder() {
 	b.clear()
 	assert b.str().length == 0
 
-	b.write_str('world')
-	assert b.str() == 'world'
+	b.write_str('foo')
+	assert b.str() == 'foo'
 }
