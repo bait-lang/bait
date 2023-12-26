@@ -8,6 +8,9 @@ All notable changes will be documented in this file.
 _unreleased_
 
 ### Breaking
+- `strings.Builder`: Rename some methods
+  - `write()` to `write_chars()`
+  - `write_str()` to `write()`
 - Remove tool `test-lib`
   - All standard library tests can be run with `bait test lib`
   - Compiler tests can be run with `bait test tests`

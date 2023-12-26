@@ -12,11 +12,11 @@ pub fun (mut b Builder) clear() {
 	b = []u8{cap = b.cap} as Builder
 }
 
-pub fun (mut b Builder) write(data []u8) {
+pub fun (mut b Builder) write_chars(data []u8) {
 	b.push_many(data)
 }
 
-pub fun (mut b Builder) write_str(s string) {
+pub fun (mut b Builder) write(s string) {
 	b.push_many_with_len(s.str, s.length)
 }
 
