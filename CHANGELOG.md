@@ -86,6 +86,7 @@ _unreleased_
   - Add `input(prompt) string` function _[JS]_
   - Add `exists_dir(path)` that checks if path exists and is a directory _[JS]_
   - Fix js error with `mkdir()` and `mkdir_all()` if path already exists
+- strings: JS implementation of the string builder
 
 ### General Fixes
 - `parser`: Fix precedence of PrefixExpr
@@ -223,7 +224,7 @@ _16 July 2023_
   - Add `user_os()` function
   - Fix `cp()` for directories
 - builtin: New `toI32()` string method
-- Add `strings` package containing a simple string builder _(C backend only)_
+- _[C]_ Add `strings` package containing a simple string builder
 
 ### C Backend (experimental)
 - Properly implement backend selection
