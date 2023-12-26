@@ -1,17 +1,24 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
 
-@noreturn
-fun has_noreturn_attr() i32 {}
+fun calls_noreturn_fun_before_declaration() {
+	x := match 'one' {
+		'two' { 2 }
+		else { has_noreturn_attr() }
+	}
+}
 
-fun calls_noreturn_fun() i32 {
+@noreturn
+fun has_noreturn_attr() {}
+
+fun calls_noreturn_fun() {
 	has_noreturn_attr()
 }
 
 fun match_expr_noreturn_branch() {
 	x := match 'one' {
 		'two' { 2 }
-		else { calls_noreturn_fun() }
+		else { has_noreturn_attr() }
 	}
 }
 

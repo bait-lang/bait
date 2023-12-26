@@ -11,6 +11,10 @@ pub:
 	pos token.Pos
 }
 
+pub fun (attrs []Attribute) has(name string) bool {
+	return attrs.find_attr(name).name.length > 0
+}
+
 pub fun (attrs []Attribute) find_attr(name string) Attribute {
 	for attr in attrs {
 		if attr.name == name {

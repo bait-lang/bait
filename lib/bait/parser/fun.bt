@@ -86,6 +86,7 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 		generic_names = generic_names
 		params = params
 		return_type = return_type
+		noreturn = p.attributes.has('noreturn')
 		attrs = p.attributes
 		lang = lang
 		pos = pos
