@@ -1,0 +1,84 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package cli
+
+import strings
+
+type Callback := fun (Command)
+
+pub struct Command {
+	name string
+	exec Callback
+	required_args []string
+mut:
+	nr_required_args i32
+pub mut:
+	options []Option
+	args []string
+}
+
+pub struct Option {
+	name string
+mut:
+	found bool
+}
+
+pub fun (mut cmd Command) parse(args []string) {
+	if cmd.nr_required_args < cmd.required_args.length {
+		cmd.nr_required_args = cmd.required_args.length
+	}
+
+	for i := 0; i < args.length; i += 1 {
+		arg := args[i]
+		if arg.starts_with('--') {
+			// FIXME this should require cmd.options to be mutable as well
+			for mut opt in cmd.options {
+				if arg.ends_with(opt.name) {
+					opt.found = true
+					break
+				}
+			}
+		} else {
+			cmd.args.push(arg)
+		}
+	}
+
+	if cmd.nr_required_args > cmd.args.length {
+		eprintln('error: missing required arguments')
+		eprintln(cmd.get_help_text())
+		exit(1)
+	}
+
+	cmd.exec(cmd)
+}
+
+fun (cmd Command) get_help_text() string {
+	mut help := strings.new_builder(100)
+	help.write('Usage: ')
+	help.write(cmd.name)
+
+	for i := 0; i < cmd.nr_required_args; i += 1 {
+		if i < cmd.required_args.length {
+			help.write(' <')
+			help.write(cmd.required_args[i])
+			help.write('>')
+		} else {
+			help.write(' <arg>')
+		}
+	}
+
+	if cmd.options.length > 0 {
+		help.write(' [options]')
+	}
+
+	return help.str()
+}
+
+fun (options []Option) is_set(name string) bool {
+	for opt in options {
+		if opt.found and opt.name == name {
+			return true
+		}
+	}
+	return false
+}

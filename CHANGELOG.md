@@ -79,7 +79,8 @@ _unreleased_
     - Handle skips for lib tests
 
 ### Standard Library
-- Add quite minimal `time` package
+- Add work in progress `time` package
+- Add work in progress `cli` package
 - Add `bait.util.timers` to aid with performance measurements
 - builtin:
   - New string method `is_capital() bool`
