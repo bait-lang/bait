@@ -5,7 +5,7 @@ All notable changes will be documented in this file.
 
 
 ## 0.0.6
-_unreleased_
+_26 December 2023_
 
 ### Breaking
 - `strings.Builder`: Rename some methods
