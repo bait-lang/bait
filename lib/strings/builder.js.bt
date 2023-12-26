@@ -1,0 +1,31 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package strings
+
+type Builder := []u8
+
+pub fun new_builder(initial_size i32) Builder {
+	return []u8 as Builder
+}
+
+pub fun (mut b Builder) clear() {
+	#JS.'b.data = []
+	b.length = 0'
+}
+
+pub fun (mut b Builder) write(data []u8) {
+	b.push_many(data)
+}
+
+pub fun (mut b Builder) write_str(s string) {
+	for c in s {
+		b.push(c)
+	}
+}
+
+pub fun (b Builder) str() string {
+	return string{
+		str = #JS.'String.fromCharCode(...b.data)' as #JS.String
+		length = b.length
+	}
+}

@@ -3,7 +3,7 @@
 package builtin
 
 struct string {
-pub:
+pub mut:
 	str #JS.String
 	length i32
 }
