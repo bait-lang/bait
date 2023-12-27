@@ -1,0 +1,6 @@
+// fun params
+fun foo (y MyType) {
+
+	// casting
+	x := 1 as u7
+}
