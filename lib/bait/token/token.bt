@@ -110,6 +110,7 @@ pub fun kind_from_string(name string) Token {
 const COMPARE_KINDS := [Token.eq, .ne, .lt, .gt, .le, .ge, .key_is]
 const MATH_KINDS := [Token.plus, .minus, .mul, .div, .mod]
 const OTHER_INFIXES := [Token.key_and, .key_or]
+const MATH_ASSIGNS := [Token.plus_assign, .minus_assign, .mul_assign, .div_assign, .mod_assign]
 
 pub fun (kind Token) is_compare() bool {
 	return COMPARE_KINDS.contains(kind)
@@ -119,10 +120,23 @@ pub fun (kind Token) is_infix() bool {
 	return kind.is_compare() or MATH_KINDS.contains(kind) or OTHER_INFIXES.contains(kind)
 }
 
-const ASSIGN_KINDS := [Token.decl_assign, .assign, .plus_assign, .minus_assign, .mul_assign, .div_assign, .mod_assign]
-
 pub fun (kind Token) is_assign() bool {
-	return ASSIGN_KINDS.contains(kind)
+	return kind == .decl_assign or kind == .assign or kind.is_math_assign()
+}
+
+pub fun (tok Token) is_math_assign() bool {
+	return MATH_ASSIGNS.contains(tok)
+}
+
+pub fun (tok Token) math_from_assign() Token {
+	return match tok {
+		.plus_assign { .plus }
+		.minus_assign { .minus }
+		.mul_assign { .mul }
+		.div_assign { .div }
+		.mod_assign { .mod }
+		else { panic('invalid math assign token') }
+	}
 }
 
 pub fun (kind Token) js_repr() string {

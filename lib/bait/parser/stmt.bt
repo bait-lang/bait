@@ -148,9 +148,20 @@ fun (mut p Parser) assign_stmt() ast.AssignStmt {
 }
 
 fun (mut p Parser) partial_assign_stmt(left ast.Expr) ast.AssignStmt {
-	op := p.tok
+	mut op := p.tok
 	p.next()
-	right := p.expr(.lowest)
+	mut right := p.expr(.lowest)
+
+	// Convert math assign to normal assign
+	if op.is_math_assign() {
+		right = ast.InfixExpr{
+			op = op.math_from_assign()
+			left = left
+			right = right
+		}
+		op = .assign
+	}
+
 	return ast.AssignStmt{
 		op = op
 		left = left
