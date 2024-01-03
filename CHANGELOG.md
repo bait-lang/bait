@@ -10,6 +10,9 @@ _unreleased_
 ### Type Checks
 - Ensure function parameter type exists
 
+### General Fixes
+- Fix integer division assign possibly resulting in a float
+
 
 ## 0.0.6
 _26 December 2023_
