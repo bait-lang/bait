@@ -213,11 +213,10 @@ fun (mut b Builder) code_gen_c() i32 {
 	res := cgen.gen(b.parsed_files, b.parser.table, b.prefs) + '\n'
 	timers.show('GEN')
 
-	if os.exists_dir(b.prefs.out_name) {
+	if os.exists_dir(b.prefs.out_name) or os.platform() == 'win32' {
 		b.prefs.out_name += '.exe'
-	} else {
-		ensure_dir_exists(os.dir(b.prefs.out_name))
 	}
+	ensure_dir_exists(os.dir(b.prefs.out_name))
 
 	tmp_c_path := os.join_path(os.tmp_dir(), [os.file_name(b.prefs.out_name) + '.c'])
 	os.write_file(tmp_c_path, res)
@@ -228,7 +227,8 @@ fun (mut b Builder) code_gen_c() i32 {
 
 	if b.prefs.should_run{
 		argstr := b.prefs.user_args.join(' ')
-		run_res := os.system('./${b.prefs.out_name} ${argstr}')
+		run_cmd := './${b.prefs.out_name} ${argstr}'.replace('/', os.PATH_SEP)
+		run_res := os.system(run_cmd)
 		if not b.prefs.keep_exe {
 			os.rm(b.prefs.out_name)
 		}
