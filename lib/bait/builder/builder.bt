@@ -221,7 +221,7 @@ fun (mut b Builder) code_gen_c() i32 {
 
 	tmp_c_path := os.join_path(os.tmp_dir(), [os.file_name(b.prefs.out_name) + '.c'])
 	os.write_file(tmp_c_path, res)
-	comp_res := os.system('cc ${tmp_c_path} -o ${b.prefs.out_name}')
+	comp_res := os.system('${b.prefs.cc} ${tmp_c_path} -o ${b.prefs.out_name}')
 	if comp_res != 0 {
 		return comp_res
 	}

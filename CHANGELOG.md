@@ -1,7 +1,7 @@
 # Bait Changelog
-All notable changes will be documented in this file.
+All notable changes are documented in this file.
 
-> Right now Bait is in an Alpha State (`0.0.x`). Breaking changes might occur anytime.
+> Bait is currently in an Alpha State (`0.0.x`). Breaking changes may occur at any time.
 
 
 ## 0.0.7
@@ -11,7 +11,10 @@ _unreleased_
 - Ensure function parameter type exists
 
 ### General Fixes
-- Fix integer division assign possibly resulting in a float
+- Fix integer division assign that could result in a float
+
+### CLI and Tooling
+- `build`: Add `-cc` option to use a custom C compiler
 
 
 ## 0.0.6
@@ -21,7 +24,7 @@ _26 December 2023_
 - `strings.Builder`: Rename some methods
   - `write()` to `write_chars()`
   - `write_str()` to `write()`
-- Remove tool `test-lib`
+- Remove the tool `test-lib`
   - All standard library tests can be run with `bait test lib`
   - Compiler tests can be run with `bait test tests`
   - Tool tests can be run with `bait test cli/tools`

@@ -30,6 +30,7 @@ pub mut:
 	is_script bool
 	is_library bool
 	keep_exe bool
+	cc string := 'cc'
 
 	// Error related
 	hide_warnings bool
@@ -61,6 +62,12 @@ pub fun parse_args(args []string) Prefs {
 			"-o", '--out' {
 				i += 1
 				p.out_name = args[i]
+				p.build_options.push(arg)
+				p.build_options.push(p.out_name)
+			}
+			'-cc' {
+				i += 1
+				p.cc = args[i]
 				p.build_options.push(arg)
 				p.build_options.push(p.out_name)
 			}
