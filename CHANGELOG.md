@@ -10,8 +10,12 @@ _unreleased_
 ### Type Checks
 - Ensure function parameter type exists
 
+### C Backend
+- builder: Fixes for using the C backend on windows
+- Fix string interpolation C error with tcc
+
 ### General Fixes
-- Fix integer division assign that could result in a float
+- _[JS]_ Fix integer division assign that could result in a float
 
 ### CLI and Tooling
 - `build`: Add `-cc` option to use a custom C compiler

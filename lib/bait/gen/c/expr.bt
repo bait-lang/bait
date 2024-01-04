@@ -212,7 +212,7 @@ fun (mut g Gen) string_literal(node ast.StringLiteral) {
 
 fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
 	len := node.vals.length + node.exprs.length
-	g.write('interpolate(new_array_from_c(${len}, ${len}, sizeof(string), (string[]){')
+	g.write('interpolate(new_array_from_c(${len}, ${len}, sizeof(string), (string[${len}]){')
 	for i, val in node.vals {
 		esc_val := util.escape_char(val.replace('\n', '\\n'), `\"`)
 		g.write('from_c_string("${esc_val}")')

@@ -1,0 +1,7 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package os
+
+import 'unistd.h' as #C._
+
+pub fun #C.access(path &u8, mode i32) i32
