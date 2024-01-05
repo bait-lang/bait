@@ -16,6 +16,7 @@ _unreleased_
 ### C Backend
 - builder: Fixes for using the C backend on windows
 - Fix string interpolation C error with tcc
+- Fix C error when calling a method on a mutable array instance
 
 ### General Fixes
 - _[JS]_ Fix integer division assign that could result in a float
