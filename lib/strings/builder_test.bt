@@ -5,9 +5,10 @@ import strings
 fun test_builder() {
 	mut b := strings.new_builder(50)
 
-	b.write_chars([104 as u8, 101 as u8]) // FIXME second u8 cast should not be needed
-	assert b.str() == 'he'
+	b.write_u8(104 as u8)
+	assert b.str() == 'h'
 
+	b.write_u8(`e`)
 	b.write('llo')
 	assert b.str() == 'hello'
 

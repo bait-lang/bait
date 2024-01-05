@@ -13,14 +13,14 @@ pub fun (mut b Builder) clear() {
 	b.length = 0'
 }
 
-pub fun (mut b Builder) write_chars(data []u8) {
-	b.push_many(data)
-}
-
 pub fun (mut b Builder) write(s string) {
 	for c in s {
 		b.push(c)
 	}
+}
+
+pub fun (mut b Builder) write_u8(c u8) {
+	b.push(c)
 }
 
 pub fun (b Builder) str() string {

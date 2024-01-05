@@ -7,6 +7,9 @@ All notable changes are documented in this file.
 ## 0.0.7
 _unreleased_
 
+### Breaking
+- `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
+
 ### Type Checks
 - Ensure function parameter type exists
 
