@@ -19,11 +19,15 @@ _unreleased_
 - Fix string interpolation C error with tcc
 - Fix C error when calling a method on a mutable array instance
 
-### General Fixes
-- _[JS]_ Fix integer division assign that could result in a float
+### Standard Library
+- builtin
+  - _[C]_ Implement string methods: `substr()`, `trim_left()`, `trim_right()` and `repeat()`
 
 ### CLI and Tooling
 - `build`: Add `-cc` option to use a custom C compiler
+
+### General Fixes
+- _[JS]_ Fix integer division assign that could result in a float
 
 
 ## 0.0.6
