@@ -47,7 +47,8 @@ jobs:
       - name: Bootstrap
         run: |
           ./make.bat
-          echo "$env:GITHUB_WORKSPACE" >> $GITHUB_PATH
+          echo "${env:GITHUB_WORKSPACE}\bait" >> $GITHUB_PATH
+          echo "$GITHUB_PATH"
       - name: Build tools
         run: bait build-tools
       - name: Build examples
