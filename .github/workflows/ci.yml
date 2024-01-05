@@ -47,7 +47,6 @@ jobs:
       - name: Bootstrap
         run: |
           ./make.bat
-          ./bait.bat symlink --ghci-win
       - name: Build tools
         run: bait build-tools
       - name: Build examples
