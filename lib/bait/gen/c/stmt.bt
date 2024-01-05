@@ -24,6 +24,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.FunDecl { g.fun_decl(stmt) }
 		ast.IfExpr { g.if_expr(stmt, false) }
 		ast.InterfaceDecl { g.interface_decl(stmt) }
+		ast.LoopControlStmt { g.loop_control_stmt(stmt) }
 		ast.ReturnStmt { g.return_stmt(stmt) }
 		ast.StructDecl {} // see write_types()
 		ast.TypeDecl {} // see write_types()
@@ -148,6 +149,10 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 	// TODO for in map
 	g.stmts(node.stmts)
 	g.writeln('}')
+}
+
+fun (mut g Gen) loop_control_stmt(node ast.LoopControlStmt){
+	g.writeln(node.kind.c_repr() + ';')
 }
 
 fun (g Gen) interface_decl(node ast.InterfaceDecl){
