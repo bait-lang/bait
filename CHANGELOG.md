@@ -16,6 +16,7 @@ _unreleased_
 ### C Backend
 - builder: Fixes for using the C backend on windows
 - gen: Implement `break` and `continue`
+- Fix compiling libraries
 - Fix string interpolation C error with tcc
 - Fix C error when calling a method on a mutable array instance
 
