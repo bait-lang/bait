@@ -1,3 +1,9 @@
-# Program binaries
-${name}
+# Ignore binary files without extension
+*
+!*/
+!*.*
+
+# Ignore other bineries
+*.exe
 ${name}.js
+src.js
