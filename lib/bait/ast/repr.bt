@@ -1,0 +1,32 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package ast
+
+pub fun ( e Expr) repr() string {
+	return match e {
+		AnonFun { 'anon_fun'}
+		ArrayInit { '[]XX' } // TODO type name
+		AsCast { e.expr.repr() + ' as XX' } // TODO type name
+		BoolLiteral { 'bool' } // TODO val
+		CallExpr{ e.name + '()'} // TODO left.repr, args
+		CharLiteral { e.val }
+		ComptimeVar { e.name }
+		EnumVal{ e.name + '.' + e.val }
+		FloatLiteral { e.val }
+		HashExpr { '#XX' } // TODO lang
+		Ident { e.name }
+		IfExpr { 'if' } // TODO match, branches
+		IndexExpr { e.left.repr() + '[' + e.index.repr() + ']' }
+		InfixExpr { e.left.repr() + ' ' + e.op.js_repr() + ' ' + e.right.repr() }
+		IntegerLiteral { e.val }
+		MapInit { 'map[xx]yy'} // TODO type names
+		ParExpr { '(' + e.expr.repr() + ')' }
+		PrefixExpr { e.op.js_repr() + e.right.repr() }
+		SelectorExpr { e.expr.repr() + '.' + e.field_name }
+		StringLiteral { e.val }
+		StringInterLiteral { 'string interpolation' } // TODO vals, exprs
+		StructInit { e.name + '{..}'} // TODO fields
+		TypeOf { 'typeof ' + e.expr.repr() }
+		EmptyExpr { 'EmptyExpr' }
+	}
+}
