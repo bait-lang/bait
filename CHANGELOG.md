@@ -10,6 +10,9 @@ _unreleased_
 ### Breaking
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 
+### Error Checks
+- match: Prevent duplicate branch conditions
+
 ### Type Checks
 - Ensure function parameter type exists
 

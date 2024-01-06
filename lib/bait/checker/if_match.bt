@@ -10,6 +10,7 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 		node.typ = c.expected_type
 	}
 
+	mut branch_exprs := []string
 	if node.is_match {
 		// Check branch count
 		mut min_branches := 1
@@ -32,6 +33,16 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 		c.open_scope()
 		if not node.has_else or i < node.branches.length - 1 {
 			cond_type := c.expr(branch.cond)
+
+			if node.is_match {
+				key := (branch.cond as ast.InfixExpr).right.repr()
+				if branch_exprs.contains(key) {
+					c.error('match case `${key}` is already handled', branch.pos)
+				} else {
+					branch_exprs.push(key)
+				}
+			}
+
 			if not c.is_sumtype_match and cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
 				c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
 			}
