@@ -4,7 +4,7 @@ package checker
 
 import bait.ast
 
-fun (mut c Checker) if_match_expr(mut node ast.IfMatchExpr, is_expr bool) ast.Type {
+fun (mut c Checker) if_match(mut node ast.IfMatch, is_expr bool) ast.Type {
 	if is_expr {
 		c.is_if_match_expr = true
 		node.typ = c.expected_type
@@ -12,11 +12,8 @@ fun (mut c Checker) if_match_expr(mut node ast.IfMatchExpr, is_expr bool) ast.Ty
 
 	mut branch_exprs := []string
 	if node.is_match {
-		// Check branch count
-		mut min_branches := 1
-		if node.has_else {
-			min_branches += 1
-		}
+		// Check at least one branch except `else` exists
+		min_branches := if node.has_else { 2 } else { 1 }
 		if node.branches.length < min_branches {
 			c.error('match needs at least one non-else branch', node.pos)
 			return ast.PLACEHOLDER_TYPE
@@ -31,6 +28,8 @@ fun (mut c Checker) if_match_expr(mut node ast.IfMatchExpr, is_expr bool) ast.Ty
 	mut nr_branches_return := 0
 	for i, branch in node.branches {
 		c.open_scope()
+
+		// Condition
 		if not node.has_else or i < node.branches.length - 1 {
 			cond_type := c.expr(branch.cond)
 
