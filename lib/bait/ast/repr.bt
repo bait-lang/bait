@@ -7,7 +7,7 @@ pub fun ( e Expr) repr() string {
 		AnonFun { 'anon_fun'}
 		ArrayInit { '[]XX' } // TODO type name
 		AsCast { e.expr.repr() + ' as XX' } // TODO type name
-		BoolLiteral { 'bool' } // TODO val
+		BoolLiteral { e.str() }
 		CallExpr{ e.name + '()'} // TODO left.repr, args
 		CharLiteral { e.val }
 		ComptimeVar { e.name }
@@ -15,7 +15,7 @@ pub fun ( e Expr) repr() string {
 		FloatLiteral { e.val }
 		HashExpr { '#XX' } // TODO lang
 		Ident { e.name }
-		IfMatch { 'if' } // TODO match, branches
+		IfMatch { 'if/match' } // TODO branches
 		IndexExpr { e.left.repr() + '[' + e.index.repr() + ']' }
 		InfixExpr { e.left.repr() + ' ' + e.op.js_repr() + ' ' + e.right.repr() }
 		IntegerLiteral { e.val }
