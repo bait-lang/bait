@@ -39,7 +39,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		g.fun_decl(stmt)
 	} else if stmt is ast.GlobalDecl {
 		g.global_decl(stmt)
-	} else if stmt is ast.IfExpr {
+	} else if stmt is ast.IfMatchExpr {
 		g.if_expr(stmt, false)
 	} else if stmt is ast.InterfaceDecl {
 		g.interface_decl(stmt)

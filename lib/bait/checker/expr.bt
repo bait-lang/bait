@@ -28,7 +28,7 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 		return c.hash_expr(expr)
 	} else if expr is ast.Ident {
 		return c.ident(expr)
-	} else if expr is ast.IfExpr {
+	} else if expr is ast.IfMatchExpr {
 		return c.if_expr(expr, true)
 	} else if expr is ast.IndexExpr {
 		return c.index_expr(expr)

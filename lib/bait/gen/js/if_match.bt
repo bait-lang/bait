@@ -4,7 +4,7 @@ package js
 
 import bait.ast
 
-fun (mut g Gen) if_expr(node ast.IfExpr, is_expr bool){
+fun (mut g Gen) if_expr(node ast.IfMatchExpr, is_expr bool){
 	tmp := g.new_temp_var()
 	mut cut := ''
 	if is_expr {

@@ -32,7 +32,7 @@ fun (mut c Checker) stmt(stmt ast.Stmt){
 		c.fun_decl(stmt)
 	} else if stmt is ast.GlobalDecl {
 		c.global_decl(stmt)
-	} else if stmt is ast.IfExpr {
+	} else if stmt is ast.IfMatchExpr {
 		c.if_expr(stmt, false)
 	} else if stmt is ast.InterfaceDecl {
 		c.interface_decl(stmt)
@@ -71,7 +71,7 @@ fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
 	expr := node.expr
 	node.typ = c.expr(expr)
 
-	if c.is_if_expr or expr is ast.CallExpr or expr is ast.IfExpr or expr is ast.HashExpr {
+	if c.is_if_expr or expr is ast.CallExpr or expr is ast.IfMatchExpr or expr is ast.HashExpr {
 		return
 	}
 	e := expr as ast.EmptyExpr

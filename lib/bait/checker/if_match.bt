@@ -4,7 +4,7 @@ package checker
 
 import bait.ast
 
-fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
+fun (mut c Checker) if_expr(mut node ast.IfMatchExpr, is_expr bool) ast.Type {
 	if is_expr {
 		c.is_if_expr = true
 		node.typ = c.expected_type
