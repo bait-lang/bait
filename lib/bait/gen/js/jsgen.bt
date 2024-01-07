@@ -55,6 +55,7 @@ mut:
 	out string
 	indent i32
 	empty_line bool
+	stmt_offsets []i32
 	foreign_imports map[string]string // alias: name
 	generated_str_funs []ast.Type
 	tmp_counter i32
@@ -141,6 +142,12 @@ fun (mut g Gen) writeln (s string){
 	g.empty_line = true
 }
 
+fun (mut g Gen) cut_back_to(pos i32) string {
+	cut := g.out.substr(pos, g.out.length)
+	g.out = g.out.substr(0, pos)
+	return cut
+}
+
 fun (mut g Gen) cut_before(to u8) string {
 	for i := g.out.length - 1; i >= 0; i -= 1 {
 		if g.out[i] == to {
@@ -150,6 +157,10 @@ fun (mut g Gen) cut_before(to u8) string {
 		}
 	}
 	return g.out
+}
+
+fun (mut g Gen) save_stmt_offset() {
+	g.stmt_offsets.push(g.out.length)
 }
 
 fun (mut g Gen) gen_test_main() {

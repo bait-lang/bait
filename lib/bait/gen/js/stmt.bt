@@ -295,6 +295,8 @@ fun (mut g Gen) interface_decl(node ast.InterfaceDecl){
 }
 
 fun (mut g Gen) return_stmt(node ast.ReturnStmt){
+	g.save_stmt_offset()
+
 	g.write('return')
 	if not (node.expr is ast.EmptyExpr) {
 		g.write(" ")
