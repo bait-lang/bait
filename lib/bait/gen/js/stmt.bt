@@ -23,6 +23,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 	} else if stmt is ast.ConstDecl {
 		g.const_decl(stmt)
 	} else if stmt is ast.ExprStmt {
+		g.save_stmt_offset()
 		g.expr(stmt.expr)
 		if not g.empty_line {
 			g.writeln("")

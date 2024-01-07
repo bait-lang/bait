@@ -27,9 +27,7 @@ fun (mut g Gen) if_match(node ast.IfMatch){
 		g.stmts(b.stmts)
 
 		if node.is_expr {
-			mut branch_cut := g.cut_before(`\n`)
-			branch_cut = g.cut_before(`\t`)
-			g.empty_line = false
+			branch_cut := g.cut_back_to(g.stmt_offsets.last()).trim_space()
 			g.writeln('\t${tmp} = ${branch_cut}')
 		}
 	}
