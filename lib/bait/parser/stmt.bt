@@ -93,12 +93,6 @@ fun (mut p Parser) stmt() ast.Stmt {
 		.key_assert {
 			return p.assert_stmt()
 		}
-		.key_match {
-			return p.match_as_if_expr()
-		}
-		.key_mut {
-			return p.assign_stmt()
-		}
 		.key_break, .key_continue {
 			return p.loop_control_stmt()
 		}
@@ -106,7 +100,13 @@ fun (mut p Parser) stmt() ast.Stmt {
 			return p.for_loop('')
 		}
 		.key_if {
-			return p.if_expr()
+			return p.if_match(false)
+		}
+		.key_match {
+			return p.match_as_if_expr(false)
+		}
+		.key_mut {
+			return p.assign_stmt()
 		}
 		.key_return {
 			return p.return_stmt()

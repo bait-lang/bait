@@ -4,12 +4,12 @@ package c
 
 import bait.ast
 
-fun (mut g Gen) if_expr(node ast.IfExpr, is_expr bool) {
+fun (mut g Gen) if_match(node ast.IfMatch) {
 	tmp := g.new_temp_var()
 	mut cut := ''
-	if is_expr {
-		cut = g.cut_before(`\n`).trim_left('\t')
-		g.writeln('')
+	if node.is_expr {
+		cut = g.cut_back_to(g.stmt_offsets.last()).trim_left('\t')
+		g.empty_line = true
 		typ := g.typ(node.typ)
 		g.writeln('${typ} ${tmp};')
 	}
@@ -25,18 +25,27 @@ fun (mut g Gen) if_expr(node ast.IfExpr, is_expr bool) {
 			g.expr(b.cond)
 			g.writeln(') {')
 		}
+
+		branch_start := g.out.length
 		g.stmts(b.stmts)
 
-		if is_expr {
-			mut branch_cut := g.cut_before(`\n`)
-			branch_cut = g.cut_before(`\t`)
-			g.empty_line = false
-			g.writeln('\t${tmp} = ${branch_cut};')
+		if node.is_expr {
+			if g.empty_line {
+				g.cut_before(`\n`)
+			}
+			last_line_cut := g.cut_before(`\t`)
+
+			branch_cut := g.cut_back_to(branch_start).trim_right('\n\t')
+			if branch_cut.length > 0 {
+				g.writeln(branch_cut)
+			}
+
+			g.writeln('\t${tmp} = ${last_line_cut};')
 		}
 	}
 	g.writeln('}')
 
-	if is_expr {
+	if node.is_expr {
 		g.write(cut)
 		g.write(tmp)
 	}

@@ -4,21 +4,25 @@ package checker
 
 import bait.ast
 
-fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
-	if is_expr {
-		c.is_if_expr = true
+fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
+	save_is_if_match_expr := c.is_if_match_expr
+
+	// Nested if/match expr. The parser does not have this information
+	if c.is_if_match_expr {
+		node.is_expr = true
+	}
+
+	if node.is_expr {
+		c.is_if_match_expr = true
 		node.typ = c.expected_type
 	}
 
 	mut branch_exprs := []string
 	if node.is_match {
-		// Check branch count
-		mut min_branches := 1
-		if node.has_else {
-			min_branches += 1
-		}
+		// Check at least one branch except `else` exists
+		min_branches := if node.has_else { 2 } else { 1 }
 		if node.branches.length < min_branches {
-			c.error('match expression needs at least one non-else branch', node.pos)
+			c.error('match needs at least one non-else branch', node.pos)
 			return ast.PLACEHOLDER_TYPE
 		}
 
@@ -31,6 +35,8 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 	mut nr_branches_return := 0
 	for i, branch in node.branches {
 		c.open_scope()
+
+		// Condition
 		if not node.has_else or i < node.branches.length - 1 {
 			cond_type := c.expr(branch.cond)
 
@@ -48,20 +54,22 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 			}
 		}
 
-		if is_expr {
+		if node.is_expr {
 			c.expected_type = node.typ
 		}
 
 		c.stmts(branch.stmts)
 		c.close_scope()
 
-		if is_expr {
+		if node.is_expr {
 			last := branch.stmts.last()
 			if is_noreturn_call(last) {
 				continue
 			}
 
-			if not (last is ast.ExprStmt) or (last as ast.ExprStmt).typ == ast.VOID_TYPE {
+			if c.stmt_returns(last) {
+				nr_branches_return += 1
+			} else {
 				c.error('branch does not return a value', branch.pos)
 				continue
 			}
@@ -78,7 +86,8 @@ fun (mut c Checker) if_expr(mut node ast.IfExpr, is_expr bool) ast.Type {
 	}
 
 	c.returns = nr_branches_return == node.branches.length
-	c.is_if_expr = false
+	c.is_if_match_expr = save_is_if_match_expr
 	c.is_sumtype_match = false
+
 	return node.typ
 }

@@ -16,6 +16,19 @@ fun test_get_num() {
 	assert get_num() == 2
 }
 
+fun clamp_max_2(n i32) i32 {
+	return match n {
+		1 { 1 }
+		else { if n > 2 { 2 } else { n } }
+	}
+}
+
+fun test_nested_if_expr() {
+	assert clamp_max_2(1) == 1
+	assert clamp_max_2(2) == 2
+	assert clamp_max_2(3) == 2
+}
+
 struct Foo{}
 struct Bar{}
 type Sum := Foo | Bar

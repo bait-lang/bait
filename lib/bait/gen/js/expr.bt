@@ -31,8 +31,8 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		g.hash_expr(expr)
 	} else if expr is ast.Ident {
 		g.ident(expr)
-	} else if expr is ast.IfExpr {
-		g.if_expr(expr, true)
+	} else if expr is ast.IfMatch {
+		g.if_match(expr)
 	} else if expr is ast.IndexExpr {
 		g.index_expr(expr)
 	} else if expr is ast.InfixExpr {
