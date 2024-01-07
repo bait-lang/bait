@@ -25,7 +25,7 @@ fun js_stacktrace() string {
 	return from_js_string(#JS.'new Error().stack' as #JS.String)
 }
 
-fun (b bool) str() string {
+pub fun (b bool) str() string {
 	if b {
 		return 'true'
 	}
