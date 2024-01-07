@@ -29,7 +29,7 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 	} else if expr is ast.Ident {
 		return c.ident(expr)
 	} else if expr is ast.IfMatch {
-		return c.if_match(expr, true)
+		return c.if_match(expr)
 	} else if expr is ast.IndexExpr {
 		return c.index_expr(expr)
 	} else if expr is ast.InfixExpr {

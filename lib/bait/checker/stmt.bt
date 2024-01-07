@@ -33,7 +33,7 @@ fun (mut c Checker) stmt(stmt ast.Stmt){
 	} else if stmt is ast.GlobalDecl {
 		c.global_decl(stmt)
 	} else if stmt is ast.IfMatch {
-		c.if_match(stmt, c.is_if_match_expr)
+		c.if_match(stmt)
 	} else if stmt is ast.InterfaceDecl {
 		c.interface_decl(stmt)
 	} else if stmt is ast.LoopControlStmt {

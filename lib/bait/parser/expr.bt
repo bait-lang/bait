@@ -59,10 +59,10 @@ fun (mut p Parser) single_expr() ast.Expr {
 			return p.bool_literal()
 		}
 		.key_if {
-			return p.if_match()
+			return p.if_match(true)
 		}
 		.key_match {
-			return p.match_as_if_expr()
+			return p.match_as_if_expr(true)
 		}
 		.key_mut {
 			return p.ident(.bait)
