@@ -106,7 +106,7 @@ fun (mut p Parser) stmt() ast.Stmt {
 			return p.for_loop('')
 		}
 		.key_if {
-			return p.if_expr()
+			return p.if_match_expr()
 		}
 		.key_return {
 			return p.return_stmt()

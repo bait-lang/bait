@@ -5,7 +5,7 @@ package parser
 import bait.ast
 import bait.token
 
-fun (mut p Parser) if_expr() ast.IfMatchExpr {
+fun (mut p Parser) if_match_expr() ast.IfMatchExpr {
 	pos := p.pos()
 
 	mut branches := []ast.IfBranch
