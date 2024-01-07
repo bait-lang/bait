@@ -1,5 +1,9 @@
-	mut a := [1, 2, 3]
-	a.push(true)
-	a.index('a')
-	a.contains(12 as i16)
-	a.concat(['b', 'c'])
+mut a := [1, 2, 3]
+
+a.push(true)
+a.index('a') // FIXME should raise error
+a.contains(12 as i16)
+a.concat(['b', 'c'])
+
+mut x := 'a'
+x = a.last()

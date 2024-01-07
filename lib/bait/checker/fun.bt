@@ -270,6 +270,11 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		return left_expr_type
 	}
 
+	// Array methods with return type `any`
+	if left_sym.kind == .array and ['last'].contains(node.name) {
+		return (left_sym.info as ast.ArrayInfo).elem_type
+	}
+
 	if node.concrete_types.length > 0 {
 		def.concrete_types.push(node.concrete_types)
 

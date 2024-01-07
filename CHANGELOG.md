@@ -15,6 +15,7 @@ _unreleased_
 
 ### Type Checks
 - Ensure function parameter type exists
+- Properly check return type of `array.last()`
 
 ### C Backend
 - builder: Fixes for using the C backend on windows
