@@ -15,6 +15,7 @@ _unreleased_
 
 ### Type Checks
 - Ensure function parameter type exists
+- Raise error if array type cannot be inferred
 - Properly check return type of `array.last()`
 
 ### C Backend

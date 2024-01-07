@@ -75,6 +75,10 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 	if node.exprs.length == 0 {
 		// Typeless array init
 		if node.elem_type == ast.PLACEHOLDER_TYPE {
+			if c.expected_type == ast.VOID_TYPE {
+				c.error('cannot infer type of empty array', node.pos)
+			}
+
 			node.typ = c.expected_type
 			return node.typ
 		}

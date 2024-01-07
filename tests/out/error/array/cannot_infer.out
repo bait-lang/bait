@@ -1,0 +1,1 @@
+tests/out/error/array/cannot_infer.in.bt:1:13 error: cannot infer type of empty array
