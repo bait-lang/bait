@@ -29,15 +29,16 @@ fun (mut g Gen) if_match(node ast.IfMatch){
 		g.stmts(b.stmts)
 
 		if node.is_expr {
-			mut last_line_cut := g.cut_before(`\n`)
-			last_line_cut = g.cut_before(`\t`)
+			if g.empty_line {
+				g.cut_before(`\n`)
+			}
+			last_line_cut := g.cut_before(`\t`)
 
-			branch_cut := g.cut_back_to(branch_start).trim_space()
+			branch_cut := g.cut_back_to(branch_start).trim_right('\n\t')
 			if branch_cut.length > 0 {
 				g.writeln(branch_cut)
 			}
 
-			g.empty_line = true
 			g.writeln('\t${tmp} = ${last_line_cut}')
 		}
 	}
