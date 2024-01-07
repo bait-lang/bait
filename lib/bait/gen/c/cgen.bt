@@ -7,7 +7,7 @@ import bait.ast
 
 const C_RESERVED := [
 	// C99 reserved keywords. See https://en.cppreference.com/w/c/keyword
-	'auto', 'break', 'case', 'char', 'const', 'continue', 'default', 'do', 'double', 'else', 'enum', 'extern', 'float', 'for', 'goto', 'if', 'inline', 'int', 'long', 'register', 'restrict', 'return', 'short', 'signed', 'sizeof', 'static', 'struct', 'switch', 'typedef', 'union', 'unsigned', 'void', 'volatile', 'while', 
+	'auto', 'break', 'case', 'char', 'const', 'continue', 'default', 'do', 'double', 'else', 'enum', 'extern', 'float', 'for', 'goto', 'if', 'inline', 'int', 'long', 'register', 'restrict', 'return', 'short', 'signed', 'sizeof', 'static', 'struct', 'switch', 'typedef', 'union', 'unsigned', 'void', 'volatile', 'while',
 	// Builtin function names
 	'main', 'exit',
 ]
@@ -25,6 +25,7 @@ mut:
 	out string
 	indent i32 := -1
 	empty_line bool := true
+	stmt_offsets []i32
 	foreign_imports []string // C header files
 	generated_eq_funs []ast.Type
 	tmp_counter i32
@@ -115,6 +116,16 @@ fun (mut g Gen) cut_before(to u8) string {
 		}
 	}
 	return g.out
+}
+
+fun (mut g Gen) cut_back_to(pos i32) string {
+	cut := g.out.substr(pos, g.out.length)
+	g.out = g.out.substr(0, pos)
+	return cut
+}
+
+fun (mut g Gen) save_stmt_offset() {
+	g.stmt_offsets.push(g.out.length)
 }
 
 fun c_name(n string) string {
