@@ -8,6 +8,7 @@ import bait.token
 import bait.util
 
 fun (mut g Gen) stmts(stmts []ast.Stmt) {
+	g.save_stmt_offset()
 	g.indent += 1
 	for stmt in stmts {
 		g.stmt(stmt)

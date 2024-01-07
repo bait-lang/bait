@@ -24,11 +24,21 @@ fun (mut g Gen) if_match(node ast.IfMatch){
 			g.expr(b.cond)
 			g.writeln(") {")
 		}
+
+		branch_start := g.out.length
 		g.stmts(b.stmts)
 
 		if node.is_expr {
-			branch_cut := g.cut_back_to(g.stmt_offsets.last()).trim_space()
-			g.writeln('\t${tmp} = ${branch_cut}')
+			mut last_line_cut := g.cut_before(`\n`)
+			last_line_cut = g.cut_before(`\t`)
+
+			branch_cut := g.cut_back_to(branch_start).trim_space()
+			if branch_cut.length > 0 {
+				g.writeln(branch_cut)
+			}
+
+			g.empty_line = true
+			g.writeln('\t${tmp} = ${last_line_cut}')
 		}
 	}
 	g.writeln('}')
