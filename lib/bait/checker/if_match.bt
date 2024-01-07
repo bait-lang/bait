@@ -18,7 +18,7 @@ fun (mut c Checker) if_match_expr(mut node ast.IfMatchExpr, is_expr bool) ast.Ty
 			min_branches += 1
 		}
 		if node.branches.length < min_branches {
-			c.error('match expression needs at least one non-else branch', node.pos)
+			c.error('match needs at least one non-else branch', node.pos)
 			return ast.PLACEHOLDER_TYPE
 		}
 
