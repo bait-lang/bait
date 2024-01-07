@@ -48,6 +48,7 @@ pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.
 	p.is_for_init = false
 	p.is_struct_possible = true
 	p.should_abort = false
+	p.warnings = []
 	p.next()
 
 	// Start Parsing
