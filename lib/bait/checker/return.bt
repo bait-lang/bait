@@ -24,6 +24,19 @@ fun (mut c Checker) return_stmt(node ast.ReturnStmt) {
 	}
 }
 
+fun (c Checker) stmt_returns (stmt ast.Stmt) bool {
+	if stmt is ast.ExprStmt {
+		return stmt.typ != ast.VOID_TYPE
+	}
+
+	if stmt is ast.IfMatch {
+		// return true
+		return c.returns
+	}
+
+	return false
+}
+
 fun has_toplevel_return(stmts []ast.Stmt) bool {
 	for stmt in stmts {
 		if stmt is ast.ReturnStmt or is_noreturn_call(stmt) {

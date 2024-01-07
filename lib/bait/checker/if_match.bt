@@ -5,6 +5,7 @@ package checker
 import bait.ast
 
 fun (mut c Checker) if_match(mut node ast.IfMatch, is_expr bool) ast.Type {
+	save_is_if_match_expr := c.is_if_match_expr
 	if is_expr {
 		c.is_if_match_expr = true
 		node.typ = c.expected_type
@@ -60,7 +61,9 @@ fun (mut c Checker) if_match(mut node ast.IfMatch, is_expr bool) ast.Type {
 				continue
 			}
 
-			if not (last is ast.ExprStmt) or (last as ast.ExprStmt).typ == ast.VOID_TYPE {
+			if c.stmt_returns(last) {
+				nr_branches_return += 1
+			} else {
 				c.error('branch does not return a value', branch.pos)
 				continue
 			}
@@ -76,8 +79,11 @@ fun (mut c Checker) if_match(mut node ast.IfMatch, is_expr bool) ast.Type {
 		}
 	}
 
+	node.is_expr = is_expr
+
 	c.returns = nr_branches_return == node.branches.length
-	c.is_if_match_expr = false
+	c.is_if_match_expr = save_is_if_match_expr
 	c.is_sumtype_match = false
+
 	return node.typ
 }

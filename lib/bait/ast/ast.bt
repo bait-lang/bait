@@ -281,6 +281,7 @@ pub:
 pub struct IfMatch{
 global:
 	typ Type := VOID_TYPE
+	is_expr bool
 pub:
 	is_match bool
 	has_else bool

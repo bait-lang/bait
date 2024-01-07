@@ -4,10 +4,10 @@ package c
 
 import bait.ast
 
-fun (mut g Gen) if_match(node ast.IfMatch, is_expr bool) {
+fun (mut g Gen) if_match(node ast.IfMatch) {
 	tmp := g.new_temp_var()
 	mut cut := ''
-	if is_expr {
+	if node.is_expr {
 		cut = g.cut_before(`\n`).trim_left('\t')
 		g.writeln('')
 		typ := g.typ(node.typ)
@@ -27,7 +27,7 @@ fun (mut g Gen) if_match(node ast.IfMatch, is_expr bool) {
 		}
 		g.stmts(b.stmts)
 
-		if is_expr {
+		if node.is_expr {
 			mut branch_cut := g.cut_before(`\n`)
 			branch_cut = g.cut_before(`\t`)
 			g.empty_line = false
@@ -36,7 +36,7 @@ fun (mut g Gen) if_match(node ast.IfMatch, is_expr bool) {
 	}
 	g.writeln('}')
 
-	if is_expr {
+	if node.is_expr {
 		g.write(cut)
 		g.write(tmp)
 	}
