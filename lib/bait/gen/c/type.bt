@@ -43,12 +43,8 @@ fun (mut g Gen) write_types() {
 			g.type_impls_out += '};\n'
 		} else if sym.info is ast.ArrayInfo {
 			g.type_defs_out += 'typedef Array ${cname};\n'
-		} else {
-			match sym.kind {
-				.alias_type {
-					g.type_defs_out += 'typedef ${g.typ(sym.parent)} ${cname};\n'
-				}
-			}
+		} else if sym.kind == .alias_type {
+			g.type_defs_out += 'typedef ${g.typ(sym.parent)} ${cname};\n'
 		}
 	}
 }

@@ -155,13 +155,13 @@ fun (mut p Parser) generic_type_names() []string {
 }
 
 fun (p Parser) infer_expr_type(expr ast.Expr) ast.Type {
-	match expr {
-		ast.BoolLiteral{ return ast.BOOL_TYPE }
-		ast.CharLiteral{ return ast.U8_TYPE }
-		ast.IntegerLiteral{ return ast.I32_TYPE }
-		ast.StringLiteral{ return ast.STRING_TYPE }
-		ast.StructInit{ return expr.typ }
-		ast.MapInit{ return expr.typ }
+	return match expr {
+		ast.BoolLiteral{ ast.BOOL_TYPE }
+		ast.CharLiteral{ ast.U8_TYPE }
+		ast.IntegerLiteral{ ast.I32_TYPE }
+		ast.StringLiteral{ ast.STRING_TYPE }
+		ast.StructInit{ expr.typ }
+		ast.MapInit{ expr.typ }
+		else { ast.VOID_TYPE }
 	}
-	return ast.VOID_TYPE
 }
