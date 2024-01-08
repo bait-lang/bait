@@ -1,0 +1,11 @@
+enum JobStatus {
+	unemployed
+	employed
+}
+
+s := JobStatus.employed
+match s {
+	.unemployed {}
+	.employed {}
+	else {}
+}

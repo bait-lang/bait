@@ -27,15 +27,22 @@ enum Color {
 
 fun test_exhaustive_enum() {
 	mut ok := 0
-
 	c := Color.green
+
+	// All variants covered
 	match c {
 		.red { assert false }
 		.green { ok += 1 }
 		.blue { assert false }
 	}
 
-	assert ok == 1
+	// Has else
+	match c {
+		.blue { assert false }
+		else { ok += 1 }
+	}
+
+	assert ok == 2
 }
 
 struct Mars{}
@@ -44,12 +51,19 @@ type Planet := Mars | Venus
 
 fun test_exhaustive_sumtype() {
 	mut ok := 0
-
 	p := Mars{} as Planet
+
+	// All variants covered
 	match p {
 		Mars { ok += 1}
 		Venus { assert false }
 	}
 
-	assert ok == 1
+	// Has else
+	match p {
+		Venus { assert false }
+		else { ok += 1 }
+	}
+
+	assert ok == 2
 }

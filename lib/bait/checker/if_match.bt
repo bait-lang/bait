@@ -119,7 +119,7 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 		} else if not node.has_else {
 			mut msg := 'match must be exhaustive'
 			if unhandled.length > 0 {
-				msg += ' (add branches for ${unhandled.join(", ")})'
+				msg += ' (add `else {}` or branches for ${unhandled.join(", ")})'
 			} else {
 				msg += ' (add `else {}` branch)'
 			}
