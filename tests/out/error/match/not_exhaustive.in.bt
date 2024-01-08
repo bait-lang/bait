@@ -1,0 +1,19 @@
+enum Color {
+	red
+	green
+	blue
+}
+
+struct Mars{}
+struct Venus{}
+type Planet := Mars | Venus
+
+c := Color.green
+match c {
+	.blue {}
+}
+
+p := Mars{} as Planet
+match p {
+	Mars {}
+}

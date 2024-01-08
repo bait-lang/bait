@@ -29,6 +29,7 @@ fun (mut g Gen) get_comptime_val(name string, pos token.Pos) string {
 		'BAITEXE' { g.comptime_baitexe() }
 		'BAITDIR' { g.comptime_baitdir() }
 		'BAITHASH' { g.comptime_baithash() }
+		else { '' }
 	}
 }
 

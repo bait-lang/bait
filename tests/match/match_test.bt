@@ -13,7 +13,57 @@ fun test_type_alias(){
 	match i {
 		INT_1 { assert false }
 		INT_5 { a += 1 }
+		else { assert false }
 	}
 
 	assert a == 1
+}
+
+enum Color {
+	red
+	green
+	blue
+}
+
+fun test_exhaustive_enum() {
+	mut ok := 0
+	c := Color.green
+
+	// All variants covered
+	match c {
+		.red { assert false }
+		.green { ok += 1 }
+		.blue { assert false }
+	}
+
+	// Has else
+	match c {
+		.blue { assert false }
+		else { ok += 1 }
+	}
+
+	assert ok == 2
+}
+
+struct Mars{}
+struct Venus{}
+type Planet := Mars | Venus
+
+fun test_exhaustive_sumtype() {
+	mut ok := 0
+	p := Mars{} as Planet
+
+	// All variants covered
+	match p {
+		Mars { ok += 1}
+		Venus { assert false }
+	}
+
+	// Has else
+	match p {
+		Venus { assert false }
+		else { ok += 1 }
+	}
+
+	assert ok == 2
 }

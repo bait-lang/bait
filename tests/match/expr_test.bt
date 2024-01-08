@@ -9,6 +9,7 @@ fun get_num() i32 {
 	return match x {
 		'a' { 1 }
 		'b' { 2 }
+		else { 0 }
 	}
 }
 

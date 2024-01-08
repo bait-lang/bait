@@ -11,7 +11,10 @@ _unreleased_
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 
 ### Error Checks
-- match: Prevent duplicate branch conditions
+- match
+  - Require match to be exhaustive
+  - Prevent duplicate branch conditions
+  - Warn if else branch is unreachable
 
 ### Type Checks
 - Ensure function parameter type exists

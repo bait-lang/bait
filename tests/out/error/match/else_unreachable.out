@@ -1,0 +1,1 @@
+tests/out/error/match/else_unreachable.in.bt:7:0 warning: match is exhaustive, else is unreachable
