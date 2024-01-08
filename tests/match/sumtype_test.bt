@@ -14,7 +14,6 @@ fun test_sumtype_match() {
 			assert true
 		}
 		Bar { assert false }
-		else { assert false }
 	}
 	assert n == 1
 }

@@ -3,4 +3,5 @@ match n {
 	'asd' {}
 	456 {}
 	true {}
+	else {}
 }
