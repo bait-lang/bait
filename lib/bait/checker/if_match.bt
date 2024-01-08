@@ -86,46 +86,8 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 		}
 	}
 
-	// Exhaustive check
 	if node.is_match {
-		mut is_exhaustive := true
-		mut unhandled := []string
-
-		if cond_sym.info is ast.EnumInfo {
-			info := cond_sym.info as ast.EnumInfo
-			for val in info.vals {
-				if not branch_exprs.contains(val) {
-					is_exhaustive = false
-					unhandled.push(val)
-				}
-			}
-		} else if cond_sym.info is ast.SumTypeInfo {
-			info := cond_sym.info as ast.SumTypeInfo
-			for typ in info.variants {
-				variant := c.table.type_name(typ)
-				if not branch_exprs.contains(variant) {
-					is_exhaustive = false
-					unhandled.push(variant)
-				}
-			}
-		} else {
-			is_exhaustive = false
-		}
-
-		if is_exhaustive {
-			if node.has_else {
-				c.warn('match is exhaustive, else is unreachable', node.pos)
-			}
-		} else if not node.has_else {
-			mut msg := 'match must be exhaustive'
-			if unhandled.length > 0 {
-				msg += ' (add `else {}` or branches for ${unhandled.join(", ")})'
-			} else {
-				msg += ' (add `else {}` branch)'
-			}
-			// TODO make error
-			c.warn(msg, node.pos)
-		}
+		c.check_exhaustive_match(cond_sym.info, branch_exprs, node)
 	}
 
 	c.returns = nr_branches_return == node.branches.length
@@ -133,4 +95,42 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 	c.is_sumtype_match = false
 
 	return node.typ
+}
+
+fun (mut c Checker) check_exhaustive_match(info ast.TypeInfo, branch_exprs []string, node ast.IfMatch) {
+	mut is_exhaustive := true
+	mut unhandled := []string
+
+	if info is ast.EnumInfo {
+		for val in info.vals {
+			if not branch_exprs.contains(val) {
+				is_exhaustive = false
+				unhandled.push(val)
+			}
+		}
+	} else if info is ast.SumTypeInfo {
+		for typ in info.variants {
+			variant := c.table.type_name(typ)
+			if not branch_exprs.contains(variant) {
+				is_exhaustive = false
+				unhandled.push(variant)
+			}
+		}
+	} else {
+		is_exhaustive = false
+	}
+
+	if is_exhaustive {
+		if node.has_else {
+			c.warn('match is exhaustive, else is unreachable', node.pos)
+		}
+	} else if not node.has_else {
+		mut msg := 'match must be exhaustive'
+		if unhandled.length > 0 {
+			msg += ' (add `else {}` or branches for ${unhandled.join(", ")})'
+		} else {
+			msg += ' (add `else {}` branch)'
+		}
+		c.error(msg, node.pos)
+	}
 }
