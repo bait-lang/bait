@@ -11,7 +11,7 @@ pub fun ( e Expr) repr() string {
 		CallExpr{ e.name + '()'} // TODO left.repr, args
 		CharLiteral { e.val }
 		ComptimeVar { e.name }
-		EnumVal{ e.name + '.' + e.val }
+		EnumVal{ e.val }
 		FloatLiteral { e.val }
 		HashExpr { '#XX' } // TODO lang
 		Ident { e.name }
