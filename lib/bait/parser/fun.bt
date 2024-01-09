@@ -169,9 +169,12 @@ fun (mut p Parser) fun_call(lang ast.Language)ast.CallExpr{
 	args := p.call_args()
 	p.check(.rpar)
 
+	or_block := p.or_block()
+
 	return ast.CallExpr{
 		name = name
 		args = args
+		or_block = or_block
 		pkg = p.pkg_name
 		pos = pos
 		lang = lang
@@ -185,11 +188,14 @@ fun (mut p Parser) method_call(left ast.Expr) ast.CallExpr {
 	args := p.call_args()
 	p.check(.rpar)
 
+	or_block := p.or_block()
+
 	return ast.CallExpr{
 		is_method = true
 		left = left
 		name = name
 		args = args
+		or_block = or_block
 		pos = pos
 	}
 }
@@ -205,4 +211,30 @@ fun (mut p Parser) call_args() []ast.CallArg {
 		}
 	}
 	return args
+}
+
+fun (mut p Parser) or_block() ast.OrBlock {
+	// Propagation
+	if p.tok == .excl {
+		p.next()
+		return ast.OrBlock{
+			kind = .prop
+		}
+	}
+
+	// No block
+	if p.tok != .key_or {
+		return ast.OrBlock{
+			kind = .none
+		}
+	}
+
+	// or {}
+	p.next()
+	stmts := p.parse_block()
+
+	return ast.OrBlock {
+		kind = .block
+		stmts = stmts
+	}
 }

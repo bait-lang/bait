@@ -222,6 +222,7 @@ global:
 	noreturn bool
 pub:
 	args []CallArg
+	or_block OrBlock
 	is_method bool
 	pkg string
 	pos token.Pos
@@ -232,6 +233,18 @@ global:
 	typ Type
 pub:
 	expr Expr
+}
+
+pub enum OrKind {
+	none
+	block
+	prop
+}
+
+pub struct OrBlock {
+pub:
+	kind OrKind
+	stmts []Stmt
 }
 
 pub struct CharLiteral{
