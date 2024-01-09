@@ -167,7 +167,7 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 				l.pos += 1
 				return .ne
 			}
-			return l.unknown_char(c)
+			return .excl
 		}
 		`<` {
 			if l.text[l.pos] == `=` {
