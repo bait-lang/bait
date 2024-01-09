@@ -336,9 +336,16 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 fun (mut c Checker) or_block(node ast.CallExpr) {
 	ret_sym := c.table.get_sym(node.return_type)
 	if ret_sym.kind != .result {
-		// TODO error or/propagate not possible
+		if node.or_block.kind != .none {
+			c.error('${node.name} does not return a result, it cannot have an `or {}` block or `!` at the end', node.pos)
+		}
 		return
 	}
 
-	c.error('${node.name} returns a result, it must have an `or {}` block or propagation `!` at the end', node.pos)
+	if node.or_block.kind == .none {
+		c.error('${node.name} returns a result, it must have an `or {}` block or propagation `!` at the end', node.pos)
+		return
+	}
+
+	c.stmts(node.or_block.stmts)
 }
