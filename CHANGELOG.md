@@ -10,6 +10,9 @@ _unreleased_
 ### Breaking
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 
+### Generics
+- Implement generic structs
+
 ### Error Checks
 - match
   - Require match to be exhaustive
