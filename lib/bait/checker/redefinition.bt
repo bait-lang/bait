@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
-package builder
+package checker
 
 import bait.ast
 import bait.errors
@@ -13,33 +13,32 @@ struct FunRedefinition {
 	signature string
 }
 
-fun (b Builder) check_redefined_functions() bool {
-	// Note: It is assumed that there are at most a few redefined functions.
-	// Thus the performance impact of looping over all files and root stmts is negligible.
-
-	if b.parser.table.redefined_funs.length == 0 {
-		return false
+fun (mut c Checker) check_fun_redefinitions(files []ast.File) {
+	if c.table.redefined_funs.length == 0 {
+		return
 	}
 
-	// Remove duplicates that happen in case of a tripple redefinition
-	mut unique_redefs := []string
-	for name in b.parser.table.redefined_funs {
-		if not unique_redefs.contains(name) {
-			unique_redefs.push(name)
+	// Remove duplicates (e.g. triple redefinitions)
+	mut unique := []string
+	for name in c.table.redefined_funs {
+		if not unique.contains(name) {
+			unique.push(name)
 		}
 	}
 
-	for name in unique_redefs {
+	// Note: It is assumed that there are at most a few redefined functions.
+	// Thus the performance impact of looping over all files and root stmts is ok.
+	for name in unique {
 		// Collect information about redefinitions
 		mut redefinitions := []FunRedefinition
-		for file in b.parsed_files {
+		for file in files {
 			for stmt in file.stmts {
 				if stmt is ast.FunDecl and stmt.name == name {
 					redefinitions.push(FunRedefinition{
 						path = file.path
 						pos = stmt.pos
 						name = name
-						signature = b.fun_signature(stmt)
+						signature = c.fun_signature(stmt)
 					})
 				}
 			}
@@ -51,13 +50,12 @@ fun (b Builder) check_redefined_functions() bool {
 			errors.info('conflict', redef.path, redef.pos, redef.signature)
 		}
 	}
-	return true
 }
 
-fun (b Builder) fun_signature(node ast.FunDecl) string {
+fun (c Checker) fun_signature(node ast.FunDecl) string {
 	mut sig := 'fun ${node.name}('
 	for i, p in node.params {
-		type_name := b.parser.table.get_sym(p.typ).name
+		type_name := c.table.get_sym(p.typ).name
 		sig += '${p.name} ${type_name}'
 		if i < node.params.length - 1 {
 			sig += ', '

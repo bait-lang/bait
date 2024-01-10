@@ -44,6 +44,8 @@ pub fun (mut c Checker) check_files(files []ast.File) {
 		c.errors = []errors.Message
 	}
 
+	c.check_fun_redefinitions(files)
+
 	// no main function needed for libraries, tests and script mode
 	if c.prefs.is_library or c.prefs.is_test or c.prefs.is_script {
 		return

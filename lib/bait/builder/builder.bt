@@ -173,9 +173,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 	b.checker.check_files(sorted_files)
 	timers.show('CHECK')
 
-	if b.check_redefined_functions() {
-		return 1
-	}
 	if b.print_errors_and_warnings(false) {
 		return 1
 	}
