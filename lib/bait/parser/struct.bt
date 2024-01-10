@@ -134,9 +134,11 @@ fun (mut p Parser) struct_init()ast.StructInit{
 	mut typ := p.parse_type()
 	conc_types := p.concrete_types()
 	if conc_types.length > 0 {
+		parent := p.table.get_sym(typ)
 		typ = p.table.register_sym(ast.TypeSymbol{
 			kind = .generic_inst
 			parent = typ
+			pkg = parent.pkg
 			info = ast.GenericInst{
 				concrete_types = conc_types
 			}

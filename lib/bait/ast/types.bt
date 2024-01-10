@@ -79,6 +79,10 @@ global:
 }
 
 pub fun (sym TypeSymbol) find_field(name string, t Table) StructField {
+	if sym.kind == .generic_inst {
+		return t.unwrap_generic(sym).find_field(name, t)
+	}
+
 	if sym.info is StructInfo {
 		info := sym.info as StructInfo
 		for f in info.fields {
@@ -91,6 +95,7 @@ pub fun (sym TypeSymbol) find_field(name string, t Table) StructField {
 		parent_sym := t.get_sym(sym.parent)
 		return parent_sym.find_field(name, t)
 	}
+
 	return StructField{}
 }
 
