@@ -10,6 +10,9 @@ _unreleased_
 ### Breaking
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 
+### Generics
+- Implement generic structs
+
 ### Error Checks
 - match
   - Require match to be exhaustive
@@ -56,6 +59,7 @@ _26 December 2023_
 - Check that concrete types for each generic type match
 - Generate concrete functions on both backends
 - Fix invalid error that a generic type is private
+- Fix string conversion of generic types
 
 ### Package and Import System
 - Import resolving order: Search for imports next to the importer first

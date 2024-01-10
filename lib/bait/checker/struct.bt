@@ -42,7 +42,8 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 }
 
 fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
-	sym := c.table.get_sym(node.typ)
+	gen_sym := c.table.get_sym(node.typ)
+	mut sym := c.table.unwrap_generic(gen_sym)
 	if sym.kind == .placeholder {
 		c.error('undefined struct ${node.name}', node.pos)
 		return ast.PLACEHOLDER_TYPE
@@ -53,6 +54,7 @@ fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 	}
 
 	c.check_init_field_values(node, sym.info as ast.StructInfo)
+
 
 	node.name = sym.name
 	for field in node.fields {

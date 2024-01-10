@@ -340,13 +340,20 @@ fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
 	if p.val == 'map' {
 		return p.map_init()
 	}
+
 	if p.peek() == .lpar {
 		return p.fun_call(lang)
 	}
-	if p.is_struct_possible and p.peek() == .lcur {
-		return p.struct_init()
+
+	capitalised := p.val[0].is_capital() and not p.val.is_upper()
+
+	if p.is_struct_possible and (p.peek() == .lcur or p.peek() == .lsqr) {
+		if capitalised or ['array', 'map', 'string'].contains(p.val) {
+			return p.struct_init()
+		}
 	}
-	if p.peek() == .dot and p.val[0].is_capital() and not p.val.is_upper() {
+
+	if capitalised and p.peek() == .dot {
 		return p.enum_val(true)
 	}
 

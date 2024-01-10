@@ -339,6 +339,11 @@ fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 		return
 	}
 
+	if sym.kind == .generic {
+		g.expr_to_string(expr, g.cur_concrete_types[sym.name])
+		return
+	}
+
 	name := g.get_str_fun(typ)
 	g.write('${name}(')
 	g.expr(expr)

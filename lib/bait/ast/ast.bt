@@ -112,7 +112,7 @@ global:
 	noreturn bool
 	stmts []Stmt
 	generic_names []string
-	concrete_types [][]Type // Array of concrete used concrete types. Populated in checker
+	concrete_types [][]Type
 }
 
 pub struct Param{
@@ -379,6 +379,7 @@ pub:
 	pos token.Pos
 global:
 	name string
+	concrete_types []Type
 }
 
 pub struct StructInitField{

@@ -62,6 +62,7 @@ pub enum TypeKind {
 	sum_type
 	fun_
 	generic
+	generic_inst
 }
 
 pub struct TypeSymbol{
