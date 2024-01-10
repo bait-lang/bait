@@ -1,3 +1,8 @@
+struct FieldTypes {
+	a Bar
+	b []Bar
+}
+
 // fun params
 fun foo (y MyType) {
 

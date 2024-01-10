@@ -1,2 +1,4 @@
-tests/out/error/type/unknown.in.bt:2:9 error: unknown type MyType
-tests/out/error/type/unknown.in.bt:5:8 error: unknown type u7
+tests/out/error/type/unknown.in.bt:2:1 error: unknown type Bar
+tests/out/error/type/unknown.in.bt:3:1 error: unknown type Bar
+tests/out/error/type/unknown.in.bt:7:9 error: unknown type MyType
+tests/out/error/type/unknown.in.bt:10:8 error: unknown type u7

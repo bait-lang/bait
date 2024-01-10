@@ -11,7 +11,7 @@ _unreleased_
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 
 ### Generics
-- Implement generic structs
+- _[JS]_ Implement generic structs
 
 ### Error Checks
 - match
@@ -21,6 +21,7 @@ _unreleased_
 
 ### Type Checks
 - Ensure function parameter type exists
+- Fix existence check for array element types
 - Raise error if array type cannot be inferred
 - Properly check return type of `array.last()`
 
@@ -37,6 +38,7 @@ _unreleased_
 
 ### CLI and Tooling
 - `build`: Add `-cc` option to use a custom C compiler
+- `self`: Use $BAITEXE as default out name
 
 ### General Fixes
 - _[JS]_ Fix integer division assign that could result in a float

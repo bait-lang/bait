@@ -106,8 +106,9 @@ pub fun (sym TypeSymbol) has_method(name string) bool {
 pub fun (t Table) register_builtins(){
 	// IMPORTANT: Order of registration must match the order of the constants above
 	t.register_sym(TypeSymbol{
-		name = 'placeholder'
+		name = '_'
 		kind = .placeholder
+		is_pub = true
 	})
 	t.register_sym(TypeSymbol{ name = 'void' })
 	t.register_num('i8')
