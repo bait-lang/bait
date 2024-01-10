@@ -228,6 +228,15 @@ fun (mut g Gen) write_default_value(typ ast.Type) {
 	}
 }
 
+
+fun (g Gen) get_concrete_name(name string, concrete_types []ast.Type) string {
+	mut full_name := name
+	for t in concrete_types {
+		full_name += '_' + g.table.get_sym(t).name
+	}
+	return full_name
+}
+
 fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 	sym := g.table.get_sym(typ)
 	if g.cur_concrete_types.length == 0 {

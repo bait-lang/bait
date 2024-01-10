@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 package ast
 
-type TypeInfo := ArrayInfo | EnumInfo | FunInfo | MapInfo | StructInfo | SumTypeInfo | EmptyInfo
+type TypeInfo := ArrayInfo | EnumInfo | FunInfo | GenericInst | MapInfo | StructInfo | SumTypeInfo | EmptyInfo
 
 pub struct ArrayInfo{
 pub:
@@ -20,6 +20,11 @@ pub:
 	return_type Type
 }
 
+pub struct GenericInst{
+pub:
+	concrete_types []Type
+}
+
 pub struct MapInfo{
 pub:
 	key_type Type
@@ -29,6 +34,7 @@ pub:
 pub struct StructInfo{
 pub:
 	fields []StructField
+	generic_names []string
 }
 
 pub struct SumTypeInfo{

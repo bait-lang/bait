@@ -88,6 +88,7 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 		pkg = p.pkg_name
 		info = ast.StructInfo{
 			fields = fields
+			generic_names = generic_names
 		}
 	}
 	typ := p.table.register_sym(tsym)
@@ -99,7 +100,6 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 		typ = typ
 		fields = fields
 		pos = pos
-		generic_names = generic_names
 	}
 }
 
@@ -131,9 +131,17 @@ fun (mut p Parser) struct_init()ast.StructInit{
 	pos := p.pos()
 
 	name := p.val
-	typ := p.parse_type()
-
+	mut typ := p.parse_type()
 	conc_types := p.concrete_types()
+	if conc_types.length > 0 {
+		typ = p.table.register_sym(ast.TypeSymbol{
+			kind = .generic_inst
+			parent = typ
+			info = ast.GenericInst{
+				concrete_types = conc_types
+			}
+		})
+	}
 
 	p.check(.lcur)
 	mut fields := []ast.StructInitField

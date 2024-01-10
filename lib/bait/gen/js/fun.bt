@@ -32,7 +32,7 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 		name = js_name(node.name)
 	}
 	if g.cur_concrete_types.length > 0 {
-		name = g.generic_fun_name(name, g.cur_concrete_types.values())
+		name = g.get_concrete_name(name, g.cur_concrete_types.values())
 	}
 
 	g.write('${name}(')
@@ -97,7 +97,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 	}
 
 	if node.concrete_types.length > 0 {
-		name = g.generic_fun_name(name, node.concrete_types)
+		name = g.get_concrete_name(name, node.concrete_types)
 	}
 
 	g.write(name)
@@ -138,12 +138,4 @@ fun (mut g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSym
 		g.expr(node.args[i].expr)
 	}
 	g.write(')')
-}
-
-fun (g Gen) generic_fun_name(name string, concrete_types []ast.Type) string {
-	mut full_name := name
-	for t in concrete_types {
-		full_name += '_' + g.table.get_sym(t).name
-	}
-	return full_name
 }

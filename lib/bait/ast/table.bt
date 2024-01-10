@@ -40,6 +40,14 @@ pub fun (t Table) get_final_sym(typ Type) TypeSymbol {
 	return s
 }
 
+
+pub fun (t Table) unwrap_generic(sym TypeSymbol) TypeSymbol {
+	if sym.kind == .generic_inst {
+		return t.get_sym(sym.parent)
+	}
+	return sym
+}
+
 pub fun (t Table) type_name(typ Type) string {
 	amps := '&'.repeat(typ.get_nr_amp())
 	return amps + t.get_sym(typ).name

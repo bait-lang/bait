@@ -161,9 +161,6 @@ pub:
 	typ Type
 	fields []StructField
 	pos token.Pos
-global:
-	generic_names []string
-	concrete_types [][]Type
 }
 
 pub struct StructField{
