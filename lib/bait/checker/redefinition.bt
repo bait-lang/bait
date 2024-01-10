@@ -36,11 +36,22 @@ fun (mut c Checker) check_fun_redefinitions(files []ast.File) {
 			}
 		}
 
-		// Raise the error and show where redefinitions happened
-		errors.generic_error('redfinition of function "${name}"')
-		for redef in redefinitions {
-			errors.info('conflict', redef.path, redef.pos, redef.signature)
+		// Add the error and show where redefinitions happened
+		mut err := errors.Message{
+			kind = .error
+			msg = 'redfinition of function "${name}"'
 		}
+		for redef in redefinitions {
+			err.infos.push(errors.Message{
+				kind = .info
+				path = redef.path
+				pos = redef.pos
+				title = 'conflict'
+				msg = redef.signature
+
+			})
+		}
+		c.errors.push(err)
 	}
 }
 
