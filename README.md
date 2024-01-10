@@ -10,7 +10,8 @@ fun main() {
 ```
 
 ## Key Features
-> **Note:** Bait is in an alpha state. Incomplete features are marked with :construction:. Breaking changes may occur.
+> **Note:** Bait is under heavy development. Incomplete features are marked with :construction:.
+> While it is quite stable already, breaking changes might happen.
 
 - Clean, simple and consistent syntax
 - Type and memory safety with immutability by default
