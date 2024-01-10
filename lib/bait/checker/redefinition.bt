@@ -13,6 +13,12 @@ struct FunRedefinition {
 	signature string
 }
 
+struct StructRedefinition {
+	path string
+	pos token.Pos
+	name string
+}
+
 fun (mut c Checker) check_fun_redefinitions(files []ast.File) {
 	if c.redefined_funs.length == 0 {
 		return
@@ -66,4 +72,47 @@ fun (c Checker) fun_signature(node ast.FunDecl) string {
 	}
 	sig += ')'
 	return sig
+}
+
+fun (mut c Checker) check_struct_redefinitions(files []ast.File) {
+	// Remove duplicates
+	mut unique := []string
+	for name in c.table.redefined_structs {
+		if not unique.contains(name) {
+			unique.push(name)
+		}
+	}
+
+	// TODO share more logic with fun redefs
+	for name in unique {
+		mut redefinitions := []StructRedefinition
+		for file in files {
+			for stmt in file.stmts {
+				if stmt is ast.StructDecl and stmt.name == name {
+					redefinitions.push(StructRedefinition{
+						path = file.path
+						pos = stmt.pos
+						name = name
+					})
+				}
+			}
+		}
+
+		// Add the error and show where redefinitions happened
+		mut err := errors.Message{
+			kind = .error
+			msg = 'redfinition of struct "${name}"'
+		}
+		for redef in redefinitions {
+			err.infos.push(errors.Message{
+				kind = .info
+				path = redef.path
+				pos = redef.pos
+				title = 'conflict'
+				msg = name
+
+			})
+		}
+		c.errors.push(err)
+	}
 }
