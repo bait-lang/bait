@@ -101,9 +101,6 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 		}
 		sym.methods.push(node)
 	} else {
-		if p.table.fun_decls.contains(name) {
-			p.table.redefined_funs.push(name)
-		}
 		p.table.fun_decls[name] = node
 		mut param_types := []ast.Type
 		for param in params {

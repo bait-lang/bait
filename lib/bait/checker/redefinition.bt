@@ -14,21 +14,13 @@ struct FunRedefinition {
 }
 
 fun (mut c Checker) check_fun_redefinitions(files []ast.File) {
-	if c.table.redefined_funs.length == 0 {
+	if c.redefined_funs.length == 0 {
 		return
-	}
-
-	// Remove duplicates (e.g. triple redefinitions)
-	mut unique := []string
-	for name in c.table.redefined_funs {
-		if not unique.contains(name) {
-			unique.push(name)
-		}
 	}
 
 	// Note: It is assumed that there are at most a few redefined functions.
 	// Thus the performance impact of looping over all files and root stmts is ok.
-	for name in unique {
+	for name in c.redefined_funs {
 		// Collect information about redefinitions
 		mut redefinitions := []FunRedefinition
 		for file in files {

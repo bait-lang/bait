@@ -25,6 +25,7 @@ mut:
 	is_loop bool
 	returns bool
 	export_names []string
+	redefined_funs []string
 pub mut:
 	infos []errors.Message
 	warnings []errors.Message

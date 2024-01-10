@@ -8,7 +8,7 @@ pub mut:
 	fun_decls map[string]FunDecl
 	type_idxs map[string]Type
 	type_symbols []TypeSymbol
-	redefined_funs []string
+	redefined_structs []string
 	needed_equality_funs []Type
 	needed_str_funs []Type
 	generic_fun_types map[string][][]Type // Array of concrete types used for each generic fun
@@ -39,7 +39,6 @@ pub fun (t Table) get_final_sym(typ Type) TypeSymbol {
 	}
 	return s
 }
-
 
 pub fun (t Table) unwrap_generic(sym TypeSymbol) TypeSymbol {
 	if sym.kind == .generic_inst {

@@ -23,9 +23,15 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 			}
 		}
 	} else {
-		if c.scope.is_known(node.name) {
+		def := c.scope.get(node.name)
+		if def.kind == .function {
+			if not c.redefined_funs.contains(node.name) {
+				c.redefined_funs.push(node.name)
+			}
+		} else if def.kind != .unknown {
 			c.error('redefinition of ${node.name}', node.pos)
 		}
+
 		mut param_types := []ast.Type
 		for param in node.params {
 			param_types.push(param.typ)

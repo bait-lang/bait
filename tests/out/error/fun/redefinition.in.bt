@@ -2,4 +2,6 @@ fun foo(a string){}
 
 fun foo(b bool){}
 
-fun foo(c i32, d i32) i32{}
+fun foo(c i32, d i32) i32 {
+	return 0
+}
