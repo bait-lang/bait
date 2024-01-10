@@ -18,6 +18,7 @@ _unreleased_
   - Require match to be exhaustive
   - Prevent duplicate branch conditions
   - Warn if else branch is unreachable
+- Prevent struct redefinition
 
 ### Type Checks
 - Ensure function parameter type exists

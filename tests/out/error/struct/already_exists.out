@@ -1,0 +1,1 @@
+tests/out/error/struct/already_exists.in.bt:4:0 error: cannot register struct "Foo", another type with this name exists

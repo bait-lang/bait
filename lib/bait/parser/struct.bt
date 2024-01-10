@@ -81,6 +81,12 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 	}
 	p.check(.rcur)
 
+	if p.table.get_idx(name) > 0 {
+		// TODO move into checker
+		p.error('cannot register struct "${name}", another type with this name exists')
+		return ast.StructDecl{}
+	}
+
 	tsym := ast.TypeSymbol{
 		kind = .struct_
 		name = p.prepend_pkg(name)
