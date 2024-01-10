@@ -1,0 +1,20 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun result_fun(give_error bool) !i32 {
+	if give_error {
+		return error('my message')
+	}
+	return 1
+}
+
+fun test_result() {
+	a := result_fun(false) or { assert false }
+	assert a == 1
+
+	mut errs := 0
+	e := result_fun(true) or {
+		errs += 1
+	}
+	assert errs == 1
+}
