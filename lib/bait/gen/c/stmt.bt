@@ -16,20 +16,23 @@ fun (mut g Gen) stmts(stmts []ast.Stmt) {
 
 fun (mut g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
+		ast.AssertStmt { panic('Not implemented') } // TODO
 		ast.AssignStmt { g.assign_stmt(stmt) }
 		ast.ConstDecl { g.const_decl(stmt) }
+		ast.EnumDecl { panic('Not implemented') } // TODO, probably write_types()
 		ast.ExprStmt { g.expr_stmt(stmt) }
 		ast.ForLoop { g.for_loop(stmt) }
 		ast.ForClassicLoop { g.for_classic_loop(stmt) }
 		ast.ForInLoop { g.for_in_loop(stmt) }
 		ast.FunDecl { g.fun_decl(stmt) }
+		ast.GlobalDecl { panic('Not implemented') } // TODO
 		ast.IfMatch { g.if_match(stmt) }
 		ast.InterfaceDecl { g.interface_decl(stmt) }
 		ast.LoopControlStmt { g.loop_control_stmt(stmt) }
 		ast.ReturnStmt { g.return_stmt(stmt) }
 		ast.StructDecl {} // see write_types()
 		ast.TypeDecl {} // see write_types()
-		else {}
+		ast.EmptyStmt { panic('unexpected EmptyStmt') }
 	}
 }
 

@@ -12,42 +12,29 @@ fun (mut c Checker) stmts(stmts []ast.Stmt){
 }
 
 fun (mut c Checker) stmt(stmt ast.Stmt){
-	if stmt is ast.AssertStmt {
-		c.assert_stmt(stmt)
-	} else if stmt is ast.AssignStmt {
-		c.assign_stmt(stmt)
-	} else if stmt is ast.ConstDecl {
-		c.const_decl(stmt)
-	} else if stmt is ast.ExprStmt {
-		c.expr_stmt(stmt)
-	} else if stmt is ast.EnumDecl {
-		c.enum_decl(stmt)
-	} else if stmt is ast.ForLoop {
-		c.for_loop(stmt)
-	} else if stmt is ast.ForClassicLoop {
-		c.for_classic_loop(stmt)
-	} else if stmt is ast.ForInLoop {
-		c.for_in_loop(stmt)
-	} else if stmt is ast.FunDecl {
-		c.fun_decl(stmt)
-	} else if stmt is ast.GlobalDecl {
-		c.global_decl(stmt)
-	} else if stmt is ast.IfMatch {
-		c.if_match(stmt)
-	} else if stmt is ast.InterfaceDecl {
-		c.interface_decl(stmt)
-	} else if stmt is ast.LoopControlStmt {
-		c.loop_control_stmt(stmt)
-	} else if stmt is ast.ReturnStmt {
-		c.return_stmt(stmt)
-	} else if stmt is ast.StructDecl {
-		c.struct_decl(stmt)
-	} else if stmt is ast.TypeDecl {
-		c.type_decl(stmt)
-	} else {
-		s := stmt as ast.EmptyStmt
-		c.error('unexpected stmt: ${s}', s.pos)
+	match stmt {
+		ast.AssertStmt { c.assert_stmt(stmt) }
+		ast.AssignStmt { c.assign_stmt(stmt) }
+		ast.ConstDecl { c.const_decl(stmt) }
+		ast.ExprStmt { c.expr_stmt(stmt) }
+		ast.EnumDecl { c.enum_decl(stmt) }
+		ast.ForLoop { c.for_loop(stmt) }
+		ast.ForClassicLoop { c.for_classic_loop(stmt) }
+		ast.ForInLoop { c.for_in_loop(stmt) }
+		ast.FunDecl { c.fun_decl(stmt) }
+		ast.GlobalDecl { c.global_decl(stmt) }
+		ast.IfMatch { c.if_match(stmt) }
+		ast.InterfaceDecl { c.interface_decl(stmt) }
+		ast.LoopControlStmt { c.loop_control_stmt(stmt) }
+		ast.ReturnStmt { c.return_stmt(stmt) }
+		ast.StructDecl { c.struct_decl(stmt) }
+		ast.TypeDecl { c.type_decl(stmt) }
+		else {
+			s := stmt as ast.EmptyStmt
+			c.error('unexpected stmt: ${s}', s.pos)
+		}
 	}
+
 	c.expected_type = ast.VOID_TYPE
 }
 

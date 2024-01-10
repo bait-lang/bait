@@ -6,56 +6,35 @@ import bait.ast
 import bait.token
 
 fun (mut c Checker) expr(expr ast.Expr) ast.Type {
-	if expr is ast.AnonFun {
-		return c.anon_fun(expr)
-	} else if expr is ast.ArrayInit {
-		return c.array_init(expr)
-	} else if expr is ast.AsCast {
-		return c.as_cast(expr)
-	} else if expr is ast.BoolLiteral {
-		return ast.BOOL_TYPE
-	} else if expr is ast.CallExpr {
-		return c.call_expr(expr)
-	} else if expr is ast.CharLiteral {
-		return ast.U8_TYPE
-	} else if expr is ast.ComptimeVar {
-		return c.comptime_var(expr)
-	} else if expr is ast.EnumVal {
-		return c.enum_val(expr)
-	} else if expr is ast.FloatLiteral {
-		return ast.F64_TYPE
-	} else if expr is ast.HashExpr {
-		return c.hash_expr(expr)
-	} else if expr is ast.Ident {
-		return c.ident(expr)
-	} else if expr is ast.IfMatch {
-		return c.if_match(expr)
-	} else if expr is ast.IndexExpr {
-		return c.index_expr(expr)
-	} else if expr is ast.InfixExpr {
-		return c.infix_expr(expr)
-	} else if expr is ast.IntegerLiteral {
-		return ast.I32_TYPE
-	} else if expr is ast.MapInit {
-		return c.map_init(expr)
-	} else if expr is ast.ParExpr {
-		return c.par_expr(expr)
-	} else if expr is ast.PrefixExpr {
-		return c.prefix_expr(expr)
-	} else if expr is ast.SelectorExpr {
-		return c.selector_expr(expr)
-	} else if expr is ast.StringLiteral {
-		return c.string_literal(expr)
-	} else if expr is ast.StringInterLiteral {
-		return c.string_inter_literal(expr)
-	} else if expr is ast.StructInit {
-		return c.struct_init(expr)
-	} else if expr is ast.TypeOf {
-		return c.type_of(expr)
-	} else {
-		e := expr as ast.EmptyExpr
-		c.error('unexpected expr: ${e}', e.pos)
-		return ast.PLACEHOLDER_TYPE
+	return match expr {
+		ast.AnonFun { c.anon_fun(expr) }
+		ast.ArrayInit { c.array_init(expr) }
+		ast.AsCast { c.as_cast(expr) }
+		ast.BoolLiteral { ast.BOOL_TYPE }
+		ast.CallExpr { c.call_expr(expr) }
+		ast.CharLiteral { ast.U8_TYPE }
+		ast.ComptimeVar { c.comptime_var(expr) }
+		ast.EnumVal { c.enum_val(expr) }
+		ast.FloatLiteral { ast.F64_TYPE }
+		ast.HashExpr { c.hash_expr(expr) }
+		ast.Ident { c.ident(expr) }
+		ast.IfMatch { c.if_match(expr) }
+		ast.IndexExpr { c.index_expr(expr) }
+		ast.InfixExpr { c.infix_expr(expr) }
+		ast.IntegerLiteral { ast.I32_TYPE }
+		ast.MapInit { c.map_init(expr) }
+		ast.ParExpr { c.par_expr(expr) }
+		ast.PrefixExpr { c.prefix_expr(expr) }
+		ast.SelectorExpr { c.selector_expr(expr) }
+		ast.StringLiteral { c.string_literal(expr) }
+		ast.StringInterLiteral { c.string_inter_literal(expr) }
+		ast.StructInit { c.struct_init(expr) }
+		ast.TypeOf { c.type_of(expr) }
+		else {
+			e := expr as ast.EmptyExpr
+			c.error('unexpected expr: ${e}', e.pos)
+			ast.PLACEHOLDER_TYPE
+		}
 	}
 }
 

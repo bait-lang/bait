@@ -8,16 +8,22 @@ import bait.util
 
 fun (mut g Gen) expr(expr ast.Expr) {
 	match expr {
+		ast.AnonFun { panic('not implemented') } // TODO
 		ast.ArrayInit { g.array_init(expr) }
 		ast.AsCast { g.as_cast(expr) }
 		ast.BoolLiteral { g.bool_literal(expr) }
 		ast.CallExpr { g.call_expr(expr) }
+		ast.CharLiteral { panic('not implemented') } // TODO
+		ast.ComptimeVar { panic('not implemented') } // TODO
+		ast.EnumVal { panic('not implemented') } // TODO
+		ast.FloatLiteral { panic('not implemented') } // TODO
 		ast.HashExpr { g.hash_expr(expr) }
 		ast.Ident { g.ident(expr) }
 		ast.IfMatch { g.if_match(expr) }
 		ast.IndexExpr { g.index_expr(expr) }
 		ast.InfixExpr { g.infix_expr(expr) }
 		ast.IntegerLiteral { g.integer_literal(expr) }
+		ast.MapInit { panic('not implemented') } // TODO
 		ast.ParExpr { g.par_expr(expr) }
 		ast.PrefixExpr { g.prefix_expr(expr)}
 		ast.SelectorExpr { g.selector_expr(expr) }
@@ -25,7 +31,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.StringInterLiteral { g.string_inter_literal(expr) }
 		ast.StructInit { g.struct_init(expr) }
 		ast.TypeOf{ g.type_of(expr)}
-		else {}
+		ast.EmptyExpr { panic('unexpected EmptyExpr') }
 	}
 }
 
