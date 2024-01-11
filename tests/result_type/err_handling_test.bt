@@ -12,9 +12,16 @@ fun test_result() {
 	a := result_fun(false) or { assert false }
 	assert a == 1
 
-	mut errs := 0
-	e := result_fun(true) or {
-		errs += 1
+	b := result_fun(true) or {
+		-5
 	}
-	assert errs == 1
+	assert b == -5
+}
+
+fun get_false() bool {
+	return false
+}
+
+fun test_or_infix() {
+	assert get_false() or true
 }
