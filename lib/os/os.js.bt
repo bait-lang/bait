@@ -185,15 +185,15 @@ pub fun input(prompt string) string {
 	return from_js_string(#JS.'input' as #JS.String)
 }
 
-pub struct Result {
+pub struct CmdRes {
 pub:
 	code i32
 	stdout string
 	stderr string
 }
 
-pub fun exec(cmd string) Result {
-	mut res := Result{}
+pub fun exec(cmd string) CmdRes {
+	mut res := CmdRes{}
 	#JS.'const out = JS.child_process.spawnSync(cmd.str, { shell: true })
 	res.code = out.status
 	res.stdout = from_js_string(out.stdout.toString())
