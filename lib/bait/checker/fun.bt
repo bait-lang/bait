@@ -351,6 +351,10 @@ fun (mut c Checker) or_block(node ast.CallExpr) {
 	}
 
 	c.is_or_block = true
+	c.scope.register('err', ast.ScopeObject{
+		kind = .variable
+		typ = ast.STRING_TYPE
+	})
 	c.stmts(node.or_block.stmts)
 	c.is_or_block = false
 }

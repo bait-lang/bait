@@ -75,6 +75,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 
 	g.writeln('if (${tmp}.is_error) {')
 	if node.or_block.kind == .block {
+		g.writeln('\t const err = ${tmp}.msg')
 		g.stmts(node.or_block.stmts)
 
 		if node.or_block.stmts.last() is ast.ExprStmt {
