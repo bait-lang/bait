@@ -58,8 +58,8 @@ fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
 	expr := node.expr
 	node.typ = c.expr(expr)
 
-	// Used are all exprs inside if/match expr, functions calls, if/match stmt and HashExprs
-	if c.is_if_match_expr or expr is ast.CallExpr or expr is ast.IfMatch or expr is ast.HashExpr {
+	// Used are all exprs inside if/match expr and or blocks, functions calls, if/match stmt and HashExprs
+	if c.is_if_match_expr or c.is_or_block or expr is ast.CallExpr or expr is ast.IfMatch or expr is ast.HashExpr {
 		return
 	}
 	e := expr as ast.EmptyExpr

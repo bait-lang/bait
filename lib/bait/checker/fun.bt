@@ -350,5 +350,7 @@ fun (mut c Checker) or_block(node ast.CallExpr) {
 		return
 	}
 
+	c.is_or_block = true
 	c.stmts(node.or_block.stmts)
+	c.is_or_block = false
 }
