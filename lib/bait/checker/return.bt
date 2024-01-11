@@ -47,7 +47,6 @@ fun (c Checker) stmt_returns (stmt ast.Stmt) bool {
 	}
 
 	if stmt is ast.IfMatch {
-		// return true
 		return c.returns
 	}
 

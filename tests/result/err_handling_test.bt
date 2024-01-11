@@ -9,14 +9,14 @@ fun result_fun(give_error bool) !i32 {
 }
 
 fun test_result() {
-	a := result_fun(false) or { assert false }
+	a := result_fun(false) or { 0 }
 	assert a == 1
 
 	b := result_fun(true) or {
 		assert err == 'message'
-		(-5)
+		2
 	}
-	assert b == -5
+	assert b == 2
 }
 
 fun get_false() bool {

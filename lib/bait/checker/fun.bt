@@ -357,4 +357,8 @@ fun (mut c Checker) or_block(node ast.CallExpr) {
 	})
 	c.stmts(node.or_block.stmts)
 	c.is_or_block = false
+
+	if not c.stmt_returns(node.or_block.stmts.last()) and not has_toplevel_return(node.or_block.stmts) {
+		c.error('or block does not return a value', node.pos)
+	}
 }

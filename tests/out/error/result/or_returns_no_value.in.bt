@@ -1,0 +1,9 @@
+fun result_fun() !i32 {
+	return 1
+}
+
+a := result_fun() or {}
+
+b := result_fun() or {
+	panic(err)
+}
