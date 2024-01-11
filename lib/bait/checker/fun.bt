@@ -142,7 +142,6 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 		return ast.VOID_TYPE
 	}
 
-
 	// Check argument types
 	c.call_args(def, mut node, 0)
 
@@ -155,6 +154,10 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 		if ret_sym.kind == .generic {
 			node.return_type = node.concrete_types[def.generic_names.index(ret_sym.name)]
 		}
+	}
+
+	if node.name == 'error' {
+		node.return_type = c.cur_fun.return_type
 	}
 
 	return node.return_type
