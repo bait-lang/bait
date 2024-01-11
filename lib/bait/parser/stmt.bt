@@ -274,6 +274,10 @@ fun (mut p Parser) enum_decl()ast.EnumDecl{
 	}
 	p.check(.rcur)
 
+	if p.table.type_exists(name) {
+		p.table.redefined_types.push(name)
+	}
+
 	p.table.register_sym(ast.TypeSymbol{
 		name = name
 		is_pub = is_pub
@@ -321,6 +325,10 @@ fun (mut p Parser) interface_decl()ast.InterfaceDecl{
 		name += '.'
 		p.next()
 		name += p.check_name()
+	}
+
+	if p.table.type_exists(name) {
+		p.table.redefined_types.push(name)
 	}
 
 	// TODO investigate why registration of the sym after loop with methods as struct field does not work
@@ -473,6 +481,11 @@ fun (mut p Parser) type_decl() ast.TypeDecl {
 		name = p.prepend_pkg(name)
 	} else {
 		name = lang.prepend_to(name)
+	}
+
+	// Note: exception for builtin due to C backend type declarations
+	if p.table.type_exists(name) and p.pkg_name != 'builtin' {
+		p.table.redefined_types.push(name)
 	}
 
 	p.check(.decl_assign)

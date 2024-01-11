@@ -1,0 +1,11 @@
+struct Mixed{}
+
+enum Mixed{
+	default
+}
+
+struct Mixed{}
+
+type Mixed := i32
+
+interface Mixed {}

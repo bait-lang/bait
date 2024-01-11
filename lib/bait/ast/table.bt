@@ -8,7 +8,7 @@ pub mut:
 	fun_decls map[string]FunDecl
 	type_idxs map[string]Type
 	type_symbols []TypeSymbol
-	redefined_funs []string
+	redefined_types []string
 	needed_equality_funs []Type
 	needed_str_funs []Type
 	generic_fun_types map[string][][]Type // Array of concrete types used for each generic fun
@@ -32,6 +32,16 @@ pub fun (t Table) get_sym(typ Type) TypeSymbol {
 	return t.type_symbols[typ.idx()]
 }
 
+pub fun (t Table) type_exists(name string) bool {
+	idx := t.get_idx(name)
+	if idx as i32 == 0 {
+		return false
+	}
+
+	sym := t.get_sym(idx)
+	return sym.kind != .placeholder
+}
+
 pub fun (t Table) get_final_sym(typ Type) TypeSymbol {
 	mut s := t.get_sym(typ)
 	for s.kind == .alias_type {
@@ -39,7 +49,6 @@ pub fun (t Table) get_final_sym(typ Type) TypeSymbol {
 	}
 	return s
 }
-
 
 pub fun (t Table) unwrap_generic(sym TypeSymbol) TypeSymbol {
 	if sym.kind == .generic_inst {

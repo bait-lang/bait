@@ -41,7 +41,7 @@ pub fun (runner InOutRunner) test_all_in_root() {
 	}
 }
 
-fun (runner InOutRunner) check_result(res os.Result, out_path string) {
+fun (runner InOutRunner) check_result(res os.CmdRes, out_path string) {
 	// Fix mode: just overwrite the out file
 	if runner.fix_out_file {
 		if runner.check_stdout {

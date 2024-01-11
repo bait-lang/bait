@@ -9,6 +9,7 @@ _unreleased_
 
 ### Breaking
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
+- `os`: Rename struct `Result` to `CmdRes`
 
 ### Generics
 - _[JS]_ Implement generic structs
@@ -18,6 +19,7 @@ _unreleased_
   - Require match to be exhaustive
   - Prevent duplicate branch conditions
   - Warn if else branch is unreachable
+- Prevent redefinition of types (enum, interface, struct, type alias)
 
 ### Type Checks
 - Ensure function parameter type exists
