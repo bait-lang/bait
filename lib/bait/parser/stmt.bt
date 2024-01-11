@@ -483,7 +483,8 @@ fun (mut p Parser) type_decl() ast.TypeDecl {
 		name = lang.prepend_to(name)
 	}
 
-	if p.table.type_exists(name) {
+	// Note: exception for builtin due to C backend type declarations
+	if p.table.type_exists(name) and p.pkg_name != 'builtin' {
 		p.table.redefined_types.push(name)
 	}
 
