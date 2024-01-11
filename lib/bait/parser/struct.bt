@@ -82,7 +82,7 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 	p.check(.rcur)
 
 	if p.table.get_idx(name) > 0 and p.pkg_name != 'builtin' {
-		p.table.redefined_structs.push(name)
+		p.table.redefined_types.push(name)
 	}
 
 	tsym := ast.TypeSymbol{
