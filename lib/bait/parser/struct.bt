@@ -81,13 +81,15 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 	}
 	p.check(.rcur)
 
-	if p.table.get_idx(name) > 0 and p.pkg_name != 'builtin' {
-		p.table.redefined_types.push(name)
+	name_with_pkg := p.prepend_pkg(name)
+	// Note: exception for builtin due to internal struct types (e.g. Array, Map, String)
+	if p.table.type_exists(name_with_pkg) and p.pkg_name != 'builtin' {
+		p.table.redefined_types.push(name_with_pkg)
 	}
 
 	tsym := ast.TypeSymbol{
 		kind = .struct_
-		name = p.prepend_pkg(name)
+		name = name_with_pkg
 		is_pub = is_pub
 		pkg = p.pkg_name
 		info = ast.StructInfo{

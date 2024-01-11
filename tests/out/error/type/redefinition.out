@@ -1,6 +1,0 @@
-error: redfinition of "All"
-tests/out/error/type/redefinition.in.bt:1:0 conflict: struct All
-tests/out/error/type/redefinition.in.bt:3:0 conflict: enum All
-tests/out/error/type/redefinition.in.bt:7:0 conflict: struct All
-tests/out/error/type/redefinition.in.bt:9:0 conflict: type All
-tests/out/error/type/redefinition.in.bt:11:0 conflict: interface All

@@ -1,0 +1,7 @@
+enum More {
+	base
+}
+
+enum More {
+	default
+}

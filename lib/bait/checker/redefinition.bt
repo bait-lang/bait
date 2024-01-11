@@ -88,11 +88,11 @@ fun (mut c Checker) check_type_redefinitions(files []ast.File) {
 
 fun (c Checker) stmt_signature(stmt ast.Stmt) string {
 	return match stmt {
-		ast.EnumDecl { 'enum ${stmt.name}' }
+		ast.EnumDecl { 'enum' }
 		ast.FunDecl { c.fun_signature(stmt) }
-		ast.InterfaceDecl { 'interface ${stmt.name}' }
-		ast.StructDecl { 'struct ${stmt.name}' }
-		ast.TypeDecl { 'type ${stmt.name}' }
+		ast.InterfaceDecl { 'interface' }
+		ast.StructDecl { 'struct' }
+		ast.TypeDecl { 'type' }
 		else { '' }
 	}
 }

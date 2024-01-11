@@ -32,6 +32,16 @@ pub fun (t Table) get_sym(typ Type) TypeSymbol {
 	return t.type_symbols[typ.idx()]
 }
 
+pub fun (t Table) type_exists(name string) bool {
+	idx := t.get_idx(name)
+	if idx as i32 == 0 {
+		return false
+	}
+
+	sym := t.get_sym(idx)
+	return sym.kind != .placeholder
+}
+
 pub fun (t Table) get_final_sym(typ Type) TypeSymbol {
 	mut s := t.get_sym(typ)
 	for s.kind == .alias_type {
