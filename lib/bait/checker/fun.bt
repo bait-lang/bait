@@ -48,7 +48,9 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 	c.stmts(node.stmts)
 	c.close_scope()
 
-	if not node.noreturn and node.return_type != ast.VOID_TYPE and not has_toplevel_return(node.stmts) and not c.returns {
+	ret_sym := c.table.get_sym(node.return_type)
+	is_void := node.return_type == ast.VOID_TYPE or ret_sym.parent == ast.VOID_TYPE
+	if not node.noreturn and not is_void and not has_toplevel_return(node.stmts) and not c.returns {
 		c.error('missing return statement', node.pos)
 	}
 
@@ -358,7 +360,9 @@ fun (mut c Checker) or_block(node ast.CallExpr) {
 	c.stmts(node.or_block.stmts)
 	c.is_or_block = false
 
-	if not c.stmt_returns(node.or_block.stmts.last()) and not has_toplevel_return(node.or_block.stmts) {
-		c.error('or block does not return a value', node.pos)
+	if node.or_block.kind == .block and ret_sym.parent != ast.VOID_TYPE {
+		if not c.stmt_returns(node.or_block.stmts.last()) and not has_toplevel_return(node.or_block.stmts) {
+			c.error('or block does not return a value', node.pos)
+		}
 	}
 }

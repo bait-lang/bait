@@ -9,6 +9,14 @@ fun (mut p Parser) parse_type() ast.Type {
 	// Result type
 	if p.tok == .excl {
 		p.next()
+		if p.tok == .lcur {
+			return p.table.register_sym(ast.TypeSymbol{
+				kind = .result
+				name = 'Result[void]'
+				parent = ast.VOID_TYPE
+			})
+		}
+
 		typ := p.parse_type()
 		tsym := p.table.get_sym(typ)
 		return p.table.register_sym(ast.TypeSymbol{

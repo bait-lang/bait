@@ -87,8 +87,12 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 			g.writeln('${tmp}.data = ${last_line_cut}')
 		}
 	} else {
-		// TODO if main fun: panic, else: return error
+		// TODO panic in main
+		g.writeln('\treturn ${tmp}')
+		g.writeln('}')
+		return
 	}
+
 	g.writeln('}')
 
 	g.empty_line = false
