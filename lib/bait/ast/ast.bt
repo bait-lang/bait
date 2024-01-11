@@ -148,8 +148,9 @@ pub:
 }
 
 pub struct ReturnStmt{
-pub:
+global:
 	expr Expr
+pub:
 	pos token.Pos
 }
 
