@@ -87,8 +87,12 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 			g.writeln('${tmp}.data = ${last_line_cut}')
 		}
 	} else {
-		// TODO panic in main
-		g.writeln('\treturn ${tmp}')
+		if g.cur_fun.name == 'main' {
+			// TODO test
+			g.writeln('\tpanic(${tmp}.msg)')
+		} else {
+			g.writeln('\treturn ${tmp}')
+		}
 		g.writeln('}')
 		return
 	}
