@@ -1,3 +1,0 @@
-error: redfinition of struct "Foo"
-tests/out/error/struct/already_exists.in.bt:1:0 conflict: Foo
-tests/out/error/struct/already_exists.in.bt:3:0 conflict: Foo

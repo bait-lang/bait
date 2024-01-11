@@ -1,0 +1,11 @@
+struct All{}
+
+enum All{
+	default
+}
+
+struct All{}
+
+type All := i32
+
+interface All {}

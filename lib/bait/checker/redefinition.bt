@@ -24,7 +24,7 @@ fun stmt_is_redef(stmt ast.Stmt, name string, kind RedefKind) bool {
 			stmt is ast.FunDecl and stmt.name == name
 		}
 		.type_ {
-			(stmt is ast.StructDecl or stmt is ast.EnumDecl) and stmt.name == name
+			(stmt is ast.EnumDecl or stmt is ast.InterfaceDecl or stmt is ast.StructDecl or stmt is ast.TypeDecl) and stmt.name == name
 		}
 	}
 }
@@ -88,8 +88,11 @@ fun (mut c Checker) check_type_redefinitions(files []ast.File) {
 
 fun (c Checker) stmt_signature(stmt ast.Stmt) string {
 	return match stmt {
+		ast.EnumDecl { 'enum ${stmt.name}' }
 		ast.FunDecl { c.fun_signature(stmt) }
+		ast.InterfaceDecl { 'interface ${stmt.name}' }
 		ast.StructDecl { 'struct ${stmt.name}' }
+		ast.TypeDecl { 'type ${stmt.name}' }
 		else { '' }
 	}
 }
