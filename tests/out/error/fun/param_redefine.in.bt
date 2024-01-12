@@ -1,3 +1,5 @@
 fun foo(p string) {
 	p := 123
 }
+
+fun bar(a i32, a bool) {}

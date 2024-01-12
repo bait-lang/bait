@@ -1,0 +1,2 @@
+tests/out/error/import/shadowing.in.bt:3:8 error: cannot shadow import "os"
+tests/out/error/import/shadowing.in.bt:5:3 error: cannot shadow import "os"

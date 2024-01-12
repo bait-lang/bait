@@ -1,0 +1,3 @@
+struct Foo{}
+
+fun (rec Foo) method(rec i32) {}

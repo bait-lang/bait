@@ -62,7 +62,13 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 fun (c Checker) fun_params(params []ast.Param){
 	for p in params {
 		if c.scope.is_known(p.name) {
-			c.error('cannot shadow import "${p.name}"', p.pos)
+			obj := c.scope.get(p.name)
+			msg := if obj.kind == .package_ {
+				'cannot shadow import "${p.name}"'
+			} else {
+				'redefinition of ${p.name}'
+			}
+			c.error(msg, p.pos)
 			continue
 		}
 

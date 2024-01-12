@@ -25,9 +25,16 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 
 	left := node.left as ast.Ident
 	if c.scope.is_known(left.name) {
-		c.error('redefinition of ${left.name}', node.pos)
+		obj := c.scope.get(left.name)
+		msg := if obj.kind == .package_ {
+			'cannot shadow import "${left.name}"'
+		} else {
+			'redefinition of ${left.name}'
+		}
+		c.error(msg, node.pos)
 		return
 	}
+
 	c.scope.register(left.name, ast.ScopeObject{
 		kind = .variable
 		typ = typ

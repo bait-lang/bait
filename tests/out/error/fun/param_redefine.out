@@ -1,1 +1,2 @@
 tests/out/error/fun/param_redefine.in.bt:2:3 error: redefinition of p
+tests/out/error/fun/param_redefine.in.bt:5:15 error: redefinition of a
