@@ -116,6 +116,11 @@ pub fun rmdir_all(dir string) {
 	#JS.'JS.fs.rmdirSync(dir.str, { recursive: true })'
 }
 
+pub fun read_bytes(path string) []u8 {
+	js_arr := #JS.'[...JS.fs.readFileSync(path.str)]' as #JS.Array
+	return from_js_arr(js_arr)
+}
+
 pub fun read_file(path string) string {
 	return from_js_string(#JS.'JS.fs.readFileSync(path.str).toString()' as #JS.String)
 }

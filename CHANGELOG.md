@@ -46,6 +46,8 @@ _unreleased_
 ### Standard Library
 - builtin
   - _[C]_ Implement string methods: `substr()`, `trim_left()`, `trim_right()` and `repeat()`
+- os
+  - _[JS]_ Implement `read_bytes(path)`
 
 ### CLI and Tooling
 - `build`: Add `-cc` option to use a custom C compiler

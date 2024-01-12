@@ -89,7 +89,7 @@ pub fun (a Array) filter(fn fun (any) bool) Array {
 	return from_js_arr(a.data.filter(fn as #JS.Any))
 }
 
-fun from_js_arr(a #JS.Array) Array {
+pub fun from_js_arr(a #JS.Array) Array {
 	return Array{
 		data = a
 		length = a.length as i32
