@@ -149,6 +149,14 @@ fun (a string) add (b string) string {
 	return from_js_string(a.str + b.str)
 }
 
+@overload: '=='
+fun (a string) eq (b string) bool {
+	if a.length != b.length {
+		return false
+	}
+	return #JS.'a.str === b.str' as bool
+}
+
 pub fun (arr []string) join(sep string) string {
 	js_arr := arr.to_js_arr()
 	return from_js_string(js_arr.join(sep.str))

@@ -33,6 +33,9 @@ _unreleased_
 - Raise error if array type cannot be inferred
 - Properly check return type of `array.last()`
 
+### JS Backend
+- Improve performance of string comparison
+
 ### C Backend
 - builder: Fixes for using the C backend on windows
 - gen: Implement `break` and `continue`
