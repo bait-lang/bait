@@ -41,6 +41,9 @@ pub fun (t Type) get_nr_amp() i32 {
 	return (t as i32 - t.idx()) / 65536
 }
 
+pub fun (t Type) is_int() bool {
+	return t >= I8_TYPE and t <= U64_TYPE
+}
 
 const BUILTIN_STRUCT_TYPES := [
 	STRING_TYPE,
