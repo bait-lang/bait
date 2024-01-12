@@ -65,7 +65,7 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 
 	// Params
 	p.check(.lpar)
-	params = params.concat(p.fun_params())
+	params.push_many(p.fun_params())
 	p.check(.rpar)
 
 	mut return_type := ast.VOID_TYPE

@@ -50,7 +50,9 @@ _unreleased_
 
 ### General Fixes
 - _[JS]_ Fix integer division assign that could result in a float
-- Parser: Fix duplication of warnings
+- Parser
+  - Fix duplication of warnings
+  - Fix typeless array inits used as call arg
 
 
 ## 0.0.6

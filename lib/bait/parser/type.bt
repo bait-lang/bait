@@ -67,6 +67,10 @@ fun (mut p Parser) parse_type() ast.Type {
 }
 
 fun (mut p Parser) parse_name_type(lang ast.Language) ast.Type {
+	if p.tok != .name {
+		return ast.PLACEHOLDER_TYPE
+	}
+
 	mut name := lang.prepend_to(p.check_name())
 
 	// Build full name and handle imported types

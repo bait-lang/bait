@@ -439,7 +439,7 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) ast.FunDecl 
 		name = '_'
 		typ = rec_type
 	}]
-	params = params.concat(p.fun_params())
+	params.push_many(p.fun_params())
 	par_line := p.pos().line
 	p.check(.rpar)
 	mut return_type := ast.VOID_TYPE
