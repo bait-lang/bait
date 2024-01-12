@@ -12,14 +12,6 @@ fun (s string) get(i i32) u8 {
 	return u8(s.str.charCodeAt(i as #JS.Number) as #JS.Any)
 }
 
-pub fun (s string) get_str(i i32) string {
-	return from_js_string(s.str.charAt(i as #JS.Number))
-}
-
-pub fun (s string) get_code() i32 {
-	return s.str.charCodeAt(0 as #JS.Number) as i32
-}
-
 pub fun (s string) replace(val string, rep string) string {
 	return from_js_string(s.str.replaceAll(val.str, rep.str))
 }
@@ -70,48 +62,6 @@ pub fun (s string) all_after_last(search string) string {
 
 pub fun (s string) repeat(count i32) string {
 	return from_js_string(s.str.repeat(count as #JS.Number))
-}
-
-pub fun (s string) trim_left(cutset string) string {
-	mut pos := 0
-	for pos < s.length {
-		mut found := false
-		for c in cutset {
-			if s[pos] == c {
-				found = true
-				break
-			}
-		}
-
-		if not found {
-			break
-		}
-
-		pos += 1
-	}
-
-	return s.substr(pos, s.length)
-}
-
-pub fun (s string) trim_right(cutset string) string {
-	mut pos := s.length - 1
-	for pos >= 0 {
-		mut found := false
-		for c in cutset {
-			if s[pos] == c {
-				found = true
-				break
-			}
-		}
-
-		if not found {
-			break
-		}
-
-		pos -= 1
-	}
-
-	return s.substr(0, pos + 1)
 }
 
 pub fun (s string) trim_space() string {
