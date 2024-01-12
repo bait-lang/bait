@@ -1,4 +1,4 @@
 tests/out/error/array/magic_methods.in.bt:3:6 error: type bool not matches i32 in argument 1
 tests/out/error/array/magic_methods.in.bt:5:10 error: type i16 not matches i32 in argument 1
-tests/out/error/array/magic_methods.in.bt:6:8 error: type []string not matches []i32 in argument 1
+tests/out/error/array/magic_methods.in.bt:6:11 error: type []string not matches []i32 in argument 1
 tests/out/error/array/magic_methods.in.bt:9:2 error: cannot assign type i32 to string
