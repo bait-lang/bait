@@ -15,6 +15,7 @@ _unreleased_
 - Implement Result type (e.g. `fun foo() !<type> {}`)
 - Add `or {}` block for error handling (e.g. `foo() or { println(err) }`)
 - Add `!` operator for error propagation (e.g. `foo()!`)
+- Support numbers in hex format (e.g. `0x12a`)
 
 ### Generics
 - _[JS]_ Implement generic structs

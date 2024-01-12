@@ -238,8 +238,27 @@ fun (mut l Lexer) name_or_key() token.Token {
 }
 
 fun (mut l Lexer) number() token.Token {
+	if l.text[l.pos - 1] == `0` {
+		if l.text[l.pos] == `x` {
+			return l.hex_number()
+		}
+	}
+	return l.dec_number()
+}
+
+fun (mut l Lexer) dec_number() token.Token {
 	l.start = l.pos - 1
 	for l.pos < l.text.length and is_digit(l.text[l.pos]) {
+		l.pos += 1
+	}
+	l.val = l.text.substr(l.start, l.pos)
+	return .number
+}
+
+fun (mut l Lexer) hex_number() token.Token {
+	l.start = l.pos - 1
+	l.pos += 1
+	for l.pos < l.text.length and is_hex_digit(l.text[l.pos]) {
 		l.pos += 1
 	}
 	l.val = l.text.substr(l.start, l.pos)
@@ -339,4 +358,8 @@ fun is_name_char(c u8) bool {
 
 fun is_digit(c u8) bool {
 	return c >= `0` and c <= `9`
+}
+
+fun is_hex_digit(c u8) bool {
+	return is_digit(c) or (c >= `a` and c <= `f`) or (c >= `A` and c <= `F`)
 }

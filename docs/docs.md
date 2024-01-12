@@ -77,6 +77,12 @@ num := 123
 By default all integers are of type `i32` and all floats of type `f64`.
 To get a different type, you can use casting (see [Casting](#casting))
 
+#### Formats
+It's also possible to define numbers in hex format by prepending them with `0x`.
+```bait
+num := 0x12a
+```
+
 #### Number Promotion
 > Not yet implemented
 

@@ -1,0 +1,13 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun test_hex() {
+	h := 0x01b
+	assert h == 27
+
+	ten := 0xA
+	assert ten == 10
+
+	ten2 := 0xa
+	assert ten2 == ten
+}
