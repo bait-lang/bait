@@ -51,7 +51,7 @@ pub fun (mut l Lexer) next() token.Token {
 	}
 
 	// Number literal
-	if is_digit(c) {
+	if c.is_digit() {
 		return l.number()
 	}
 
@@ -237,34 +237,6 @@ fun (mut l Lexer) name_or_key() token.Token {
 	return tok
 }
 
-fun (mut l Lexer) number() token.Token {
-	if l.text[l.pos - 1] == `0` {
-		if l.text[l.pos] == `x` {
-			return l.hex_number()
-		}
-	}
-	return l.dec_number()
-}
-
-fun (mut l Lexer) dec_number() token.Token {
-	l.start = l.pos - 1
-	for l.pos < l.text.length and is_digit(l.text[l.pos]) {
-		l.pos += 1
-	}
-	l.val = l.text.substr(l.start, l.pos)
-	return .number
-}
-
-fun (mut l Lexer) hex_number() token.Token {
-	l.start = l.pos - 1
-	l.pos += 1
-	for l.pos < l.text.length and is_hex_digit(l.text[l.pos]) {
-		l.pos += 1
-	}
-	l.val = l.text.substr(l.start, l.pos)
-	return .number
-}
-
 fun (mut l Lexer) string_val(quote u8) token.Token {
 	is_foreign := l.text[l.pos - 2] == `.` // E.g. #JS.'eval()'
 	l.start = l.pos
@@ -349,17 +321,9 @@ fun (mut l Lexer) skip_line() {
 }
 
 fun is_name_start_char(c u8) bool {
-	return c >= `a` and c <= `z` or c >= `A` and c <= `Z` or c == `_`
+	return c.is_upper() or c.is_lower() or c == `_`
 }
 
 fun is_name_char(c u8) bool {
-	return is_name_start_char(c) or is_digit(c)
-}
-
-fun is_digit(c u8) bool {
-	return c >= `0` and c <= `9`
-}
-
-fun is_hex_digit(c u8) bool {
-	return is_digit(c) or (c >= `a` and c <= `f`) or (c >= `A` and c <= `F`)
+	return is_name_start_char(c) or c.is_digit()
 }

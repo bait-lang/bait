@@ -80,7 +80,12 @@ To get a different type, you can use casting (see [Casting](#casting))
 #### Formats
 It's also possible to define numbers in hex format by prepending them with `0x`.
 ```bait
-num := 0x12a
+h := 0x12a
+```
+
+Or in binary format by prepending them with `0b`.
+```bait
+b := 0b1010
 ```
 
 #### Number Promotion

@@ -2,8 +2,24 @@
 // SPDX-License-Identifier: MPL-2.0
 package builtin
 
-pub fun (c u8) is_capital() bool {
+pub fun (c u8) is_upper() bool {
 	return c >= `A` and c <= `Z`
+}
+
+pub fun (c u8) is_lower() bool {
+	return c >= `a` and c <= `z`
+}
+
+pub fun (c u8) is_digit() bool {
+	return c >= `0` and c <= `9`
+}
+
+pub fun (c u8) is_hex_digit() bool {
+	return c.is_digit() or (c >= `a` and c <= `f`) or (c >= `A` and c <= `F`)
+}
+
+pub fun (c u8) is_bin_digit() bool {
+	return c == `0` or c == `1`
 }
 
 pub fun (c u8) ascii() string {

@@ -10,18 +10,21 @@ _unreleased_
 ### Breaking
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 - `os`: Rename struct `Result` to `CmdRes`
+- `builtin`: Remove `u8.is_capital()`
+  - Use `u8.is_upper()` instead
 
 ### New Language Features
 - Implement Result type (e.g. `fun foo() !<type> {}`)
 - Add `or {}` block for error handling (e.g. `foo() or { println(err) }`)
 - Add `!` operator for error propagation (e.g. `foo()!`)
 - Support numbers in hex format (e.g. `0x12a`)
+- Support numbers in binary format (e.g. `0b1001`)
 
 ### Generics
 - _[JS]_ Implement generic structs
 
 ### Error Checks
-- match
+- MatchExpr
   - Require match to be exhaustive
   - Prevent duplicate branch conditions
   - Warn if else branch is unreachable
@@ -44,10 +47,11 @@ _unreleased_
 - Fix C error when calling a method on a mutable array instance
 
 ### Standard Library
-- builtin
-  - _[C]_ Implement string methods: `substr()`, `trim_left()`, `trim_right()` and `repeat()`
-- os
-  - _[JS]_ Implement `read_bytes(path)`
+- `builtin`
+  - _[C]_ Implement string methods: `substr()`, `trim_left()`, `trim_right()`, `repeat()`
+  - _[JS]_ New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
+- `os`
+  - _[JS]_ New function `read_bytes(path)`
 
 ### CLI and Tooling
 - `build`: Add `-cc` option to use a custom C compiler
@@ -55,7 +59,7 @@ _unreleased_
 
 ### General Fixes
 - _[JS]_ Fix integer division assign that could result in a float
-- Parser
+- parser
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
 

@@ -1,0 +1,49 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package lexer
+
+import bait.token
+
+fun (mut l Lexer) number() token.Token {
+	if l.text[l.pos - 1] == `0` {
+		if l.text[l.pos] == `x` {
+			return l.hex_number()
+		}
+
+		if l.text[l.pos] == `b` {
+			return l.bin_number()
+		}
+	}
+	return l.dec_number()
+}
+
+// TODO share more code between the below functions
+
+fun (mut l Lexer) dec_number() token.Token {
+	l.start = l.pos - 1
+	for l.pos < l.text.length and l.text[l.pos].is_digit() {
+		l.pos += 1
+	}
+	l.val = l.text.substr(l.start, l.pos)
+	return .number
+}
+
+fun (mut l Lexer) hex_number() token.Token {
+	l.start = l.pos - 1
+	l.pos += 1
+	for l.pos < l.text.length and l.text[l.pos].is_hex_digit() {
+		l.pos += 1
+	}
+	l.val = l.text.substr(l.start, l.pos)
+	return .number
+}
+
+fun (mut l Lexer) bin_number() token.Token {
+	l.start = l.pos - 1
+	l.pos += 1
+	for l.pos < l.text.length and l.text[l.pos].is_bin_digit() {
+		l.pos += 1
+	}
+	l.val = l.text.substr(l.start, l.pos)
+	return .number
+}

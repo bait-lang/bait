@@ -345,7 +345,7 @@ fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
 		return p.fun_call(lang)
 	}
 
-	capitalised := p.val[0].is_capital() and not p.val.is_upper()
+	capitalised := p.val[0].is_upper() and not p.val.is_upper()
 
 	if p.is_struct_possible and (p.peek() == .lcur or p.peek() == .lsqr) {
 		if capitalised or ['array', 'map', 'string'].contains(p.val) {
