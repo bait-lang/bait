@@ -63,6 +63,7 @@ pub enum TypeKind {
 	fun_
 	generic
 	generic_inst
+	result
 }
 
 pub struct TypeSymbol{

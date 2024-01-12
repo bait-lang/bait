@@ -25,6 +25,19 @@ fun js_stacktrace() string {
 	return from_js_string(#JS.'new Error().stack' as #JS.String)
 }
 
+struct Result[T] {
+	is_error bool
+	msg string
+	data T
+}
+
+pub fun error(msg string) Result {
+	return Result{
+		is_error = true
+		msg = msg
+	}
+}
+
 pub fun (b bool) str() string {
 	if b {
 		return 'true'

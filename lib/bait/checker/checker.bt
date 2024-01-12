@@ -22,6 +22,7 @@ mut:
 	is_lhs_assign bool
 	is_if_match_expr bool
 	is_sumtype_match bool
+	is_or_block bool
 	is_loop bool
 	returns bool
 	export_names []string

@@ -4,7 +4,7 @@ package checker
 
 import bait.ast
 
-fun (mut c Checker) return_stmt(node ast.ReturnStmt) {
+fun (mut c Checker) return_stmt(mut node ast.ReturnStmt) {
 	// without value
 	if node.expr is ast.EmptyExpr {
 		if c.cur_fun.return_type != ast.VOID_TYPE {
@@ -17,10 +17,27 @@ fun (mut c Checker) return_stmt(node ast.ReturnStmt) {
 	if c.cur_fun.return_type == ast.VOID_TYPE {
 		c.error('function ${c.cur_fun.name} does not return a value', node.pos)
 	}
+
 	c.expected_type = c.cur_fun.return_type
 	expr_type := c.expr(node.expr)
 	if not c.check_types(expr_type, c.cur_fun.return_type) {
 		c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}, got ${c.table.type_name(expr_type)}', node.pos)
+	}
+
+	return_sym := c.table.get_sym(c.cur_fun.return_type)
+	if return_sym.kind == .result {
+		expr_sym := c.table.get_sym(expr_type)
+		if expr_sym.kind == .result {
+			return
+		}
+
+		node.expr = ast.StructInit{
+			name = 'Result'
+			fields = [ast.StructInitField{
+				name = 'data'
+				expr = node.expr
+			}]
+		}
 	}
 }
 
@@ -30,7 +47,6 @@ fun (c Checker) stmt_returns (stmt ast.Stmt) bool {
 	}
 
 	if stmt is ast.IfMatch {
-		// return true
 		return c.returns
 	}
 

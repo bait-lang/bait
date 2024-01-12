@@ -65,16 +65,16 @@ string
 
 i8 i16 i32 i64
 u8 u16 u32 u64
-```
 
-> Floats are not yet implemented
+f32 f64
+```
 
 ### Numbers
 ```bait
 num := 123
 ```
 
-By default all integers are of type `i32`.
+By default all integers are of type `i32` and all floats of type `f64`.
 To get a different type, you can use casting (see [Casting](#casting))
 
 #### Number Promotion
@@ -131,6 +131,50 @@ mut airports := map[string]string
 airports['lax'] = 'Los Angeles'
 airports['jfk'] = 'New York'
 ```
+
+### Result Type
+Result types are used for functions that possibly return an error.
+They are declared by prpending `!` to the type name: `!Type`.
+
+For more information see [Error Handling](#error-handling).
+
+
+## Error Handling
+### Propagation
+```bait
+fun get_res() ! {
+    return error('failure')
+}
+
+fun other() ! {
+    get_res()!
+}
+```
+
+### Stop Execution
+```bait
+fun get_res() ! {
+    return error('failure')
+}
+
+fun stop_on_error() {
+    get_res() or {
+        exit(1)
+    }
+}
+```
+
+### Provide a default value
+```bait
+fun int_or_fail() !i32 {
+    return error('no num')
+}
+
+fun main() {
+    num := int_or_fail() or { 42 }
+}
+```
+
 
 ## Package Imports
 ```bait

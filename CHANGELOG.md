@@ -11,6 +11,11 @@ _unreleased_
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 - `os`: Rename struct `Result` to `CmdRes`
 
+### New Language Features
+- Implement Result type (e.g. `fun foo() !<type> {}`)
+- Add `or {}` block for error handling (e.g. `foo() or { println(err) }`)
+- Add `!` operator for error propagation (e.g. `foo()!`)
+
 ### Generics
 - _[JS]_ Implement generic structs
 

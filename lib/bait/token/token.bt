@@ -38,6 +38,7 @@ pub enum Token {
 	rsqr
 	lcur
 	rcur
+	excl // !
 	amp
 	caret
 	pipe
@@ -213,6 +214,7 @@ pub fun (kind Token) str() string {
 		.rsqr { 'rsqr' }
 		.lcur { 'lcur' }
 		.rcur { 'rcur' }
+		.excl { 'excl' }
 		.amp { 'amp' }
 		.caret { 'caret' }
 		.pipe { 'pipe' }

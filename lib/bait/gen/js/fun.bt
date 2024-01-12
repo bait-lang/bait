@@ -59,6 +59,51 @@ fun (mut g Gen) fun_params(params []ast.Param){
 }
 
 fun (mut g Gen) call_expr(node ast.CallExpr) {
+	if node.or_block.kind == .none {
+		g.call_expr_no_or(node)
+		return
+	}
+
+	// Or block
+	cut := g.cut_back_to(g.stmt_offsets.last())
+	g.empty_line = true
+	tmp := g.new_temp_var()
+	g.write('let ${tmp} = ')
+
+	g.call_expr_no_or(node)
+	g.writeln('')
+
+	g.writeln('if (${tmp}.is_error) {')
+	if node.or_block.kind == .block {
+		g.writeln('\t const err = ${tmp}.msg')
+		g.stmts(node.or_block.stmts)
+
+		if node.or_block.stmts.last() is ast.ExprStmt {
+			if g.empty_line {
+				g.cut_before(`\n`)
+			}
+			last_line_cut := g.cut_before(`\t`)
+
+			g.writeln('${tmp}.data = ${last_line_cut}')
+		}
+	} else {
+		if g.cur_fun.name == 'main' {
+			// TODO test
+			g.writeln('\tpanic(${tmp}.msg)')
+		} else {
+			g.writeln('\treturn ${tmp}')
+		}
+		g.writeln('}')
+		return
+	}
+
+	g.writeln('}')
+
+	g.empty_line = false
+	g.writeln('${cut}${tmp}.data')
+}
+
+fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 	if node.is_method and node.lang != .bait {
 		g.expr(node.left)
 		g.write('.' + node.name + '(')
