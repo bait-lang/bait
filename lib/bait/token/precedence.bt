@@ -25,10 +25,10 @@ pub fun (t Token) precedence() Precedence {
 		.key_not {
 			.prefix
 		}
-		.mul, .div, .mod {
+		.mul, .div, .mod, .amp, .lshift, .rshift {
 			.product
 		}
-		.plus, .minus {
+		.plus, .minus, .pipe, .caret {
 			.sum
 		}
 		.eq, .ne, .lt, .gt, .le, .ge {

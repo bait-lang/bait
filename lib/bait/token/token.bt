@@ -39,9 +39,12 @@ pub enum Token {
 	lcur
 	rcur
 	excl // !
-	amp
-	caret
-	pipe
+	tilde // ~
+	amp // &
+	pipe // |
+	caret // ^
+	lshift // <<
+	rshift // >>
 	dollar
 	hash
 	key_and
@@ -112,13 +115,14 @@ const COMPARE_KINDS := [Token.eq, .ne, .lt, .gt, .le, .ge, .key_is]
 const MATH_KINDS := [Token.plus, .minus, .mul, .div, .mod]
 const OTHER_INFIXES := [Token.key_and, .key_or]
 const MATH_ASSIGNS := [Token.plus_assign, .minus_assign, .mul_assign, .div_assign, .mod_assign]
+const BITWISE_INFIX := [Token.amp, .pipe, .caret, .lshift, .rshift]
 
 pub fun (kind Token) is_compare() bool {
 	return COMPARE_KINDS.contains(kind)
 }
 
 pub fun (kind Token) is_infix() bool {
-	return kind.is_compare() or MATH_KINDS.contains(kind) or OTHER_INFIXES.contains(kind)
+	return kind.is_compare() or MATH_KINDS.contains(kind) or OTHER_INFIXES.contains(kind) or BITWISE_INFIX.contains(kind)
 }
 
 pub fun (kind Token) is_assign() bool {
@@ -162,6 +166,12 @@ pub fun (kind Token) js_repr() string {
 		.gt { ">" }
 		.le { "<=" }
 		.ge { ">=" }
+		.tilde { '~' }
+		.amp { '&' }
+		.pipe { '|' }
+		.caret { '^' }
+		.lshift { '<<' }
+		.rshift { '>>' }
 		.key_and { "&&" }
 		.key_not { "!" }
 		.key_or { "||" }
@@ -214,9 +224,12 @@ pub fun (kind Token) str() string {
 		.lcur { 'lcur' }
 		.rcur { 'rcur' }
 		.excl { 'excl' }
+		.tilde { 'tilde' }
 		.amp { 'amp' }
-		.caret { 'caret' }
 		.pipe { 'pipe' }
+		.caret { 'caret' }
+		.lshift { 'lshift' }
+		.rshift { 'rshift' }
 		.dollar { 'dollar' }
 		.hash { 'hash' }
 		.key_and { 'key_and' }

@@ -174,12 +174,20 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 				l.pos += 1
 				return .le
 			}
+			if l.text[l.pos] == `<` {
+				l.pos += 1
+				return .lshift
+			}
 			return .lt
 		}
 		`>` {
 			if l.text[l.pos] == `=` {
 				l.pos += 1
 				return .ge
+			}
+			if l.text[l.pos] == `>` {
+				l.pos += 1
+				return .rshift
 			}
 			return .gt
 		}
@@ -201,6 +209,9 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 		}
 		`}` {
 			return .rcur
+		}
+		`~` {
+			return .tilde
 		}
 		`&` {
 			return .amp
