@@ -24,6 +24,4 @@ fun test_pub_works(){
 
 	s2 := UsesPub{}
 	assert typeof(s2.p) == 'bait.test_pkgs.pubpriv.PubAlias'
-
-	// TODO test Bait-interfaces once they are implemented
 }

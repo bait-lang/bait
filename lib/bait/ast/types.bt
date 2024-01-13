@@ -27,18 +27,15 @@ pub fun new_type(t i32) Type {
 }
 
 pub fun (t Type) idx() i32 {
-	// TODO use bitwise operations
-	return (t as i32) % 65536
+	return (t & 0xffff) as i32
 }
 
 pub fun (t Type) set_nr_amp(n i32) Type {
-	// TODO use bitwise operations
-	return new_type(t.idx() + (n * 65536))
+	return new_type((t & 0xff00ffff | n << 16) as i32)
 }
 
 pub fun (t Type) get_nr_amp() i32 {
-	// TODO use bitwise operations
-	return (t as i32 - t.idx()) / 65536
+	return (t >> 16 & 0xff) as i32
 }
 
 pub fun (t Type) is_int() bool {

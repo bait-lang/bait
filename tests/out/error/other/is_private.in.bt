@@ -16,6 +16,3 @@ pubpriv.priv_fun()
 
 s2 := pubpriv.PubStruct{}
 s2.priv_method()
-
-
-// TODO test Bait-interfaces, once they are implemented

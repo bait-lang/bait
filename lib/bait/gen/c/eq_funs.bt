@@ -30,6 +30,4 @@ fun (g Gen) equality_fun(typ ast.Type) string {
 
 	errors.generic_error('cannot generate equality function for type ${sym.name}')
 	exit(1)
-	// TODO checker: detect exit() and panic() as noreturn
-	return ''
 }

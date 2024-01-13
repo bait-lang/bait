@@ -157,9 +157,6 @@ fun backend_from_string(s string) Backend {
 	return match s {
 		'js' { Backend.js }
 		'c' { .c }
-		else {
-			panic('Invalid backend: ${s}')
-			Backend.js // TODO remove once @noreturn works properly
-		}
+		else { panic('Invalid backend: ${s}') }
 	}
 }
