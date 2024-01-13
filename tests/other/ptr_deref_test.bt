@@ -6,7 +6,7 @@ fun test_pointer_deref() {
 	nptr := n as &i32
 	assert typeof(nptr) == '*i32'
 
-	n2 := ^nptr
+	n2 := *nptr
 	assert typeof(n2) == 'i32'
 	assert n2 == n
 }

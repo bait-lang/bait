@@ -84,7 +84,7 @@ pub fun (mut a Array) push_many_with_len(data &void, len i32) {
 
 pub fun (a Array) index[T](val T) i32 {
 	for i := 0; i < a.length; i += 1 {
-		if ^(a.get(i) as &T) == val {
+		if *(a.get(i) as &T) == val {
 			return i
 		}
 	}
@@ -93,7 +93,7 @@ pub fun (a Array) index[T](val T) i32 {
 
 pub fun (a Array) last_index[T](val T) i32 {
 	for i := a.length - 1; i >= 0; i -= 1 {
-		if ^(a.get(i) as &T) == val {
+		if *(a.get(i) as &T) == val {
 			return i
 		}
 	}
