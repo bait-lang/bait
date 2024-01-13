@@ -20,6 +20,7 @@ _unreleased_
 - Add `!` operator for error propagation (e.g. `foo()!`)
 - Support numbers in hex format (e.g. `0x12a`)
 - Support numbers in binary format (e.g. `0b1001`)
+- Add bitwise operators (`~`, `&`, `|`, `^`, `<<`, `>>`)
 
 ### Generics
 - _[JS]_ Implement generic structs
