@@ -16,7 +16,7 @@ pub enum Token {
 	semicolon
 	plus
 	minus
-	mul
+	mul // *
 	div
 	mod
 	assign
@@ -172,7 +172,6 @@ pub fun (kind Token) js_repr() string {
 pub fun (kind Token) c_repr() string {
 	return match kind {
 		.amp { '&' }
-		.caret { '*' }
 		else { kind.js_repr() }
 	}
 }

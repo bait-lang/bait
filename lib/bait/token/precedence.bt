@@ -22,7 +22,7 @@ pub fun (t Token) precedence() Precedence {
 		.dot {
 			.call
 		}
-		.key_not, .caret {
+		.key_not {
 			.prefix
 		}
 		.mul, .div, .mod {

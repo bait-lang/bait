@@ -284,7 +284,7 @@ fun (mut c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
 		return ast.PLACEHOLDER_TYPE
 	}
 
-	if node.op == .caret {
+	if node.op == .mul {
 		if typ.get_nr_amp() == 0 {
 			c.error('cannot dereference ${c.table.type_name(typ)}', node.pos)
 			return ast.PLACEHOLDER_TYPE

@@ -8,6 +8,7 @@ All notable changes are documented in this file.
 _unreleased_
 
 ### Breaking
+- Change operator for pointer dereferencing from `^` to `*`
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 - `os`: Rename struct `Result` to `CmdRes`
 - `builtin`: Remove `u8.is_capital()`

@@ -273,7 +273,9 @@ fun (mut g Gen) par_expr(node ast.ParExpr){
 }
 
 fun (mut g Gen) prefix_expr(node ast.PrefixExpr){
-	g.write(node.op.js_repr())
+	if node.op != .mul {
+		g.write(node.op.js_repr())
+	}
 	if node.right is ast.InfixExpr and (node.right as ast.InfixExpr).op == .key_is {
 		g.write('(')
 		g.expr(node.right)
