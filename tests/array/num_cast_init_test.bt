@@ -1,0 +1,7 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun test_u8_init() {
+	a := [1 as u8, 2, 3]
+	assert typeof(a[1]) == 'u8'
+}

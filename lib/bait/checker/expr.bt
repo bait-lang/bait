@@ -21,7 +21,7 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 		ast.IfMatch { c.if_match(expr) }
 		ast.IndexExpr { c.index_expr(expr) }
 		ast.InfixExpr { c.infix_expr(expr) }
-		ast.IntegerLiteral { ast.I32_TYPE }
+		ast.IntegerLiteral { c.integer_literal(expr) }
 		ast.MapInit { c.map_init(expr) }
 		ast.ParExpr { c.par_expr(expr) }
 		ast.PrefixExpr { c.prefix_expr(expr) }
@@ -227,6 +227,14 @@ fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 		return ast.U8_TYPE
 	}
 	return node.left_type
+}
+
+fun (mut c Checker) integer_literal(node ast.IntegerLiteral) ast.Type {
+	if c.expected_type.is_int() {
+		return c.expected_type
+	}
+
+	return ast.I32_TYPE
 }
 
 fun (mut c Checker) map_init(mut node ast.MapInit) ast.Type {

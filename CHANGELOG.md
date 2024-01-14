@@ -37,6 +37,7 @@ _unreleased_
 - Fix existence check for array element types
 - Raise error if array type cannot be inferred
 - Properly check return type of `array.last()`
+- Improve integer type check to infer type in e.g. array inits `[1 as u8, 2, 3]`
 
 ### JS Backend
 - Improve performance of string comparison
