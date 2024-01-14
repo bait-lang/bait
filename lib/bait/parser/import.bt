@@ -17,6 +17,12 @@ fun (p Parser) add_builtin_imports() []ast.Import {
 		alias = 'builtin'
 	})
 
+	if p.pref.is_test and p.pkg_name != 'main' {
+		imports.push(ast.Import{
+			name = p.pkg_name
+		})
+	}
+
 	return imports
 }
 
