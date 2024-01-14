@@ -1,4 +1,4 @@
-Update the compiler to the latest commit from https://github.com/tiabeast/bait.
+Update the compiler to the latest commit from https://github.com/bait-lang/bait.
 
 Usage:
   bait up [options]

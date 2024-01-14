@@ -25,7 +25,7 @@ download_baitjs() {
       git -C $BAITJS_DIR pull --quiet
     fi
   elif [ $IS_LOCAL == 0 ]; then
-    git clone --depth 1 https://github.com/tiabeast/baitjs $BAITJS_DIR
+    git clone --depth 1 https://github.com/bait-lang/baitjs $BAITJS_DIR
   else
     echo "baitjs not found locally. Run without \"--local\""
     exit 1

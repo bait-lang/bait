@@ -18,7 +18,7 @@ if exist "%BAITJS_DIR%\bait.js" (
   )
 ) else (
   if "%IS_LOCAL%"=="0" (
-    git clone --depth 1 https://github.com/tiabeast/baitjs "%BAITJS_DIR%"
+    git clone --depth 1 https://github.com/bait-lang/baitjs "%BAITJS_DIR%"
   ) else (
     echo baitjs not found locally. Run without "--local"
     exit /b 1

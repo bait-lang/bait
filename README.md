@@ -21,7 +21,7 @@ fun main() {
 
 ## Documentation
 - [Language Overview](docs/docs.md)
-- [Examples](examples) and [Rosetta Code](https://github.com/tiabeast/rosetta-bait)
+- [Examples](examples) and [Rosetta Code](https://github.com/bait-lang/rosetta-bait)
 
 ## Installation
 Right now Bait has to be compiled from source.
@@ -31,7 +31,7 @@ Precompiled binaries will be available in the future.
 
 Linux:
 ```sh
-git clone https://github.com/tiabeast/bait
+git clone https://github.com/bait-lang/bait
 cd bait
 ./make.sh
 sudo ./bait symlink
@@ -39,7 +39,7 @@ sudo ./bait symlink
 
 Windows:
 ```powershell
-git clone https://github.com/tiabeast/bait
+git clone https://github.com/bait-lang/bait
 cd bait
 ./make.bat
 

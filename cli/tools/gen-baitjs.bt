@@ -8,7 +8,7 @@ import bait.util
 const GIT_USER := 'tiabeast-bot'
 const GIT_MAIL := '131296262+tiabeast-bot@users.noreply.github.com'
 
-const MAIN_REPO_COMMIT_URL := 'https://github.com/tiabeast/bait/commit'
+const MAIN_REPO_COMMIT_URL := 'https://github.com/bait-lang/bait/commit'
 
 // Exit if not in CI because gen-baitjs is only meant for use in GH Actions
 fun ci_or_exit() {
@@ -32,7 +32,7 @@ fun main() {
 	os.rmdir_all(baitjs_dir)
 
 	access_token := os.getenv('TIABEAST_BOT_TOKEN')
-	errors += git_command('clone --depth 1 https://${GIT_USER}:${access_token}@github.com/tiabeast/baitjs.git ${baitjs_dir}')
+	errors += git_command('clone --depth 1 https://${GIT_USER}:${access_token}@github.com/bait-lang/baitjs.git ${baitjs_dir}')
 
 	println('Building bait.js...')
 	res := os.exec('node ${$BAITEXE} cli/bait.bt -o ${baitjs_dir}/bait.js')

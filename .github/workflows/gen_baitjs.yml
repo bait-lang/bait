@@ -11,7 +11,7 @@ on:
 
 jobs:
   gen-baitjs:
-    if: github.repository == 'tiabeast/bait'
+    if: github.repository == 'bait-lang/bait'
     runs-on: ubuntu-latest
     env:
       TIABEAST_BOT_TOKEN: ${{ secrets.TIABEAST_BOT_TOKEN }}
