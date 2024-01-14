@@ -50,6 +50,7 @@ _unreleased_
 - Fix C error when calling a method on a mutable array instance
 
 ### Standard Library
+- Add new package `encoding.binary`
 - `builtin`
   - _[C]_ Implement string methods: `substr()`, `trim_left()`, `trim_right()`, `repeat()`
   - _[JS]_ New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`

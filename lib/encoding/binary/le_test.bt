@@ -1,0 +1,21 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package binary
+
+fun test_u16_le() {
+	assert u16_le([0 as u8, 2]) == 0x200
+	assert u16_le([3 as u8, 4]) == 0x0403
+	assert u16_le([0x12 as u8, 0x34]) == 0x3412
+}
+
+fun test_u32_le() {
+	assert u32_le([0x12 as u8, 0x34, 0x56, 0x78]) == 0x78563412
+	// FIXME: u32 should actually be unsigned (likely only JS)
+	// assert u32_le([0xff as u8, 0xff, 0xff, 0xff]) == 0xffffffff
+}
+
+fun test_u64_le() {
+	// FIXME JS: capped to i32 max
+	// assert u64_le([0 as u8, 1, 0, 2, 0, 3, 0, 4]) == 0x04000300020001
+	// assert u64_le([0x1a as u8, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f, 0x78, 0x90]) == 0x1a2b3c4d5e6f7890
+}

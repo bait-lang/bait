@@ -1,0 +1,15 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package binary
+
+pub fun u16_le(b []u8) u16 {
+	return b[0] as u16 | (b[1] as u16 << 8)
+}
+
+pub fun u32_le(b []u8) u32 {
+	return b[0] as u32 | (b[1] as u32 << 8) | (b[2] as u32 << 16) | (b[3] as u32 << 24)
+}
+
+pub fun u64_le(b []u8) u64 {
+	return b[0] as u64 | (b[1] as u64 << 8) | (b[2] as u64 << 16) | (b[3] as u64 << 24) | (b[4] as u64 << 32) | (b[5] as u64 << 40) | (b[6] as u64 << 48)| (b[7] as u64 << 56)
+}
