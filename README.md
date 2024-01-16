@@ -1,4 +1,8 @@
+<img align="left" width=110 src="docs/img/bait-logo.png">
+
 # Bait Programming Language
+---
+
 Simple compiled language for building reliable software.
 
 This repository contains the compiler, standard library and documentation for Bait.
