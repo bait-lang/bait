@@ -1,19 +1,28 @@
 // SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
 
-fun result_fun(give_error bool) !i32 {
+fun err_fun(give_error bool) !i32 {
 	return error('throw')
 }
 
-fun propagates_result() !i32 {
-	result_fun(true)!
+fun propagates_err() !i32 {
+	err_fun(true)!
 	return 0
 }
 
-fun test_propagation() {
-	p := propagates_result() or {
+fun result_data_fun() !i32 {
+	return 3
+}
+
+fun test_error_propagation() {
+	p := propagates_err() or {
 		assert err == 'throw'
 		2
 	}
 	assert p == 2
+}
+
+fun test_value_propagation() {
+	res := result_data_fun() !
+	assert res == 3
 }

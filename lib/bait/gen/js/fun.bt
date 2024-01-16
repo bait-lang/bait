@@ -93,14 +93,12 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 		} else {
 			g.writeln('\treturn ${tmp}')
 		}
-		g.writeln('}')
-		return
 	}
 
 	g.writeln('}')
 
 	g.empty_line = false
-	g.writeln('${cut}${tmp}.data')
+	g.write('${cut}${tmp}.data')
 }
 
 fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {

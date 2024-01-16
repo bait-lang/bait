@@ -121,6 +121,14 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		return
 	}
 
+	if sym.kind == .result {
+		par_fun_name := g.get_str_fun(sym.parent)
+		g.fun_decls_out += 'function ${name}(it, indent) {
+	return ${par_fun_name}(it, indent)
+}'
+		return
+	}
+
 	errors.generic_error('cannot convert ${sym.name} to string')
 	exit(1)
 }

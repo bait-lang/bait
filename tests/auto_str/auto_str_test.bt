@@ -109,3 +109,12 @@ fun test_nested_array_structs() {
     }]
 }'
 }
+
+fun returns_res() ![]i32 {
+	return [1, 2, 3]
+}
+
+fun test_result() {
+	r := returns_res()!
+	assert r.str() == '[1, 2, 3]'
+}
