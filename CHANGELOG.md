@@ -51,11 +51,13 @@ _unreleased_
 
 ### Standard Library
 - Add new package `encoding.binary`
+- Add work in progress `math` package
 - `builtin`
   - _[C]_ Implement string methods: `substr()`, `trim_left()`, `trim_right()`, `repeat()`
-  - _[JS]_ New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
-- `os`
-  - _[JS]_ New function `read_bytes(path)`
+  - _JS backend_
+    - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
+    - New `[]u8` method: `to_string()`
+- `os`: _[JS]_ New function `read_bytes(path)`
 
 ### CLI and Tooling
 - `build`: Add `-cc` option to use a custom C compiler

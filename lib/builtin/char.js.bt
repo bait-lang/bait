@@ -25,3 +25,11 @@ pub fun (c u8) is_bin_digit() bool {
 pub fun (c u8) ascii() string {
 	return from_js_string(#JS.'String.fromCharCode(c)' as #JS.String)
 }
+
+pub fun (chars []u8) to_string() string {
+	mut s := ''
+	for c in chars {
+		s += c.ascii()
+	}
+	return s
+}
