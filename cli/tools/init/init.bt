@@ -11,12 +11,12 @@ fun main() {
 	args := os.user_args()
 	if args.length == 0 {
 		create_git_repo('.')
-		copy_template('hello_world', '.')
+		copy_template('bin', '.')
 		return
 	}
 
 	name := args[0]
-	copy_template('hello_world', name)
+	copy_template('bin', name)
 	create_git_repo(name)
 }
 
