@@ -5,5 +5,4 @@
 
 # Ignore other bineries
 *.exe
-${name}.js
-src.js
+*.js
