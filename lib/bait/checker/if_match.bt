@@ -39,20 +39,31 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 
 		// Condition
 		if not node.has_else or i < node.branches.length - 1 {
-			cond_type := c.expr(branch.cond)
-
-			if node.is_match {
-				key := (branch.cond as ast.InfixExpr).right.repr()
-				if branch_exprs.contains(key) {
-					c.error('match case `${key}` is already handled', branch.pos)
+			if node.is_comptime {
+				if c.comptime_if_condition(branch.cond) {
+					node.ct_eval_branch = i
 				} else {
-					branch_exprs.push(key)
+					c.close_scope()
+					continue
+				}
+			} else {
+				cond_type := c.expr(branch.cond)
+
+				if node.is_match {
+					key := (branch.cond as ast.InfixExpr).right.repr()
+					if branch_exprs.contains(key) {
+						c.error('match case `${key}` is already handled', branch.pos)
+					} else {
+						branch_exprs.push(key)
+					}
+				}
+
+				if not c.is_sumtype_match and cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
+					c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
 				}
 			}
-
-			if not c.is_sumtype_match and cond_type != ast.BOOL_TYPE and cond_type != ast.PLACEHOLDER_TYPE {
-				c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
-			}
+		} else if node.is_comptime {
+			node.ct_eval_branch = i
 		}
 
 		if node.is_expr {
@@ -83,6 +94,10 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 			}
 		} else if has_toplevel_return(branch.stmts) {
 			nr_branches_return += 1
+		}
+
+		if node.is_comptime and node.ct_eval_branch >= 0 {
+			break
 		}
 	}
 

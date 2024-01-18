@@ -296,8 +296,10 @@ pub struct IfMatch{
 global:
 	typ Type := VOID_TYPE
 	is_expr bool
+	ct_eval_branch i32 := -1
 pub:
-	is_match bool
+	is_comptime bool
+	is_match bool // Note: match cannot be comptime
 	has_else bool
 	branches []IfBranch
 	pos token.Pos

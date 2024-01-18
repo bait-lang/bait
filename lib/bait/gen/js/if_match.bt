@@ -5,6 +5,13 @@ package js
 import bait.ast
 
 fun (mut g Gen) if_match(node ast.IfMatch){
+	if node.is_comptime {
+		if node.ct_eval_branch >= 0 {
+			g.stmts(node.branches[node.ct_eval_branch].stmts)
+		}
+		return
+	}
+
 	tmp := g.new_temp_var()
 	mut cut := ''
 	if node.is_expr {

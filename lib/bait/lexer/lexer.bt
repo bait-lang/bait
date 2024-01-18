@@ -13,8 +13,10 @@ mut:
 	start i32 // Start of the current token
 	pos i32 // Position of the next char
 	insert_semi bool // Insert a semicolon on \n
+
 	// String interpolation
-	is_str_interpol bool
+	is_str_interpol bool // True for the whole expr (`${...}`)
+	is_str_dollar bool // True only for the opening `$`
 	str_quote u8
 }
 
@@ -223,6 +225,10 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			return .caret
 		}
 		`$` {
+			if l.is_str_dollar {
+				l.is_str_dollar = false
+				return .str_dollar
+			}
 			return .dollar
 		}
 		else {
@@ -271,6 +277,7 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 		} else if not is_foreign and c == `$` and l.text[l.pos] == `{` {
 			// Start of interpolated expr
 			l.is_str_interpol = true
+			l.is_str_dollar = true
 			l.str_quote = quote
 
 			l.pos -= 1

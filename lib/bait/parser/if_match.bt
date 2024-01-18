@@ -8,14 +8,21 @@ import bait.token
 fun (mut p Parser) if_match(is_expr bool) ast.IfMatch {
 	pos := p.pos()
 
+	is_comptime := p.tok == .dollar
+
 	mut branches := []ast.IfBranch
 	mut has_else := false
 
 	for true {
 		bpos := p.pos()
 
+		if is_comptime {
+			p.check(.dollar)
+		}
+
 		if p.tok == .key_else{
 			p.next()
+			// else branch
 			if p.tok == .lcur{
 				has_else = true
 				stmts := p.parse_block()
@@ -26,8 +33,13 @@ fun (mut p Parser) if_match(is_expr bool) ast.IfMatch {
 				})
 				break
 			}
+
+			if is_comptime {
+				p.check(.dollar)
+			}
 		}
 
+		// if / else if branch
 		p.check(.key_if)
 		p.is_struct_possible = false
 		cond := p.expr(.lowest)
@@ -40,12 +52,13 @@ fun (mut p Parser) if_match(is_expr bool) ast.IfMatch {
 			pos = bpos
 		})
 
-		if p.tok != .key_else{
+		if (is_comptime and p.tok != .dollar) or (not is_comptime and p.tok != .key_else) {
 			break
 		}
 	}
 
 	return ast.IfMatch{
+		is_comptime = is_comptime
 		is_expr = is_expr
 		has_else = has_else
 		branches = branches

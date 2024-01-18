@@ -1,0 +1,29 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package checker
+
+import bait.ast
+
+fun (mut c Checker) comptime_var(node ast.ComptimeVar) ast.Type {
+	if not SUPPORTED_COMPTIME_VARS.contains(node.name) {
+		c.error('unsupported comptime var "${node.name}"', node.pos)
+	}
+	return ast.STRING_TYPE
+}
+
+fun (mut c Checker) comptime_if_condition(node ast.Expr) bool {
+	if node is ast.Ident {
+		match node.name {
+			// Backend
+			'C' { return c.prefs.backend == .c }
+			'JS' { return c.prefs.backend == .js }
+			else {
+				c.error('invalid $if condition "${node.name}"', node.pos)
+				return false
+			}
+		}
+	} else {
+		c.error('invalid $if condition', (node as ast.EmptyExpr).pos)
+	}
+	return false
+}
