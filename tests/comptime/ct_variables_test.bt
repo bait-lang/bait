@@ -5,9 +5,9 @@ import os
 
 fun test_comptime_vars() {
 	assert $PKG == 'main'
-	assert $FILE == 'tests/other/comptime_vars_test.bt'.replace('/', os.PATH_SEP)
+	assert $FILE == 'tests/comptime/ct_variables_test.bt'.replace('/', os.PATH_SEP)
 	assert $LINE == '9'
-	assert $FILE_LINE == 'tests/other/comptime_vars_test.bt:10'.replace('/', os.PATH_SEP)
+	assert $FILE_LINE == 'tests/comptime/ct_variables_test.bt:10'.replace('/', os.PATH_SEP)
 	assert $FUN == 'test_comptime_vars'
 
 	// The following vars are hard to test
@@ -19,4 +19,8 @@ fun test_comptime_vars() {
 	assert $BAITDIR.length < $BAITEXE.length
 
 	assert $BAITHASH.length == 7
+}
+
+fun test_interpolated_var() {
+	assert 'pkg: ${$PKG}' == 'pkg: main'
 }
