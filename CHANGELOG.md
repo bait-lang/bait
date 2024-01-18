@@ -21,6 +21,7 @@ _unreleased_
 - Support numbers in hex format (e.g. `0x12a`)
 - Support numbers in binary format (e.g. `0b1001`)
 - Add bitwise operators (`~`, `&`, `|`, `^`, `<<`, `>>`)
+- Implement basic conditional compilation with `$if {} $else {}`
 
 ### Generics
 - _[JS]_ Implement generic structs

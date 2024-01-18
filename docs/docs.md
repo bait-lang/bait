@@ -481,7 +481,7 @@ struct FooBar {
 | `@required` | The field must be initialized with a value. | _none_ |
 
 
-## Conditional Compilation
+## Compile Time Code Evaluation (CompTime)
 ### Compile Time Pseudo Variables
 Bait supports a few pseudo variables, which are replaced by their actual values during compilation.
 They are all of the type `string`.
@@ -503,6 +503,23 @@ They are useful for running external tools or debugging. For example:
 eprintln('error in file ${$FILE}, line ${$LINE}, function ${$PKG}.${$FUN}')
 ```
 
+### Conditional Compilation
+```bait
+$if C {
+    println('hi from c backend')
+} $else {
+    println('hi from non-c backend')
+}
+```
+
+> [!IMPORTANT]
+> Infix and prefix operations are not yet implemented.
+> Support for combining conditions using `and`, `or` and `not` will be added in a future version.
+
+The following conditions are currently supported:
+| Backend   |
+| --------- |
+| `C`, `JS` |
 
 ## Global Variables
 While the use of global variables is discouraged, they are important in some cases.
