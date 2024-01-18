@@ -59,6 +59,8 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 					c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
 				}
 			}
+		} else if node.is_comptime {
+			node.ct_eval_branch = i
 		}
 
 		if node.is_expr {
