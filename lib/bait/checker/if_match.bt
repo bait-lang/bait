@@ -35,12 +35,15 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 	mut branch_exprs := []string
 	mut nr_branches_return := 0
 	for i, branch in node.branches {
+		c.open_scope()
+
 		// Condition
 		if not node.has_else or i < node.branches.length - 1 {
 			if node.is_comptime {
 				if c.comptime_if_condition(branch.cond) {
 					node.ct_eval_branch = i
 				} else {
+					c.close_scope()
 					continue
 				}
 			} else {
@@ -67,7 +70,6 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 			c.expected_type = node.typ
 		}
 
-		c.open_scope()
 		c.stmts(branch.stmts)
 		c.close_scope()
 
