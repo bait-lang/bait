@@ -52,7 +52,7 @@ fun (mut p Parser) if_match(is_expr bool) ast.IfMatch {
 			pos = bpos
 		})
 
-		if p.tok != .key_else and not is_comptime and p.tok != .dollar {
+		if (is_comptime and p.tok != .dollar) or (not is_comptime and p.tok != .key_else) {
 			break
 		}
 	}
