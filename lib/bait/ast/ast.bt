@@ -297,6 +297,7 @@ global:
 	typ Type := VOID_TYPE
 	is_expr bool
 pub:
+	is_comptime bool
 	is_match bool
 	has_else bool
 	branches []IfBranch
