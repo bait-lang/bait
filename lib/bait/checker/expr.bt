@@ -136,13 +136,6 @@ const SUPPORTED_COMPTIME_VARS := [
 	'BAITHASH',
 ]
 
-fun (mut c Checker) comptime_var(node ast.ComptimeVar) ast.Type {
-	if not SUPPORTED_COMPTIME_VARS.contains(node.name) {
-		c.error('unsupported comptime var "${node.name}"', node.pos)
-	}
-	return ast.STRING_TYPE
-}
-
 fun (mut c Checker) enum_val(mut node ast.EnumVal) ast.Type {
 	if node.name.length == 0 {
 		node.typ = c.expected_type
