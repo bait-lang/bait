@@ -420,7 +420,7 @@ fun (mut p Parser) prefix_expr()ast.PrefixExpr{
 
 fun (mut p Parser) string_literal(lang ast.Language)ast.Expr{
 	pos := p.pos()
-	if p.peek() != .dollar {
+	if p.peek() != .str_dollar {
 		val := p.val
 		p.next()
 		return ast.StringLiteral{
@@ -434,7 +434,7 @@ fun (mut p Parser) string_literal(lang ast.Language)ast.Expr{
 	for p.tok == .string {
 		vals.push(p.val)
 		p.next()
-		if p.tok != .dollar {
+		if p.tok != .str_dollar {
 			break
 		}
 		p.next()

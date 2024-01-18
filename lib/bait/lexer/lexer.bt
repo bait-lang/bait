@@ -223,7 +223,7 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			return .caret
 		}
 		`$` {
-			return .dollar
+			return if l.is_str_interpol { .str_dollar } else { .dollar }
 		}
 		else {
 			return l.unknown_char(c)

@@ -45,7 +45,8 @@ pub enum Token {
 	caret // ^
 	lshift // <<
 	rshift // >>
-	dollar
+	dollar // $
+	str_dollar // $
 	hash
 	key_and
 	key_as
@@ -231,6 +232,7 @@ pub fun (kind Token) str() string {
 		.lshift { 'lshift' }
 		.rshift { 'rshift' }
 		.dollar { 'dollar' }
+		.str_dollar { 'str_dollar' }
 		.hash { 'hash' }
 		.key_and { 'key_and' }
 		.key_as { 'key_as' }
