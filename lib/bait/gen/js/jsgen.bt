@@ -64,6 +64,8 @@ mut:
 	is_for_loop_head bool
 	is_lhs_assign bool
 	is_array_map_set bool
+	has_test_begin bool
+	has_test_end bool
 	// Cached comptime variables
 	baitexe string
 	baitdir string
@@ -167,6 +169,9 @@ fun (mut g Gen) gen_test_main() {
 	mut nr_test_funs := 0
 	g.writeln('function main() {')
 	g.indent += 1
+	if g.has_test_begin {
+		g.writeln('testsuite_begin()')
+	}
 	for key, func in g.table.fun_decls {
 		if func.is_test {
 			nr_test_funs += 1
@@ -175,6 +180,9 @@ fun (mut g Gen) gen_test_main() {
 			g.writeln('TestRunner_set_test_info(test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))')
 			g.writeln('${name}()')
 		}
+	}
+	if g.has_test_end {
+		g.writeln('testsuite_end()')
 	}
 	g.writeln('exit(TestRunner_exit_code(test_runner))')
 	g.indent -= 1

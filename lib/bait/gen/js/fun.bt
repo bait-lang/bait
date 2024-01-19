@@ -9,6 +9,12 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 		return
 	}
 
+	if node.name == 'testsuite_begin' {
+		g.has_test_begin = true
+	} else if node.name == 'testsuite_end' {
+		g.has_test_end = true
+	}
+
 	if node.generic_names.length > 0 and g.cur_concrete_types.length == 0 {
 		for conc_types in node.concrete_types {
 			for i, gn in node.generic_names {

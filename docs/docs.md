@@ -439,6 +439,12 @@ fun test_sum() {
 > Test files can right now not be scoped to the package they are in.
 > Everything has to be imported.
 
+### Execute a Function before and after all Test Cases
+There are two special functions `testsuite_begin()` and `testsuite_end()`, that can run code before/after all test cases.
+
+This is for example useful to create and clean up temporary directories.
+
+
 ## Attributes
 Various attributes are supported that change the behaviour of functions and struct fields.
 They are written as `@name: 'value'` before the respective declaration.
