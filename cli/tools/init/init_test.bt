@@ -1,0 +1,23 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+import os
+
+const TMP := os.tmp_dir() + '/bait'
+
+fun testsuite_begin() {
+	os.mkdir(TMP)
+	os.chdir(TMP)
+}
+
+fun test_init_new_dir() {
+	res := os.system('node ${$BAITEXE} init new_test')
+	assert res == 0
+
+	assert os.exists_dir('${TMP}/new_test')
+	assert os.ls('${TMP}/new_test').length == 6
+}
+
+fun testsuite_end() {
+	os.rmdir_all(TMP)
+}
