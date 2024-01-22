@@ -1,0 +1,28 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package options
+
+pub fun new_option_parser(args []string) OptParser {
+	return OptParser{
+		args = args
+	}
+}
+
+struct OptParser {
+mut:
+	args []string
+}
+
+pub fun (mut op OptParser) string(long string, short u8, default string) string {
+	long_name := '--${long}'
+	short_name := '-${short}'
+
+	for i, arg in op.args {
+		if arg == long_name or arg == short_name {
+			if i + 1 < op.args.length {
+				return op.args[i + 1]
+			}
+		}
+	}
+	return default
+}

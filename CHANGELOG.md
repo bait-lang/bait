@@ -13,6 +13,9 @@ _unreleased_
 - `os`: Rename struct `Result` to `CmdRes`
 - `builtin`: Remove `u8.is_capital()`
   - Use `u8.is_upper()` instead
+- Remove `cli.cmdline`
+  - `parse_string()` was moved into `cli`
+  - `options()` was replaced by the `cli.options` package
 
 ### New Language Features
 - Implement Result type (e.g. `fun foo() !<type> {}`)

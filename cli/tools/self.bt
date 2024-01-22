@@ -3,13 +3,14 @@
 package main
 
 import os
-import cli.cmdline
+import cli.options
 
 fun main() {
 	os.chdir($BAITDIR)
 	mut args := os.user_args()
+	mut op := options.new_option_parser(args)
 
-	mut out := cmdline.option(args, '-o')
+	mut out := op.string('out', `o`, '')
 	if out == '' {
 		os.cp($BAITEXE, 'old_bait.js')
 		out = os.file_name($BAITEXE)
