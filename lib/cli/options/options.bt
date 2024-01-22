@@ -20,6 +20,7 @@ fun (mut op OptParser) option_index(long string, short u8) i32 {
 	for i, arg in op.args {
 		is_short := arg.length == 2 and arg[0] == `-` and arg[1] == short
 		if is_short or arg == long_name {
+			op.args.delete(i)
 			return i
 		}
 	}
@@ -28,13 +29,15 @@ fun (mut op OptParser) option_index(long string, short u8) i32 {
 }
 
 fun (mut op OptParser) find_val(long string, short u8) !string {
-	vidx := op.option_index(long, short) + 1
+	vi := op.option_index(long, short)
 
-	if vidx == 0 or vidx == op.args.length {
+	if vi == -1 or vi == op.args.length {
 		return error('')
 	}
 
-	return op.args[vidx]
+	v := op.args[vi]
+	op.args.delete(vi)
+	return v
 }
 
 pub fun (mut op OptParser) string(long string, short u8, default string) string {
@@ -58,4 +61,8 @@ pub fun (mut op OptParser) float(long string, short u8, default f64) f64 {
 pub fun (mut op OptParser) bool(long string, short u8, default bool) bool {
 	idx := op.option_index(long, short)
 	return if idx >= 0 { true } else { default }
+}
+
+pub fun (op OptParser) remaining() []string {
+	return op.args.copy()
 }

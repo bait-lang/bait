@@ -3,7 +3,7 @@
 import cli.options
 
 fun test_opt_parser() {
-	args := ['-s', 'str', '_', '--flag', '-n', '123', '--f_val', '1.23']
+	args := ['-s', 'str', '_', '--flag', '-n', '123', 'other', '--f_val', '1.23']
 	mut op := options.new_option_parser(args)
 
 	s := op.string('string', `s`, '')
@@ -17,6 +17,8 @@ fun test_opt_parser() {
 
 	f := op.float('f_val', `f`, 0.0)
 	assert f == 1.23
+
+	assert op.remaining() == ['_', 'other']
 
 	assert op.string('def', ``, 'default') == 'default'
 	assert op.float('def', ``, 4.56) == 4.56
