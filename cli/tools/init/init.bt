@@ -53,6 +53,7 @@ fun (init Init) create_git_repo() {
 fun (mut init Init) use_template(template string) {
 	init.tmpl_map = map{
 		'name': init.name
+		'test': 'test'
 	}
 
 	os.mkdir(init.name)
