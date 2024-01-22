@@ -43,14 +43,17 @@ fun main() {
 	init.use_template(template)
 }
 
-fun (init Init) check_preconditions() ! {
-	if init.name == '.' and os.ls('.').length > 0 {
-		return error('cannot run init in non-empty directory')
+fun (init Init) check_preconditions() !bool {
+	if init.name == '.' {
+		if os.ls('.').length > 0 {
+			return error('cannot run init in non-empty directory')
+		}
+	} else if os.exists(init.name) {
+		return error('"${init.name}" already exists')
 	}
 
-	if os.exists(init.name) {
-		return error('"${init.name}"" already exists')
-	}
+	// FIXME function should return !void
+	return true
 }
 
 fun (init Init) create_git_repo() {

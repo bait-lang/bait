@@ -37,6 +37,16 @@ fun test_template_option() {
 	assert os.ls('${TMP}/mylib').length > 7
 }
 
+fun test_errors() {
+	os.mkdir('exi')
+
+	assert os.exec('node ${$BAITEXE} init exi').code != 0
+
+	assert os.exec('node ${$BAITEXE} init').code != 0
+
+	assert os.ls('exi').length == 0
+}
+
 fun testsuite_end() {
 	os.rmdir_all(TMP)
 }
