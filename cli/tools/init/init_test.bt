@@ -36,6 +36,7 @@ fun test_template_option() {
 	res := os.system('node ${$BAITEXE} init -t lib mylib')
 	assert res == 0
 
+	assert os.exists('${TMP}/mylib/tests/mylib_test.bt')
 	assert os.ls('${TMP}/mylib').length == 7
 }
 
