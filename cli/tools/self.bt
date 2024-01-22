@@ -25,7 +25,7 @@ fun main() {
 	if res.stderr.length > 0 {
 		eprintln(res.stderr)
 	}
-	if res.code != 0 {
+	if res.code != 0 or not os.exists(out) {
 		eprintln('"bait self" failed:')
 		exit(1)
 	}

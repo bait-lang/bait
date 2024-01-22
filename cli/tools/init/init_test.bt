@@ -1,0 +1,52 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+import os
+import bait.util.testing
+
+const TMP := os.tmp_dir() + '/bait'
+
+fun testsuite_begin() {
+	os.mkdir(TMP)
+	os.chdir(TMP)
+}
+
+fun test_with_name() {
+	assert os.system('node ${$BAITEXE} init with_name') == 0
+
+	assert os.exists_dir('${TMP}/with_name/src')
+	assert os.ls('${TMP}/with_name').length > 6
+}
+
+fun test_dot() {
+	os.mkdir('dot')
+	os.chdir('dot')
+
+	assert os.system('node ${$BAITEXE} init .') == 0
+
+	assert os.exists_dir('${TMP}/dot/src')
+	assert os.ls('${TMP}/dot').length > 6
+
+	os.chdir(TMP)
+}
+
+fun test_template_option() {
+	assert os.system('node ${$BAITEXE} init -t lib mylib') == 0
+
+	assert os.exists('${TMP}/mylib/tests/mylib_test.bt')
+	assert os.ls('${TMP}/mylib').length > 7
+}
+
+fun test_errors() {
+	os.mkdir('exi')
+
+	assert os.exec('node ${$BAITEXE} init exi').code != 0
+
+	assert os.exec('node ${$BAITEXE} init').code != 0
+
+	assert os.ls('exi').length == 0
+}
+
+fun testsuite_end() {
+	os.rmdir_all(TMP)
+}

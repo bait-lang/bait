@@ -65,6 +65,10 @@ _unreleased_
 - `os`: _[JS]_ New functions `read_bytes(path)`, `is_root(path)`
 
 ### CLI and Tooling
+- `init`
+  - Add `--template` option to allow choosing a template
+  - Add `bin` and `lib` templates
+  - Prevent overwriting existing files
 - `build`: Add `-cc` option to use a custom C compiler
 - `self`: Use $BAITEXE as default out name
 

@@ -3,26 +3,64 @@
 package main
 
 import os
+import cli.options
 
-const ROOT := os.dir($FILE) + '/templates'
+const TEMPLATES := ['bin', 'lib']
 
-// TODO add support to let user choose template
-fun main() {
-	args := os.user_args()
-	if args.length == 0 {
-		create_git_repo('.')
-		copy_template('hello_world', '.')
-		return
-	}
+const TMPL := os.dir($FILE) + '/templates'
+const COMMON := os.dir($FILE) + '/common'
 
-	name := args[0]
-	copy_template('hello_world', name)
-	create_git_repo(name)
+struct Init {
+mut:
+	name string
+	tmpl_map map[string]string
 }
 
-fun create_git_repo(dir string) {
-	if not os.exists_dir('${dir}/.git') {
-		res := os.exec('git init ${dir}')
+fun main() {
+	mut op := options.new_option_parser(os.user_args())
+	template := op.string('template', `t`, 'bin')
+
+	if not TEMPLATES.contains(template) {
+		eprintln('invalid template ${template}')
+		exit(1)
+	}
+
+	mut name := '.'
+	if op.remaining().length > 0 {
+		name = op.remaining()[0]
+	}
+
+	mut init := Init{
+		name = name
+	}
+
+	init.check_preconditions() or {
+		eprintln(err)
+		exit(1)
+	}
+
+	init.create_git_repo()
+	init.use_template(template)
+}
+
+fun (init Init) check_preconditions() !bool {
+	if init.name == '.' {
+		if os.ls('.').length > 0 {
+			return error('cannot run init in non-empty directory')
+		}
+	} else if os.exists(init.name) {
+		return error('"${init.name}" already exists')
+	}
+
+	// FIXME function should return !void
+	return true
+}
+
+fun (init Init) create_git_repo() {
+	// TODO check git is installed
+	// TODO flag to skip
+	if not os.exists_dir('${init.name}/.git') {
+		res := os.exec('git init ${init.name}')
 		if res.code != 0 {
 			eprintln('Failed to create git repository')
 			exit(1)
@@ -30,24 +68,30 @@ fun create_git_repo(dir string) {
 	}
 }
 
-fun copy_template(template string, dest string) {
-	copy_files(os.join_path(ROOT, [template]), dest)
+fun (mut init Init) use_template(template string) {
+	init.tmpl_map = map{
+		'name': init.name
+		'test': 'test'
+	}
+
+	os.mkdir(init.name)
+
+	init.copy_files(COMMON, init.name)
+	init.copy_files(os.join_path(TMPL, [template]), init.name)
 }
 
-fun copy_files(src string, dest string) {
-	os.mkdir(dest)
-
+fun (init Init) copy_files(src string, dest string) {
 	for file in os.ls(src) {
 		path := '${src}/${file}'
 		if os.is_dir(path) {
-			copy_files(path, '${dest}/${file}')
+			os.mkdir('${dest}/${file}')
+			init.copy_files(path, '${dest}/${file}')
 			continue
 		}
 
-		content := render_template(os.read_file(path), map{
-			'name': dest
-		})
-		os.write_file('${dest}/${file}', content)
+		content := render_template(os.read_file(path), init.tmpl_map)
+		final_name := render_template(file, init.tmpl_map)
+		os.write_file('${dest}/${final_name}', content)
 	}
 }
 
