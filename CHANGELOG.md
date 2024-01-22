@@ -54,6 +54,7 @@ _unreleased_
 
 ### Standard Library
 - Add new package `encoding.binary`
+- Add new package `cli.options`
 - Add work in progress `math` package
 - `builtin`
   - _[C]_ Implement string methods: `substr()`, `trim_left()`, `trim_right()`, `repeat()`
