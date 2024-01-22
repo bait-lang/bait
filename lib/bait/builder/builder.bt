@@ -284,14 +284,15 @@ fun (b Builder) print_errors_and_warnings(parser_errs bool) bool {
 fun (b Builder) resolve_import(base_dir string, name string) string {
 	name_as_path := name.replace('.', os.PATH_SEP)
 
-	// Search next to the current file
-	mut dir := os.join_path(base_dir, [name_as_path])
+	// Search in std lib
+	mut dir := os.resource_abs_path(os.join_path("lib", [name_as_path]))
 	if os.exists(dir) {
 		return dir
 	}
 
-	// Search in std lib
-	dir = os.resource_abs_path(os.join_path("lib", [name_as_path]))
+	project_base := get_project_root(os.abs_path(base_dir))
+	// Search in `project_root/src`` (next to bait.toml)
+	dir = os.join_path(project_base, ['src'])
 	if os.exists(dir) {
 		return dir
 	}
@@ -303,6 +304,19 @@ fun (b Builder) resolve_import(base_dir string, name string) string {
 
 	// When running make, lib is in the working dir
 	return os.join_path(os.getwd(), ["lib", name_as_path])
+}
+
+fun get_project_root(abs_dir string) string {
+	if abs_dir == '/' {
+		return ''
+	}
+
+	files := os.ls(abs_dir)
+	if files.contains('bait.toml') {
+		return abs_dir
+	}
+
+	return get_project_root(os.dir(abs_dir))
 }
 
 fun order_pkgs(mut ordered []string, pkg string, deps map[string][]string, mut looked []string) {
