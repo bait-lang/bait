@@ -11,7 +11,7 @@ fun testsuite_begin() {
 	os.chdir(TMP)
 }
 
-fun test_init_new_dir() {
+fun test_with_name() {
 	res := os.system('node ${$BAITEXE} init with_name')
 	assert res == 0
 
@@ -19,7 +19,7 @@ fun test_init_new_dir() {
 	assert os.ls('${TMP}/with_name').length == 6
 }
 
-fun test_init_dot() {
+fun test_dot() {
 	os.mkdir('dot')
 	os.chdir('dot')
 
@@ -30,6 +30,13 @@ fun test_init_dot() {
 	assert os.ls('${TMP}/dot').length == 6
 
 	os.chdir(TMP)
+}
+
+fun test_template_option() {
+	res := os.system('node ${$BAITEXE} init -t lib mylib')
+	assert res == 0
+
+	assert os.ls('${TMP}/mylib').length == 7
 }
 
 fun testsuite_end() {
