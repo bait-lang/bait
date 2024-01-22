@@ -1,21 +1,21 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
-import cli.cmdline
+import cli
 
-fun test_parse_string_whitespace() {
+fun test_whitespace() {
 	inp := '--foo -a   bc d'
 	exp := ['--foo', '-a', 'bc', 'd']
-	assert cmdline.parse_string(inp) == exp
+	assert cli.parse_string(inp) == exp
 }
 
-fun test_parse_string_quoted() {
+fun test_quotes() {
 	inp := '-s "w spa  ce"'
 	exp := ['-s', 'w spa  ce']
-	assert cmdline.parse_string(inp) == exp
+	assert cli.parse_string(inp) == exp
 }
 
-fun test_parse_string_quotes_mixed() {
+fun test_mixed_quotes() {
 	inp := '"a a" "s\'" \'"d\' \'b b\''
 	exp := ['a a', "s'", '"d', 'b b']
-	assert cmdline.parse_string(inp) == exp
+	assert cli.parse_string(inp) == exp
 }

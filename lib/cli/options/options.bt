@@ -1,0 +1,61 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package options
+
+pub fun new_option_parser(args []string) OptParser {
+	return OptParser{
+		args = args
+	}
+}
+
+struct OptParser {
+mut:
+	args []string
+}
+
+fun (mut op OptParser) option_index(long string, short u8) i32 {
+	long_name := '--${long}'
+	short_name := '-${short}'
+
+	for i, arg in op.args {
+		is_short := arg.length == 2 and arg[0] == `-` and arg[1] == short
+		if is_short or arg == long_name {
+			return i
+		}
+	}
+
+	return -1
+}
+
+fun (mut op OptParser) find_val(long string, short u8) !string {
+	vidx := op.option_index(long, short) + 1
+
+	if vidx == 0 or vidx == op.args.length {
+		return error('')
+	}
+
+	return op.args[vidx]
+}
+
+pub fun (mut op OptParser) string(long string, short u8, default string) string {
+	return op.find_val(long, short) or { default }
+}
+
+pub fun (mut op OptParser) int(long string, short u8, default i32) i32 {
+	val := op.find_val(long, short) or {
+		return default
+	}
+	return val.toI32()
+}
+
+pub fun (mut op OptParser) float(long string, short u8, default f64) f64 {
+	val := op.find_val(long, short) or {
+		return default
+	}
+	return val.toF64()
+}
+
+pub fun (mut op OptParser) bool(long string, short u8, default bool) bool {
+	idx := op.option_index(long, short)
+	return if idx >= 0 { true } else { default }
+}

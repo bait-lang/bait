@@ -1,0 +1,23 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+import cli.options
+
+fun test_opt_parser() {
+	args := ['-s', 'str', '_', '--flag', '-n', '123', '--f_val', '1.23']
+	mut op := options.new_option_parser(args)
+
+	s := op.string('string', `s`, '')
+	assert s == 'str'
+
+	b := op.bool('flag', `f`, false)
+	assert b == true
+
+	i := op.int('num', `n`, 0)
+	assert i == 123
+
+	f := op.float('f_val', `f`, 0.0)
+	assert f == 1.23
+
+	assert op.string('def', ``, 'default') == 'default'
+	assert op.float('def', ``, 4.56) == 4.56
+}
