@@ -59,6 +59,7 @@ _unreleased_
 - `builtin`
   - _[C]_ Implement string methods: `substr()`, `trim_left()`, `trim_right()`, `repeat()`
   - _JS backend_
+    - New array method `delete()`
     - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
     - New `[]u8` method: `to_string()`
 - `os`: _[JS]_ New functions `read_bytes(path)`, `is_root(path)`
