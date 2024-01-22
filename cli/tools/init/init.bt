@@ -5,18 +5,25 @@ package main
 import os
 import cli.options
 
+const TEMPLATES := ['bin', 'lib']
+
 const TMPL := os.dir($FILE) + '/templates'
 const COMMON := os.dir($FILE) + '/common'
 
 struct Init {
 mut:
 	name string
+	tmpl_map map[string]string
 }
 
 fun main() {
 	mut op := options.new_option_parser(os.user_args())
 	template := op.string('template', `t`, 'bin')
-	// TODO check template exists
+
+	if not TEMPLATES.contains(template) {
+		eprintln('invalid template ${template}')
+		exit(1)
+	}
 
 	mut name := '.'
 	if op.remaining().length > 0 {
@@ -43,7 +50,11 @@ fun (init Init) create_git_repo() {
 	}
 }
 
-fun (init Init) use_template(template string) {
+fun (mut init Init) use_template(template string) {
+	init.tmpl_map = map{
+		'name': init.name
+	}
+
 	os.mkdir(init.name)
 
 	init.copy_files(COMMON, init.name)
@@ -59,11 +70,8 @@ fun (init Init) copy_files(src string, dest string) {
 			continue
 		}
 
-		tmpl_map := map{
-			'name': init.name
-		}
-		content := render_template(os.read_file(path), tmpl_map)
-		final_name := render_template(file, tmpl_map)
+		content := render_template(os.read_file(path), init.tmpl_map)
+		final_name := render_template(file, init.tmpl_map)
 		os.write_file('${dest}/${final_name}', content)
 	}
 }
