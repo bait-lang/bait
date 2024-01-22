@@ -53,6 +53,11 @@ pub fun (a Array) contains(el any) bool {
 	return a.index(el) >= 0
 }
 
+pub fun (mut a Array) delete(idx i32) {
+	#JS.'a.data.splice(idx, 1)'
+	a.length -= 1
+}
+
 pub fun (a Array) slice(start i32, end i32) Array {
 	return Array{
 		data = a.data.slice(start as #JS.Number, end as #JS.Number)
