@@ -290,15 +290,15 @@ fun (b Builder) resolve_import(base_dir string, name string) string {
 		return dir
 	}
 
-	project_base := get_project_root(os.abs_path(base_dir))
-	// Search in `project_root/src`` (next to bait.toml)
-	dir = os.join_path(project_base, ['src'])
-	if os.exists(dir) {
-		return dir
-	}
-
-	// Package test
 	if b.prefs.is_test {
+		// Search in `project_root/src` (next to bait.toml)
+		project_root := get_project_root(os.abs_path(base_dir))
+		dir = os.join_path(project_root, ['src'])
+		if os.exists(dir) {
+			return dir
+		}
+
+		// Tests next to source code
 		return base_dir
 	}
 

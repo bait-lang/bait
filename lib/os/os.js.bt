@@ -48,12 +48,12 @@ pub fun symlink(src string, dest string) {
 	#JS.fs.symlinkSync(src.str, dest.str)
 }
 
-pub fun is_root(dir string) bool {
+pub fun is_root(path string) bool {
 	if platform() == 'win32' {
-		return dir.length == 2 and dir[1] == `:`
+		return path.length == 2 and path[1] == `:`
 	}
 
-	return dir == '/'
+	return path == '/'
 }
 
 pub fun chdir(dir string) {

@@ -61,7 +61,7 @@ _unreleased_
   - _JS backend_
     - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
     - New `[]u8` method: `to_string()`
-- `os`: _[JS]_ New function `read_bytes(path)`
+- `os`: _[JS]_ New functions `read_bytes(path)`, `is_root(path)`
 
 ### CLI and Tooling
 - `build`: Add `-cc` option to use a custom C compiler
