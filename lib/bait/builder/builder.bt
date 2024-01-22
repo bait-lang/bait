@@ -307,7 +307,7 @@ fun (b Builder) resolve_import(base_dir string, name string) string {
 }
 
 fun get_project_root(abs_dir string) string {
-	if abs_dir == '/' {
+	if os.is_root(abs_dir) {
 		return ''
 	}
 
