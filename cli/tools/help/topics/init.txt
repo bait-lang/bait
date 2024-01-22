@@ -1,5 +1,12 @@
 Usage:
-  bait init [name]
+  bait init [options] [name]
 
 If name is given, set up a new Bait project in a new directory of that name.
 Otherwise use the current directory.
+
+Options:
+  -t, --template [template]   Use the project template. Default: `bin`
+
+Templates:
+  bin   Simple hello world application
+  lib   Shared library template
