@@ -8,6 +8,11 @@ import cli.options
 const TMPL := os.dir($FILE) + '/templates'
 const COMMON := os.dir($FILE) + '/common'
 
+struct Init {
+mut:
+	name string
+}
+
 fun main() {
 	mut op := options.new_option_parser(os.user_args())
 	template := op.string('template', `t`, 'bin')
@@ -18,13 +23,19 @@ fun main() {
 		name = op.remaining()[0]
 	}
 
-	create_git_repo(name)
-	copy_template(template, name)
+	// TODO test behaviour if dest already exists
+	mut init := Init{
+		name = name
+	}
+	init.create_git_repo()
+	init.use_template(template)
 }
 
-fun create_git_repo(dir string) {
-	if not os.exists_dir('${dir}/.git') {
-		res := os.exec('git init ${dir}')
+fun (init Init) create_git_repo() {
+	// TODO check git is installed
+	// TODO flag to skip
+	if not os.exists_dir('${init.name}/.git') {
+		res := os.exec('git init ${init.name}')
 		if res.code != 0 {
 			eprintln('Failed to create git repository')
 			exit(1)
@@ -32,26 +43,28 @@ fun create_git_repo(dir string) {
 	}
 }
 
-fun copy_template(template string, dest string) {
-	os.mkdir(dest)
+fun (init Init) use_template(template string) {
+	os.mkdir(init.name)
 
-	copy_files(COMMON, dest)
-	copy_files(os.join_path(TMPL, [template]), dest)
+	init.copy_files(COMMON, init.name)
+	init.copy_files(os.join_path(TMPL, [template]), init.name)
 }
 
-fun copy_files(src string, dest string) {
+fun (init Init) copy_files(src string, dest string) {
 	for file in os.ls(src) {
 		path := '${src}/${file}'
 		if os.is_dir(path) {
 			os.mkdir('${dest}/${file}')
-			copy_files(path, '${dest}/${file}')
+			init.copy_files(path, '${dest}/${file}')
 			continue
 		}
 
-		content := render_template(os.read_file(path), map{
-			'name': dest
-		})
-		os.write_file('${dest}/${file}', content)
+		tmpl_map := map{
+			'name': init.name
+		}
+		content := render_template(os.read_file(path), tmpl_map)
+		final_name := render_template(file, tmpl_map)
+		os.write_file('${dest}/${final_name}', content)
 	}
 }
 
