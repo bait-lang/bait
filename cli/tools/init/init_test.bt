@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import os
+import bait.util.testing
 
 const TMP := os.tmp_dir() + '/bait'
 
@@ -11,11 +12,24 @@ fun testsuite_begin() {
 }
 
 fun test_init_new_dir() {
-	res := os.system('node ${$BAITEXE} init new_test')
+	res := os.system('node ${$BAITEXE} init with_name')
 	assert res == 0
 
-	assert os.exists_dir('${TMP}/new_test')
-	assert os.ls('${TMP}/new_test').length == 6
+	assert os.exists_dir('${TMP}/with_name/src')
+	assert os.ls('${TMP}/with_name').length == 6
+}
+
+fun test_init_dot() {
+	os.mkdir('dot')
+	os.chdir('dot')
+
+	res := os.system('node ${$BAITEXE} init .')
+	assert res == 0
+
+	assert os.exists_dir('${TMP}/dot/src')
+	assert os.ls('${TMP}/dot').length == 6
+
+	os.chdir(TMP)
 }
 
 fun testsuite_end() {

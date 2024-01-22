@@ -3,21 +3,23 @@
 package main
 
 import os
+import cli.options
 
-const ROOT := os.dir($FILE) + '/templates'
+const TMPL := os.dir($FILE) + '/templates'
+const COMMON := os.dir($FILE) + '/common'
 
-// TODO add support to let user choose template
 fun main() {
-	args := os.user_args()
-	if args.length == 0 {
-		create_git_repo('.')
-		copy_template('bin', '.')
-		return
+	mut op := options.new_option_parser(os.user_args())
+	template := op.string('template', `t`, 'bin')
+	// TODO check template exists
+
+	mut name := '.'
+	if op.remaining().length > 0 {
+		name = op.remaining()[0]
 	}
 
-	name := args[0]
-	copy_template('bin', name)
 	create_git_repo(name)
+	copy_template(template, name)
 }
 
 fun create_git_repo(dir string) {
@@ -31,15 +33,17 @@ fun create_git_repo(dir string) {
 }
 
 fun copy_template(template string, dest string) {
-	copy_files(os.join_path(ROOT, [template]), dest)
+	os.mkdir(dest)
+
+	copy_files(COMMON, dest)
+	copy_files(os.join_path(TMPL, [template]), dest)
 }
 
 fun copy_files(src string, dest string) {
-	os.mkdir(dest)
-
 	for file in os.ls(src) {
 		path := '${src}/${file}'
 		if os.is_dir(path) {
+			os.mkdir('${dest}/${file}')
 			copy_files(path, '${dest}/${file}')
 			continue
 		}
