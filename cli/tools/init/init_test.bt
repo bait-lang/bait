@@ -4,10 +4,10 @@
 import os
 import bait.util.testing
 
-const TMP := os.tmp_dir() + '/bait'
+const TMP := os.tmp_dir() + '/bait/init_test'
 
 fun testsuite_begin() {
-	os.mkdir(TMP)
+	os.mkdir_all(TMP)
 	os.chdir(TMP)
 }
 
@@ -48,5 +48,6 @@ fun test_errors() {
 }
 
 fun testsuite_end() {
+	os.chdir('..')
 	os.rmdir_all(TMP)
 }
