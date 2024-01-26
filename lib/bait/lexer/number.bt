@@ -5,7 +5,9 @@ package lexer
 import bait.token
 
 fun (mut l Lexer) number() token.Token {
-	if l.text[l.pos - 1] == `0` {
+	l.start = l.pos - 1
+
+	if l.text[l.start] == `0` {
 		if l.text[l.pos] == `x` {
 			return l.hex_number()
 		}
@@ -14,13 +16,13 @@ fun (mut l Lexer) number() token.Token {
 			return l.bin_number()
 		}
 	}
+
 	return l.dec_number()
 }
 
-// TODO share more code between the below functions
+// TODO share even more code between the below functions
 
 fun (mut l Lexer) dec_number() token.Token {
-	l.start = l.pos - 1
 	for l.pos < l.text.length and l.text[l.pos].is_digit() {
 		l.pos += 1
 	}
@@ -29,7 +31,6 @@ fun (mut l Lexer) dec_number() token.Token {
 }
 
 fun (mut l Lexer) hex_number() token.Token {
-	l.start = l.pos - 1
 	l.pos += 1
 	for l.pos < l.text.length and l.text[l.pos].is_hex_digit() {
 		l.pos += 1
@@ -39,7 +40,6 @@ fun (mut l Lexer) hex_number() token.Token {
 }
 
 fun (mut l Lexer) bin_number() token.Token {
-	l.start = l.pos - 1
 	l.pos += 1
 	for l.pos < l.text.length and l.text[l.pos].is_bin_digit() {
 		l.pos += 1
