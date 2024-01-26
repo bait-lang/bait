@@ -9,24 +9,17 @@ pub enum Language {
 }
 
 pub fun (l Language) prepend_to(s string) string {
-	if l == .bait {
-		return s
+	return match l {
+		.bait { s }
+		.c { 'C.' + s }
+		.js { 'JS.' + s }
 	}
-	if l == .c {
-		return 'C.' + s
-	}
-	if l == .js {
-		return 'JS.' + s
-	}
-	return s
 }
 
 pub fun prefix_to_lang(p string) Language {
-	if p == 'C' {
-		return .c
+	return match p {
+		'C' { .c }
+		'JS' { .js }
+		else { .bait }
 	}
-	if p == 'JS' {
-		return .js
-	}
-	return .bait
 }
