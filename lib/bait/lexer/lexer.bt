@@ -43,14 +43,13 @@ pub fun (l Lexer) get_pos() token.Pos {
 pub fun (mut l Lexer) next() token.Token {
 	l.skip_whitespace()
 
-	l.start = l.pos
-
 	// End of file
 	if l.pos == l.text.length {
 		return .eof
 	}
 
 	c := l.text[l.pos]
+	l.start = l.pos
 	l.pos += 1
 	l.insert_semi = false
 
@@ -101,7 +100,7 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 	match c {
 		`\n` {
 			// This is only reached if l.insert_semi was set to true
-			l.line_starts.push(l.pos)
+			l.save_line()
 			return .semicolon
 		}
 		`.` {
@@ -275,7 +274,7 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 
 		if c == `\n` {
 			// Properly track line count
-			l.line_starts.push(l.pos)
+			l.save_line()
 		} else if c == `\\` {
 			// Escape sequence
 			l.pos += 1
@@ -333,6 +332,10 @@ fun (mut l Lexer) unexpected_char(c u8) token.Token {
 	return .error
 }
 
+fun (mut l Lexer) save_line() {
+	l.line_starts.push(l.pos - 1)
+}
+
 fun (mut l Lexer) skip_whitespace() {
 	for l.pos < l.text.length {
 		c := l.text[l.pos]
@@ -341,7 +344,7 @@ fun (mut l Lexer) skip_whitespace() {
 				return
 			}
 			l.pos += 1
-			l.line_starts.push(l.pos)
+			l.save_line()
 		} else if c == ` ` or c == `\t` or c == `\r` {
 			l.pos += 1
 		} else {
@@ -355,7 +358,7 @@ fun (mut l Lexer) skip_line() {
 		l.pos += 1
 	}
 	l.pos += 1
-	l.line_starts.push(l.pos)
+	l.save_line()
 }
 
 fun is_name_start_char(c u8) bool {
