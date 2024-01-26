@@ -258,6 +258,7 @@ fun (mut l Lexer) name_or_key() token.Token {
 	return tok
 }
 
+// FIXME get_pos() should point to start of string (currently: end)
 fun (mut l Lexer) string_val(quote u8) token.Token {
 	is_foreign := l.text[l.pos - 2] == `.` // E.g. #JS.'eval()'
 	l.start = l.pos
