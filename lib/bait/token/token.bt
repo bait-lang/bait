@@ -5,40 +5,40 @@ package token
 pub enum Token {
 	error
 	eof
-	attr
+	attr // @name
 	comment
 	name
 	string
 	char
 	number
-	dot
-	colon
-	comma
-	semicolon
-	plus
-	minus
+	dot // .
+	colon // :
+	comma // ,
+	semicolon // ;
+	plus // +
+	minus // -
 	mul // *
-	div
-	mod
-	assign
-	decl_assign
-	plus_assign
-	minus_assign
-	mul_assign
-	div_assign
-	mod_assign
-	eq
-	ne
-	lt
-	gt
-	le
-	ge
-	lpar
-	rpar
-	lsqr
-	rsqr
-	lcur
-	rcur
+	div // /
+	mod // %
+	assign // =
+	decl_assign // :=
+	plus_assign // +=
+	minus_assign // -=
+	mul_assign // *=
+	div_assign // /=
+	mod_assign // %=
+	eq // ==
+	ne // !=
+	lt // <
+	gt // >
+	le // <=
+	ge // >=
+	lpar // (
+	rpar // )
+	lsqr // [
+	rsqr // ]
+	lcur // {
+	rcur // }
 	excl // !
 	tilde // ~
 	amp // &
@@ -48,7 +48,7 @@ pub enum Token {
 	rshift // >>
 	dollar // $
 	str_dollar // $
-	hash
+	hash // #LANG
 	key_and
 	key_as
 	key_assert

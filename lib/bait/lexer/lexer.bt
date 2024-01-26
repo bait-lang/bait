@@ -96,10 +96,12 @@ pub fun (mut l Lexer) next() token.Token {
 }
 
 fun (mut l Lexer) simple_token(c u8) token.Token {
-	l.val = '' // The following tokens are directly converted to string
+	// The following tokens are directly converted to string (except comments)
+	l.val = ''
+
 	match c {
 		`\n` {
-			// This is only reached if l.insert_semi was set to true
+			// Only reached if insert_semi was set to true
 			l.save_line()
 			return .semicolon
 		}
@@ -165,9 +167,6 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			}
 			return .colon
 		}
-		`;` {
-			return .semicolon
-		}
 		`!` {
 			if l.text[l.pos] == `=` {
 				l.pos += 1
@@ -196,6 +195,9 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 				return .rshift
 			}
 			return .gt
+		}
+		`;` {
+			return .semicolon
 		}
 		`(` {
 			return .lpar
