@@ -1,1 +1,1 @@
-tests/out/error/parser/bad_interface.in.bt:2:15 error: unexpected string, expecting name
+tests/out/error/parser/bad_interface.in.bt:2:16 error: unexpected string, expecting name

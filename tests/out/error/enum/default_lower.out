@@ -1,1 +1,1 @@
-tests/out/error/enum/default_lower.in.bt:5:1 error: enum field value must be greater than previous field
+tests/out/error/enum/default_lower.in.bt:5:2 error: enum field value must be greater than previous field

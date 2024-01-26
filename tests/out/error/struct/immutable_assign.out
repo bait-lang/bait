@@ -1,1 +1,1 @@
-tests/out/error/struct/immutable_assign.in.bt:7:1 error: cannot assign to field of immutable variable `f`
+tests/out/error/struct/immutable_assign.in.bt:7:2 error: cannot assign to field of immutable variable `f`

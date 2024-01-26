@@ -1,1 +1,1 @@
-tests/out/error/match/branch_no_return.in.bt:4:3 error: branch does not return a value
+tests/out/error/match/branch_no_return.in.bt:4:4 error: branch does not return a value

@@ -1,1 +1,1 @@
-tests/out/error/attributes/export.in.bt:6:1 error: @export name "spameggs" is already used
+tests/out/error/attributes/export.in.bt:6:2 error: @export name "spameggs" is already used

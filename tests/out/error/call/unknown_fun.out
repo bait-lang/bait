@@ -1,2 +1,2 @@
-tests/out/error/call/unknown_fun.in.bt:4:15 error: unknown function not_exists
-tests/out/error/call/unknown_fun.in.bt:5:17 error: method bad_method not found on type Foo
+tests/out/error/call/unknown_fun.in.bt:4:16 error: unknown function not_exists
+tests/out/error/call/unknown_fun.in.bt:5:18 error: method bad_method not found on type Foo

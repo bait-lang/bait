@@ -1,1 +1,1 @@
-tests/out/error/other/stmt_after_script_mode.in.bt:5:0 error: invalid expression: kind = key_struct, val = struct
+tests/out/error/other/stmt_after_script_mode.in.bt:5:1 error: invalid expression: kind = key_struct, val = struct

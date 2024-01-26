@@ -1,1 +1,1 @@
-tests/out/error/struct/decl.in.bt:3:1 error: duplicate field name foo
+tests/out/error/struct/decl.in.bt:3:2 error: duplicate field name foo

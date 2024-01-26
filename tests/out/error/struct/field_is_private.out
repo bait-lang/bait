@@ -1,2 +1,2 @@
-tests/out/error/struct/field_is_private.in.bt:4:9 error: field bait.test_pkgs.structs.Foo.priv_f is private
-tests/out/error/struct/field_is_private.in.bt:5:9 error: field bait.test_pkgs.structs.Foo.mut_f is private
+tests/out/error/struct/field_is_private.in.bt:4:10 error: field bait.test_pkgs.structs.Foo.priv_f is private
+tests/out/error/struct/field_is_private.in.bt:5:10 error: field bait.test_pkgs.structs.Foo.mut_f is private
