@@ -237,7 +237,7 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			return .dollar
 		}
 		else {
-			return l.unknown_char(c)
+			return l.unexpected_char(c)
 		}
 	}
 }
@@ -294,7 +294,7 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 	// Unclosed string
 	l.start = l.pos
 	l.val = 'unclosed string literal'
-	return .unknown
+	return .error
 }
 
 fun (mut l Lexer) char_val() token.Token {
@@ -328,9 +328,9 @@ fun (mut l Lexer) comment() token.Token {
 	return l.next()
 }
 
-fun (mut l Lexer) unknown_char(c u8) token.Token {
-	l.val = 'unknown char ${c.ascii()}'
-	return .unknown
+fun (mut l Lexer) unexpected_char(c u8) token.Token {
+	l.val = 'unexpected char ${c.ascii()}'
+	return .error
 }
 
 fun (mut l Lexer) skip_whitespace() {

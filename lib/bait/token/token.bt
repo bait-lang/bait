@@ -3,7 +3,7 @@
 package token
 
 pub enum Token {
-	unknown
+	error
 	eof
 	attr
 	comment
@@ -190,7 +190,7 @@ pub fun (kind Token) c_repr() string {
 
 pub fun (kind Token) str() string {
 	return match kind {
-		.unknown { 'unknown' }
+		.error { 'error' }
 		.eof { 'eof' }
 		.attr { 'attr' }
 		.comment { 'comment' }

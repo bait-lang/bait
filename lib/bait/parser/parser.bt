@@ -206,17 +206,17 @@ fun (p Parser) pos() token.Pos {
 }
 
 fun (mut p Parser) next() {
-	if p.next_tok == .unknown {
+	if p.next_tok == .error {
 		p.tok = p.lexer.next()
 	} else {
 		p.tok = p.next_tok
-		p.next_tok = .unknown
+		p.next_tok = .error
 	}
 	p.val = p.lexer.val
 }
 
 fun (mut p Parser) peek() token.Token {
-	if p.next_tok == .unknown {
+	if p.next_tok == .error {
 		p.next_tok = p.lexer.next()
 	}
 	return p.next_tok

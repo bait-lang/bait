@@ -30,4 +30,6 @@ fun test_store() {
 
 	assert l.next() == .comment
 	assert l.val == '   spaces'
+
+	assert l.next() == .comment
 }
