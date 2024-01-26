@@ -4,23 +4,30 @@ package lexer
 
 import bait.token
 
+pub enum CommentMode {
+	discard
+	store
+}
+
 pub struct Lexer {
 pub mut:
 	val string // Value of the current token
 mut:
+	comment_mode CommentMode
 	text string
 	line_starts []i32
 	start i32 // Start of the current token
 	pos i32 // Position of the next char
 	insert_semi bool // Insert a semicolon on \n
 
-	// String interpolation
+	// String interpolation state
 	is_str_interpol bool // True for the whole expr (`${...}`)
 	is_str_dollar bool // True only for the opening `$`
 	str_quote u8
 }
 
-pub fun (mut l Lexer) init(text string) {
+pub fun (mut l Lexer) init(text string, comment_mode CommentMode) {
+	l.comment_mode = comment_mode
 	l.text = text
 	l.line_starts = [0]
 	l.pos = 0
@@ -133,9 +140,7 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			}
 
 			if c2 == `/` {
-				l.skip_line()
-				// TODO use a non-recursive approch to prevent a growing call stack
-				return l.next()
+				return l.comment()
 			}
 
 			return .div
@@ -306,6 +311,21 @@ fun (mut l Lexer) char_val() token.Token {
 	}
 	l.val = l.text.substr(l.start, l.pos - 1)
 	return .char
+}
+
+fun (mut l Lexer) comment() token.Token {
+	start := l.pos + 1
+	l.skip_line()
+
+	if l.comment_mode == .store {
+		// Set val to comment text including all spaces after `//`
+		l.val = l.text.substr(start, l.pos - 1)
+		return .comment
+	}
+
+	// REFAC use non-recursive approch to prevent a growing call stack
+	// Discard the comment
+	return l.next()
 }
 
 fun (mut l Lexer) unknown_char(c u8) token.Token {

@@ -40,7 +40,7 @@ pub fun new(table ast.Table, pref preference.Prefs) Parser {
 
 pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.File {
 	// Init Parser
-	p.lexer.init(text)
+	p.lexer.init(text, .discard)
 	p.path = path
 	p.eofs = 0
 	p.import_aliases = map[string]string

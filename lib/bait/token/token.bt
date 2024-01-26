@@ -6,6 +6,7 @@ pub enum Token {
 	unknown
 	eof
 	attr
+	comment
 	name
 	string
 	char
@@ -192,6 +193,7 @@ pub fun (kind Token) str() string {
 		.unknown { 'unknown' }
 		.eof { 'eof' }
 		.attr { 'attr' }
+		.comment { 'comment' }
 		.name { 'name' }
 		.string { 'string' }
 		.char { 'char' }
