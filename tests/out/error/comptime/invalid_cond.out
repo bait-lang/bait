@@ -1,3 +1,3 @@
-tests/out/error/comptime/invalid_cond.in.bt:1:6 error: invalid $if condition
+tests/out/error/comptime/invalid_cond.in.bt:1:7 error: invalid $if condition
 tests/out/error/comptime/invalid_cond.in.bt:2:11 error: invalid $if condition
 tests/out/error/comptime/invalid_cond.in.bt:3:16 error: invalid $if condition "RUST"

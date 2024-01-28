@@ -1,1 +1,1 @@
-tests/out/error/other/backend_warning.in.bt:1:5 warning: JS code can only be used in .js.bt files
+tests/out/error/other/backend_warning.in.bt:1:6 warning: JS code can only be used in .js.bt files

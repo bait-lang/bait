@@ -1,1 +1,1 @@
-tests/out/error/array/invalid_field.in.bt:1:27 error: invalid array init field: no_field
+tests/out/error/array/invalid_field.in.bt:1:28 error: invalid array init field: no_field

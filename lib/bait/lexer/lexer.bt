@@ -29,7 +29,7 @@ mut:
 pub fun (mut l Lexer) init(text string, comment_mode CommentMode) {
 	l.comment_mode = comment_mode
 	l.text = text
-	l.line_starts = [0]
+	l.line_starts = [-1]
 	l.pos = 0
 }
 

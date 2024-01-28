@@ -1,4 +1,4 @@
-tests/out/error/ident/undefined.in.bt:1:12 error: undefined identifier bad_name
+tests/out/error/ident/undefined.in.bt:1:13 error: undefined identifier bad_name
 tests/out/error/ident/undefined.in.bt:3:7 error: undefined identifier where
 tests/out/error/ident/undefined.in.bt:5:3 error: undefined identifier os
 tests/out/error/ident/undefined.in.bt:7:10 error: undefined identifier xyz

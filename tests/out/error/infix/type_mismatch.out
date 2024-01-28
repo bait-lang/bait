@@ -1,1 +1,1 @@
-tests/out/error/infix/type_mismatch.in.bt:1:11 error: infix expr: types string and i32 do not match
+tests/out/error/infix/type_mismatch.in.bt:1:12 error: infix expr: types string and i32 do not match
