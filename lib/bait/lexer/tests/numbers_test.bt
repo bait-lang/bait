@@ -15,8 +15,10 @@ fun test_valid_numbers() {
 
 	l.init('12.34', .discard)
 	assert l.next() == .number
+	assert l.val == '12'
 	assert l.next() == .dot
 	assert l.next() == .number
+	assert l.val == '34'
 
 	l.init('0b0101', .discard)
 	assert l.next() == .number
@@ -24,6 +26,7 @@ fun test_valid_numbers() {
 
 	l.init('0xff', .discard)
 	assert l.next() == .number
+	assert l.val == '0xff'
 }
 
 fun test_error_leading_zero() {

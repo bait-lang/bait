@@ -11,46 +11,38 @@ fun (mut l Lexer) number() token.Token {
 
 	if l.text[l.start] == `0` {
 		if c == `b` {
-			return l.bin_number()
-		}
-
-		if c == `x` {
-			return l.hex_number()
-		}
-
-		if c.is_digit() {
+			l.advance_bin_number()
+		} else if c == `x` {
+			l.advance_hex_number()
+		} else if c.is_digit() {
 			l.val = 'leading zeros in decimal numbers are not allowed'
 			return .error
 		}
+	} else {
+		l.advance_dec_number()
 	}
 
-	return l.dec_number()
-}
-
-// TODO share even more code between the below functions
-
-fun (mut l Lexer) dec_number() token.Token {
-	for l.pos < l.text.length and l.text[l.pos].is_digit() {
-		l.pos += 1
-	}
 	l.val = l.text.substr(l.start, l.pos)
 	return .number
 }
 
-fun (mut l Lexer) hex_number() token.Token {
+
+fun (mut l Lexer) advance_dec_number() {
+	for l.pos < l.text.length and l.text[l.pos].is_digit() {
+		l.pos += 1
+	}
+}
+
+fun (mut l Lexer) advance_hex_number() {
 	l.pos += 1
 	for l.pos < l.text.length and l.text[l.pos].is_hex_digit() {
 		l.pos += 1
 	}
-	l.val = l.text.substr(l.start, l.pos)
-	return .number
 }
 
-fun (mut l Lexer) bin_number() token.Token {
+fun (mut l Lexer) advance_bin_number() {
 	l.pos += 1
 	for l.pos < l.text.length and l.text[l.pos].is_bin_digit() {
 		l.pos += 1
 	}
-	l.val = l.text.substr(l.start, l.pos)
-	return .number
 }
