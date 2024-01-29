@@ -15,10 +15,12 @@ pub mut:
 mut:
 	comment_mode CommentMode
 	text string
-	line_starts []i32
-	start i32 // Start of the current token
-	pos i32 // Position of the next char
 	insert_semi bool // Insert a semicolon on \n
+
+	// Position tracking
+	line_starts []i32 // Array with positions of the \n before each line
+	start i32 // Start of the current token
+	pos i32 // Always points to the next char in text
 
 	// String interpolation state
 	is_str_interpol bool // True for the whole expr (`${...}`)
