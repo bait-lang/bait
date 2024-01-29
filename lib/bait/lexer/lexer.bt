@@ -291,7 +291,7 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 			l.str_quote = quote
 
 			l.pos -= 1
-			l.val = l.text.substr(l.start, l.pos)
+			l.val = l.text.substr(l.start, l.pos).trim_right('\r')
 			return .string
 		}
 	}

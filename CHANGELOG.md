@@ -29,6 +29,7 @@ _unreleased_
 - _[JS]_ Implement generic structs
 
 ### Error Checks
+- Fixes and improvements regarding error positions
 - MatchExpr
   - Require match to be exhaustive
   - Prevent duplicate branch conditions
