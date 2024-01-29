@@ -291,7 +291,7 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 			l.str_quote = quote
 
 			l.pos -= 1
-			l.val = l.text.substr(l.start, l.pos).trim_right('\r')
+			l.val = l.text.substr(l.start, l.pos)
 			return .string
 		}
 	}
@@ -324,7 +324,7 @@ fun (mut l Lexer) comment() token.Token {
 
 	if l.comment_mode == .store {
 		// Set val to comment text including all spaces after `//`
-		l.val = l.text.substr(start, l.pos - 1)
+		l.val = l.text.substr(start, l.pos - 1).trim_right('\r')
 		return .comment
 	}
 
