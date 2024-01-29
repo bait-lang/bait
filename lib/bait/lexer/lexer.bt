@@ -45,13 +45,14 @@ pub fun (l Lexer) get_pos() token.Pos {
 pub fun (mut l Lexer) next() token.Token {
 	l.skip_whitespace()
 
+	l.start = l.pos
+
 	// End of file
 	if l.pos == l.text.length {
 		return .eof
 	}
 
 	c := l.text[l.pos]
-	l.start = l.pos
 	l.pos += 1
 	l.insert_semi = false
 
