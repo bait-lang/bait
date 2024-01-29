@@ -1,0 +1,27 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+import bait.lexer
+
+fun test_valid_numbers() {
+	mut l := lexer.Lexer{}
+
+	l.init('0', .discard)
+	assert l.next() == .number
+
+	l.init('123', .discard)
+	assert l.next() == .number
+	assert l.val == '123'
+
+	l.init('12.34', .discard)
+	assert l.next() == .number
+	assert l.next() == .dot
+	assert l.next() == .number
+
+	l.init('0b0101', .discard)
+	assert l.next() == .number
+	assert l.val == '0b0101'
+
+	l.init('0xff', .discard)
+	assert l.next() == .number
+}
