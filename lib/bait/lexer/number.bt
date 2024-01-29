@@ -7,13 +7,20 @@ import bait.token
 fun (mut l Lexer) number() token.Token {
 	l.start = l.pos - 1
 
+	c := l.text[l.pos]
+
 	if l.text[l.start] == `0` {
-		if l.text[l.pos] == `x` {
+		if c == `b` {
+			return l.bin_number()
+		}
+
+		if c == `x` {
 			return l.hex_number()
 		}
 
-		if l.text[l.pos] == `b` {
-			return l.bin_number()
+		if c.is_digit() {
+			l.val = 'leading zeros in decimal numbers are not allowed'
+			return .error
 		}
 	}
 

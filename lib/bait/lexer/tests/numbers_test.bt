@@ -25,3 +25,13 @@ fun test_valid_numbers() {
 	l.init('0xff', .discard)
 	assert l.next() == .number
 }
+
+fun test_error_leading_zero() {
+	mut l := lexer.Lexer{}
+
+	l.init('00', .discard)
+	assert l.next() == .error
+
+	l.init('012', .discard)
+	assert l.next() == .error
+}
