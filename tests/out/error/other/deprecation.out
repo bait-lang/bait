@@ -1,4 +1,4 @@
-tests/out/error/other/deprecation.in.bt:10:5 note: function "foo" is deprecated
-tests/out/error/other/deprecation.in.bt:14:5 note: function "baz" is deprecated; custom message 2
-tests/out/error/other/deprecation.in.bt:15:5 note: function "foo" is deprecated
-tests/out/error/other/deprecation.in.bt:16:5 note: function "bar" will be deprecated after 2345-12-31; custom message
+tests/out/error/other/deprecation.in.bt:10:2 note: function "foo" is deprecated
+tests/out/error/other/deprecation.in.bt:14:2 note: function "baz" is deprecated; custom message 2
+tests/out/error/other/deprecation.in.bt:15:2 note: function "foo" is deprecated
+tests/out/error/other/deprecation.in.bt:16:2 note: function "bar" will be deprecated after 2345-12-31; custom message
