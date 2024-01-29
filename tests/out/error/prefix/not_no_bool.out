@@ -1,1 +1,1 @@
-tests/out/error/prefix/not_no_bool.in.bt:2:5 error: cannot use `not` on i32
+tests/out/error/prefix/not_no_bool.in.bt:2:6 error: cannot use `not` on i32

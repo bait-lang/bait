@@ -87,7 +87,8 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 			c.expected_type = typ
 		}
 		if not c.check_types(typ, node.elem_type) {
-			c.error('expected element type ${c.table.type_name(node.elem_type)}, got ${c.table.type_name(typ)}', node.pos)
+			pos := (e as ast.EmptyExpr).pos
+			c.error('expected element type ${c.table.type_name(node.elem_type)}, got ${c.table.type_name(typ)}', pos)
 		}
 	}
 	node.typ = c.table.find_or_register_array(node.elem_type)

@@ -1,1 +1,1 @@
-tests/out/error/method/mut_receiver.in.bt:6:5 error: method requires an mutable receiver
+tests/out/error/method/mut_receiver.in.bt:6:3 error: method requires an mutable receiver

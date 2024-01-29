@@ -1,3 +1,3 @@
-tests/out/error/other/js_interop.in.bt:1:0 warning: JS imports have to be in .js.bt files
-tests/out/error/other/js_interop.in.bt:5:26 error: type string not matches JS.String in argument 1
-tests/out/error/other/js_interop.in.bt:6:2 error: cannot assign type bool to JS.Boolean
+tests/out/error/other/js_interop.in.bt:1:1 warning: JS imports have to be in .js.bt files
+tests/out/error/other/js_interop.in.bt:5:17 error: type string not matches JS.String in argument 1
+tests/out/error/other/js_interop.in.bt:6:1 error: cannot assign type bool to JS.Boolean

@@ -1,1 +1,1 @@
-tests/out/error/selector/cannot_select.in.bt:7:6 error: cannot select from Color
+tests/out/error/selector/cannot_select.in.bt:7:7 error: cannot select from Color

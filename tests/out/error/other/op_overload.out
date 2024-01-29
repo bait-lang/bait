@@ -1,4 +1,4 @@
-tests/out/error/other/op_overload.in.bt:1:1 warning: operator overloading can only be used on methods
-tests/out/error/other/op_overload.in.bt:13:1 error: "+" was overloaded twice for type "Foo"
-tests/out/error/other/op_overload.in.bt:18:1 error: cannot overload "!=", ">", "<=" and ">=" as they are generated from "==" and "<"
-tests/out/error/other/op_overload.in.bt:23:1 error: cannot overload "+="
+tests/out/error/other/op_overload.in.bt:1:2 warning: operator overloading can only be used on methods
+tests/out/error/other/op_overload.in.bt:13:2 error: "+" was overloaded twice for type "Foo"
+tests/out/error/other/op_overload.in.bt:18:2 error: cannot overload "!=", ">", "<=" and ">=" as they are generated from "==" and "<"
+tests/out/error/other/op_overload.in.bt:23:2 error: cannot overload "+="

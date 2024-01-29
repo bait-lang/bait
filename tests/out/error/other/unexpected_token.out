@@ -1,1 +1,1 @@
-tests/out/error/other/unexpected_token.in.bt:2:1 error: invalid expression: kind = lcur
+tests/out/error/other/unexpected_token.in.bt:2:2 error: invalid expression: kind = lcur

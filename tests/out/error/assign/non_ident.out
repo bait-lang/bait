@@ -1,1 +1,1 @@
-tests/out/error/assign/non_ident.in.bt:1:3 error: cannot declare a variable with a non-identifier
+tests/out/error/assign/non_ident.in.bt:1:4 error: cannot declare a variable with a non-identifier

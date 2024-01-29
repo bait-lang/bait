@@ -1,1 +1,1 @@
-tests/out/opts/no_script/script_mode_warn.in.bt:1:0 warning: declare the main function or use the --script option
+tests/out/opts/no_script/script_mode_warn.in.bt:1:1 warning: declare the main function or use the --script option

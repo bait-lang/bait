@@ -1,1 +1,1 @@
-tests/out/opts/warn_error/warns_are_error.in.bt:1:1 error: unknown attribute "unknown"
+tests/out/opts/warn_error/warns_are_error.in.bt:1:2 error: unknown attribute "unknown"

@@ -1,0 +1,35 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+import bait.lexer
+
+const TEXT := '// my comment
+package test
+//   spaces
+// above'
+
+fun test_discard() {
+	mut l := lexer.Lexer{}
+	l.init(TEXT, .discard)
+
+	assert l.next() == .key_package
+
+	assert l.next() == .name
+	assert l.val == 'test'
+}
+
+fun test_store() {
+	mut l := lexer.Lexer{}
+	l.init(TEXT, .store)
+
+	assert l.next() == .comment
+	assert l.val == ' my comment'
+
+	l.next()
+	l.next()
+
+	assert l.next() == .comment
+	assert l.val == '   spaces'
+
+	assert l.next() == .comment
+}

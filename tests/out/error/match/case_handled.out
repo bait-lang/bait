@@ -1,1 +1,1 @@
-tests/out/error/match/case_handled.in.bt:5:1 error: match case `2` is already handled
+tests/out/error/match/case_handled.in.bt:5:2 error: match case `2` is already handled

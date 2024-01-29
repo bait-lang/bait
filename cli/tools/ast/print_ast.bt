@@ -26,7 +26,7 @@ fun main() {
 
 	if PRINT_TOKENS {
 		mut l := lexer.Lexer{}
-		l.init(text)
+		l.init(text, .discard)
 		mut tok := l.next()
 		for tok != .eof {
 			if tok == .name or tok == .string  {

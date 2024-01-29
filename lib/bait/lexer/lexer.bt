@@ -4,25 +4,34 @@ package lexer
 
 import bait.token
 
+pub enum CommentMode {
+	discard
+	store
+}
+
 pub struct Lexer {
 pub mut:
 	val string // Value of the current token
 mut:
+	comment_mode CommentMode
 	text string
-	line_starts []i32
-	start i32 // Start of the current token
-	pos i32 // Position of the next char
 	insert_semi bool // Insert a semicolon on \n
 
-	// String interpolation
+	// Position tracking
+	line_starts []i32 // Array with positions of the \n before each line
+	start i32 // Start of the current token
+	pos i32 // Always points to the next char in text
+
+	// String interpolation state
 	is_str_interpol bool // True for the whole expr (`${...}`)
 	is_str_dollar bool // True only for the opening `$`
 	str_quote u8
 }
 
-pub fun (mut l Lexer) init(text string) {
+pub fun (mut l Lexer) init(text string, comment_mode CommentMode) {
+	l.comment_mode = comment_mode
 	l.text = text
-	l.line_starts = [0]
+	l.line_starts = [-1]
 	l.pos = 0
 }
 
@@ -90,11 +99,13 @@ pub fun (mut l Lexer) next() token.Token {
 }
 
 fun (mut l Lexer) simple_token(c u8) token.Token {
-	l.val = '' // The following tokens are directly converted to string
+	// The following tokens are directly converted to string (except comments)
+	l.val = ''
+
 	match c {
 		`\n` {
-			// This is only reached if l.insert_semi was set to true
-			l.line_starts.push(l.pos)
+			// Only reached if insert_semi was set to true
+			l.save_line()
 			return .semicolon
 		}
 		`.` {
@@ -133,9 +144,7 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			}
 
 			if c2 == `/` {
-				l.skip_line()
-				// TODO use a non-recursive approch to prevent a growing call stack
-				return l.next()
+				return l.comment()
 			}
 
 			return .div
@@ -160,9 +169,6 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 				return .decl_assign
 			}
 			return .colon
-		}
-		`;` {
-			return .semicolon
 		}
 		`!` {
 			if l.text[l.pos] == `=` {
@@ -192,6 +198,9 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 				return .rshift
 			}
 			return .gt
+		}
+		`;` {
+			return .semicolon
 		}
 		`(` {
 			return .lpar
@@ -232,7 +241,7 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			return .dollar
 		}
 		else {
-			return l.unknown_char(c)
+			return l.unexpected_char(c)
 		}
 	}
 }
@@ -254,6 +263,7 @@ fun (mut l Lexer) name_or_key() token.Token {
 	return tok
 }
 
+// FIXME get_pos() should point to start of string (currently: end)
 fun (mut l Lexer) string_val(quote u8) token.Token {
 	is_foreign := l.text[l.pos - 2] == `.` // E.g. #JS.'eval()'
 	l.start = l.pos
@@ -270,7 +280,7 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 
 		if c == `\n` {
 			// Properly track line count
-			l.line_starts.push(l.pos)
+			l.save_line()
 		} else if c == `\\` {
 			// Escape sequence
 			l.pos += 1
@@ -289,7 +299,7 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 	// Unclosed string
 	l.start = l.pos
 	l.val = 'unclosed string literal'
-	return .unknown
+	return .error
 }
 
 fun (mut l Lexer) char_val() token.Token {
@@ -308,9 +318,28 @@ fun (mut l Lexer) char_val() token.Token {
 	return .char
 }
 
-fun (mut l Lexer) unknown_char(c u8) token.Token {
-	l.val = 'unknown char ${c.ascii()}'
-	return .unknown
+fun (mut l Lexer) comment() token.Token {
+	start := l.pos + 1
+	l.skip_line()
+
+	if l.comment_mode == .store {
+		// Set val to comment text including all spaces after `//`
+		l.val = l.text.substr(start, l.pos - 1).trim_right('\r')
+		return .comment
+	}
+
+	// REFAC use non-recursive approch to prevent a growing call stack
+	// Discard the comment
+	return l.next()
+}
+
+fun (mut l Lexer) unexpected_char(c u8) token.Token {
+	l.val = 'unexpected char ${c.ascii()}'
+	return .error
+}
+
+fun (mut l Lexer) save_line() {
+	l.line_starts.push(l.pos - 1)
 }
 
 fun (mut l Lexer) skip_whitespace() {
@@ -321,7 +350,7 @@ fun (mut l Lexer) skip_whitespace() {
 				return
 			}
 			l.pos += 1
-			l.line_starts.push(l.pos)
+			l.save_line()
 		} else if c == ` ` or c == `\t` or c == `\r` {
 			l.pos += 1
 		} else {
@@ -335,7 +364,7 @@ fun (mut l Lexer) skip_line() {
 		l.pos += 1
 	}
 	l.pos += 1
-	l.line_starts.push(l.pos)
+	l.save_line()
 }
 
 fun is_name_start_char(c u8) bool {

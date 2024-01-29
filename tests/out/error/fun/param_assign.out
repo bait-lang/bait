@@ -1,1 +1,1 @@
-tests/out/error/fun/param_assign.in.bt:2:3 error: cannot assign to immutable variable "a"
+tests/out/error/fun/param_assign.in.bt:2:2 error: cannot assign to immutable variable "a"

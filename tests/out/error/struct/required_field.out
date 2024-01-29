@@ -1,2 +1,2 @@
-tests/out/error/struct/required_field.in.bt:10:9 error: field "Spam.n" requires initialization
-tests/out/error/struct/required_field.in.bt:14:10 error: field "Spam.eggs" requires initialization
+tests/out/error/struct/required_field.in.bt:10:6 error: field "Spam.n" requires initialization
+tests/out/error/struct/required_field.in.bt:14:7 error: field "Spam.eggs" requires initialization
