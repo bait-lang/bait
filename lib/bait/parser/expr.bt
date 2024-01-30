@@ -375,21 +375,18 @@ fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
 
 fun (mut p Parser) number_literal() ast.Expr {
 	pos := p.pos
-	mut val := p.val
+	val := p.val
 
 	p.next()
 
-	if p.tok != .dot {
-		return ast.IntegerLiteral{
+	if val.contains('.') {
+		return ast.FloatLiteral{
 			val = val
 			pos = pos
 		}
 	}
 
-	p.next()
-	val += '.' + p.val
-	p.check(.number)
-	return ast.FloatLiteral{
+	return ast.IntegerLiteral{
 		val = val
 		pos = pos
 	}
