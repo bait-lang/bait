@@ -7,43 +7,87 @@ import bait.token
 fun (mut l Lexer) number() token.Token {
 	l.start = l.pos - 1
 
-	if l.text[l.start] == `0` {
-		if l.text[l.pos] == `x` {
-			return l.hex_number()
-		}
+	mut is_dec := false
+	mut c := l.text[l.pos]
 
-		if l.text[l.pos] == `b` {
-			return l.bin_number()
+	if l.text[l.start] == `0` {
+		if c == `b` {
+			l.advance_bin_number()
+		} else if c == `o` {
+			l.advance_oct_number()
+		} else if c == `x` {
+			l.advance_hex_number()
+		} else if c.is_digit() {
+			l.val = 'leading zeros in decimal numbers are not allowed'
+			return .error
+		} else {
+			is_dec = true
 		}
+	} else {
+		l.advance_dec_number()
+		is_dec = true
 	}
 
-	return l.dec_number()
+	// Missing number part after `0b`, `0o` or `0x`
+	if not is_dec and l.pos - l.start == 2 {
+		prefix := l.text.substr(l.start, l.pos)
+		l.val = 'missing number part after `${prefix}`'
+		return .error
+	}
+
+	c = l.text[l.pos]
+
+	// Fraction part of a float
+	if c == `.` {
+		if not is_dec {
+			l.val = 'floats must be decimal numbers (base 10)'
+			return .error
+		}
+
+		// Advance dot and fraction part
+		l.pos += 1
+		l.advance_dec_number()
+
+		// Set float value
+		l.val = l.text.substr(l.start, l.pos)
+		return .float
+	}
+
+	// Invalid character after number
+	if is_name_char(c) {
+		l.val = 'invalid suffix ${c} on number'
+		return .error
+	}
+
+	// Set integer value
+	l.val = l.text.substr(l.start, l.pos)
+	return .integer
 }
 
-// TODO share even more code between the below functions
 
-fun (mut l Lexer) dec_number() token.Token {
+fun (mut l Lexer) advance_dec_number() {
 	for l.pos < l.text.length and l.text[l.pos].is_digit() {
 		l.pos += 1
 	}
-	l.val = l.text.substr(l.start, l.pos)
-	return .number
 }
 
-fun (mut l Lexer) hex_number() token.Token {
-	l.pos += 1
-	for l.pos < l.text.length and l.text[l.pos].is_hex_digit() {
-		l.pos += 1
-	}
-	l.val = l.text.substr(l.start, l.pos)
-	return .number
-}
-
-fun (mut l Lexer) bin_number() token.Token {
+fun (mut l Lexer) advance_bin_number() {
 	l.pos += 1
 	for l.pos < l.text.length and l.text[l.pos].is_bin_digit() {
 		l.pos += 1
 	}
-	l.val = l.text.substr(l.start, l.pos)
-	return .number
+}
+
+fun (mut l Lexer) advance_oct_number() {
+	l.pos += 1
+	for l.pos < l.text.length and l.text[l.pos].is_oct_digit() {
+		l.pos += 1
+	}
+}
+
+fun (mut l Lexer) advance_hex_number() {
+	l.pos += 1
+	for l.pos < l.text.length and l.text[l.pos].is_hex_digit() {
+		l.pos += 1
+	}
 }

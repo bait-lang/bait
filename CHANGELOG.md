@@ -21,8 +21,10 @@ _unreleased_
 - Implement Result type (e.g. `fun foo() !<type> {}`)
 - Add `or {}` block for error handling (e.g. `foo() or { println(err) }`)
 - Add `!` operator for error propagation (e.g. `foo()!`)
-- Support numbers in hex format (e.g. `0x12a`)
-- Support numbers in binary format (e.g. `0b1001`)
+- Support number prefixes for different bases
+  - binary (e.g. `0b1001`)
+  - octal (e.g. `0o123`)
+  - hex (e.g. `0x12a`)
 - Add bitwise operators (`~`, `&`, `|`, `^`, `<<`, `>>`)
 - Implement basic conditional compilation with `$if {} $else {}`
 - _[JS]_ Add `testsuite_begin()` and `testsuite_end()` functions
@@ -30,6 +32,8 @@ _unreleased_
 
 ### Error Checks
 - Fixes and improvements regarding error positions
+- Disallow leading zeros in decimal numbers
+- Prevent invalid number suffixes
 - MatchExpr
   - Require match to be exhaustive
   - Prevent duplicate branch conditions

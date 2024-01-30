@@ -10,7 +10,8 @@ pub enum Token {
 	name
 	string
 	char
-	number
+	float
+	integer
 	dot // .
 	colon // :
 	comma // ,
@@ -197,7 +198,8 @@ pub fun (kind Token) str() string {
 		.name { 'name' }
 		.string { 'string' }
 		.char { 'char' }
-		.number { 'number' }
+		.float { 'float' }
+		.integer { 'integer' }
 		.dot { 'dot' }
 		.colon { 'colon' }
 		.comma { 'comma' }

@@ -1,0 +1,93 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+import bait.lexer
+
+fun test_valid_numbers() {
+	mut l := lexer.Lexer{}
+
+	// Integer
+	l.init('123', .discard)
+	assert l.next() == .integer
+	assert l.val == '123'
+
+	// Float
+	l.init('12.34', .discard)
+	assert l.next() == .float
+	assert l.val == '12.34'
+
+	// Different bases
+	l.init('0b0101', .discard)
+	assert l.next() == .integer
+	assert l.val == '0b0101'
+
+	l.init('0o755', .discard)
+	assert l.next() == .integer
+	assert l.val == '0o755'
+
+	l.init('0xff', .discard)
+	assert l.next() == .integer
+	assert l.val == '0xff'
+}
+
+fun test_leading_zero() {
+	mut l := lexer.Lexer{}
+
+	// Valid: single zero
+	l.init('0', .discard)
+	assert l.next() == .integer
+
+	// Valid: zeros in fraction
+	l.init('0.001', .discard)
+	assert l.next() == .float
+	assert l.val == '0.001'
+
+	// Invalid: leading zeros
+	l.init('00', .discard)
+	assert l.next() == .error
+
+	l.init('012', .discard)
+	assert l.next() == .error
+}
+
+fun test_base_no_fraction() {
+	mut l := lexer.Lexer{}
+
+	l.init('0xff.123', .discard)
+	assert l.next() == .error
+}
+
+fun test_missing_number_part() {
+	mut l := lexer.Lexer{}
+
+	l.init('0b', .discard)
+	assert l.next() == .error
+
+	l.init('0o', .discard)
+	assert l.next() == .error
+
+	l.init('0x', .discard)
+	assert l.next() == .error
+}
+
+fun test_invalid_digit() {
+	mut l := lexer.Lexer{}
+
+	l.init('0a', .discard)
+	assert l.next() == .error
+
+	l.init('1a', .discard)
+	assert l.next() == .error
+
+	l.init('0b12', .discard)
+	assert l.next() == .error
+
+	l.init('0o790', .discard)
+	assert l.next() == .error
+
+	l.init('0x2Z', .discard)
+	assert l.next() == .error
+
+	l.init('22_', .discard)
+	assert l.next() == .error
+}

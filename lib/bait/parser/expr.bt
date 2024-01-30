@@ -37,6 +37,12 @@ fun (mut p Parser) single_expr() ast.Expr {
 		.dot {
 			return p.enum_val(false)
 		}
+		.float {
+			return p.float_literal()
+		}
+		.integer {
+			return p.integer_literal()
+		}
 		.lsqr {
 			return p.array_init()
 		}
@@ -45,9 +51,6 @@ fun (mut p Parser) single_expr() ast.Expr {
 		}
 		.name {
 			return p.name_expr(.bait)
-		}
-		.number {
-			return p.number_literal()
 		}
 		.string {
 			return p.string_literal(.bait)
@@ -373,26 +376,24 @@ fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
 	return p.ident(lang)
 }
 
-fun (mut p Parser) number_literal() ast.Expr {
-	pos := p.pos
-	mut val := p.val
-
-	p.next()
-
-	if p.tok != .dot {
-		return ast.IntegerLiteral{
-			val = val
-			pos = pos
-		}
+fun (mut p Parser) float_literal() ast.FloatLiteral {
+	n := ast.FloatLiteral{
+		val = p.val
+		pos = p.pos
 	}
 
 	p.next()
-	val += '.' + p.val
-	p.check(.number)
-	return ast.FloatLiteral{
-		val = val
-		pos = pos
+	return n
+}
+
+fun (mut p Parser) integer_literal() ast.IntegerLiteral {
+	n := ast.IntegerLiteral{
+		val = p.val
+		pos = p.pos
 	}
+
+	p.next()
+	return n
 }
 
 fun (mut p Parser) par_expr() ast.ParExpr {

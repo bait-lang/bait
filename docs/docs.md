@@ -77,15 +77,18 @@ num := 123
 By default all integers are of type `i32` and all floats of type `f64`.
 To get a different type, you can use casting (see [Casting](#casting))
 
-#### Formats
-It's also possible to define numbers in hex format by prepending them with `0x`.
-```bait
-h := 0x12a
-```
+#### Base Prefixes
+It's also possible to define numbers with a different base by using a prefix:
+| Name        | Base | Prefix |
+| ----------- | ---- | ------ |
+| Binary      | 2    | `0b`   |
+| Octal       | 8    | `0o`   |
+| Hexadecimal | 16   | `0x`   |
 
-Or in binary format by prepending them with `0b`.
 ```bait
 b := 0b1010
+o := 0o755
+h := 0x12a
 ```
 
 #### Number Promotion
