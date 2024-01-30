@@ -31,10 +31,12 @@ fun (mut l Lexer) number() token.Token {
 	if l.text[l.pos] == `.` {
 		l.pos += 1
 		l.advance_dec_number()
+		l.val = l.text.substr(l.start, l.pos)
+		return .float
 	}
 
 	l.val = l.text.substr(l.start, l.pos)
-	return .number
+	return .integer
 }
 
 

@@ -7,23 +7,23 @@ fun test_valid_numbers() {
 	mut l := lexer.Lexer{}
 
 	l.init('123', .discard)
-	assert l.next() == .number
+	assert l.next() == .integer
 	assert l.val == '123'
 
 	l.init('12.34', .discard)
-	assert l.next() == .number
+	assert l.next() == .float
 	assert l.val == '12.34'
 
 	l.init('0b0101', .discard)
-	assert l.next() == .number
+	assert l.next() == .integer
 	assert l.val == '0b0101'
 
 	l.init('0o755', .discard)
-	assert l.next() == .number
+	assert l.next() == .integer
 	assert l.val == '0o755'
 
 	l.init('0xff', .discard)
-	assert l.next() == .number
+	assert l.next() == .integer
 	assert l.val == '0xff'
 }
 
@@ -32,11 +32,11 @@ fun test_leading_zero() {
 
 	// Valid: single zero
 	l.init('0', .discard)
-	assert l.next() == .number
+	assert l.next() == .integer
 
 	// Valid: zeros in fraction
 	l.init('0.001', .discard)
-	assert l.next() == .number
+	assert l.next() == .float
 	assert l.val == '0.001'
 
 	// Invalid: leading zeros
