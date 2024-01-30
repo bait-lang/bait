@@ -21,7 +21,7 @@ _unreleased_
 - Implement Result type (e.g. `fun foo() !<type> {}`)
 - Add `or {}` block for error handling (e.g. `foo() or { println(err) }`)
 - Add `!` operator for error propagation (e.g. `foo()!`)
-- Support new number formats
+- Support number prefixes for different bases
   - binary (e.g. `0b1001`)
   - octal (e.g. `0o123`)
   - hex (e.g. `0x12a`)

@@ -25,10 +25,16 @@ fun (mut l Lexer) number() token.Token {
 		}
 	} else {
 		l.advance_dec_number()
+		is_dec = true
 	}
 
 	// Fraction part of a float
 	if l.text[l.pos] == `.` {
+		if not is_dec {
+			l.val = 'floats must be decimal numbers (base 10)'
+			return .error
+		}
+
 		l.pos += 1
 		l.advance_dec_number()
 		l.val = l.text.substr(l.start, l.pos)
