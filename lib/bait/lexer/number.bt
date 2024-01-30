@@ -28,6 +28,13 @@ fun (mut l Lexer) number() token.Token {
 		is_dec = true
 	}
 
+	// Missing number part after `0b`, `0o` or `0x`
+	if not is_dec and l.pos - l.start == 2 {
+		prefix := l.text.substr(l.start, l.pos)
+		l.val = 'missing number part after `${prefix}`'
+		return .error
+	}
+
 	// Fraction part of a float
 	if l.text[l.pos] == `.` {
 		if not is_dec {
