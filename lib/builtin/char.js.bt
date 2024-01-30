@@ -14,12 +14,16 @@ pub fun (c u8) is_digit() bool {
 	return c >= `0` and c <= `9`
 }
 
-pub fun (c u8) is_hex_digit() bool {
-	return c.is_digit() or (c >= `a` and c <= `f`) or (c >= `A` and c <= `F`)
-}
-
 pub fun (c u8) is_bin_digit() bool {
 	return c == `0` or c == `1`
+}
+
+pub fun (c u8) is_oct_digit() bool {
+	return c >= `0` and c <= `7`
+}
+
+pub fun (c u8) is_hex_digit() bool {
+	return c.is_digit() or (c >= `a` and c <= `f`) or (c >= `A` and c <= `F`)
 }
 
 pub fun (c u8) ascii() string {

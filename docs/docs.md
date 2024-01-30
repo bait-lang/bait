@@ -78,14 +78,15 @@ By default all integers are of type `i32` and all floats of type `f64`.
 To get a different type, you can use casting (see [Casting](#casting))
 
 #### Formats
-It's also possible to define numbers in hex format by prepending them with `0x`.
-```bait
-h := 0x12a
-```
+It's also possible to define numbers in the following formats:
+- Binary (prefix `0b`)
+- Octal (prefix `0o`)
+- Hexadecimal (prefix `0x`)
 
-Or in binary format by prepending them with `0b`.
 ```bait
 b := 0b1010
+o := 0o755
+h := 0x12a
 ```
 
 #### Number Promotion

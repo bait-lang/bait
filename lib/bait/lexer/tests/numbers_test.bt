@@ -6,9 +6,6 @@ import bait.lexer
 fun test_valid_numbers() {
 	mut l := lexer.Lexer{}
 
-	l.init('0', .discard)
-	assert l.next() == .number
-
 	l.init('123', .discard)
 	assert l.next() == .number
 	assert l.val == '123'
@@ -24,14 +21,23 @@ fun test_valid_numbers() {
 	assert l.next() == .number
 	assert l.val == '0b0101'
 
+	l.init('0o755', .discard)
+	assert l.next() == .number
+	assert l.val == '0o755'
+
 	l.init('0xff', .discard)
 	assert l.next() == .number
 	assert l.val == '0xff'
 }
 
-fun test_error_leading_zero() {
+fun test_leading_zero() {
 	mut l := lexer.Lexer{}
 
+	// A single zero is valid
+	l.init('0', .discard)
+	assert l.next() == .number
+
+	// Invalid leading zero
 	l.init('00', .discard)
 	assert l.next() == .error
 

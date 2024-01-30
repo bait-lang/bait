@@ -12,6 +12,8 @@ fun (mut l Lexer) number() token.Token {
 	if l.text[l.start] == `0` {
 		if c == `b` {
 			l.advance_bin_number()
+		} else if c == `o` {
+			l.advance_oct_number()
 		} else if c == `x` {
 			l.advance_hex_number()
 		} else if c.is_digit() {
@@ -33,16 +35,23 @@ fun (mut l Lexer) advance_dec_number() {
 	}
 }
 
-fun (mut l Lexer) advance_hex_number() {
+fun (mut l Lexer) advance_bin_number() {
 	l.pos += 1
-	for l.pos < l.text.length and l.text[l.pos].is_hex_digit() {
+	for l.pos < l.text.length and l.text[l.pos].is_bin_digit() {
 		l.pos += 1
 	}
 }
 
-fun (mut l Lexer) advance_bin_number() {
+fun (mut l Lexer) advance_oct_number() {
 	l.pos += 1
-	for l.pos < l.text.length and l.text[l.pos].is_bin_digit() {
+	for l.pos < l.text.length and l.text[l.pos].is_oct_digit() {
+		l.pos += 1
+	}
+}
+
+fun (mut l Lexer) advance_hex_number() {
+	l.pos += 1
+	for l.pos < l.text.length and l.text[l.pos].is_hex_digit() {
 		l.pos += 1
 	}
 }
