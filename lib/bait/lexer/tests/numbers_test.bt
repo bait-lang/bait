@@ -69,3 +69,25 @@ fun test_missing_number_part() {
 	l.init('0x', .discard)
 	assert l.next() == .error
 }
+
+fun test_invalid_digit() {
+	mut l := lexer.Lexer{}
+
+	l.init('0a', .discard)
+	assert l.next() == .error
+
+	l.init('1a', .discard)
+	assert l.next() == .error
+
+	l.init('0b12', .discard)
+	assert l.next() == .error
+
+	l.init('0o790', .discard)
+	assert l.next() == .error
+
+	l.init('0x2Z', .discard)
+	assert l.next() == .error
+
+	l.init('22_', .discard)
+	assert l.next() == .error
+}

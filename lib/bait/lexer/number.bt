@@ -8,7 +8,7 @@ fun (mut l Lexer) number() token.Token {
 	l.start = l.pos - 1
 
 	mut is_dec := false
-	c := l.text[l.pos]
+	mut c := l.text[l.pos]
 
 	if l.text[l.start] == `0` {
 		if c == `b` {
@@ -35,19 +35,31 @@ fun (mut l Lexer) number() token.Token {
 		return .error
 	}
 
+	c = l.text[l.pos]
+
 	// Fraction part of a float
-	if l.text[l.pos] == `.` {
+	if c == `.` {
 		if not is_dec {
 			l.val = 'floats must be decimal numbers (base 10)'
 			return .error
 		}
 
+		// Advance dot and fraction part
 		l.pos += 1
 		l.advance_dec_number()
+
+		// Set float value
 		l.val = l.text.substr(l.start, l.pos)
 		return .float
 	}
 
+	// Invalid character after number
+	if is_name_char(c) {
+		l.val = 'invalid suffix ${c} on number'
+		return .error
+	}
+
+	// Set integer value
 	l.val = l.text.substr(l.start, l.pos)
 	return .integer
 }

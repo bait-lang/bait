@@ -33,6 +33,7 @@ _unreleased_
 ### Error Checks
 - Fixes and improvements regarding error positions
 - Disallow leading zeros in decimal numbers
+- Prevent invalid number suffixes
 - MatchExpr
   - Require match to be exhaustive
   - Prevent duplicate branch conditions
