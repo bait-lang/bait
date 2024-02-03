@@ -242,7 +242,7 @@ fun (g Gen) get_concrete_name(name string, concrete_types []ast.Type) string {
 	for t in concrete_types {
 		full_name += '_' + g.table.get_sym(t).name
 	}
-	return full_name
+	return js_name(full_name)
 }
 
 fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {

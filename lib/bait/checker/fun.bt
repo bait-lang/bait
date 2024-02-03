@@ -261,7 +261,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	// Array methods with one argument of `any` type, expecting the element
-	if final_sym.kind == .array and ['push', 'push_many_with_len', 'contains'].contains(node.name) {
+	if final_sym.kind == .array and ['push', 'push_many_with_len'].contains(node.name) {
 		mut arg := node.args[0]
 		info := final_sym.info as ast.ArrayInfo
 		c.expected_type = info.elem_type

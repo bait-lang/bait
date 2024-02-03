@@ -79,6 +79,7 @@ _unreleased_
 
 ### General Fixes
 - _[JS]_ Fix integer division assign that could result in a float
+- gen.js: Fix generics with types from imported packages
 - parser
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
