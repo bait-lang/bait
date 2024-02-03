@@ -2,6 +2,38 @@
 // SPDX-License-Identifier: MPL-2.0
 package builtin
 
+pub fun (s string) all_before(search string) string {
+	idx := s.index(search)
+	if idx == -1 {
+		return s
+	}
+	return s.substr(0, idx)
+}
+
+pub fun (s string) all_before_last(search string) string {
+	idx := s.last_index(search)
+	if idx == -1 {
+		return s
+	}
+	return s.substr(0, idx)
+}
+
+pub fun (s string) all_after(search string) string {
+	idx := s.index(search)
+	if idx == -1 {
+		return s
+	}
+	return s.substr(idx + 1, s.length)
+}
+
+pub fun (s string) all_after_last(search string) string {
+	idx := s.last_index(search)
+	if idx == -1 {
+		return s
+	}
+	return s.substr(idx + 1, s.length)
+}
+
 pub fun (s string) trim_left(cutset string) string {
 	mut pos := 0
 	for pos < s.length {

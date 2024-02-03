@@ -25,6 +25,93 @@ pub fun (s string) substr(start i32, end i32) string {
 	return res
 }
 
+pub fun (s string) index(search string) i32 {
+	if search.length == 0 {
+		return -1
+	}
+	return s.index_kmp(search)
+	return -1
+}
+
+pub fun (s string) last_index(search string) i32 {
+	if search.length == 0 or search.length > s.length {
+		return -1
+	}
+
+	for i := s.length - search.length; i >= 0; i -= 1 {
+		mut j := 0
+		for j < search.length and s.str[i + j] == search.str[j] {
+			j += 1
+		}
+		if j == search.length {
+			return i
+		}
+	}
+
+	return -1
+}
+
+fun (pattern string) kmp_prefix_table() []i32 {
+	mut prefix := []i32{length = pattern.length}
+	mut j := 0
+
+	for i, c in pattern {
+		for j > 0 and pattern.str[j] != c {
+			j = prefix[j - i]
+		}
+		if pattern.str[j] == c {
+			j += 1
+		}
+		prefix[i] = j
+	}
+
+	return prefix
+}
+
+fun (s string) index_kmp(search string) i32 {
+	if search.length > s.length {
+		return -1
+	}
+
+	prefix := search.kmp_prefix_table()
+	mut j := 0
+
+	for i, c in s {
+		for j > 0 and search.str[j] != c {
+			j = prefix[j - 1]
+		}
+		if search.str[j] == c {
+			j += 1
+		}
+		if j == search.length {
+			return i - search.length + 1
+		}
+	}
+
+	return -1
+}
+
+pub fun (s string) starts_with(prefix string) bool {
+	for i := 0; i < prefix.length; i += 1 {
+		if s.str[i] != prefix.str[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+pub fun (s string) ends_with(suffix string) bool {
+	offset := s.length - suffix.length
+	for i := 0; i < suffix.length; i += 1 {
+		if s.str[offset + i] != suffix.str[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
 pub fun (s string) repeat(count i32) string {
 	if count == 0 {
 		return ''
