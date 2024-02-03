@@ -2,7 +2,7 @@ mut a := [1, 2, 3]
 
 a.push(true)
 a.index('a') // FIXME should raise error
-a.contains(12 as i16)
+a.contains(12 as i16) // FIXME should raise error
 a.push_many(['b', 'c'])
 
 mut x := 'a'

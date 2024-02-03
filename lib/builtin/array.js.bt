@@ -49,7 +49,7 @@ pub fun (a Array) last_index[T](val T) i32 {
 	return -1
 }
 
-pub fun (a Array) contains(el any) bool {
+pub fun (a Array) contains[T](el T) bool {
 	return a.index(el) >= 0
 }
 
