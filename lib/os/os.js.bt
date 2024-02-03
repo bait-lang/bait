@@ -87,11 +87,6 @@ pub fun dir(path string) string {
 	return path.substr(0, pos)
 }
 
-// Returns whether a given path exists and is a directory.
-pub fun exists_dir(path string) bool {
-	return exists(path) and is_dir(path)
-}
-
 // Returns whether a given path is a directory.
 // CAUTION: Crashes if path does not exist (safe alternative: `exists_dir`).
 pub fun is_dir(path string) bool {
