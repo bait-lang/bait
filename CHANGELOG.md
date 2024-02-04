@@ -62,12 +62,21 @@ _unreleased_
 - Add new package `cli.options`
 - Add work in progress `math` package
 - `builtin`
-  - _[C]_ Implement string methods: `substr()`, `trim_left()`, `trim_right()`, `repeat()`
+  - _[C]_ Implement string methods
+    - `all_before(search)`, `all_before_last(search)`
+    - `all_after(search)`, `all_after_last(search)`
+    - `index(search)`, `last_index(search)`
+    - `starts_with(prefix)`, `ends_with(suffix)`
+    - `trim_left()`, `trim_right()`
+    - `substr()`
+    - `repeat()`
   - _JS backend_
     - New array method `delete()`
     - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
     - New `[]u8` method: `to_string()`
-- `os`: _[JS]_ New functions `read_bytes(path)`, `is_root(path)`
+- `os`:
+  - _[JS]_ New functions `read_bytes(path)`, `is_root(path)`
+  - _[C]_ Implement functions `ls(dir)`, `file_name(path)`, `is_dir(path)`, `join_path(base, dirs)`, `platform()`, `exec(cmd)`, `system(cmd)` for Linux
 
 ### CLI and Tooling
 - `init`
