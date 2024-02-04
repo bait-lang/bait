@@ -1,0 +1,8 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package os
+
+// Returns whether a given path exists and is a directory.
+pub fun exists_dir(path string) bool {
+	return exists(path) and is_dir(path)
+}

@@ -3,5 +3,10 @@
 package os
 
 import 'unistd.h' as #C._
+import 'dirent.h' as #C._
+import 'sys/stat.h' as #C._
+import 'sys/types.h' as #C._
 
 pub fun #C.access(path &u8, mode i32) i32
+
+pub fun #C.system(cmd &u8) i32

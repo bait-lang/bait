@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MPL-2.0
 package os
 
+import strings
+
 pub const ARGS := init_os_args(#C.'argc', #C.'argv' as &&u8)
 
 fun init_os_args(argc i32, argv &&u8) []string {
@@ -12,10 +14,85 @@ fun init_os_args(argc i32, argv &&u8) []string {
 	return a
 }
 
+pub const PATH_SEP := '/'
+
 pub fun user_args() []string {
 	return ARGS.slice(1, ARGS.length)
 }
 
+pub fun ls(dir string) []string {
+	mut res := []string
+	#C.'struct dirent *pDirent;
+	DIR *pDir;
+
+	pDir = opendir(dir.str);
+	while((pDirent = readdir(pDir)) != NULL) {
+		if (strcmp(pDirent->d_name, ".") != 0 && strcmp(pDirent->d_name, "..") != 0) {
+			Array_push(&res, (string[]){pDirent->d_name});
+		}
+	}
+	closedir (pDir);'
+	return res
+}
+
+pub fun file_name(path string) string {
+	return path.all_after_last(PATH_SEP)
+}
+
 pub fun exists(path string) bool {
 	return #C.access(path.str, 0) != -1
+}
+
+pub fun is_dir(path string) bool {
+	#C.'struct stat path_stat;
+    if (stat(path.str, &path_stat) != 0) {
+        return false;
+    }
+    return S_ISDIR(path_stat.st_mode);'
+	return false
+}
+
+pub fun join_path(base string, dirs []string) string {
+	mut sb := strings.new_builder(base.length + dirs.length * 50)
+	sb.write(base)
+	for d in dirs {
+		sb.write(PATH_SEP)
+		sb.write(d)
+	}
+	return sb.str()
+}
+
+pub fun platform() string {
+	return 'linux'
+}
+
+pub struct CmdRes {
+pub:
+	code i32
+	stdout string
+	stderr string
+}
+
+pub fun exec(cmd string) CmdRes {
+	mut res := CmdRes{}
+
+	#C.'FILE* f;
+	size_t bytes_read;
+	char buf[4096];
+
+	f = popen(cmd.str, "r");
+
+	bytes_read = fread(buf, 1, sizeof(buf) - 1, f);'
+	#C."buf[bytes_read] = '\0';
+
+	res.code = pclose(f);
+
+	res.stdout = from_c_string(buf);
+	res.stderr = res.stdout;"
+
+	return res
+}
+
+pub fun system(cmd string) i32 {
+	return #C.system(cmd.str)
 }
