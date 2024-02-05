@@ -112,7 +112,6 @@ global:
 	noreturn bool
 	stmts []Stmt
 	generic_names []string
-	concrete_types [][]Type
 }
 
 pub struct Param{
@@ -443,6 +442,7 @@ global:
 	infos []errors.Message
 	warnings []errors.Message
 	errors []errors.Message
+	generic_funs []FunDecl
 pub:
 	path string
 	pkg_decl PackageDecl

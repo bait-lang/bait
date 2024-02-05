@@ -10,6 +10,12 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 		return
 	}
 
+	if node.generic_names.length > 0 and c.cur_concrete_types.length == 0 {
+		c.file.generic_funs.push(node)
+		c.need_generic_resolve = true
+		return
+	}
+
 	c.returns = false
 
 	if node.is_method {
@@ -300,7 +306,7 @@ fun (mut c Checker) set_conc_types(mut node ast.CallExpr, mut def ast.FunDecl) {
 		return
 	}
 
-	def.concrete_types.push(node.concrete_types)
+	c.table.generic_fun_types[def.key()].push(node.concrete_types)
 
 	ret_sym := c.table.get_sym(node.return_type)
 	if ret_sym.kind == .generic {
@@ -369,6 +375,16 @@ fun (mut c Checker) or_block(node ast.CallExpr) {
 	if node.or_block.kind == .block and ret_sym.parent != ast.VOID_TYPE {
 		if not c.stmt_returns(node.or_block.stmts.last()) and not has_toplevel_return(node.or_block.stmts) {
 			c.error('or block does not return a value', node.pos)
+		}
+	}
+}
+
+fun (mut c Checker) resolve_generics_funs() {
+	for fn in c.file.generic_funs {
+		gtypes := c.table.generic_fun_types[fn.key()]
+		for concrete in gtypes {
+			c.cur_concrete_types = concrete
+			c.fun_decl(fn)
 		}
 	}
 }

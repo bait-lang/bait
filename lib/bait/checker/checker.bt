@@ -11,6 +11,7 @@ pub struct Checker{
 	prefs preference.Prefs
 	table ast.Table
 mut:
+	file ast.File
 	scope ast.Scope
 	path string
 	pkg string
@@ -18,6 +19,8 @@ mut:
 	has_main_fun bool
 	is_js_file bool
 	cur_fun ast.FunDecl
+	cur_concrete_types []ast.Type
+	need_generic_resolve bool
 	expected_type ast.Type
 	is_lhs_assign bool
 	is_if_match_expr bool
@@ -35,6 +38,7 @@ pub mut:
 
 pub fun (mut c Checker) check_files(files []ast.File) {
 	for mut f in files {
+		c.file = f
 		c.check(f)
 
 		f.infos = c.infos
@@ -44,6 +48,22 @@ pub fun (mut c Checker) check_files(files []ast.File) {
 		c.infos = []errors.Message
 		c.warnings = []errors.Message
 		c.errors = []errors.Message
+	}
+
+	mut resolve_runs := 0
+	for c.need_generic_resolve and resolve_runs < 100 {
+		c.need_generic_resolve = false
+
+		for f in files {
+			if f.generic_funs.length == 0 {
+				continue
+			}
+
+			c.change_file(f)
+			c.resolve_generics_funs()
+		}
+
+		resolve_runs += 1
 	}
 
 	c.check_fun_redefinitions(files)
@@ -61,7 +81,7 @@ pub fun (mut c Checker) check_files(files []ast.File) {
 	}
 }
 
-fun (mut c Checker) check(file ast.File) {
+fun (mut c Checker) change_file(file ast.File) {
 	c.path = file.path
 	c.is_js_file = c.path.contains('.js.')
 	c.pkg = file.pkg_decl.full_name
@@ -70,6 +90,10 @@ fun (mut c Checker) check(file ast.File) {
 		// TODO how to handle recursive sturct inits?
 		parent = c.table.global_scope
 	}
+}
+
+fun (mut c Checker) check(file ast.File) {
+	c.change_file(file)
 
 	if c.pkg == 'main' {
 		c.has_main_pkg_files = true
