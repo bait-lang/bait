@@ -6,7 +6,7 @@ import bait.ast
 
 fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 	sym := g.table.get_sym(typ)
-	if g.cur_concrete_types.length == 0 {
+	if sym.kind != .generic or g.cur_concrete_types.length == 0 {
 		return sym
 	}
 

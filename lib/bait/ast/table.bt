@@ -57,6 +57,15 @@ pub fun (t Table) unwrap_generic(sym TypeSymbol) TypeSymbol {
 	return sym
 }
 
+pub fun (mut t Table) register_concrete(key string, concrete []Type) bool {
+	if t.generic_fun_types[key].contains(concrete) {
+		return false
+	}
+
+	t.generic_fun_types[key].push(concrete)
+	return true
+}
+
 pub fun (t Table) type_name(typ Type) string {
 	amps := '&'.repeat(typ.get_nr_amp())
 	return amps + t.get_sym(typ).name

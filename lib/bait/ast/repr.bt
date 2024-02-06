@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 package ast
 
-pub fun ( e Expr) repr() string {
+pub fun (e Expr) repr() string {
 	return match e {
 		AnonFun { 'anon_fun'}
 		ArrayInit { '[]XX' } // TODO type name
@@ -29,4 +29,11 @@ pub fun ( e Expr) repr() string {
 		TypeOf { 'typeof ' + e.expr.repr() }
 		EmptyExpr { 'EmptyExpr' }
 	}
+}
+
+pub fun (fn FunDecl) key() string {
+	if fn.is_method {
+		return '${fn.params[0].typ}.${fn.name}'
+	}
+	return fn.name
 }

@@ -1,0 +1,18 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun nr1[G](x G) G {
+	return x
+}
+
+fun nr2[G](x G) G {
+	return nr1(x)
+}
+
+fun nr3[G](x G) G {
+	return nr2(x)
+}
+
+fun test_nested_generic_calls() {
+	assert nr3(5) == 5
+}

@@ -1,0 +1,11 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun more_generic_types[G, H](g G, h H) string {
+	return typeof(g) + '_' + typeof(h)
+}
+
+fun test_multiple_types(){
+	assert more_generic_types(1, 2) == 'i32_i32'
+	assert more_generic_types('str', false) == 'string_bool'
+}

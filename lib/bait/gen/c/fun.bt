@@ -10,7 +10,8 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	}
 
 	if node.generic_names.length > 0 and g.cur_concrete_types.length == 0 {
-		for conc_types in node.concrete_types {
+		gtypes := g.table.generic_fun_types[node.key()]
+		for conc_types in gtypes {
 			for i, gn in node.generic_names {
 				g.cur_concrete_types[gn] = conc_types[i]
 			}
@@ -28,7 +29,7 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 		name = c_name(sym.name + '_' + node.name)
 	}
 	if g.cur_concrete_types.length > 0 {
-		name = g.generic_fun_name(name, g.cur_concrete_types.values())
+		name = g.get_concrete_name(name, g.cur_concrete_types.values())
 	}
 	s := '${type_str} ${name}('
 
@@ -82,7 +83,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 	}
 
 	if node.concrete_types.length > 0 {
-		name = g.generic_fun_name(name, node.concrete_types)
+		name = g.get_concrete_name(name, node.concrete_types)
 	}
 
 	g.write(name)
@@ -147,12 +148,4 @@ fun (mut g Gen) gen_array_push_many(node ast.CallExpr) {
 	g.write(', &')
 	g.expr(node.args[0].expr)
 	g.write(')')
-}
-
-fun (g Gen) generic_fun_name(name string, concrete_types []ast.Type) string {
-	mut full_name := name
-	for t in concrete_types {
-		full_name += '_' + g.table.get_sym(t).name
-	}
-	return full_name
 }
