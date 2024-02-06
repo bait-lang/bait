@@ -34,5 +34,5 @@ fun (mut l Lexer) skip_line() {
 		l.pos += 1
 	}
 	l.pos += 1
-	l.save_line()
+	l.inc_line()
 }

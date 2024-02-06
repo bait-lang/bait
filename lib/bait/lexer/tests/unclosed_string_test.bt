@@ -5,19 +5,17 @@ import bait.lexer
 import bait.token
 
 fun test_unclosed_string() {
-	text := 'str := "no
+	text := '"no
 closing
 quote'
 
 	mut l := lexer.Lexer{}
 	l.init(text, .discard)
-	l.next()
-	l.next()
 
 	assert l.next() == .error
 	assert l.val == 'unclosed string literal'
 	assert l.get_pos() == token.Pos{
-		line = 3
-		col = 6
+		line = 1
+		col = 2
 	}
 }

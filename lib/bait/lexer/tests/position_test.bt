@@ -1,0 +1,51 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+import bait.lexer
+import bait.token
+
+fun test_multiline_string_pos() {
+	text := '"multi
+line
+string"'
+
+	mut l := lexer.Lexer{}
+	l.init(text, .discard)
+
+	assert l.next() == .string
+	assert l.get_pos() == token.Pos {
+		line = 1
+		col = 2
+	}
+}
+
+fun test_next_pos_after_string() {
+	text := '"1
+2"
+after'
+
+	mut l := lexer.Lexer{}
+	l.init(text, .discard)
+
+	assert l.next() == .string
+	assert l.next() == .name
+	assert l.get_pos() == token.Pos {
+		line = 3
+		col = 1
+	}
+}
+
+fun test_next_pos_after_comment() {
+	text := 'line // comment
+next_line'
+
+	mut l := lexer.Lexer{}
+	l.init(text, .discard)
+
+	assert l.next() == .name
+	assert l.next() == .name
+	assert l.get_pos() == token.Pos {
+		line = 2
+		col = 1
+	}
+}

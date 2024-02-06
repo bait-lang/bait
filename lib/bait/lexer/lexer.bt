@@ -19,6 +19,7 @@ mut:
 
 	// Position tracking
 	line_starts []i32 // Array with positions of the \n before each line
+	cur_line i32 // Current line number
 	start i32 // Start of the current token
 	pos i32 // Always points to the next char in text
 
@@ -32,13 +33,14 @@ pub fun (mut l Lexer) init(text string, comment_mode CommentMode) {
 	l.comment_mode = comment_mode
 	l.text = text
 	l.line_starts = [-1]
+	l.cur_line = 0
 	l.pos = 0
 }
 
 pub fun (l Lexer) get_pos() token.Pos {
 	return token.Pos{
-		line = l.line_starts.length
-		col = l.start - l.line_starts.last()
+		line = l.cur_line + 1
+		col = l.start - l.line_starts[l.cur_line]
 	}
 }
 
@@ -110,7 +112,7 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 	match c {
 		`\n` {
 			// Only reached if insert_semi was set to true
-			l.save_line()
+			l.inc_line()
 			return .semicolon
 		}
 		`.` {
@@ -261,7 +263,6 @@ fun (mut l Lexer) name_or_key() token.Token {
 	return tok
 }
 
-// FIXME get_pos() should point to start of string (currently: end)
 fun (mut l Lexer) string_val(quote u8) token.Token {
 	is_foreign := l.text[l.pos - 2] == `.` // E.g. #JS.'eval()'
 	l.start = l.pos
@@ -295,7 +296,6 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 	}
 
 	// Unclosed string
-	l.start = l.pos
 	l.val = 'unclosed string literal'
 	return .error
 }
@@ -321,6 +321,11 @@ fun (mut l Lexer) unexpected_char(c u8) token.Token {
 	return .error
 }
 
+fun (mut l Lexer) inc_line() {
+	l.save_line()
+	l.cur_line = l.line_starts.length - 1
+}
+
 fun (mut l Lexer) save_line() {
 	l.line_starts.push(l.pos - 1)
 }
@@ -333,7 +338,7 @@ fun (mut l Lexer) skip_whitespace() {
 				return
 			}
 			l.pos += 1
-			l.save_line()
+			l.inc_line()
 		} else if c == ` ` or c == `\t` or c == `\r` {
 			l.pos += 1
 		} else {

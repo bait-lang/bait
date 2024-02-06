@@ -92,7 +92,10 @@ _unreleased_
 - parser
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
-- lexer: Prevent rare crash due to huge sequences of comments overflowing the call stack
+- lexer:
+  - Fix position of multiline strings
+  - Unclosed string error now points to the opening quote
+  - Prevent rare crash due to huge sequences of comments overflowing the call stack
 
 
 ## 0.0.6
