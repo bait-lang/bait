@@ -1,0 +1,15 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun gt[T](t T) T {
+	return t
+}
+
+fun gs[S](s S) S {
+	return gt(s)
+}
+
+fun test_mixed(){
+	assert gt(1) == 1
+	assert gs(true) == true
+}

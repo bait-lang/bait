@@ -48,14 +48,19 @@ _unreleased_
 - Improve integer type check to infer type in e.g. array inits `[1 as u8, 2, 3]`
 
 ### Generics
-- Fix type checking for nested generic function calls
-- `typeof(G)` now prints the concrete type
-- gen.js: Fix generics with types from imported packages
+- checker:
+  - Fix type checking for nested generic function calls
+  - Fix passing generic params as arg to another generic function
+- gen:
+  - `typeof(G)` now prints the concrete type
+  - Fix escaping of imported types in generic function calls
 
 ### JS Backend
 - Improve performance of string comparison
 
 ### C Backend
+- Experimental generics support
+- Minimal windows support (`os` package won't work)
 - builder: Fixes for using the C backend on windows
 - gen: Implement `break` and `continue`
 - Fix compiling libraries
@@ -91,7 +96,7 @@ _unreleased_
 - `build`: Add `-cc` option to use a custom C compiler
 - `self`: Use $BAITEXE as default out name
 
-### General Fixes
+### Other Changes
 - _[JS]_ Fix integer division assign that could result in a float
 - parser
   - Fix duplication of warnings

@@ -32,6 +32,9 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 	if exp_sym.kind == .generic and got_sym.kind != .generic {
 		return true
 	}
+	if exp_sym.kind == .generic and got_sym.kind == .generic {
+		return true
+	}
 
 	if exp_sym.parent.idx() == got.idx() {
 		return true
