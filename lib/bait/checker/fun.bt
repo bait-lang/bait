@@ -5,6 +5,17 @@ package checker
 import bait.ast
 import bait.token
 
+fun (mut c Checker) anon_fun(node ast.AnonFun) ast.Type {
+	root_fun_decl := c.cur_fun
+	c.cur_fun = node.decl
+	c.open_scope()
+	c.fun_params(node.decl.params)
+	c.stmts(node.decl.stmts)
+	c.close_scope()
+	c.cur_fun = root_fun_decl
+	return node.typ
+}
+
 fun (mut c Checker) fun_decl(node ast.FunDecl) {
 	if node.lang != .bait {
 		return
@@ -329,14 +340,12 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 
 		if should_resolve_generics and psym.kind == .generic {
 			is_concrete = false
-			gi := def.generic_names.index(psym.name)
-			if gi < c.cur_concrete_types.length {
-				param_type = c.cur_concrete_types[gi]
-				node.concrete_types.push(param_type)
-				is_concrete = true
-			}
 
-			if node.concrete_types.length < def.generic_names.length {
+			gi := def.generic_names.index(psym.name)
+			if gi < node.concrete_types.length {
+				param_type = node.concrete_types[gi]
+				is_concrete = true
+			} else {
 				save_as_concrete = true
 			}
 		}
@@ -353,7 +362,7 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 			save_as_concrete = false
 		}
 
-		if not is_concrete and not c.check_types(arg.typ, param_type) {
+		if not c.check_types(arg.typ, param_type) {
 			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
 		}
 	}

@@ -38,17 +38,6 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 	}
 }
 
-fun (mut c Checker) anon_fun(node ast.AnonFun) ast.Type {
-	root_fun_decl := c.cur_fun
-	c.cur_fun = node.decl
-	c.open_scope()
-	c.fun_params(node.decl.params)
-	c.stmts(node.decl.stmts)
-	c.close_scope()
-	c.cur_fun = root_fun_decl
-	return node.typ
-}
-
 fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 	// Type init
 	if node.exprs.length == 0 {

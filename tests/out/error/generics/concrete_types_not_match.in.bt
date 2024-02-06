@@ -7,8 +7,8 @@ fun add[Z](a Z, b Z) Z {
 }
 
 f := Foo{}
-f.stuff([1, 2], 7)
-f.stuff('f', 'oo')
+f.stuff([1, 2], 7) // error
+f.stuff('f', 'o')
 
 add(1, 2)
-add('a', false)
+add('a', false) // error

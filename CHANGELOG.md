@@ -47,6 +47,11 @@ _unreleased_
 - Properly check return type of `array.last()`
 - Improve integer type check to infer type in e.g. array inits `[1 as u8, 2, 3]`
 
+### Generics
+- Fix type checking for nested generic function calls
+- `typeof(G)` now prints the concrete type
+- gen.js: Fix generics with types from imported packages
+
 ### JS Backend
 - Improve performance of string comparison
 
@@ -88,7 +93,6 @@ _unreleased_
 
 ### General Fixes
 - _[JS]_ Fix integer division assign that could result in a float
-- gen.js: Fix generics with types from imported packages
 - parser
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
