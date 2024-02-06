@@ -309,7 +309,7 @@ fun (mut c Checker) set_conc_types(mut node ast.CallExpr, mut def ast.FunDecl) {
 		return
 	}
 
-	c.table.generic_fun_types[def.key()].push(node.concrete_types)
+	c.need_generic_resolve = c.table.register_concrete(def.key(), node.concrete_types) or c.need_generic_resolve
 
 	ret_sym := c.table.get_sym(node.return_type)
 	if ret_sym.kind == .generic {
@@ -320,6 +320,7 @@ fun (mut c Checker) set_conc_types(mut node ast.CallExpr, mut def ast.FunDecl) {
 
 fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i32) {
 	should_resolve_generics := def.generic_names.length != node.concrete_types.length
+	mut is_concrete := false
 	mut save_as_concrete := false
 
 	for i, mut arg in node.args {
@@ -327,10 +328,15 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 		psym := c.table.get_sym(param_type)
 
 		if should_resolve_generics and psym.kind == .generic {
+			is_concrete = false
 			gi := def.generic_names.index(psym.name)
-			if gi < node.concrete_types.length {
-				param_type = node.concrete_types[gi]
-			} else {
+			if gi < c.cur_concrete_types.length {
+				param_type = c.cur_concrete_types[gi]
+				node.concrete_types.push(param_type)
+				is_concrete = true
+			}
+
+			if node.concrete_types.length < def.generic_names.length {
 				save_as_concrete = true
 			}
 		}
@@ -347,7 +353,7 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 			save_as_concrete = false
 		}
 
-		if not c.check_types(arg.typ, param_type) {
+		if not is_concrete and not c.check_types(arg.typ, param_type) {
 			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
 		}
 	}

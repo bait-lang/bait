@@ -38,7 +38,6 @@ pub mut:
 
 pub fun (mut c Checker) check_files(files []ast.File) {
 	for mut f in files {
-		c.file = f
 		c.check(f)
 
 		f.infos = c.infos
@@ -82,6 +81,7 @@ pub fun (mut c Checker) check_files(files []ast.File) {
 }
 
 fun (mut c Checker) change_file(file ast.File) {
+	c.file = file
 	c.path = file.path
 	c.is_js_file = c.path.contains('.js.')
 	c.pkg = file.pkg_decl.full_name
