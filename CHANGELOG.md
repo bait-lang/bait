@@ -39,6 +39,7 @@ _unreleased_
   - Prevent duplicate branch conditions
   - Warn if else branch is unreachable
 - Prevent redefinition of types (enum, interface, struct, type alias)
+- Lexer: Add unqiue error codes
 
 ### Type Checks
 - Ensure function parameter type exists
@@ -86,12 +87,16 @@ _unreleased_
 - `build`: Add `-cc` option to use a custom C compiler
 - `self`: Use $BAITEXE as default out name
 
-### General Fixes
+### Other Changes
 - _[JS]_ Fix integer division assign that could result in a float
 - gen.js: Fix generics with types from imported packages
 - parser
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
+- lexer:
+  - Fix position of multiline strings
+  - Unclosed string error now points to the opening quote
+  - Prevent rare crash due to huge sequences of comments overflowing the call stack
 
 
 ## 0.0.6

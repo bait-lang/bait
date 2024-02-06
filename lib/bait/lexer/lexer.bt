@@ -19,6 +19,7 @@ mut:
 
 	// Position tracking
 	line_starts []i32 // Array with positions of the \n before each line
+	cur_line i32 // Current line number
 	start i32 // Start of the current token
 	pos i32 // Always points to the next char in text
 
@@ -32,13 +33,14 @@ pub fun (mut l Lexer) init(text string, comment_mode CommentMode) {
 	l.comment_mode = comment_mode
 	l.text = text
 	l.line_starts = [-1]
+	l.cur_line = 0
 	l.pos = 0
 }
 
 pub fun (l Lexer) get_pos() token.Pos {
 	return token.Pos{
-		line = l.line_starts.length
-		col = l.start - l.line_starts.last()
+		line = l.cur_line + 1
+		col = l.start - l.line_starts[l.cur_line]
 	}
 }
 
@@ -94,18 +96,23 @@ pub fun (mut l Lexer) next() token.Token {
 		return .attr
 	}
 
+	// Comments
+	if c == `/` and l.text[l.pos] == `/` {
+		return l.comment_or_next()
+	}
+
 	// Simple tokens
 	return l.simple_token(c)
 }
 
 fun (mut l Lexer) simple_token(c u8) token.Token {
-	// The following tokens are directly converted to string (except comments)
+	// The following tokens are directly converted to string
 	l.val = ''
 
 	match c {
 		`\n` {
 			// Only reached if insert_semi was set to true
-			l.save_line()
+			l.inc_line()
 			return .semicolon
 		}
 		`.` {
@@ -136,17 +143,10 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			return .mul
 		}
 		`/` {
-			c2 := l.text[l.pos]
-
-			if c2 == `=` {
+			if l.text[l.pos] == `=`  {
 				l.pos += 1
 				return .div_assign
 			}
-
-			if c2 == `/` {
-				return l.comment()
-			}
-
 			return .div
 		}
 		`%` {
@@ -263,7 +263,6 @@ fun (mut l Lexer) name_or_key() token.Token {
 	return tok
 }
 
-// FIXME get_pos() should point to start of string (currently: end)
 fun (mut l Lexer) string_val(quote u8) token.Token {
 	is_foreign := l.text[l.pos - 2] == `.` // E.g. #JS.'eval()'
 	l.start = l.pos
@@ -297,8 +296,7 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 	}
 
 	// Unclosed string
-	l.start = l.pos
-	l.val = 'unclosed string literal'
+	l.val = 'unclosed string literal [L0010]'
 	return .error
 }
 
@@ -318,24 +316,14 @@ fun (mut l Lexer) char_val() token.Token {
 	return .char
 }
 
-fun (mut l Lexer) comment() token.Token {
-	start := l.pos + 1
-	l.skip_line()
-
-	if l.comment_mode == .store {
-		// Set val to comment text including all spaces after `//`
-		l.val = l.text.substr(start, l.pos - 1).trim_right('\r')
-		return .comment
-	}
-
-	// REFAC use non-recursive approch to prevent a growing call stack
-	// Discard the comment
-	return l.next()
+fun (mut l Lexer) unexpected_char(c u8) token.Token {
+	l.val = 'unexpected char ${c.ascii()} [L0001]'
+	return .error
 }
 
-fun (mut l Lexer) unexpected_char(c u8) token.Token {
-	l.val = 'unexpected char ${c.ascii()}'
-	return .error
+fun (mut l Lexer) inc_line() {
+	l.save_line()
+	l.cur_line = l.line_starts.length - 1
 }
 
 fun (mut l Lexer) save_line() {
@@ -350,21 +338,13 @@ fun (mut l Lexer) skip_whitespace() {
 				return
 			}
 			l.pos += 1
-			l.save_line()
+			l.inc_line()
 		} else if c == ` ` or c == `\t` or c == `\r` {
 			l.pos += 1
 		} else {
 			break
 		}
 	}
-}
-
-fun (mut l Lexer) skip_line() {
-	for l.pos < l.text.length and l.text[l.pos] != `\n` {
-		l.pos += 1
-	}
-	l.pos += 1
-	l.save_line()
 }
 
 fun is_name_start_char(c u8) bool {

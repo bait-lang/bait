@@ -8,7 +8,7 @@ package test
 //   spaces
 // above'
 
-fun test_discard() {
+fun test_discard_mode() {
 	mut l := lexer.Lexer{}
 	l.init(TEXT, .discard)
 
@@ -18,7 +18,7 @@ fun test_discard() {
 	assert l.val == 'test'
 }
 
-fun test_store() {
+fun test_store_mode() {
 	mut l := lexer.Lexer{}
 	l.init(TEXT, .store)
 
@@ -32,4 +32,19 @@ fun test_store() {
 	assert l.val == '   spaces'
 
 	assert l.next() == .comment
+}
+
+const MANY_COMMENTS := '// 1
+// 2
+    // 3, space indent
+// 4
+	// 5, tab indent
+// 6'
+
+fun test_skip_comments() {
+	mut l := lexer.Lexer{}
+	l.init(MANY_COMMENTS, .discard)
+
+	l.skip_comments()
+	assert l.get_pos().line == 7
 }

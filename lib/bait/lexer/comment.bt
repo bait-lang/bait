@@ -1,0 +1,38 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package lexer
+
+import bait.token
+
+pub fun (mut l Lexer) comment_or_next() token.Token {
+	if l.comment_mode == .discard {
+		l.skip_comments()
+		return l.next()
+	}
+
+	start := l.pos + 1
+	l.skip_line()
+
+	// Set val to comment text including all spaces after `//`
+	l.val = l.text.substr(start, l.pos - 1).trim_right('\r')
+	return .comment
+}
+
+pub fun (mut l Lexer) skip_comments() {
+	for true {
+		l.skip_line()
+		l.skip_whitespace()
+
+		if l.text[l.pos] != `/` or l.text[l.pos + 1] != `/` {
+			break
+		}
+	}
+}
+
+fun (mut l Lexer) skip_line() {
+	for l.pos < l.text.length and l.text[l.pos] != `\n` {
+		l.pos += 1
+	}
+	l.pos += 1
+	l.inc_line()
+}
