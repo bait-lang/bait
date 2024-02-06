@@ -296,7 +296,7 @@ fun (mut l Lexer) string_val(quote u8) token.Token {
 	}
 
 	// Unclosed string
-	l.val = 'unclosed string literal'
+	l.val = 'unclosed string literal [L0010]'
 	return .error
 }
 
@@ -317,7 +317,7 @@ fun (mut l Lexer) char_val() token.Token {
 }
 
 fun (mut l Lexer) unexpected_char(c u8) token.Token {
-	l.val = 'unexpected char ${c.ascii()}'
+	l.val = 'unexpected char ${c.ascii()} [L0001]'
 	return .error
 }
 

@@ -13,7 +13,7 @@ quote'
 	l.init(text, .discard)
 
 	assert l.next() == .error
-	assert l.val == 'unclosed string literal'
+	assert l.val == 'unclosed string literal [L0010]'
 	assert l.get_pos() == token.Pos{
 		line = 1
 		col = 2

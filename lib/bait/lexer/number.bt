@@ -18,7 +18,7 @@ fun (mut l Lexer) number() token.Token {
 		} else if c == `x` {
 			l.advance_hex_number()
 		} else if c.is_digit() {
-			l.val = 'leading zeros in decimal numbers are not allowed'
+			l.val = 'leading zeros in decimal numbers are not allowed [L0020]'
 			return .error
 		} else {
 			is_dec = true
@@ -31,7 +31,7 @@ fun (mut l Lexer) number() token.Token {
 	// Missing number part after `0b`, `0o` or `0x`
 	if not is_dec and l.pos - l.start == 2 {
 		prefix := l.text.substr(l.start, l.pos)
-		l.val = 'missing number part after `${prefix}`'
+		l.val = 'missing number part after `${prefix}` [L0021]'
 		return .error
 	}
 
@@ -40,7 +40,7 @@ fun (mut l Lexer) number() token.Token {
 	// Fraction part of a float
 	if c == `.` {
 		if not is_dec {
-			l.val = 'floats must be decimal numbers (base 10)'
+			l.val = 'floats must be decimal numbers (base 10) [L0022]'
 			return .error
 		}
 
@@ -55,7 +55,7 @@ fun (mut l Lexer) number() token.Token {
 
 	// Invalid character after number
 	if is_name_char(c) {
-		l.val = 'invalid suffix ${c} on number'
+		l.val = 'invalid suffix ${c} on number [L0023]'
 		return .error
 	}
 
