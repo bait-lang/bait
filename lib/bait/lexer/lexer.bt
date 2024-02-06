@@ -94,12 +94,17 @@ pub fun (mut l Lexer) next() token.Token {
 		return .attr
 	}
 
+	// Comments
+	if c == `/` and l.text[l.pos] == `/` {
+		return l.comment_or_next()
+	}
+
 	// Simple tokens
 	return l.simple_token(c)
 }
 
 fun (mut l Lexer) simple_token(c u8) token.Token {
-	// The following tokens are directly converted to string (except comments)
+	// The following tokens are directly converted to string
 	l.val = ''
 
 	match c {
@@ -136,17 +141,10 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			return .mul
 		}
 		`/` {
-			c2 := l.text[l.pos]
-
-			if c2 == `=` {
+			if l.text[l.pos] == `=`  {
 				l.pos += 1
 				return .div_assign
 			}
-
-			if c2 == `/` {
-				return l.comment()
-			}
-
 			return .div
 		}
 		`%` {
@@ -318,21 +316,6 @@ fun (mut l Lexer) char_val() token.Token {
 	return .char
 }
 
-fun (mut l Lexer) comment() token.Token {
-	start := l.pos + 1
-	l.skip_line()
-
-	if l.comment_mode == .store {
-		// Set val to comment text including all spaces after `//`
-		l.val = l.text.substr(start, l.pos - 1).trim_right('\r')
-		return .comment
-	}
-
-	// REFAC use non-recursive approch to prevent a growing call stack
-	// Discard the comment
-	return l.next()
-}
-
 fun (mut l Lexer) unexpected_char(c u8) token.Token {
 	l.val = 'unexpected char ${c.ascii()}'
 	return .error
@@ -357,14 +340,6 @@ fun (mut l Lexer) skip_whitespace() {
 			break
 		}
 	}
-}
-
-fun (mut l Lexer) skip_line() {
-	for l.pos < l.text.length and l.text[l.pos] != `\n` {
-		l.pos += 1
-	}
-	l.pos += 1
-	l.save_line()
 }
 
 fun is_name_start_char(c u8) bool {
