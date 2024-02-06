@@ -39,6 +39,7 @@ _unreleased_
   - Prevent duplicate branch conditions
   - Warn if else branch is unreachable
 - Prevent redefinition of types (enum, interface, struct, type alias)
+- Lexer: Add unqiue error codes
 
 ### Type Checks
 - Ensure function parameter type exists
