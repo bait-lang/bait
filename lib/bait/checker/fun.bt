@@ -331,7 +331,6 @@ fun (mut c Checker) set_conc_types(mut node ast.CallExpr, mut def ast.FunDecl) {
 
 fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i32) {
 	should_resolve_generics := def.generic_names.length != node.concrete_types.length
-	mut is_concrete := false
 	mut save_as_concrete := false
 
 	for i, mut arg in node.args {
@@ -339,12 +338,11 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 		psym := c.table.get_sym(param_type)
 
 		if should_resolve_generics and psym.kind == .generic {
-			is_concrete = false
-
 			gi := def.generic_names.index(psym.name)
 			if gi < node.concrete_types.length {
 				param_type = node.concrete_types[gi]
-				is_concrete = true
+			} else if gi < c.cur_concrete_types.length {
+				node.concrete_types.push(c.cur_concrete_types[gi])
 			} else {
 				save_as_concrete = true
 			}

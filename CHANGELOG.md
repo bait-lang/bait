@@ -81,6 +81,7 @@ _unreleased_
     - `trim_left()`, `trim_right()`
     - `substr()`
     - `repeat()`
+  - _[C]_ Implement array method `contains(val)`
   - _JS backend_
     - New array method `delete()`
     - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
