@@ -10,14 +10,6 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 		return
 	}
 
-	if node.generic_names.length > 0 and c.cur_concrete_types.length == 0 {
-		c.file.generic_funs.push(node)
-		c.need_generic_resolve = true
-		return
-	}
-
-	c.returns = false
-
 	if node.is_method {
 		sym := c.table.get_sym(node.params[0].typ)
 		if sym.info is ast.StructInfo {
@@ -46,6 +38,17 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 		})
 	}
 
+	if node.generic_names.length > 0 and c.cur_concrete_types.length == 0 {
+		c.file.generic_funs.push(node)
+		c.need_generic_resolve = true
+		return
+	}
+
+	c.fun_instance(node)
+}
+
+fun (mut c Checker) fun_instance(node ast.FunDecl) {
+	c.returns = false
 	c.cur_fun = node
 	c.check_fun_attrs(node) // FIXME this should error because node is not mut
 
@@ -384,7 +387,7 @@ fun (mut c Checker) resolve_generics_funs() {
 		gtypes := c.table.generic_fun_types[fn.key()]
 		for concrete in gtypes {
 			c.cur_concrete_types = concrete
-			c.fun_decl(fn)
+			c.fun_instance(fn)
 		}
 	}
 }

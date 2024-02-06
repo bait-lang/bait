@@ -124,7 +124,7 @@ fun (c Checker) does_type_exist(sym ast.TypeSymbol, pos token.Pos) bool {
 		return c.does_type_exist(c.table.get_sym(info.return_type), pos)
 	}
 
-	if sym.is_pub or sym.pkg == c.pkg {
+	if sym.is_pub or sym.pkg == c.pkg or c.pkg == 'builtin'{
 		return true
 	}
 
