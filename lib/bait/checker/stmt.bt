@@ -179,9 +179,9 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 	c.close_scope()
 }
 
-fun (mut c Checker) global_decl(node ast.GlobalDecl){
-	typ := c.expr(node.expr)
-	c.table.global_scope.update_type(node.name, typ)
+fun (mut c Checker) global_decl(mut node ast.GlobalDecl){
+	node.typ = c.expr(node.expr)
+	c.table.global_scope.update_type(node.name, node.typ)
 }
 
 fun (c Checker) interface_decl(node ast.InterfaceDecl){
