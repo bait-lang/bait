@@ -24,7 +24,7 @@ pub fun (s string) index(search string) i32 {
 	return s.str.indexOf(search.str) as i32
 }
 
-pub fun (s string) last_index(search string) i32 {
+pub fun (s string) index_last(search string) i32 {
 	return s.str.lastIndexOf(search.str) as i32
 }
 

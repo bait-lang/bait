@@ -11,8 +11,10 @@ _unreleased_
 - Change operator for pointer dereferencing from `^` to `*`
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 - `os`: Rename struct `Result` to `CmdRes`
-- `builtin`: Remove `u8.is_capital()`
-  - Use `u8.is_upper()` instead
+- `builtin`:
+  - Remove `u8.is_capital()`
+    - Use `u8.is_upper()` instead
+  - Rename `last_index(val)` to `index_last(val)` (affects string and array)
 - Remove `cli.cmdline`
   - `parse_string()` was moved into `cli`
   - `options()` was replaced by the `cli.options` package
@@ -73,7 +75,7 @@ _unreleased_
 - Add new package `cli.options`
 - Add work in progress `math` package
 - `builtin`
-  - _[C]_ Implement string methods
+  - _[C]_ Implement string methods:
     - `all_before(search)`, `all_before_last(search)`
     - `all_after(search)`, `all_after_last(search)`
     - `index(search)`, `last_index(search)`
@@ -88,7 +90,13 @@ _unreleased_
     - New `[]u8` method: `to_string()`
 - `os`:
   - _[JS]_ New functions `read_bytes(path)`, `is_root(path)`
-  - _[C]_ Implement functions `ls(dir)`, `file_name(path)`, `is_dir(path)`, `join_path(base, dirs)`, `platform()`, `exec(cmd)`, `system(cmd)` for Linux
+  - _[C]_ Implement functions for Linux:
+    - `ls(dir)`, `walk_ext(dir, ext)`
+    - `file_name(path)`, `dir(path)`
+    - `is_dir(path)`
+    - `join_path(base, dirs)`
+    - `platform()`
+    - `exec(cmd)`, `system(cmd)`
 
 ### CLI and Tooling
 - `init`

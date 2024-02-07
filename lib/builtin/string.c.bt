@@ -33,7 +33,7 @@ pub fun (s string) index(search string) i32 {
 	return -1
 }
 
-pub fun (s string) last_index(search string) i32 {
+pub fun (s string) index_last(search string) i32 {
 	if search.length == 0 or search.length > s.length {
 		return -1
 	}

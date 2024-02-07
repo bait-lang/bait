@@ -11,7 +11,7 @@ pub fun (s string) all_before(search string) string {
 }
 
 pub fun (s string) all_before_last(search string) string {
-	idx := s.last_index(search)
+	idx := s.index_last(search)
 	if idx == -1 {
 		return s
 	}
@@ -27,7 +27,7 @@ pub fun (s string) all_after(search string) string {
 }
 
 pub fun (s string) all_after_last(search string) string {
-	idx := s.last_index(search)
+	idx := s.index_last(search)
 	if idx == -1 {
 		return s
 	}
