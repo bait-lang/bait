@@ -25,7 +25,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.ForClassicLoop { g.for_classic_loop(stmt) }
 		ast.ForInLoop { g.for_in_loop(stmt) }
 		ast.FunDecl { g.fun_decl(stmt) }
-		ast.GlobalDecl { panic('Not implemented') } // TODO
+		ast.GlobalDecl { g.global_decl(stmt) } // TODO
 		ast.IfMatch { g.if_match(stmt) }
 		ast.InterfaceDecl { g.interface_decl(stmt) }
 		ast.LoopControlStmt { g.loop_control_stmt(stmt) }
@@ -159,6 +159,13 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 
 fun (mut g Gen) loop_control_stmt(node ast.LoopControlStmt){
 	g.writeln(node.kind.c_repr() + ';')
+}
+
+fun (mut g Gen) global_decl(node ast.GlobalDecl){
+	name := c_name(node.name)
+	expr := g.expr_string(node.expr)
+	typ := g.typ(node.typ)
+	g.globals_out += '${typ} ${name} = ${expr};\n'
 }
 
 fun (g Gen) interface_decl(node ast.InterfaceDecl){

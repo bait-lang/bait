@@ -68,6 +68,7 @@ _unreleased_
 - gen:
   - Implement `break` and `continue`
   - Implement enums
+  - Implement globals
 - Fix compiling libraries
 - Fix string interpolation C error with tcc
 - Fix C error when calling a method on a mutable array instance

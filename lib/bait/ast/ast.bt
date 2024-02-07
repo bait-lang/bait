@@ -130,6 +130,8 @@ pub:
 }
 
 pub struct GlobalDecl{
+global:
+	typ Type
 pub:
 	name string
 	expr Expr

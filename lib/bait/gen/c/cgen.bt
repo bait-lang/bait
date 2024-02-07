@@ -22,6 +22,7 @@ mut:
 	type_defs_out string
 	fun_decls_out string
 	type_impls_out string
+	globals_out string
 	out string
 	indent i32 := -1
 	empty_line bool := true
@@ -55,7 +56,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	if not g.pref.is_library {
 		g.c_main()
 	}
-	return g.headers() + g.type_defs_out + g.fun_decls_out + g.type_impls_out + '\n' + g.out
+	return g.headers() + g.type_defs_out + g.fun_decls_out + g.type_impls_out + g.globals_out + '\n' + g.out
 }
 
 fun (g Gen) process_imports(imports []ast.Import) {
