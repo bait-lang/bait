@@ -31,9 +31,14 @@ mut:
 	generated_eq_funs []ast.Type
 	tmp_counter i32
 	cur_concrete_types map[string]ast.Type
+	cur_fun ast.FunDecl
 	is_lhs_assign bool
 	is_array_map_set bool
 	is_for_loop_head bool
+	// Cached comptime variables
+	baitexe string
+	baitdir string
+	baithash string
 }
 
 pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {

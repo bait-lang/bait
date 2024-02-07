@@ -14,7 +14,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.BoolLiteral { g.bool_literal(expr) }
 		ast.CallExpr { g.call_expr(expr) }
 		ast.CharLiteral { panic('not implemented') } // TODO
-		ast.ComptimeVar { panic('not implemented') } // TODO
+		ast.ComptimeVar { g.comptime_var(expr) }
 		ast.EnumVal { g.enum_val(expr) }
 		ast.FloatLiteral { panic('not implemented') } // TODO
 		ast.HashExpr { g.hash_expr(expr) }

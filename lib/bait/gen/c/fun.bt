@@ -22,6 +22,8 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 		return
 	}
 
+	g.cur_fun = node
+
 	type_str := g.typ(node.return_type)
 	mut name := c_name(node.name)
 	if node.is_method {

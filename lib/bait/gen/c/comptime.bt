@@ -1,0 +1,56 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package c
+
+import os
+import bait.ast
+import bait.token
+
+fun (mut g Gen) comptime_var(node ast.ComptimeVar){
+	g.write('from_c_string("')
+	g.write(g.get_comptime_val(node.name, node.pos))
+	g.write('")')
+}
+
+fun (mut g Gen) get_comptime_val(name string, pos token.Pos) string {
+	return match name {
+		// Dynamic
+		'PKG' { g.pkg }
+		'ABS_FILE' { os.abs_path(g.path).replace('\\', '\\\\') }
+		'FILE' { g.path.replace('\\', '\\\\') }
+		'LINE' { pos.line.str() }
+		'FILE_LINE' {
+			file := g.get_comptime_val('FILE', pos)
+			line := g.get_comptime_val('LINE', pos)
+			'${file}:${line}'
+		}
+		'FUN' { g.cur_fun.name }
+		// Cached
+		'BAITEXE' { g.comptime_baitexe() }
+		'BAITDIR' { g.comptime_baitdir() }
+		'BAITHASH' { g.comptime_baithash() }
+		else { '' }
+	}
+}
+
+fun (mut g Gen) comptime_baitexe() string {
+	if g.baitexe.length == 0 {
+		g.baitexe = os.executable().replace('\\', '\\\\')
+	}
+	return g.baitexe
+}
+
+fun (mut g Gen) comptime_baitdir() string {
+	if g.baitdir.length == 0 {
+		g.baitdir = os.dir(g.comptime_baitexe()).trim_right('\\')
+	}
+	return g.baitdir
+}
+
+fun (mut g Gen) comptime_baithash() string {
+	if g.baithash.length == 0 {
+		bd := g.comptime_baitdir()
+		g.baithash = os.exec('git -C ${bd} rev-parse --short HEAD').stdout.trim_space()
+	}
+	return g.baithash
+}
