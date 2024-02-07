@@ -81,7 +81,7 @@ _unreleased_
     - `index`, `last_index`
     - `starts_with`, `ends_with`
     - `trim_left`, `trim_right`
-    - `substr`, `repeat`
+    - `replace`, `substr`, `repeat`
   - _[C]_ Implement array method `contains`
   - _JS backend_
     - New array method `delete()`

@@ -14,6 +14,64 @@ fun (s string) get(i i32) u8 {
 	return s.str[i]
 }
 
+pub fun (s string) replace(val string, with string) string {
+	// Find occurences of val
+	mut idxs := []i32
+	mut idx := 0
+	for true {
+		idx = s.index_after(val, idx)
+		if idx == -1 {
+			break
+		}
+
+		idxs.push(idx)
+		idx += val.length
+	}
+
+	// Nothing to replace
+	if idxs.length == 0 {
+		return s
+	}
+
+	// Allocate new string
+	new_len := s.length + idxs.length * (with.length - val.length)
+	mut buf := #C.calloc(1, new_len + 1)
+
+	// Fill string
+	mut bi := 0 // Position in new string
+	mut si := 0 // Position in original string
+
+	for pos in idxs {
+		// Copy up to replacement
+		for si < pos {
+			buf[bi] = s.str[si]
+			bi += 1
+			si += 1
+		}
+		si += val.length // Move after val
+
+		// Replacement
+		for w := 0; w < with.length; w += 1 {
+			buf[bi] = with.str[w]
+			bi += 1
+		}
+	}
+
+	// Copy rest of string
+	for si < s.length {
+		buf[bi] = s.str[si]
+		bi += 1
+		si += 1
+	}
+
+	// Return null terminated string
+	buf[new_len] = 0 as u8
+	return string{
+		str = buf
+		length = new_len
+	}
+}
+
 pub fun (s string) substr(start i32, end i32) string {
 	length := end - start
 	mut res := string{
