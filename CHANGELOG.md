@@ -78,7 +78,7 @@ _unreleased_
   - Add new string method: `index_after(search, pos) i32`
   - _[C]_ Implement string methods:
     - `all_before`, `all_before_last`, `all_after`, `all_after_last`
-    - `index`, `last_index`
+    - `index`, `last_index`, `contains`
     - `starts_with`, `ends_with`
     - `trim_left`, `trim_right`
     - `replace`, `substr`, `repeat`

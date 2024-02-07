@@ -6,6 +6,10 @@ pub fun (s string) index(search string) i32 {
 	return s.index_after(search, 0)
 }
 
+pub fun (s string) contains(pattern string) bool {
+	return s.index(pattern) != -1
+}
+
 pub fun (s string) all_before(search string) string {
 	idx := s.index(search)
 	if idx == -1 {
