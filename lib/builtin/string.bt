@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: MPL-2.0
 package builtin
 
+pub fun (s string) index(search string) i32 {
+	return s.index_after(search, 0)
+}
+
 pub fun (s string) all_before(search string) string {
 	idx := s.index(search)
 	if idx == -1 {

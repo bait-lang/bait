@@ -20,8 +20,8 @@ pub fun (s string) substr(start i32, end i32) string {
 	return from_js_string(s.str.slice(start as #JS.Number, end as #JS.Number))
 }
 
-pub fun (s string) index(search string) i32 {
-	return s.str.indexOf(search.str) as i32
+pub fun (s string) index_after(search string, pos i32) i32 {
+	return s.str.indexOf(search.str, pos as #JS.Number) as i32
 }
 
 pub fun (s string) index_last(search string) i32 {

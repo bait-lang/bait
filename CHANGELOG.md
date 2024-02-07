@@ -75,28 +75,25 @@ _unreleased_
 - Add new package `cli.options`
 - Add work in progress `math` package
 - `builtin`
+  - Add new string method: `index_after(search, pos) i32`
   - _[C]_ Implement string methods:
-    - `all_before(search)`, `all_before_last(search)`
-    - `all_after(search)`, `all_after_last(search)`
-    - `index(search)`, `last_index(search)`
-    - `starts_with(prefix)`, `ends_with(suffix)`
-    - `trim_left()`, `trim_right()`
-    - `substr()`
-    - `repeat()`
-  - _[C]_ Implement array method `contains(val)`
+    - `all_before`, `all_before_last`, `all_after`, `all_after_last`
+    - `index`, `last_index`
+    - `starts_with`, `ends_with`
+    - `trim_left`, `trim_right`
+    - `substr`, `repeat`
+  - _[C]_ Implement array method `contains`
   - _JS backend_
     - New array method `delete()`
     - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
     - New `[]u8` method: `to_string()`
 - `os`:
-  - _[JS]_ New functions `read_bytes(path)`, `is_root(path)`
+  - _[JS]_ New functions `read_bytes(path) []u8`, `is_root(path) bool`
   - _[C]_ Implement functions for Linux:
-    - `ls(dir)`, `walk_ext(dir, ext)`
-    - `file_name(path)`, `dir(path)`
-    - `is_dir(path)`
-    - `join_path(base, dirs)`
-    - `platform()`
-    - `exec(cmd)`, `system(cmd)`
+    - `ls`, `walk_ext`
+    - `file_name`, `dir`
+    - `is_dir`, `join_path`, `platform`
+    - `exec`, `system`
 
 ### CLI and Tooling
 - `init`
