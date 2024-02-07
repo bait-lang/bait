@@ -18,6 +18,11 @@ fun (g Gen) equality_fun(typ ast.Type) string {
 		return ''
 	}
 
+	// Enums can use normal == and !=
+	if sym.kind == .enum_ {
+		return ''
+	}
+
 	// Equality is manually defined as overload
 	if sym.overloads.contains('==') {
 		return ''
