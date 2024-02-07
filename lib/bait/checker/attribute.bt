@@ -87,8 +87,9 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 	rec_sym.overloads[attr.value] = node
 	if is_math_overload {
 		rec_sym.overloads['${attr.value}='] = node
+	} else if attr.value == '==' {
+		rec_sym.overloads['!='] = node
 	}
-
 }
 
 fun (c Checker) attr_export(attr ast.Attribute) {

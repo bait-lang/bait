@@ -107,7 +107,9 @@ _unreleased_
 
 ### Other Changes
 - _[JS]_ Fix integer division assign that could result in a float
-- parser
+- gen:
+  - Fix `!=` when `==` is overloaded
+- parser:
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
 - lexer:

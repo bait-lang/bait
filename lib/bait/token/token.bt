@@ -125,7 +125,11 @@ pub fun (kind Token) is_compare() bool {
 }
 
 pub fun (kind Token) is_infix() bool {
-	return kind.is_compare() or MATH_KINDS.contains(kind) or OTHER_INFIXES.contains(kind) or BITWISE_INFIX.contains(kind)
+	return kind.is_compare() or kind.is_math() or OTHER_INFIXES.contains(kind) or BITWISE_INFIX.contains(kind)
+}
+
+pub fun (tok Token) is_math() bool {
+	return MATH_KINDS.contains(tok)
 }
 
 pub fun (kind Token) is_assign() bool {
