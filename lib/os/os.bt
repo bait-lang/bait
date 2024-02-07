@@ -2,6 +2,40 @@
 // SPDX-License-Identifier: MPL-2.0
 package os
 
+pub fun walk_ext(dir string, ext string) []string {
+	mut ext_files := []string
+	all_files := ls(dir)
+	for file in all_files {
+		fpath := join_path(dir, [file])
+		if is_dir(fpath) {
+			tmp := walk_ext(fpath, ext)
+			ext_files.push_many(tmp)
+		} else if fpath.ends_with(ext) {
+			ext_files.push(fpath)
+		}
+	}
+	return ext_files
+}
+
+pub fun dir(path string) string {
+	mut other_sep := '\\'
+	if PATH_SEP != '/' {
+		other_sep = '/'
+	}
+	p := path.replace(other_sep, PATH_SEP)
+
+	pos := p.index_last(PATH_SEP)
+	if pos == -1 {
+		return '.'
+	}
+
+	if pos == 0 and PATH_SEP == '/' {
+		return '/'
+	}
+
+	return path.substr(0, pos)
+}
+
 // Returns whether a given path exists and is a directory.
 pub fun exists_dir(path string) bool {
 	return exists(path) and is_dir(path)

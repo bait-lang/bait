@@ -14,6 +14,64 @@ fun (s string) get(i i32) u8 {
 	return s.str[i]
 }
 
+pub fun (s string) replace(val string, with string) string {
+	// Find occurences of val
+	mut idxs := []i32
+	mut idx := 0
+	for true {
+		idx = s.index_after(val, idx)
+		if idx == -1 {
+			break
+		}
+
+		idxs.push(idx)
+		idx += val.length
+	}
+
+	// Nothing to replace
+	if idxs.length == 0 {
+		return s
+	}
+
+	// Allocate new string
+	new_len := s.length + idxs.length * (with.length - val.length)
+	mut buf := #C.calloc(1, new_len + 1)
+
+	// Fill string
+	mut bi := 0 // Position in new string
+	mut si := 0 // Position in original string
+
+	for pos in idxs {
+		// Copy up to replacement
+		for si < pos {
+			buf[bi] = s.str[si]
+			bi += 1
+			si += 1
+		}
+		si += val.length // Move after val
+
+		// Replacement
+		for w := 0; w < with.length; w += 1 {
+			buf[bi] = with.str[w]
+			bi += 1
+		}
+	}
+
+	// Copy rest of string
+	for si < s.length {
+		buf[bi] = s.str[si]
+		bi += 1
+		si += 1
+	}
+
+	// Return null terminated string
+	buf[new_len] = 0 as u8
+	return string{
+		str = buf
+		length = new_len
+	}
+}
+
 pub fun (s string) substr(start i32, end i32) string {
 	length := end - start
 	mut res := string{
@@ -25,22 +83,22 @@ pub fun (s string) substr(start i32, end i32) string {
 	return res
 }
 
-pub fun (s string) index(search string) i32 {
+pub fun (s string) index_after(search string, pos i32) i32 {
 	if search.length == 0 {
 		return -1
 	}
-	return s.index_kmp(search)
+	return s.index_kmp(search, pos)
 	return -1
 }
 
-pub fun (s string) last_index(search string) i32 {
+pub fun (s string) index_last(search string) i32 {
 	if search.length == 0 or search.length > s.length {
 		return -1
 	}
 
 	for i := s.length - search.length; i >= 0; i -= 1 {
 		mut j := 0
-		for j < search.length and s.str[i + j] == search.str[j] {
+		for j < search.length and s[i + j] == search[j] {
 			j += 1
 		}
 		if j == search.length {
@@ -56,10 +114,10 @@ fun (pattern string) kmp_prefix_table() []i32 {
 	mut j := 0
 
 	for i, c in pattern {
-		for j > 0 and pattern.str[j] != c {
+		for j > 0 and pattern[j] != c {
 			j = prefix[j - i]
 		}
-		if pattern.str[j] == c {
+		if pattern[j] == c {
 			j += 1
 		}
 		prefix[i] = j
@@ -68,7 +126,7 @@ fun (pattern string) kmp_prefix_table() []i32 {
 	return prefix
 }
 
-fun (s string) index_kmp(search string) i32 {
+fun (s string) index_kmp(search string, pos i32) i32 {
 	if search.length > s.length {
 		return -1
 	}
@@ -76,11 +134,12 @@ fun (s string) index_kmp(search string) i32 {
 	prefix := search.kmp_prefix_table()
 	mut j := 0
 
-	for i, c in s {
-		for j > 0 and search.str[j] != c {
+	for i := pos; i < s.length; i += 1 {
+		c := s[i]
+		for j > 0 and search[j] != c {
 			j = prefix[j - 1]
 		}
-		if search.str[j] == c {
+		if search[j] == c {
 			j += 1
 		}
 		if j == search.length {
@@ -93,7 +152,7 @@ fun (s string) index_kmp(search string) i32 {
 
 pub fun (s string) starts_with(prefix string) bool {
 	for i := 0; i < prefix.length; i += 1 {
-		if s.str[i] != prefix.str[i] {
+		if s[i] != prefix[i] {
 			return false
 		}
 	}
@@ -104,7 +163,7 @@ pub fun (s string) starts_with(prefix string) bool {
 pub fun (s string) ends_with(suffix string) bool {
 	offset := s.length - suffix.length
 	for i := 0; i < suffix.length; i += 1 {
-		if s.str[offset + i] != suffix.str[i] {
+		if s[offset + i] != suffix[i] {
 			return false
 		}
 	}

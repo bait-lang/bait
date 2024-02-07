@@ -12,19 +12,19 @@ fun (s string) get(i i32) u8 {
 	return u8(s.str.charCodeAt(i as #JS.Number) as #JS.Any)
 }
 
-pub fun (s string) replace(val string, rep string) string {
-	return from_js_string(s.str.replaceAll(val.str, rep.str))
+pub fun (s string) replace(val string, with string) string {
+	return from_js_string(s.str.replaceAll(val.str, with.str))
 }
 
 pub fun (s string) substr(start i32, end i32) string {
 	return from_js_string(s.str.slice(start as #JS.Number, end as #JS.Number))
 }
 
-pub fun (s string) index(search string) i32 {
-	return s.str.indexOf(search.str) as i32
+pub fun (s string) index_after(search string, pos i32) i32 {
+	return s.str.indexOf(search.str, pos as #JS.Number) as i32
 }
 
-pub fun (s string) last_index(search string) i32 {
+pub fun (s string) index_last(search string) i32 {
 	return s.str.lastIndexOf(search.str) as i32
 }
 
@@ -42,10 +42,6 @@ pub fun (s string) starts_with(prefix string) bool {
 
 pub fun (s string) ends_with(suffix string) bool {
 	return s.str.endsWith(suffix.str) as bool
-}
-
-pub fun (s string) contains(substr string) bool {
-	return s.str.includes(substr.str) as bool
 }
 
 pub fun (s string) is_capital() bool {

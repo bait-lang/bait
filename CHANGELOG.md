@@ -11,8 +11,10 @@ _unreleased_
 - Change operator for pointer dereferencing from `^` to `*`
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 - `os`: Rename struct `Result` to `CmdRes`
-- `builtin`: Remove `u8.is_capital()`
-  - Use `u8.is_upper()` instead
+- `builtin`:
+  - Remove `u8.is_capital()`
+    - Use `u8.is_upper()` instead
+  - Rename `last_index(val)` to `index_last(val)` (affects string and array)
 - Remove `cli.cmdline`
   - `parse_string()` was moved into `cli`
   - `options()` was replaced by the `cli.options` package
@@ -73,22 +75,27 @@ _unreleased_
 - Add new package `cli.options`
 - Add work in progress `math` package
 - `builtin`
-  - _[C]_ Implement string methods
-    - `all_before(search)`, `all_before_last(search)`
-    - `all_after(search)`, `all_after_last(search)`
-    - `index(search)`, `last_index(search)`
-    - `starts_with(prefix)`, `ends_with(suffix)`
-    - `trim_left()`, `trim_right()`
-    - `substr()`
-    - `repeat()`
-  - _[C]_ Implement array method `contains(val)`
+  - Add new string method: `index_after(search, pos) i32`
+  - _[C]_ Implement string methods:
+    - `all_before`, `all_before_last`, `all_after`, `all_after_last`
+    - `index`, `last_index`, `contains`
+    - `starts_with`, `ends_with`
+    - `trim_left`, `trim_right`
+    - `replace`, `substr`, `repeat`
+  - _[C]_ Implement array method `contains`
   - _JS backend_
     - New array method `delete()`
     - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
     - New `[]u8` method: `to_string()`
 - `os`:
-  - _[JS]_ New functions `read_bytes(path)`, `is_root(path)`
-  - _[C]_ Implement functions `ls(dir)`, `file_name(path)`, `is_dir(path)`, `join_path(base, dirs)`, `platform()`, `exec(cmd)`, `system(cmd)` for Linux
+  - New function `read_bytes(path) []u8`
+  - _[JS]_ New function `is_root(path) bool`
+  - _[C]_ Implement functions for Linux:
+    - `read_file`, `write_file`
+    - `ls`, `walk_ext`
+    - `file_name`, `dir`
+    - `is_dir`, `join_path`, `platform`
+    - `exec`, `system`
 
 ### CLI and Tooling
 - `init`
@@ -100,7 +107,9 @@ _unreleased_
 
 ### Other Changes
 - _[JS]_ Fix integer division assign that could result in a float
-- parser
+- gen:
+  - Fix `!=` when `==` is overloaded
+- parser:
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
 - lexer:

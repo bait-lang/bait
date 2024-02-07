@@ -52,6 +52,34 @@ pub fun is_dir(path string) bool {
 	return false
 }
 
+pub fun read_bytes(path string) []u8 {
+	mut size := 0 as i64
+	#C.'FILE* fp;
+	fp = fopen(path.str, "r");
+	fseek(fp, 0, SEEK_END);
+	size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);'
+	mut res := []u8{length = size as i32}
+	#C.'fread(res.data, 1, size, fp);
+	fclose(fp);'
+	return res
+}
+
+pub fun read_file(path string) string {
+	bytes := read_bytes(path)
+	return string{
+		str = bytes.data as &u8
+		length = bytes.length
+	}
+}
+
+pub fun write_file(path string, text string) {
+	#C.'FILE* fp;
+	fp = fopen(path.str, "w");
+	fprintf(fp, text.str);
+	fclose(fp);'
+}
+
 pub fun join_path(base string, dirs []string) string {
 	mut sb := strings.new_builder(base.length + dirs.length * 50)
 	sb.write(base)

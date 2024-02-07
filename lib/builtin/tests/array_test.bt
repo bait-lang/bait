@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
 
-fun test_index_and_last_index() {
+fun test_index_and_index_last() {
 	nums := [1, 2, 1, 2]
 	assert nums.index(1) == 0
-	assert nums.last_index(1) == 2
+	assert nums.index_last(1) == 2
 
 	strings := ['a', 'b', 'c', 'c']
 	assert strings.index('c') == 2
-	assert strings.last_index('c') == 3
+	assert strings.index_last('c') == 3
 }
 
 fun test_reverse() {

@@ -91,7 +91,7 @@ pub fun (a Array) index[T](val T) i32 {
 	return -1
 }
 
-pub fun (a Array) last_index[T](val T) i32 {
+pub fun (a Array) index_last[T](val T) i32 {
 	for i := a.length - 1; i >= 0; i -= 1 {
 		if *(a.get(i) as &T) == val {
 			return i

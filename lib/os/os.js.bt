@@ -14,20 +14,6 @@ pub fun ls(dir string) []string {
 	return from_js_string_arr(#JS.fs.readdirSync(dir.str))
 }
 
-pub fun walk_ext(dir string, ext string) []string {
-	mut ext_files := []string
-	all_files := ls(dir)
-	for file in all_files {
-		fpath := join_path(dir, [file])
-		if is_dir(fpath) {
-			ext_files.push_many(walk_ext(fpath, ext))
-		} else if fpath.ends_with(ext) {
-			ext_files.push(fpath)
-		}
-	}
-	return ext_files
-}
-
 pub fun cp(src string, dest string) {
 	#JS.'JS.fs.cpSync(src.str, dest.str, { recursive: true })'
 }
@@ -66,25 +52,6 @@ pub fun home_dir() string {
 
 pub fun tmp_dir() string {
 	return from_js_string(#JS.os.tmpdir())
-}
-
-pub fun dir(path string) string {
-	mut other_sep := '\\'
-	if PATH_SEP != '/' {
-		other_sep = '/'
-	}
-	p := path.replace(other_sep, PATH_SEP)
-
-	pos := p.last_index(PATH_SEP)
-	if pos == -1 {
-		return '.'
-	}
-
-	if pos == 0 and PATH_SEP == '/' {
-		return '/'
-	}
-
-	return path.substr(0, pos)
 }
 
 // Returns whether a given path is a directory.

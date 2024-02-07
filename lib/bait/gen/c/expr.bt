@@ -167,6 +167,9 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 	lsym := g.concrete_sym(node.left_type)
 	if lsym.overloads.contains(node.op.c_repr()) {
 		overload := lsym.overloads[node.op.c_repr()]
+		if node.op == .ne {
+			g.write('!')
+		}
 		g.write(c_name(lsym.name + '_' + overload.name))
 		g.write('(')
 		g.expr(node.left)

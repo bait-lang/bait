@@ -18,7 +18,7 @@ pub interface #JS.String {
 	length #JS.Number
 	charAt(pos #JS.Number) #JS.String
 	charCodeAt(pos #JS.Number) #JS.Number
-	indexOf(search #JS.String) #JS.Number
+	indexOf(search #JS.String, position #JS.Number) #JS.Number
 	lastIndexOf(search #JS.String) #JS.Number
 	startsWith(search #JS.String) #JS.Boolean
 	endsWith(search #JS.String) #JS.Boolean
