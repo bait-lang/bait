@@ -8,7 +8,8 @@ pub fun walk_ext(dir string, ext string) []string {
 	for file in all_files {
 		fpath := join_path(dir, [file])
 		if is_dir(fpath) {
-			ext_files.push_many(walk_ext(fpath, ext))
+			tmp := walk_ext(fpath, ext)
+			ext_files.push_many(tmp)
 		} else if fpath.ends_with(ext) {
 			ext_files.push(fpath)
 		}
