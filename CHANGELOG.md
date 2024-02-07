@@ -88,8 +88,10 @@ _unreleased_
     - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
     - New `[]u8` method: `to_string()`
 - `os`:
-  - _[JS]_ New functions `read_bytes(path) []u8`, `is_root(path) bool`
+  - New function `read_bytes(path) []u8`
+  - _[JS]_ New function `is_root(path) bool`
   - _[C]_ Implement functions for Linux:
+    - `read_file`, `write_file`
     - `ls`, `walk_ext`
     - `file_name`, `dir`
     - `is_dir`, `join_path`, `platform`
