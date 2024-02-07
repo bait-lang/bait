@@ -19,7 +19,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.AssertStmt { panic('Not implemented') } // TODO
 		ast.AssignStmt { g.assign_stmt(stmt) }
 		ast.ConstDecl { g.const_decl(stmt) }
-		ast.EnumDecl { panic('Not implemented') } // TODO, probably write_types()
+		ast.EnumDecl {} // see write_types()
 		ast.ExprStmt { g.expr_stmt(stmt) }
 		ast.ForLoop { g.for_loop(stmt) }
 		ast.ForClassicLoop { g.for_classic_loop(stmt) }

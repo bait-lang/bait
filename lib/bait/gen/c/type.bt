@@ -17,7 +17,8 @@ fun (g Gen) typ(typ ast.Type) string {
 	sym := g.concrete_sym(typ)
 	name := sym.name.replace('[]', 'Array_').replace('C.', '').replace('.', '__')
 	ptrs := '*'.repeat(typ.get_nr_amp())
-	return name + ptrs
+	prefix := if sym.kind == .enum_ { 'enum ' } else { '' }
+	return prefix + name + ptrs
 }
 
 fun (mut g Gen) write_types() {
@@ -41,6 +42,13 @@ fun (mut g Gen) write_types() {
 			g.type_defs_out += 'typedef Array ${cname};\n'
 		} else if sym.kind == .alias_type {
 			g.type_defs_out += 'typedef ${g.typ(sym.parent)} ${cname};\n'
+		} else if sym.kind == .enum_ {
+			info := sym.info as ast.EnumInfo
+			g.type_defs_out += 'enum ${cname} {\n'
+			for val in info.vals {
+				g.type_defs_out += '\t${c_name(val)},\n'
+			}
+			g.type_defs_out += '};\n'
 		}
 	}
 }

@@ -15,7 +15,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.CallExpr { g.call_expr(expr) }
 		ast.CharLiteral { panic('not implemented') } // TODO
 		ast.ComptimeVar { panic('not implemented') } // TODO
-		ast.EnumVal { panic('not implemented') } // TODO
+		ast.EnumVal { g.enum_val(expr) }
 		ast.FloatLiteral { panic('not implemented') } // TODO
 		ast.HashExpr { g.hash_expr(expr) }
 		ast.Ident { g.ident(expr) }
@@ -91,6 +91,10 @@ fun (mut g Gen) bool_literal(node ast.BoolLiteral) {
 	} else {
 		g.write('false')
 	}
+}
+
+fun (mut g Gen) enum_val(node ast.EnumVal) {
+	g.write(c_name(node.val))
 }
 
 fun (mut g Gen) hash_expr(node ast.HashExpr) {
