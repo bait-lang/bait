@@ -1,0 +1,82 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package c
+
+import bait.ast
+import bait.util
+
+fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
+	g.write('if (')
+	g.expr(node.expr)
+	g.writeln(') {')
+	g.writeln('\tTestRunner_assert_pass(&test_runner);')
+	g.writeln('} else {')
+	if node.expr is ast.InfixExpr {
+		expr := node.expr as ast.InfixExpr
+		g.write('\tTestRunner_set_assert_info(&test_runner, ${node.pos.line}, from_c_string("assert ')
+		g.assert_side_expr(expr.left)
+		g.write(' ${expr.op.js_repr()} ')
+		g.assert_side_expr(expr.right)
+		g.write('"), ')
+		g.expr_to_string(expr.left, expr.left_type)
+		g.write(', ')
+		g.expr_to_string(expr.right, expr.right_type)
+		g.writeln(');')
+		g.writeln('\tTestRunner_assert_fail_infix(&test_runner);')
+	} else {
+		g.write('\tTestRunner_set_assert_info(&test_runner, ${node.pos.line}, from_c_string("assert ')
+		g.assert_side_expr(node.expr)
+		g.writeln('"), from_c_string(""), from_c_string(""));')
+		g.writeln('\tTestRunner_assert_fail(&test_runner);')
+	}
+	g.writeln('}')
+}
+
+fun (mut g Gen) assert_side_expr(node ast.Expr) {
+	if node is ast.BoolLiteral {
+		g.bool_literal(node)
+	} else if node is ast.IntegerLiteral {
+		g.integer_literal(node)
+	} else if node is ast.StringLiteral {
+		g.write("'")
+		g.write(util.escape_linebreak(node.val))
+		g.write("'")
+	} else if node is ast.CharLiteral {
+		g.write("`")
+		g.write(node.val)
+		g.write("`")
+	} else if node is ast.ArrayInit {
+		g.write('[')
+		for i, expr in node.exprs {
+			g.assert_side_expr(expr)
+			if i < node.exprs.length - 1 {
+				g.write(', ')
+			}
+		}
+		g.write(']')
+	} else if node is ast.Ident {
+		g.write(node.name)
+	} else if node is ast.ArrayInit {
+		g.write('[')
+		for i, expr in node.exprs {
+			g.assert_side_expr(expr)
+			if i < node.exprs.length - 1 {
+				g.write(', ')
+			}
+		}
+		g.write(']')
+	} else if node is ast.IndexExpr {
+		g.assert_side_expr(node.left)
+		g.write('[')
+		g.assert_side_expr(node.index)
+		g.write(']')
+	} else if node is ast.SelectorExpr {
+		g.assert_side_expr(node.expr)
+		g.write('.${node.field_name}')
+	} else if node is ast.ComptimeVar {
+		g.write('$')
+		g.write(node.name)
+	} else {
+		g.write('UNHANDLED EXPR')
+	}
+}

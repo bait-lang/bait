@@ -16,7 +16,7 @@ fun (mut g Gen) stmts(stmts []ast.Stmt) {
 
 fun (mut g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
-		ast.AssertStmt { panic('Not implemented') } // TODO
+		ast.AssertStmt { g.assert_stmt(stmt) }
 		ast.AssignStmt { g.assign_stmt(stmt) }
 		ast.ConstDecl { g.const_decl(stmt) }
 		ast.EnumDecl {} // see write_types()
@@ -25,7 +25,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.ForClassicLoop { g.for_classic_loop(stmt) }
 		ast.ForInLoop { g.for_in_loop(stmt) }
 		ast.FunDecl { g.fun_decl(stmt) }
-		ast.GlobalDecl { g.global_decl(stmt) } // TODO
+		ast.GlobalDecl { g.global_decl(stmt) }
 		ast.IfMatch { g.if_match(stmt) }
 		ast.InterfaceDecl { g.interface_decl(stmt) }
 		ast.LoopControlStmt { g.loop_control_stmt(stmt) }
