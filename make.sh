@@ -60,7 +60,7 @@ check_success() {
   if [ "$allow_retry" = true ] && [ $IS_LOCAL == 0 ]; then
     # Pull latest version of Bait
     echo "make: compilation failed. Retrying..."
-    git pull --quiet
+    git pull https://github.com/bait-lang/bait main --quiet
 
     # Retry bootstrapping
     bootstrap

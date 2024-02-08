@@ -40,7 +40,7 @@ if exist bait.js (
 
 if "%allow_retry%"=="true" (
   echo make: compilation failed. Retrying...
-  git pull --quiet
+  git pull https://github.com/bait-lang/bait main --quiet
   call :bootstrap
   call :check_success false
   goto :cleanup
