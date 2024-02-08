@@ -11,7 +11,7 @@ fun main() {
 
 	os.chdir($BAITDIR)
 
-	pull_res := os.exec('git pull')
+	pull_res := os.exec('git pull https://github.com/bait-lang/bait main')
 	if pull_res.code != 0 {
 		println('git pull failed.')
 		println(pull_res.stderr)
@@ -35,8 +35,8 @@ fun main() {
 
 	// In case of failure, try make
 	println('"bait self" failed, running make...')
-	make_cmd := if os.platform() == 'linux' { 
-		'./make.sh' 
+	make_cmd := if os.platform() == 'linux' {
+		'./make.sh'
 	} else {
 		'./make.bat'
 	}
