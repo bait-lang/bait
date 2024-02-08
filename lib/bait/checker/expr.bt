@@ -6,7 +6,8 @@ import bait.ast
 import bait.token
 
 fun (mut c Checker) expr(expr ast.Expr) ast.Type {
-	return match expr {
+	expected_save := c.expected_type
+	t := match expr {
 		ast.AnonFun { c.anon_fun(expr) }
 		ast.ArrayInit { c.array_init(expr) }
 		ast.AsCast { c.as_cast(expr) }
@@ -33,6 +34,8 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 		ast.Void { ast.VOID_TYPE }
 		ast.EmptyExpr { panic('unexpected EmptyExpr at ${expr.pos}') }
 	}
+	c.expected_type = expected_save
+	return t
 }
 
 fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
