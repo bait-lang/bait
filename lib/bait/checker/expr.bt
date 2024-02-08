@@ -30,11 +30,8 @@ fun (mut c Checker) expr(expr ast.Expr) ast.Type {
 		ast.StringInterLiteral { c.string_inter_literal(expr) }
 		ast.StructInit { c.struct_init(expr) }
 		ast.TypeOf { c.type_of(expr) }
-		else {
-			e := expr as ast.EmptyExpr
-			c.error('unexpected expr: ${e}', e.pos)
-			ast.PLACEHOLDER_TYPE
-		}
+		ast.Void { ast.VOID_TYPE }
+		ast.EmptyExpr { panic('unexpected EmptyExpr at ${expr.pos}') }
 	}
 }
 

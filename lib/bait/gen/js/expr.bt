@@ -9,56 +9,32 @@ import bait.errors
 import os
 
 fun (mut g Gen) expr(expr ast.Expr) {
-	if expr is ast.AnonFun {
-		g.anon_fun(expr)
-	} else if expr is ast.ArrayInit {
-		g.array_init(expr)
-	} else if expr is ast.AsCast {
-		g.as_cast(expr)
-	} else if expr is ast.BoolLiteral {
-		g.bool_literal(expr)
-	} else if expr is ast.CallExpr {
-		g.call_expr(expr)
-	} else if expr is ast.CharLiteral {
-		g.char_literal(expr)
-	} else if expr is ast.ComptimeVar {
-		g.comptime_var(expr)
-	} else if expr is ast.EnumVal {
-		g.enum_val(expr)
-	} else if expr is ast.FloatLiteral {
-		g.float_literal(expr)
-	} else if expr is ast.HashExpr {
-		g.hash_expr(expr)
-	} else if expr is ast.Ident {
-		g.ident(expr)
-	} else if expr is ast.IfMatch {
-		g.if_match(expr)
-	} else if expr is ast.IndexExpr {
-		g.index_expr(expr)
-	} else if expr is ast.InfixExpr {
-		g.infix_expr(expr)
-	} else if expr is ast.IntegerLiteral {
-		g.integer_literal(expr)
-	} else if expr is ast.MapInit {
-		g.map_init(expr)
-	} else if expr is ast.ParExpr {
-		g.par_expr(expr)
-	} else if expr is ast.PrefixExpr {
-		g.prefix_expr(expr)
-	} else if expr is ast.SelectorExpr {
-		g.selector_expr(expr)
-	} else if expr is ast.StringLiteral {
-		g.string_literal(expr)
-	} else if expr is ast.StringInterLiteral {
-		g.string_inter_literal(expr)
-	} else if expr is ast.StructInit {
-		g.struct_init(expr)
-	} else if expr is ast.TypeOf {
-		g.type_of(expr)
-	} else {
-		e := expr as ast.EmptyExpr
-		errors.error(g.path, e.pos, 'cannot gen ${e}')
-		exit(1)
+	match expr {
+		ast.AnonFun { g.anon_fun(expr) }
+		ast.ArrayInit { g.array_init(expr) }
+		ast.AsCast { g.as_cast(expr) }
+		ast.BoolLiteral { g.bool_literal(expr) }
+		ast.CallExpr { g.call_expr(expr) }
+		ast.CharLiteral { g.char_literal(expr) }
+		ast.ComptimeVar { g.comptime_var(expr) }
+		ast.EnumVal { g.enum_val(expr) }
+		ast.FloatLiteral { g.float_literal(expr) }
+		ast.HashExpr { g.hash_expr(expr) }
+		ast.Ident { g.ident(expr) }
+		ast.IfMatch { g.if_match(expr) }
+		ast.IndexExpr { g.index_expr(expr) }
+		ast.InfixExpr { g.infix_expr(expr) }
+		ast.IntegerLiteral { g.integer_literal(expr) }
+		ast.MapInit { g.map_init(expr) }
+		ast.ParExpr { g.par_expr(expr) }
+		ast.PrefixExpr { g.prefix_expr(expr)}
+		ast.SelectorExpr { g.selector_expr(expr) }
+		ast.StringLiteral { g.string_literal(expr) }
+		ast.StringInterLiteral { g.string_inter_literal(expr) }
+		ast.StructInit { g.struct_init(expr) }
+		ast.TypeOf{ g.type_of(expr)}
+		ast.Void {} // nothing to do
+		ast.EmptyExpr { panic('unexpected EmptyExpr') }
 	}
 }
 

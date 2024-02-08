@@ -5,23 +5,20 @@ package checker
 import bait.ast
 
 fun (mut c Checker) return_stmt(mut node ast.ReturnStmt) {
-	// without value
-	if node.expr is ast.EmptyExpr {
-		if c.cur_fun.return_type != ast.VOID_TYPE {
-			c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}', node.pos)
-		}
-		return
-	}
-
-	// with value
-	if c.cur_fun.return_type == ast.VOID_TYPE {
-		c.error('function ${c.cur_fun.name} does not return a value', node.pos)
-	}
-
 	c.expected_type = c.cur_fun.return_type
 	expr_type := c.expr(node.expr)
+
 	if not c.check_types(expr_type, c.cur_fun.return_type) {
-		c.error('expected return value of type ${c.table.type_name(c.cur_fun.return_type)}, got ${c.table.type_name(expr_type)}', node.pos)
+		mut msg := ''
+		if c.cur_fun.return_type == ast.VOID_TYPE {
+			msg = 'function ${c.cur_fun.name} does not return a value'
+		} else {
+			msg = 'expected return value of type ${c.table.type_name(c.cur_fun.return_type)}'
+		}
+		if expr_type != ast.VOID_TYPE {
+			msg += ', got ${c.table.type_name(expr_type)}'
+		}
+		c.error(msg, node.pos)
 	}
 
 	return_sym := c.table.get_sym(c.cur_fun.return_type)
@@ -31,13 +28,18 @@ fun (mut c Checker) return_stmt(mut node ast.ReturnStmt) {
 			return
 		}
 
-		node.expr = ast.StructInit{
+		mut res_expr := ast.StructInit{
 			name = 'Result'
-			fields = [ast.StructInitField{
+		}
+
+		if expr_type != ast.VOID_TYPE {
+			res_expr.fields = [ast.StructInitField{
 				name = 'data'
 				expr = node.expr
 			}]
 		}
+
+		node.expr = res_expr
 	}
 }
 
