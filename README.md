@@ -42,7 +42,7 @@ Right now Bait has to be compiled from source.
 Precompiled binaries will be available in the future.
 
 ## Building from source
-> Required dependencies: `git` and `NodeJS >= 16`
+> Required dependencies: `git` and `NodeJS >= 18`
 
 Linux:
 ```sh
