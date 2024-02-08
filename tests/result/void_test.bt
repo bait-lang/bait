@@ -1,15 +1,25 @@
 // SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
 
-fun void_result() ! {
+fun void_error() ! {
 	return error('void')
 }
 
-fun test_void() {
+fun void_return() ! {
+	return
+}
+
+fun test_void_error() {
 	mut errs := 0
-	void_result() or {
+	void_error() or {
 		assert err == 'void'
 		errs += 1
 	}
 	assert errs == 1
+}
+
+fun test_void_return() {
+	void_return() or {
+		assert false
+	}
 }
