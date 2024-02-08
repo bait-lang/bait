@@ -28,7 +28,7 @@ pub fun ls(dir string) []string {
 	pDir = opendir(dir.str);
 	while((pDirent = readdir(pDir)) != NULL) {
 		if (strcmp(pDirent->d_name, ".") != 0 && strcmp(pDirent->d_name, "..") != 0) {
-			Array_push(&res, (string[]){pDirent->d_name});
+			Array_push(&res, (string[]){from_c_string(pDirent->d_name)});
 		}
 	}
 	closedir (pDir);'
