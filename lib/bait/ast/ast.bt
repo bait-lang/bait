@@ -392,10 +392,10 @@ pub:
 pub struct StructInit{
 pub:
 	typ Type
-	fields []StructInitField
 	pos token.Pos
 global:
 	name string
+	fields []StructInitField
 	concrete_types []Type
 }
 
