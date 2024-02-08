@@ -31,6 +31,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.StringInterLiteral { g.string_inter_literal(expr) }
 		ast.StructInit { g.struct_init(expr) }
 		ast.TypeOf{ g.type_of(expr)}
+		ast.Void {} // nothing to do
 		ast.EmptyExpr { panic('unexpected EmptyExpr') }
 	}
 }
