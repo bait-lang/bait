@@ -37,7 +37,7 @@ fun (b Builder) bait_files_in_dir(dir string) []string {
 
 fun (b Builder) collect_user_files(path string) []string {
 	if os.exists(path) {
-		if  path.ends_with('.bt') {
+		if path.ends_with('.bt') {
 			return [path]
 		}
 
@@ -228,7 +228,10 @@ fun (mut b Builder) code_gen_c() i32 {
 
 	if b.prefs.should_run{
 		argstr := b.prefs.user_args.join(' ')
-		run_cmd := './${b.prefs.out_name} ${argstr}'.replace('/', os.PATH_SEP)
+		mut run_cmd := '${b.prefs.out_name} ${argstr}'.replace('/', os.PATH_SEP)
+		if not run_cmd.starts_with('/') {
+			run_cmd = '.' + os.PATH_SEP + run_cmd
+		}
 		run_res := os.system(run_cmd)
 		if not b.prefs.keep_exe {
 			os.rm(b.prefs.out_name)

@@ -65,11 +65,7 @@ _unreleased_
 - Experimental generics support
 - Minimal windows support (`os` package won't work)
 - builder: Fixes for using the C backend on windows
-- gen:
-  - Implement `break` and `continue`
-  - Implement enums
-  - Implement globals
-  - Implement compile time variables
+- gen: Implement `assert`, `break` `continue`, `enum`, `global` and compile time variables
 - Fix compiling libraries
 - Fix string interpolation C error with tcc
 - Fix C error when calling a method on a mutable array instance
