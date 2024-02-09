@@ -1,0 +1,11 @@
+fun get_err() ! {
+	return error('')
+}
+
+fun missing_result_return() {
+	get_err()! // err
+}
+
+fun main() {
+	get_err()! // Propagation in main is allowed
+}

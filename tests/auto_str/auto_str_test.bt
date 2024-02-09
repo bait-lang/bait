@@ -115,6 +115,9 @@ fun returns_res() ![]i32 {
 }
 
 fun test_result() {
-	r := returns_res()!
+	r := returns_res() or {
+		assert false
+		return
+	}
 	assert r.str() == '[1, 2, 3]'
 }

@@ -6,7 +6,10 @@ fun get_arr_result() ![]i32 {
 }
 
 fun test_arr_result() {
-	a := get_arr_result()!
+	a := get_arr_result() or {
+		assert false
+		return
+	}
 	assert a[0] == 1
 	assert a.length == 2
 }
