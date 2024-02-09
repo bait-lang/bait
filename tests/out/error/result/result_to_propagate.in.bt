@@ -9,3 +9,10 @@ fun missing_result_return() {
 fun main() {
 	get_err()! // Propagation in main is allowed
 }
+
+struct Foo{}
+
+// Method with name `main` is not the main function
+fun (f Foo) main() {
+	get_err()! // err
+}

@@ -453,3 +453,7 @@ pub:
 	imports []Import
 	stmts []Stmt
 }
+
+pub fun (fn FunDecl) is_main() bool {
+	return not fn.is_method and fn.name == 'main'
+}
