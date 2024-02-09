@@ -193,7 +193,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	left_sym := c.table.get_sym(left_expr_type)
-	final_sym := c.table.get_final_sym(left_expr_type)
+	final_sym := c.table.get_final_sym(left_sym)
 
 	mut arg_offset := 1
 	mut def := c.table.get_method(left_sym, node.name)

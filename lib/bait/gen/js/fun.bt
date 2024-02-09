@@ -135,7 +135,7 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 		}
 
 		sym := g.table.get_sym(node.left_type)
-		final_sym := g.table.get_final_sym(node.left_type)
+		final_sym := g.table.get_final_sym(sym)
 		if final_sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.name) {
 			g.gen_array_method(node.name, node, final_sym)
 			return

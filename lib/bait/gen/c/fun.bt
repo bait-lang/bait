@@ -69,7 +69,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 	mut name := c_name(node.name)
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
-		final_sym := g.table.get_final_sym(node.left_type)
+		final_sym := g.table.get_final_sym(sym)
 		if final_sym.kind == .array {
 			if name == 'push' {
 				g.gen_array_method(name, node, final_sym, true)
