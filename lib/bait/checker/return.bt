@@ -5,7 +5,7 @@ package checker
 import bait.ast
 
 fun (mut c Checker) return_stmt(mut node ast.ReturnStmt) {
-	c.expected_type = c.cur_fun.return_type
+	c.expected_type = c.table.unwrap_result(c.cur_fun.return_type)
 	expr_type := c.expr(node.expr)
 
 	if not c.check_types(expr_type, c.cur_fun.return_type) {

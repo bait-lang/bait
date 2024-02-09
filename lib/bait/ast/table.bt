@@ -42,6 +42,11 @@ pub fun (t Table) type_exists(name string) bool {
 	return sym.kind != .placeholder
 }
 
+pub fun (t Table) unwrap_result(typ Type) Type {
+	sym := t.get_sym(typ)
+	return if sym.kind == .result { sym.parent } else { typ }
+}
+
 pub fun (t Table) get_final_sym(sym TypeSymbol) TypeSymbol {
 	mut s := sym
 	for s.kind == .alias_type {
