@@ -70,8 +70,18 @@ fun (mut c Checker) fun_instance(node ast.FunDecl) {
 
 	ret_sym := c.table.get_sym(node.return_type)
 	is_void := node.return_type == ast.VOID_TYPE or ret_sym.parent == ast.VOID_TYPE
-	if not node.noreturn and not is_void and not has_toplevel_return(node.stmts) and not c.returns {
+	has_top_return := has_toplevel_return(node.stmts)
+	if not node.noreturn and not is_void and not c.returns and not has_top_return {
 		c.error('missing return statement', node.pos)
+	}
+
+	// Void result: add default return for the generated code to work
+	if ret_sym.kind == .result and ret_sym.parent == ast.VOID_TYPE and not has_top_return {
+		node.stmts.push(ast.ReturnStmt{
+			expr = ast.StructInit{
+				name = 'Result'
+			}
+		})
 	}
 
 	c.cur_fun = ast.FunDecl{

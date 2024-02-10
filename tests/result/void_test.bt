@@ -5,8 +5,8 @@ fun void_error() ! {
 	return error('void')
 }
 
-fun void_return() ! {
-	return
+fun void_result() ! {
+	// This must not have a `return` statement
 }
 
 fun test_void_error() {
@@ -18,8 +18,8 @@ fun test_void_error() {
 	assert errs == 1
 }
 
-fun test_void_return() {
-	void_return() or {
+fun test_void_result() {
+	void_result() or {
 		assert false
 	}
 }
