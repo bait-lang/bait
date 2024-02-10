@@ -39,7 +39,7 @@ fun (mut g Gen) if_match(node ast.IfMatch){
 			if g.empty_line {
 				g.cut_before(`\n`)
 			}
-			last_line_cut := g.cut_before(`\t`)
+			last_line_cut := g.cut_before_any('\n\t')
 
 			branch_cut := g.cut_back_to(branch_start).trim_right('\n\t')
 			if branch_cut.length > 0 {
