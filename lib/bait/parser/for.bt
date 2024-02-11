@@ -5,23 +5,23 @@ package parser
 import bait.ast
 import bait.token
 
-fun (mut p Parser) for_loop(label string)ast.Stmt{
+fun (mut p Parser) for_loop(label string) !ast.Stmt{
 	pos := p.pos
 	p.next()
 
 	if p.peek() == .decl_assign {
-		return p.for_classic_loop(label, pos)
+		return p.for_classic_loop(label, pos)!
 	}
 
 	if p.peek() == .key_in or p.peek() == .comma or p.tok == .key_mut {
-		return p.for_in_loop(label, pos)
+		return p.for_in_loop(label, pos)!
 	}
 
 	p.is_struct_possible = false
-	cond := p.expr(.lowest)
+	cond := p.expr(.lowest)!
 	p.is_struct_possible = true
 
-	stmts := p.parse_block()
+	stmts := p.parse_block()!
 
 	return ast.ForLoop{
 		label = label
@@ -31,16 +31,16 @@ fun (mut p Parser) for_loop(label string)ast.Stmt{
 	}
 }
 
-fun (mut p Parser) for_classic_loop(label string, pos token.Pos) ast.ForClassicLoop {
+fun (mut p Parser) for_classic_loop(label string, pos token.Pos) !ast.ForClassicLoop {
 	p.is_for_init = true
-	init := p.assign_stmt()
+	init := p.assign_stmt()!
 	p.is_for_init = false
-	p.check(.semicolon)
-	cond := p.expr(.lowest)
-	p.check(.semicolon)
-	inc := p.stmt()
+	p.check(.semicolon)!
+	cond := p.expr(.lowest)!
+	p.check(.semicolon)!
+	inc := p.stmt()!
 
-	stmts := p.parse_block()
+	stmts := p.parse_block()!
 
 	return ast.ForClassicLoop{
 		label = label
@@ -52,10 +52,10 @@ fun (mut p Parser) for_classic_loop(label string, pos token.Pos) ast.ForClassicL
 	}
 }
 
-fun (mut p Parser) for_in_loop(label string, pos token.Pos) ast.ForInLoop {
+fun (mut p Parser) for_in_loop(label string, pos token.Pos) !ast.ForInLoop {
 	mut idxvar := ''
 	if p.peek() == .comma {
-		idxvar = p.check_name()
+		idxvar = p.check_name()!
 		p.next()
 	}
 
@@ -66,16 +66,16 @@ fun (mut p Parser) for_in_loop(label string, pos token.Pos) ast.ForInLoop {
 	}
 	mut valvar := ast.Param{
 		pos = p.pos
-		name = p.check_name()
+		name = p.check_name()!
 		is_mut = is_mut
 	}
 
-	p.check(.key_in)
+	p.check(.key_in)!
 	p.is_struct_possible = false
-	expr := p.expr(.lowest)
+	expr := p.expr(.lowest)!
 	p.is_struct_possible = true
 
-	stmts := p.parse_block()
+	stmts := p.parse_block()!
 
 	return ast.ForInLoop{
 		label = label

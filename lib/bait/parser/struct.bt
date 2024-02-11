@@ -5,18 +5,18 @@ package parser
 import bait.ast
 import bait.token
 
-fun (mut p Parser) struct_decl()ast.StructDecl{
+fun (mut p Parser) struct_decl() !ast.StructDecl{
 	pos := p.pos
 	is_pub := p.check_pub()
-	p.check(.key_struct)
+	p.check(.key_struct)!
 
-	lang := p.parse_lang()
-	mut name := p.check_name()
+	lang := p.parse_lang()!
+	mut name := p.check_name()!
 	if lang != .bait {
 		name = lang.prepend_to(name)
 	}
 
-	generic_names := p.generic_type_names()
+	generic_names := p.generic_type_names()!
 
 	mut mut_idx := -1
 	mut pub_idx := -1
@@ -27,15 +27,15 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 	mut field_is_global := false
 	mut fields := []ast.StructField
 
-	p.check(.lcur)
+	p.check(.lcur)!
 	for p.tok != .rcur {
 		if p.tok == .key_mut {
 			if mut_idx != -1 {
-				p.error('redefinition of "mut" section')
+				p.error('redefinition of "mut" section')!
 				return ast.StructDecl{}
 			}
 			p.next()
-			p.check(.colon)
+			p.check(.colon)!
 			mut_idx = fields.length
 			field_is_mut = true
 			field_is_pub = false
@@ -44,7 +44,7 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 			p.next()
 			if p.tok == .key_mut {
 				if pub_mut_idx != -1 {
-					p.error('redefinition of "pub mut" section')
+					p.error('redefinition of "pub mut" section')!
 					return ast.StructDecl{}
 				}
 				p.next()
@@ -54,7 +54,7 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 				field_is_global = false
 			} else {
 				if pub_idx != -1 {
-					p.error('redefinition of "pub" section')
+					p.error('redefinition of "pub" section')!
 					return ast.StructDecl{}
 				}
 				pub_idx = fields.length
@@ -62,24 +62,24 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 				field_is_pub = true
 				field_is_global = false
 			}
-			p.check(.colon)
+			p.check(.colon)!
 		} else if p.tok == .key_global {
 			if global_idx != -1 {
-				p.error('redefinition of "global" section')
+				p.error('redefinition of "global" section')!
 				return ast.StructDecl{}
 			}
 			p.next()
-			p.check(.colon)
+			p.check(.colon)!
 			global_idx = fields.length
 			field_is_mut = true
 			field_is_pub = true
 			field_is_global = true
 		}
 
-		p.parse_attributes()
-		fields.push(p.struct_decl_field(field_is_mut, field_is_pub, field_is_global))
+		p.parse_attributes()!
+		fields.push(p.struct_decl_field(field_is_mut, field_is_pub, field_is_global)!)
 	}
-	p.check(.rcur)
+	p.check(.rcur)!
 
 	name_with_pkg := p.prepend_pkg(name)
 	// Note: exception for builtin due to internal struct types (e.g. Array, Map, String)
@@ -109,14 +109,14 @@ fun (mut p Parser) struct_decl()ast.StructDecl{
 	}
 }
 
-fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) ast.StructField {
+fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) !ast.StructField {
 	pos := p.pos
-	fname := p.check_name()
-	ftyp := p.parse_type()
+	fname := p.check_name()!
+	ftyp := p.parse_type()!
 	mut expr := ast.EmptyExpr{} as ast.Expr
 	if p.tok == .decl_assign {
 		p.next()
-		expr = p.expr(.lowest)
+		expr = p.expr(.lowest)!
 	}
 	field := ast.StructField{
 		name = fname
@@ -133,12 +133,12 @@ fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) a
 	return field
 }
 
-fun (mut p Parser) struct_init()ast.StructInit{
+fun (mut p Parser) struct_init() !ast.StructInit{
 	pos := p.pos
 
 	name := p.val
-	mut typ := p.parse_type()
-	conc_types := p.concrete_types()
+	mut typ := p.parse_type()!
+	conc_types := p.concrete_types()!
 	if conc_types.length > 0 {
 		parent := p.table.get_sym(typ)
 		typ = p.table.register_sym(ast.TypeSymbol{
@@ -151,12 +151,12 @@ fun (mut p Parser) struct_init()ast.StructInit{
 		})
 	}
 
-	p.check(.lcur)
+	p.check(.lcur)!
 	mut fields := []ast.StructInitField
 	for p.tok != .rcur {
-		fields.push(p.struct_init_field())
+		fields.push(p.struct_init_field()!)
 	}
-	p.check(.rcur)
+	p.check(.rcur)!
 
 	return ast.StructInit{
 		name = name
@@ -167,12 +167,12 @@ fun (mut p Parser) struct_init()ast.StructInit{
 	}
 }
 
-fun (mut p Parser) struct_init_field() ast.StructInitField{
+fun (mut p Parser) struct_init_field() !ast.StructInitField{
 	pos := p.pos
 
-	name := p.check_name()
-	p.check(.assign)
-	expr := p.expr(.lowest)
+	name := p.check_name()!
+	p.check(.assign)!
+	expr := p.expr(.lowest)!
 
 	return ast.StructInitField{
 		name = name

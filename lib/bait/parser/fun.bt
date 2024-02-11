@@ -4,10 +4,10 @@ package parser
 
 import bait.ast
 
-fun (mut p Parser) fun_decl()ast.FunDecl{
+fun (mut p Parser) fun_decl() !ast.FunDecl{
 	pos := p.pos
 	is_pub := p.check_pub()
-	p.check(.key_fun)
+	p.check(.key_fun)!
 
 	mut lang := ast.Language.bait
 	mut is_method := false
@@ -25,10 +25,10 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 		}
 
 		// Pass mutable receiver as pointer
-		rec_name := p.check_name()
-		lang = p.parse_lang()
+		rec_name := p.check_name()!
+		lang = p.parse_lang()!
 
-		mut rec_type := if lang == .bait { p.parse_type() } else { p.parse_name_type(lang) }
+		mut rec_type := if lang == .bait { p.parse_type()! } else { p.parse_name_type(lang)! }
 		if is_mut {
 			rec_type = rec_type.set_nr_amp(1)
 		}
@@ -38,40 +38,40 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 			name = rec_name
 			typ = rec_type
 		})
-		p.check(.rpar)
+		p.check(.rpar)!
 	}
 
 	mut name := ''
 	if p.tok == .hash {
 		// language
-		lang = p.parse_lang()
+		lang = p.parse_lang()!
 		name = lang.prepend_to(name)
 
 		// foreign package
 		if lang == .js and p.peek() == .dot {
-			name += p.check_name() + '.'
-			p.check(.dot)
+			name += p.check_name()! + '.'
+			p.check(.dot)!
 		}
 	}
 
 	// normal function name
-	name += p.check_name()
+	name += p.check_name()!
 	is_test := name.starts_with('test_')
 	if not is_method and lang == .bait {
 		name = p.prepend_pkg(name)
 	}
 
 	// Generics
-	generic_names := p.generic_type_names()
+	generic_names := p.generic_type_names()!
 
 	// Params
-	p.check(.lpar)
-	params.push_many(p.fun_params())
-	p.check(.rpar)
+	p.check(.lpar)!
+	params.push_many(p.fun_params()!)
+	p.check(.rpar)!
 
 	mut return_type := ast.VOID_TYPE
 	if p.tok != .lcur and pos.line == p.pos.line {
-		return_type = p.parse_type()
+		return_type = p.parse_type()!
 	}
 
 	mut node := ast.FunDecl{
@@ -93,7 +93,7 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 		sym := p.table.get_sym(params[0].typ)
 		// TODO move this error into checker
 		if lang == .bait and sym.has_method(name) {
-			p.error('Method "${name}" already exists on type "${sym.name}"')
+			p.error('Method "${name}" already exists on type "${sym.name}"')!
 		}
 		sym.methods.push(node)
 	} else {
@@ -106,29 +106,29 @@ fun (mut p Parser) fun_decl()ast.FunDecl{
 	}
 
 	if lang == .bait {
-		node.stmts = p.parse_block()
+		node.stmts = p.parse_block()!
 	}
 
 	node.is_method = is_method
 	return node
 }
 
-fun (mut p Parser) anon_fun()ast.AnonFun{
+fun (mut p Parser) anon_fun() !ast.AnonFun{
 	pos := p.pos
-	p.check(.key_fun)
-	p.check(.lpar)
-	params := p.fun_params()
-	p.check(.rpar)
+	p.check(.key_fun)!
+	p.check(.lpar)!
+	params := p.fun_params()!
+	p.check(.rpar)!
 	mut return_type := ast.VOID_TYPE
 	if p.tok != .lcur {
-		return_type = p.parse_type()
+		return_type = p.parse_type()!
 	}
 	mut param_types := []ast.Type
 	for param in params {
 		param_types.push(param.typ)
 	}
 	typ := p.table.find_or_register_fun(param_types, return_type)
-	stmts := p.parse_block()
+	stmts := p.parse_block()!
 	return ast.AnonFun{
 		decl = ast.FunDecl{
 			params = params
@@ -140,7 +140,7 @@ fun (mut p Parser) anon_fun()ast.AnonFun{
 	}
 }
 
-fun (mut p Parser) fun_params() []ast.Param{
+fun (mut p Parser) fun_params() ![]ast.Param{
 	mut params := []ast.Param
 	for p.tok != .rpar{
 		pos := p.pos
@@ -151,26 +151,26 @@ fun (mut p Parser) fun_params() []ast.Param{
 		}
 		param := ast.Param{
 			is_mut = is_mut
-			name = p.check_name()
-			typ = p.parse_type()
+			name = p.check_name()!
+			typ = p.parse_type()!
 			pos = pos
 		}
 		params.push(param)
 		if p.tok != .rpar{
-			p.check(.comma)
+			p.check(.comma)!
 		}
 	}
 	return params
 }
 
-fun (mut p Parser) fun_call(lang ast.Language)ast.CallExpr{
+fun (mut p Parser) fun_call(lang ast.Language) !ast.CallExpr{
 	pos := p.pos
-	name := p.prepend_expr_pkg(p.check_name())
-	p.check(.lpar)
-	args := p.call_args()
-	p.check(.rpar)
+	name := p.prepend_expr_pkg(p.check_name()!)
+	p.check(.lpar)!
+	args := p.call_args()!
+	p.check(.rpar)!
 
-	or_block := p.or_block()
+	or_block := p.or_block()!
 
 	return ast.CallExpr{
 		name = name
@@ -182,14 +182,14 @@ fun (mut p Parser) fun_call(lang ast.Language)ast.CallExpr{
 	}
 }
 
-fun (mut p Parser) method_call(left ast.Expr) ast.CallExpr {
+fun (mut p Parser) method_call(left ast.Expr) !ast.CallExpr {
 	pos := p.pos
-	name := p.check_name()
-	p.check(.lpar)
-	args := p.call_args()
-	p.check(.rpar)
+	name := p.check_name()!
+	p.check(.lpar)!
+	args := p.call_args()!
+	p.check(.rpar)!
 
-	or_block := p.or_block()
+	or_block := p.or_block()!
 
 	return ast.CallExpr{
 		is_method = true
@@ -201,20 +201,23 @@ fun (mut p Parser) method_call(left ast.Expr) ast.CallExpr {
 	}
 }
 
-fun (mut p Parser) call_args() []ast.CallArg {
+fun (mut p Parser) call_args() ![]ast.CallArg {
 	mut args := []ast.CallArg
-	for p.tok != .rpar and not p.should_abort {
+	for p.tok != .rpar {
 		args.push(ast.CallArg{
-			expr = p.expr(.lowest)
+			expr = p.expr(.lowest)!
 		})
-		if p.tok != .rpar and p.tok != .eof {
-			p.check(.comma)
+		if p.tok != .rpar {
+			if p.tok == .eof {
+				break
+			}
+			p.check(.comma)!
 		}
 	}
 	return args
 }
 
-fun (mut p Parser) or_block() ast.OrBlock {
+fun (mut p Parser) or_block() !ast.OrBlock {
 	// Propagation
 	if p.tok == .excl {
 		p.next()
@@ -232,7 +235,7 @@ fun (mut p Parser) or_block() ast.OrBlock {
 
 	// or {}
 	p.next()
-	stmts := p.parse_block()
+	stmts := p.parse_block()!
 
 	return ast.OrBlock {
 		kind = .block

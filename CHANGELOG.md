@@ -105,12 +105,14 @@ _unreleased_
   - Prevent overwriting existing files
 - `build`: Add `-cc` option to use a custom C compiler
 - `self`: Use $BAITEXE as default out name
+- `ast`: Print parser warnings and errors
 
 ### Other Changes
 - _[JS]_ Fix integer division assign that could result in a float
 - gen:
   - Fix `!=` when `==` is overloaded
 - parser:
+  - Fix hangs on unexpected eof
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
 - lexer:
