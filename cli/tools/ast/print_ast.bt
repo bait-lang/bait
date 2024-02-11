@@ -41,7 +41,9 @@ fun main() {
 
 	mut p := parser.new(ast.new_table(), preference.Prefs{})
 	file_ast := p.parse(text, file, '')
-	// TODO handle parser errors, warnings
+
+	file_ast.warnings.print()
+	file_ast.errors.print_and_exit()
 
 	println(file_ast)
 }

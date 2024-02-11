@@ -37,10 +37,14 @@ pub fun (msg Message) print() {
 	}
 }
 
-pub fun (msgs []Message) print_and_exit() {
+pub fun (msgs []Message) print() {
 	for msg in msgs {
 		msg.print()
 	}
+}
+
+pub fun (msgs []Message) print_and_exit() {
+	msgs.print()
 	if msgs.length > 0 {
 		exit(1)
 	}
