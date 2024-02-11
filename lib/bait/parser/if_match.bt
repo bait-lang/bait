@@ -5,7 +5,7 @@ package parser
 import bait.ast
 import bait.token
 
-fun (mut p Parser) if_match(is_expr bool) ast.IfMatch {
+fun (mut p Parser) if_match(is_expr bool) !ast.IfMatch {
 	pos := p.pos
 
 	is_comptime := p.tok == .dollar
@@ -17,7 +17,7 @@ fun (mut p Parser) if_match(is_expr bool) ast.IfMatch {
 		bpos := p.pos
 
 		if is_comptime {
-			p.check(.dollar)
+			p.check(.dollar)!
 		}
 
 		if p.tok == .key_else{
@@ -25,7 +25,7 @@ fun (mut p Parser) if_match(is_expr bool) ast.IfMatch {
 			// else branch
 			if p.tok == .lcur{
 				has_else = true
-				stmts := p.parse_block()
+				stmts := p.parse_block()!
 				branches.push(ast.IfBranch{
 					cond = ast.EmptyExpr{}
 					stmts = stmts
@@ -35,16 +35,16 @@ fun (mut p Parser) if_match(is_expr bool) ast.IfMatch {
 			}
 
 			if is_comptime {
-				p.check(.dollar)
+				p.check(.dollar)!
 			}
 		}
 
 		// if / else if branch
-		p.check(.key_if)
+		p.check(.key_if)!
 		p.is_struct_possible = false
-		cond := p.expr(.lowest)
+		cond := p.expr(.lowest)!
 		p.is_struct_possible = true
-		stmts := p.parse_block()
+		stmts := p.parse_block()!
 
 		branches.push(ast.IfBranch{
 			cond = cond
@@ -66,25 +66,25 @@ fun (mut p Parser) if_match(is_expr bool) ast.IfMatch {
 	}
 }
 
-fun (mut p Parser) match_as_if_expr(is_expr bool) ast.IfMatch {
+fun (mut p Parser) match_as_if_expr(is_expr bool) !ast.IfMatch {
 	pos := p.pos
 
 	mut has_else := false
 	mut branches := []ast.IfBranch
 
-	p.check(.key_match)
+	p.check(.key_match)!
 	p.is_struct_possible = false
-	cond_left := p.expr(.lowest)
+	cond_left := p.expr(.lowest)!
 	p.is_struct_possible = true
 
-	p.check(.lcur)
+	p.check(.lcur)!
 	for p.tok != .rcur {
 		bpos := p.pos
 
 		if p.tok == .key_else {
 			p.next()
 			has_else = true
-			stmts := p.parse_block()
+			stmts := p.parse_block()!
 			branches.push(ast.IfBranch{
 				cond = ast.EmptyExpr{}
 				stmts = stmts
@@ -94,9 +94,9 @@ fun (mut p Parser) match_as_if_expr(is_expr bool) ast.IfMatch {
 		}
 
 		p.is_struct_possible = false
-		right_conds := p.expr_list()
+		right_conds := p.expr_list()!
 		p.is_struct_possible = true
-		stmts := p.parse_block()
+		stmts := p.parse_block()!
 
 		branches.push(ast.IfBranch{
 			cond = p.cond_list_to_infix(cond_left, right_conds, bpos)
@@ -105,7 +105,7 @@ fun (mut p Parser) match_as_if_expr(is_expr bool) ast.IfMatch {
 		})
 
 	}
-	p.check(.rcur)
+	p.check(.rcur)!
 
 	return ast.IfMatch{
 		is_expr = is_expr

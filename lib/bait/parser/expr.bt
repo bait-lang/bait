@@ -5,17 +5,17 @@ package parser
 import bait.ast
 import bait.token
 
-fun (mut p Parser) expr(precedence token.Precedence) ast.Expr {
-	mut node := p.single_expr()
+fun (mut p Parser) expr(precedence token.Precedence) !ast.Expr {
+	mut node := p.single_expr()!
 	for precedence < p.tok.precedence() {
 		if p.tok == .dot {
-			node = p.dot_expr(node)
+			node = p.dot_expr(node)!
 		} else if p.tok == .lsqr {
-			node = p.index_expr(node)
+			node = p.index_expr(node)!
 		} else if p.tok == .key_as {
-			node = p.as_cast(node)
+			node = p.as_cast(node)!
 		} else if p.tok.is_infix() {
-			node = p.infix_expr(node)
+			node = p.infix_expr(node)!
 		} else {
 			return node
 		}
@@ -23,19 +23,19 @@ fun (mut p Parser) expr(precedence token.Precedence) ast.Expr {
 	return node
 }
 
-fun (mut p Parser) single_expr() ast.Expr {
+fun (mut p Parser) single_expr() !ast.Expr {
 	match p.tok {
 		.hash {
-			return p.hash_expr()
+			return p.hash_expr()!
 		}
 		.char {
 			return p.char_literal()
 		}
 		.dollar {
-			return p.comptime_expr()
+			return p.comptime_expr()!
 		}
 		.dot {
-			return p.enum_val(false)
+			return p.enum_val(false)!
 		}
 		.float {
 			return p.float_literal()
@@ -44,44 +44,40 @@ fun (mut p Parser) single_expr() ast.Expr {
 			return p.integer_literal()
 		}
 		.lsqr {
-			return p.array_init()
+			return p.array_init()!
 		}
 		.lpar {
-			return p.par_expr()
+			return p.par_expr()!
 		}
 		.name {
-			return p.name_expr(.bait)
+			return p.name_expr(.bait)!
 		}
 		.string {
-			return p.string_literal(.bait)
+			return p.string_literal(.bait)!
 		}
 		.key_fun {
-			return p.anon_fun()
+			return p.anon_fun()!
 		}
 		.key_false, .key_true {
 			return p.bool_literal()
 		}
 		.key_if {
-			return p.if_match(true)
+			return p.if_match(true)!
 		}
 		.key_match {
-			return p.match_as_if_expr(true)
+			return p.match_as_if_expr(true)!
 		}
 		.key_mut {
-			return p.ident(.bait)
+			return p.ident(.bait)!
 		}
 		.key_not, .minus, .mul, .tilde {
-			return p.prefix_expr()
+			return p.prefix_expr()!
 		}
 		.key_typeof {
-			return p.typeof_expr()
-		}
-		.eof {
-			p.should_abort = true
-			return ast.EmptyExpr{} as ast.Expr
+			return p.typeof_expr()!
 		}
 		.error {
-			p.error(p.val)
+			p.error(p.val)!
 			return ast.EmptyExpr{} as ast.Expr
 		}
 		else {
@@ -89,32 +85,32 @@ fun (mut p Parser) single_expr() ast.Expr {
 			if p.val.length > 0 {
 				msg += ', val = ${p.val}'
 			}
-			p.error(msg)
+			p.error(msg)!
 			return ast.EmptyExpr{} as ast.Expr
 		}
 	}
 }
 
-fun (mut p Parser) expr_list() []ast.Expr{
+fun (mut p Parser) expr_list() ![]ast.Expr{
 	mut exprs := []ast.Expr
 	for true {
-		exprs.push(p.expr(.lowest))
+		exprs.push(p.expr(.lowest)!)
 		if p.tok != .comma {
 			break
 		}
-		p.check(.comma)
+		p.check(.comma)!
 	}
 	return exprs
 }
 
-fun (mut p Parser) array_init()ast.ArrayInit{
+fun (mut p Parser) array_init() !ast.ArrayInit{
 	pos := p.pos
-	p.check(.lsqr)
+	p.check(.lsqr)!
 
 	// Type init, e.g. `[]i32`
 	if p.tok == .rsqr {
 		p.next()
-		elem_type := p.parse_type()
+		elem_type := p.parse_type()!
 		typ := p.table.find_or_register_array(elem_type)
 
 		// Optional parameters, e.g. `[]i32{ length = 10 cap = 20 }`
@@ -123,19 +119,19 @@ fun (mut p Parser) array_init()ast.ArrayInit{
 		if p.tok == .lcur {
 			p.next()
 			for p.tok != .rcur {
-				key := p.check_name()
-				p.check(.assign)
-				expr := p.expr(.lowest)
+				key := p.check_name()!
+				p.check(.assign)!
+				expr := p.expr(.lowest)!
 
 				if key == 'length' {
 					length_expr = expr
 				} else if key == 'cap' {
 					cap_expr = expr
 				} else {
-					p.error('invalid array init field: ${key}')
+					p.error('invalid array init field: ${key}')!
 				}
 			}
-			p.check(.rcur)
+			p.check(.rcur)!
 		}
 
 		return ast.ArrayInit{
@@ -150,12 +146,12 @@ fun (mut p Parser) array_init()ast.ArrayInit{
 	// Expressions init, e.g. `[1, 2, 3]`
 	mut exprs := []ast.Expr
 	for p.tok != .rsqr {
-		exprs.push(p.expr(.lowest))
+		exprs.push(p.expr(.lowest)!)
 		if p.tok == .comma {
 			p.next()
 		}
 	}
-	p.check(.rsqr)
+	p.check(.rsqr)!
 	p.skip(.semicolon)
 	return ast.ArrayInit{
 		exprs = exprs
@@ -163,10 +159,10 @@ fun (mut p Parser) array_init()ast.ArrayInit{
 	}
 }
 
-fun (mut p Parser) as_cast(left ast.Expr) ast.AsCast {
+fun (mut p Parser) as_cast(left ast.Expr) !ast.AsCast {
 	pos := p.pos
-	p.check(.key_as)
-	target := p.parse_type()
+	p.check(.key_as)!
+	target := p.parse_type()!
 	return ast.AsCast{
 		target = target
 		expr = left
@@ -194,32 +190,32 @@ fun (mut p Parser) char_literal()ast.CharLiteral{
 	}
 }
 
-fun (mut p Parser) comptime_expr() ast.Expr {
+fun (mut p Parser) comptime_expr() !ast.Expr {
 	if p.peek() == .key_if {
-		return p.if_match(false)
+		return p.if_match(false)!
 	}
 
-	return p.comptime_var()
+	return p.comptime_var()!
 }
 
-fun (mut p Parser) comptime_var() ast.ComptimeVar{
+fun (mut p Parser) comptime_var() !ast.ComptimeVar{
 	pos := p.pos
 	p.next()
-	name := p.check_name()
+	name := p.check_name()!
 	return ast.ComptimeVar{
 		name = name
 		pos = pos
 	}
 }
 
-fun (mut p Parser) dot_expr(left ast.Expr) ast.Expr {
+fun (mut p Parser) dot_expr(left ast.Expr) !ast.Expr {
 	pos := p.pos
-	p.check(.dot)
+	p.check(.dot)!
 	if p.peek() == .lpar {
-		return p.method_call(left)
+		return p.method_call(left)!
 	}
 
-	name := p.check_name()
+	name := p.check_name()!
 	return ast.SelectorExpr{
 		expr = left
 		field_name = name
@@ -227,19 +223,19 @@ fun (mut p Parser) dot_expr(left ast.Expr) ast.Expr {
 	}
 }
 
-fun (mut p Parser) enum_val(has_name bool) ast.EnumVal{
+fun (mut p Parser) enum_val(has_name bool) !ast.EnumVal{
 	pos := p.pos
 	mut name := ''
 	if has_name {
-		name = p.check_name()
+		name = p.check_name()!
 		if p.expr_pkg.length > 0 {
 			name = p.prepend_expr_pkg(name)
 		} else {
 			name = p.prepend_pkg(name)
 		}
 	}
-	p.check(.dot)
-	val := p.check_name()
+	p.check(.dot)!
+	val := p.check_name()!
 	return ast.EnumVal{
 		name = name
 		val = val
@@ -247,18 +243,18 @@ fun (mut p Parser) enum_val(has_name bool) ast.EnumVal{
 	}
 }
 
-fun (mut p Parser) hash_expr()ast.Expr{
-	lang := p.parse_lang()
+fun (mut p Parser) hash_expr() !ast.Expr{
+	lang := p.parse_lang()!
 	if p.tok != .string {
 		if lang == .js {
 			p.expr_pkg = 'JS'
 		} else if lang == .c {
 			p.expr_pkg = 'C'
 		}
-		return p.name_expr(lang)
+		return p.name_expr(lang)!
 	}
 
-	str_node := p.string_literal(.bait) as ast.StringLiteral
+	str_node := p.string_literal(.bait)! as ast.StringLiteral
 	return ast.HashExpr{
 		lang = lang
 		val = str_node.val
@@ -266,7 +262,7 @@ fun (mut p Parser) hash_expr()ast.Expr{
 	}
 }
 
-fun (mut p Parser) ident(lang ast.Language)ast.Ident{
+fun (mut p Parser) ident(lang ast.Language) !ast.Ident{
 	pos := p.pos
 	mut is_mut := p.tok == .key_mut
 	if is_mut {
@@ -275,7 +271,7 @@ fun (mut p Parser) ident(lang ast.Language)ast.Ident{
 	if p.is_for_init {
 		is_mut = true
 	}
-	name := p.prepend_expr_pkg(p.check_name())
+	name := p.prepend_expr_pkg(p.check_name()!)
 	return ast.Ident{
 		name = name
 		is_mut = is_mut
@@ -285,11 +281,11 @@ fun (mut p Parser) ident(lang ast.Language)ast.Ident{
 	}
 }
 
-fun (mut p Parser) index_expr(left ast.Expr)ast.IndexExpr {
+fun (mut p Parser) index_expr(left ast.Expr) !ast.IndexExpr {
 	pos := p.pos
-	p.check(.lsqr)
-	index := p.expr(.lowest)
-	p.check(.rsqr)
+	p.check(.lsqr)!
+	index := p.expr(.lowest)!
+	p.check(.rsqr)!
 	p.skip(.semicolon)
 	return ast.IndexExpr{
 		left = left
@@ -298,11 +294,11 @@ fun (mut p Parser) index_expr(left ast.Expr)ast.IndexExpr {
 	}
 }
 
-fun (mut p Parser) infix_expr(left ast.Expr)ast.InfixExpr{
+fun (mut p Parser) infix_expr(left ast.Expr) !ast.InfixExpr{
 	pos := p.pos
 	op_tok := p.tok
 	p.next()
-	right := p.expr(op_tok.precedence())
+	right := p.expr(op_tok.precedence())!
 	return ast.InfixExpr{
 		left = left
 		right = right
@@ -311,11 +307,11 @@ fun (mut p Parser) infix_expr(left ast.Expr)ast.InfixExpr{
 	}
 }
 
-fun (mut p Parser) map_init() ast.MapInit{
+fun (mut p Parser) map_init() !ast.MapInit{
 	pos := p.pos
 	p.next()
 	if p.tok == .lsqr{
-		map_type := p.parse_map_type()
+		map_type := p.parse_map_type()!
 		return ast.MapInit{
 			typ = map_type
 			pos = pos
@@ -323,11 +319,11 @@ fun (mut p Parser) map_init() ast.MapInit{
 	}
 	mut keys := []ast.Expr
 	mut vals := []ast.Expr
-	p.check(.lcur)
+	p.check(.lcur)!
 	for p.tok != .rcur {
-		keys.push(p.expr(.lowest))
-		p.check(.colon)
-		vals.push(p.expr(.lowest))
+		keys.push(p.expr(.lowest)!)
+		p.check(.colon)!
+		vals.push(p.expr(.lowest)!)
 	}
 	p.next()
 	return ast.MapInit{
@@ -337,11 +333,11 @@ fun (mut p Parser) map_init() ast.MapInit{
 	}
 }
 
-fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
+fun (mut p Parser) name_expr(lang ast.Language) !ast.Expr{
 	if p.peek() == .dot {
 		if lang == .js {
-			p.expr_pkg += '.' + p.check_name()
-			p.check(.dot)
+			p.expr_pkg += '.' + p.check_name()!
+			p.check(.dot)!
 		} else if p.import_aliases.contains(p.val) {
 			p.expr_pkg = p.import_aliases[p.val]
 			p.next()
@@ -349,31 +345,31 @@ fun (mut p Parser) name_expr(lang ast.Language) ast.Expr{
 		}
 	}
 	if p.val == 'map' {
-		return p.map_init()
+		return p.map_init()!
 	}
 
 	if p.peek() == .lpar {
-		return p.fun_call(lang)
+		return p.fun_call(lang)!
 	}
 
 	capitalised := p.val[0].is_upper() and not p.val.is_upper()
 
 	if p.is_struct_possible and (p.peek() == .lcur or p.peek() == .lsqr) {
 		if capitalised or ['array', 'map', 'string'].contains(p.val) {
-			return p.struct_init()
+			return p.struct_init()!
 		}
 	}
 
 	if capitalised and p.peek() == .dot {
-		return p.enum_val(true)
+		return p.enum_val(true)!
 	}
 
 	if p.peek() == .string and p.val == 'js' {
 		p.next()
-		return p.string_literal(.js)
+		return p.string_literal(.js)!
 	}
 
-	return p.ident(lang)
+	return p.ident(lang)!
 }
 
 fun (mut p Parser) float_literal() ast.FloatLiteral {
@@ -396,22 +392,22 @@ fun (mut p Parser) integer_literal() ast.IntegerLiteral {
 	return n
 }
 
-fun (mut p Parser) par_expr() ast.ParExpr {
+fun (mut p Parser) par_expr() !ast.ParExpr {
 	pos := p.pos
 	p.next()
-	expr := p.expr(.lowest)
-	p.check(.rpar)
+	expr := p.expr(.lowest)!
+	p.check(.rpar)!
 	return ast.ParExpr{
 		expr = expr
 		pos = pos
 	}
 }
 
-fun (mut p Parser) prefix_expr()ast.PrefixExpr{
+fun (mut p Parser) prefix_expr() !ast.PrefixExpr{
 	pos := p.pos
 	op := p.tok
 	p.next()
-	right := p.expr(.prefix)
+	right := p.expr(.prefix)!
 	return ast.PrefixExpr{
 		op = op
 		right = right
@@ -419,7 +415,7 @@ fun (mut p Parser) prefix_expr()ast.PrefixExpr{
 	}
 }
 
-fun (mut p Parser) string_literal(lang ast.Language)ast.Expr{
+fun (mut p Parser) string_literal(lang ast.Language) !ast.Expr{
 	pos := p.pos
 	if p.peek() != .str_dollar {
 		val := p.val
@@ -441,8 +437,8 @@ fun (mut p Parser) string_literal(lang ast.Language)ast.Expr{
 			break
 		}
 		p.next()
-		p.check(.lcur)
-		exprs.push(p.expr(.lowest))
+		p.check(.lcur)!
+		exprs.push(p.expr(.lowest)!)
 	}
 	return ast.StringInterLiteral{
 		vals = vals
@@ -451,12 +447,12 @@ fun (mut p Parser) string_literal(lang ast.Language)ast.Expr{
 	}
 }
 
-fun (mut p Parser) typeof_expr() ast.TypeOf {
+fun (mut p Parser) typeof_expr() !ast.TypeOf {
 	pos := p.pos
-	p.check(.key_typeof)
-	p.check(.lpar)
-	expr := p.expr(.lowest)
-	p.check(.rpar)
+	p.check(.key_typeof)!
+	p.check(.lpar)!
+	expr := p.expr(.lowest)!
+	p.check(.rpar)!
 	return ast.TypeOf{
 		expr = expr
 		pos = pos

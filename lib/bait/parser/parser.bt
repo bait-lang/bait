@@ -24,12 +24,11 @@ mut:
 	expr_pkg string
 	is_for_init bool
 	is_struct_possible bool
-	should_abort bool
 pub mut:
 	table ast.Table
 	lexer lexer.Lexer
 	warnings []errors.Message
-	errors []errors.Message
+	err errors.Message
 }
 
 pub fun new(table ast.Table, pref preference.Prefs) Parser {
@@ -48,12 +47,13 @@ pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.
 	p.expr_pkg = ''
 	p.is_for_init = false
 	p.is_struct_possible = true
-	p.should_abort = false
 	p.warnings = []
 	p.next()
 
 	// Start Parsing
-	pkg_decl := p.package_decl()
+	pkg_decl := p.package_decl() or {
+		return p.file_error()
+	}
 
 	// Validate the files package name actually matches the desired import
 	if expected_pkg.length > 0 and pkg_decl.full_name != expected_pkg {
@@ -67,15 +67,19 @@ pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.
 		}
 	}
 
-	imports := p.import_stmts()
+	imports := p.import_stmts() or {
+		return p.file_error()
+	}
 
 	mut stmts := []ast.Stmt
 	for p.tok != .eof {
-		p.parse_attributes()
-		stmts.push(p.toplevel_stmt())
-		if p.should_abort {
-			break
+		p.parse_attributes() or {
+			return p.file_error()
 		}
+		ts := p.toplevel_stmt() or {
+			return p.file_error()
+		}
+		stmts.push(ts)
 	}
 
 	return ast.File{
@@ -84,11 +88,18 @@ pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.
 		imports = imports
 		stmts = stmts
 		warnings = p.warnings
-		errors = p.errors
 	}
 }
 
-fun (mut p Parser) package_decl() ast.PackageDecl {
+pub fun (p Parser) file_error() ast.File {
+	return ast.File{
+		path = p.path
+		warnings = p.warnings
+		errors = [p.err]
+	}
+}
+
+fun (mut p Parser) package_decl() !ast.PackageDecl {
 	// Implicit main package
 	if p.tok != .key_package {
 		p.pkg_name = "main"
@@ -99,7 +110,7 @@ fun (mut p Parser) package_decl() ast.PackageDecl {
 	}
 
 	p.next()
-	name := p.check_name()
+	name := p.check_name()!
 	mut full_name := name
 	lib_part := os.PATH_SEP + 'lib' + os.PATH_SEP
 	if full_name != 'main' and p.path.contains(lib_part) {
@@ -117,7 +128,7 @@ fun (mut p Parser) package_decl() ast.PackageDecl {
 }
 
 // Parses one or more attributes
-fun (mut p Parser) parse_attributes() {
+fun (mut p Parser) parse_attributes() ! {
 	for p.tok == .attr {
 		pos := p.pos
 		name := p.val
@@ -126,7 +137,7 @@ fun (mut p Parser) parse_attributes() {
 		if p.tok == .colon {
 			p.next()
 			value = p.val
-			p.check(.string)
+			p.check(.string)!
 		}
 		p.attributes.push(ast.Attribute{
 			name = name
@@ -136,16 +147,13 @@ fun (mut p Parser) parse_attributes() {
 	}
 }
 
-fun (mut p Parser) parse_block() []ast.Stmt {
-	p.check(.lcur)
+fun (mut p Parser) parse_block() ![]ast.Stmt {
+	p.check(.lcur)!
 	mut bstmts := []ast.Stmt
 	for not [token.Token.eof, .rcur].contains(p.tok) {
-		bstmts.push(p.stmt())
-		if p.should_abort {
-			break
-		}
+		bstmts.push(p.stmt()!)
 	}
-	p.check(.rcur)
+	p.check(.rcur)!
 	return bstmts
 }
 
@@ -155,16 +163,16 @@ fun (mut p Parser) skip(tok token.Token) {
 	}
 }
 
-fun (mut p Parser) check (expected token.Token) {
+fun (mut p Parser) check (expected token.Token) ! {
 	if p.tok != expected {
-		p.error('unexpected ${p.tok}, expecting ${expected}')
+		p.error('unexpected ${p.tok}, expecting ${expected}')!
 	}
 	p.next()
 }
 
-fun (mut p Parser) check_name() string {
+fun (mut p Parser) check_name() !string {
 	val := p.val
-	p.check(.name)
+	p.check(.name)!
 	return val
 }
 
@@ -176,13 +184,13 @@ fun (mut p Parser) check_pub() bool {
 	return false
 }
 
-fun (mut p Parser) parse_lang() ast.Language {
+fun (mut p Parser) parse_lang() !ast.Language {
 	if p.tok != .hash {
 		return .bait
 	}
 	lang := ast.prefix_to_lang(p.val)
 	p.next()
-	p.check(.dot)
+	p.check(.dot)!
 	return lang
 }
 
@@ -231,13 +239,13 @@ fun (p Parser) warn(msg string) {
 	})
 }
 
-fun (mut p Parser) error(msg string){
-	p.errors.push(errors.Message{
+fun (mut p Parser) error(msg string) ! {
+	p.err = errors.Message{
 		kind = .error
 		path = p.path
 		pos = p.pos
 		title = 'error'
 		msg = msg
-	})
-	p.should_abort = true
+	}
+	return error('')
 }

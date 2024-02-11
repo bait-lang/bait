@@ -26,19 +26,19 @@ fun (p Parser) add_builtin_imports() []ast.Import {
 	return imports
 }
 
-fun (mut p Parser) foreign_import() ast.Import {
+fun (mut p Parser) foreign_import() !ast.Import {
 	name := p.val
 	p.next()
-	p.check(.key_as)
+	p.check(.key_as)!
 
-	lang := p.parse_lang()
+	lang := p.parse_lang()!
 
 	mut alias := ''
 	if lang == .js {
-		alias = lang.prepend_to(p.check_name())
+		alias = lang.prepend_to(p.check_name()!)
 	} else if lang == .c {
 		// TODO require _ := foo() too explicitly discard the return value
-		p.check_name() // just discard the name
+		p.check_name()! // just discard the name
 	}
 
 	return ast.Import{
@@ -48,19 +48,19 @@ fun (mut p Parser) foreign_import() ast.Import {
 	}
 }
 
-fun (mut p Parser) bait_import() ast.Import {
+fun (mut p Parser) bait_import() !ast.Import {
 	mut name_parts := []string
-	name_parts.push(p.check_name())
+	name_parts.push(p.check_name()!)
 	for p.tok == .dot {
 		p.next()
-		name_parts.push(p.check_name())
+		name_parts.push(p.check_name()!)
 	}
 	name := name_parts.join('.')
 
 	mut alias := name_parts[name_parts.length - 1]
 	if p.tok == .key_as {
 		p.next()
-		alias = p.check_name()
+		alias = p.check_name()!
 	}
 
 	return ast.Import{
@@ -69,7 +69,7 @@ fun (mut p Parser) bait_import() ast.Import {
 	}
 }
 
-fun (mut p Parser) import_stmts() [] ast.Import{
+fun (mut p Parser) import_stmts() ![]ast.Import{
 	mut imports := p.add_builtin_imports()
 	for p.tok == .key_import {
 		pos := p.pos
@@ -77,9 +77,9 @@ fun (mut p Parser) import_stmts() [] ast.Import{
 
 		mut imp := ast.Import{}
 		if p.tok == .string {
-			imp = p.foreign_import()
+			imp = p.foreign_import()!
 		} else {
-			imp = p.bait_import()
+			imp = p.bait_import()!
 		}
 
 		p.import_aliases[imp.alias] = imp.name

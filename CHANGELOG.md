@@ -111,6 +111,7 @@ _unreleased_
 - gen:
   - Fix `!=` when `==` is overloaded
 - parser:
+  - Fix hangs on unexpected eof
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
 - lexer:

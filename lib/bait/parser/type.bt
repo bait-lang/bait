@@ -5,7 +5,7 @@ package parser
 import bait.ast
 import bait.token
 
-fun (mut p Parser) parse_type() ast.Type {
+fun (mut p Parser) parse_type() !ast.Type {
 	// Result type
 	if p.tok == .excl {
 		p.next()
@@ -17,7 +17,7 @@ fun (mut p Parser) parse_type() ast.Type {
 			})
 		}
 
-		typ := p.parse_type()
+		typ := p.parse_type()!
 		tsym := p.table.get_sym(typ)
 		return p.table.register_sym(ast.TypeSymbol{
 			kind = .result
@@ -36,20 +36,20 @@ fun (mut p Parser) parse_type() ast.Type {
 	// Array type
 	if p.tok == .lsqr{
 		p.next()
-		p.check(.rsqr)
-		elem_type := p.parse_type()
+		p.check(.rsqr)!
+		elem_type := p.parse_type()!
 		return p.table.find_or_register_array(elem_type)
 	}
 
 	// Function type
 	if p.tok == .key_fun {
-		return p.parse_fun_type()
+		return p.parse_fun_type()!
 	}
 
 	// Map type
 	if p.val == 'map' {
 		p.next()
-		return p.parse_map_type()
+		return p.parse_map_type()!
 	}
 
 	// Return placeholder or get name. Used for typeless array inits where type is known
@@ -58,30 +58,30 @@ fun (mut p Parser) parse_type() ast.Type {
 		return ast.PLACEHOLDER_TYPE
 	}
 
-	lang := p.parse_lang()
-	mut typ := p.parse_name_type(lang)
+	lang := p.parse_lang()!
+	mut typ := p.parse_name_type(lang)!
 	if nr_amp > 0 {
 		typ = typ.set_nr_amp(nr_amp)
 	}
 	return typ
 }
 
-fun (mut p Parser) parse_name_type(lang ast.Language) ast.Type {
+fun (mut p Parser) parse_name_type(lang ast.Language) !ast.Type {
 	if p.tok != .name {
 		return ast.PLACEHOLDER_TYPE
 	}
 
-	mut name := lang.prepend_to(p.check_name())
+	mut name := lang.prepend_to(p.check_name()!)
 
 	// Build full name and handle imported types
 	if p.tok == .dot {
 		if lang == .js {
 			p.next()
-			name += '.' + p.check_name()
+			name += '.' + p.check_name()!
 		} else {
 			pkg := p.import_aliases[name]
 			p.next()
-			name = pkg + '.' + p.check_name()
+			name = pkg + '.' + p.check_name()!
 		}
 
 	} else if p.expr_pkg.length > 0 {
@@ -109,41 +109,41 @@ fun (mut p Parser) parse_name_type(lang ast.Language) ast.Type {
 	}
 }
 
-fun (mut p Parser) parse_fun_type() ast.Type {
+fun (mut p Parser) parse_fun_type() !ast.Type {
 	p.next()
-	p.check(.lpar)
+	p.check(.lpar)!
 	mut param_types := []ast.Type
 	for p.tok != .rpar{
-		typ := p.parse_type()
+		typ := p.parse_type()!
 		param_types.push(typ)
 		if p.tok != .rpar{
-			p.check(.comma)
+			p.check(.comma)!
 		}
 	}
 	par_line := p.pos.line
-	p.check(.rpar)
+	p.check(.rpar)!
 	mut return_type := ast.VOID_TYPE
 	if p.pos.line == par_line {
-		return_type = p.parse_type()
+		return_type = p.parse_type()!
 	}
 	return p.table.find_or_register_fun(param_types, return_type)
 }
 
-fun (mut p Parser) parse_map_type() ast.Type {
+fun (mut p Parser) parse_map_type() !ast.Type {
 	if p.tok == .rpar and p.pkg_name == 'builtin' {
 		return ast.MAP_TYPE
 	}
-	p.check(.lsqr)
-	key_type := p.parse_type()
+	p.check(.lsqr)!
+	key_type := p.parse_type()!
 	if key_type != ast.STRING_TYPE {
-		p.error('map key type must be string')
+		p.error('map key type must be string')!
 	}
-	p.check(.rsqr)
-	val_type := p.parse_type()
+	p.check(.rsqr)!
+	val_type := p.parse_type()!
 	return p.table.find_or_register_map(key_type, val_type)
 }
 
-fun (mut p Parser) generic_type_names() []string {
+fun (mut p Parser) generic_type_names() ![]string {
 	if p.tok != .lsqr {
 		return []
 	}
@@ -151,12 +151,12 @@ fun (mut p Parser) generic_type_names() []string {
 
 	mut names := []string
 	for true {
-		name := p.check_name()
+		name := p.check_name()!
 		if name.length > 1 {
-			p.error('generic types names have to be exactly one character')
+			p.error('generic types names have to be exactly one character')!
 		}
 		if not name[0].is_upper() {
-			p.error('generic type names have to be capital letters')
+			p.error('generic type names have to be capital letters')!
 		}
 		names.push(name)
 
@@ -172,13 +172,13 @@ fun (mut p Parser) generic_type_names() []string {
 		if p.tok == .rsqr {
 			break
 		}
-		p.check(.comma)
+		p.check(.comma)!
 	}
 	p.next()
 	return names
 }
 
-fun (mut p Parser) concrete_types() []ast.Type {
+fun (mut p Parser) concrete_types() ![]ast.Type {
 	if p.tok != .lsqr {
 		return []
 	}
@@ -186,9 +186,9 @@ fun (mut p Parser) concrete_types() []ast.Type {
 
 	mut types := []ast.Type
 	for p.tok != .rsqr {
-		types.push(p.parse_type())
+		types.push(p.parse_type()!)
 		if p.tok != .rsqr {
-			p.check(.comma)
+			p.check(.comma) !
 		}
 	}
 	p.next()
