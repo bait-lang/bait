@@ -23,6 +23,9 @@ fun test_error_propagation() {
 }
 
 fun test_value_propagation() {
-	res := result_data_fun() !
+	res := result_data_fun() or {
+		assert false
+		return
+	}
 	assert res == 3
 }

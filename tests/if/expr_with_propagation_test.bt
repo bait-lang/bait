@@ -1,0 +1,14 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun get_res() !i32 {
+	return 1
+}
+
+fun test_propagation_in_if_expr() ! {
+	res := if true { get_res()! } else { 0 }
+	assert res == 1
+
+	res2 := if true { 1 } else { 0 }
+	_:=get_res()!
+}

@@ -1,0 +1,23 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+global g_counter := 0
+
+fun get_int() !i32 {
+	g_counter += 1
+	return g_counter
+}
+
+struct Foo{
+	a i32
+	b i32
+}
+
+fun test_result_order() ! {
+	f := Foo {
+		a = get_int()!
+		b = get_int()!
+	}
+	assert f.a == 1
+	assert f.b == 2
+}

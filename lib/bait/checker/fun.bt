@@ -70,8 +70,18 @@ fun (mut c Checker) fun_instance(node ast.FunDecl) {
 
 	ret_sym := c.table.get_sym(node.return_type)
 	is_void := node.return_type == ast.VOID_TYPE or ret_sym.parent == ast.VOID_TYPE
-	if not node.noreturn and not is_void and not has_toplevel_return(node.stmts) and not c.returns {
+	has_top_return := has_toplevel_return(node.stmts)
+	if not node.noreturn and not is_void and not c.returns and not has_top_return {
 		c.error('missing return statement', node.pos)
+	}
+
+	// Void result: add default return for the generated code to work
+	if ret_sym.kind == .result and ret_sym.parent == ast.VOID_TYPE and not has_top_return {
+		node.stmts.push(ast.ReturnStmt{
+			expr = ast.StructInit{
+				name = 'Result'
+			}
+		})
 	}
 
 	c.cur_fun = ast.FunDecl{
@@ -114,7 +124,7 @@ fun (c Checker) fun_params(params []ast.Param){
 
 fun (mut c Checker) check_main_fun(stmts []ast.Stmt) {
 	for stmt in stmts {
-		if stmt is ast.FunDecl and stmt.name == 'main' {
+		if stmt is ast.FunDecl and stmt.is_main() {
 			c.has_main_fun = true
 		}
 	}
@@ -193,7 +203,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	left_sym := c.table.get_sym(left_expr_type)
-	final_sym := c.table.get_final_sym(left_expr_type)
+	final_sym := c.table.get_final_sym(left_sym)
 
 	mut arg_offset := 1
 	mut def := c.table.get_method(left_sym, node.name)
@@ -366,7 +376,7 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 	}
 }
 
-fun (mut c Checker) or_block(node ast.CallExpr) {
+fun (mut c Checker) or_block(mut node ast.CallExpr) {
 	ret_sym := c.table.get_sym(node.return_type)
 	if ret_sym.kind != .result {
 		if node.or_block.kind != .none {
@@ -380,6 +390,16 @@ fun (mut c Checker) or_block(node ast.CallExpr) {
 		return
 	}
 
+	node.return_type = ret_sym.parent
+
+	if node.or_block.kind == .prop {
+		cur_fun_ret_sym := c.table.get_sym(c.cur_fun.return_type)
+		if cur_fun_ret_sym.kind != .result and not c.cur_fun.is_main() {
+			c.error('`${c.cur_fun.name}` must return a result to use propagation', node.pos)
+		}
+		return
+	}
+
 	c.is_or_block = true
 	c.scope.register('err', ast.ScopeObject{
 		kind = .variable
@@ -388,7 +408,7 @@ fun (mut c Checker) or_block(node ast.CallExpr) {
 	c.stmts(node.or_block.stmts)
 	c.is_or_block = false
 
-	if node.or_block.kind == .block and ret_sym.parent != ast.VOID_TYPE {
+	if ret_sym.parent != ast.VOID_TYPE {
 		if not c.stmt_returns(node.or_block.stmts.last()) and not has_toplevel_return(node.or_block.stmts) {
 			c.error('or block does not return a value', node.pos)
 		}

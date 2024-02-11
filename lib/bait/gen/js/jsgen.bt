@@ -161,6 +161,19 @@ fun (mut g Gen) cut_before(to u8) string {
 	return g.out
 }
 
+fun (mut g Gen) cut_before_any(chars string) string {
+	for i := g.out.length - 1; i >= 0; i -= 1 {
+		for c in chars {
+			if g.out[i] == c {
+				mut cut := g.out.substr(i + 1, g.out.length)
+				g.out = g.out.substr(0, i)
+				return cut
+			}
+		}
+	}
+	return g.out
+}
+
 fun (mut g Gen) save_stmt_offset() {
 	g.stmt_offsets.push(g.out.length)
 }

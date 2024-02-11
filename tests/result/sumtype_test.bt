@@ -1,0 +1,14 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+struct Foo{}
+struct Bar{}
+type Spam := Foo | Bar
+
+fun spam_res() !Spam {
+	return Foo{}
+}
+
+fun test_code_compiles() {
+	assert true
+}

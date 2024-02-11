@@ -1,0 +1,2 @@
+tests/out/error/result/result_to_propagate.in.bt:6:2 error: `missing_result_return` must return a result to use propagation
+tests/out/error/result/result_to_propagate.in.bt:17:2 error: `main` must return a result to use propagation

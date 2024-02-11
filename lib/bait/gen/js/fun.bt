@@ -94,7 +94,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 			g.writeln('${tmp}.data = ${last_line_cut}')
 		}
 	} else {
-		if g.cur_fun.name == 'main' {
+		if g.cur_fun.is_main() {
 			// TODO test
 			g.writeln('\tpanic(${tmp}.msg)')
 		} else {
@@ -103,6 +103,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 	}
 
 	g.writeln('}')
+	g.save_stmt_offset()
 
 	g.empty_line = false
 	g.write('${cut}${tmp}.data')
@@ -135,7 +136,7 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 		}
 
 		sym := g.table.get_sym(node.left_type)
-		final_sym := g.table.get_final_sym(node.left_type)
+		final_sym := g.table.get_final_sym(sym)
 		if final_sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.name) {
 			g.gen_array_method(node.name, node, final_sym)
 			return
