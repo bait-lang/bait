@@ -1,0 +1,24 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+global g_count := 0
+
+fun inc() i32 {
+	g_count += 1
+	return g_count
+}
+
+struct Foo{
+	a i32
+	b i32
+}
+
+fun test_expr_in_struct_init(){
+	f := Foo{
+		a = if true { inc() } else { -1 }
+		b = if false { -1 } else { inc() }
+	}
+
+	assert f.a == 1
+	assert f.b == 2
+}

@@ -111,6 +111,7 @@ _unreleased_
 - _[JS]_ Fix integer division assign that could result in a float
 - gen:
   - Fix `!=` when `==` is overloaded
+  - Fix if/match expr in struct init
 - parser:
   - Fix hangs on unexpected eof
   - Fix duplication of warnings
