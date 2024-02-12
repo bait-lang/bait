@@ -51,7 +51,8 @@ fun (b Builder) collect_user_files(path string) []string {
 
 fun (b Builder) parse_file(path string, pkg string) ast.File {
 	text := os.read_file(path)
-	return b.parser.parse(text, path, pkg)
+	b.parser.init(text, path, pkg)
+	return b.parser.parse()
 }
 
 pub fun compile(prefs preference.Prefs) i32 {

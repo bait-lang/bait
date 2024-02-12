@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MPL-2.0
 package parser
 
-import os
 import bait.preference
 import bait.errors
 import bait.ast
@@ -12,12 +11,13 @@ import bait.token
 pub struct Parser {
 	pref preference.Prefs
 mut:
-	path string
+	path string // File path with slashes normalized to `/`
 	eofs i32
 	tok token.Token
 	next_tok token.Token
 	val string
 	pos token.Pos
+	expected_pkg string
 	pkg_name string
 	import_aliases map[string]string
 	attributes []ast.Attribute
@@ -28,7 +28,7 @@ pub mut:
 	table ast.Table
 	lexer lexer.Lexer
 	warnings []errors.Message
-	err errors.Message
+	error errors.Message
 }
 
 pub fun new(table ast.Table, pref preference.Prefs) Parser {
@@ -38,27 +38,37 @@ pub fun new(table ast.Table, pref preference.Prefs) Parser {
 	}
 }
 
+pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
+	p.lexer.init(text, .discard)
+	p.path = path.replace('\\', '/')
+	p.expected_pkg = expected_pkg
+	p.eofs = 0
+	p.import_aliases = map[string]string
+	p.expr_pkg = ''
+	p.is_for_init = false
+	p.is_struct_possible = true
+	p.warnings = []
+	p.next()
+}
 
-pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.File {
-	return p.parse_result(text, path, expected_pkg) or {
+pub fun (mut p Parser) parse() ast.File {
+	return p.parse_result() or {
 		p.file_error()
 	}
 }
 
-fun (mut p Parser) parse_result(text string, path string, expected_pkg string) !ast.File {
-	p.init(text, path)
-
+pub fun (mut p Parser) parse_result() !ast.File {
 	p.pkg_name = p.package_decl()!
 
 	// Validate the files package name actually matches the desired import
-	if expected_pkg.length > 0 and p.pkg_name != expected_pkg {
+	if p.expected_pkg.length > 0 and p.pkg_name != p.expected_pkg {
 		return ast.File{}
 	}
 
 	// Do not parse assert.bt outside of tests
-	if not p.pref.is_test and p.pkg_name == 'builtin' and path.ends_with('assert.bt') {
+	if not p.pref.is_test and p.pkg_name == 'builtin' and p.path.ends_with('assert.bt') {
 		return ast.File{
-			path = path
+			path = p.path
 		}
 	}
 
@@ -72,31 +82,11 @@ fun (mut p Parser) parse_result(text string, path string, expected_pkg string) !
 	}
 
 	return ast.File{
-		path = path
+		path = p.path
 		pkg_name = p.pkg_name
 		imports = imports
 		stmts = stmts
 		warnings = p.warnings
-	}
-}
-
-pub fun (mut p Parser) init(text string, path string) {
-	p.lexer.init(text, .discard)
-	p.path = path
-	p.eofs = 0
-	p.import_aliases = map[string]string
-	p.expr_pkg = ''
-	p.is_for_init = false
-	p.is_struct_possible = true
-	p.warnings = []
-	p.next()
-}
-
-fun (p Parser) file_error() ast.File {
-	return ast.File{
-		path = p.path
-		warnings = p.warnings
-		errors = [p.err]
 	}
 }
 
@@ -111,12 +101,14 @@ fun (mut p Parser) package_decl() !string {
 	name := p.check_name()!
 	mut full_name := name
 	// REFAC consider moving into builder as it is only relevant for imports
-	lib_part := os.PATH_SEP + 'lib' + os.PATH_SEP
+	lib_part := '/lib/'
 	if full_name != 'main' and p.path.contains(lib_part) {
 		rel_path := p.path.substr(p.path.index(lib_part) + lib_part.length, p.path.length)
-		full_name = rel_path.substr(0, rel_path.index_last(os.PATH_SEP)).replace(os.PATH_SEP, '.')
+		full_name = rel_path.substr(0, rel_path.index_last('/')).replace('/', '.')
+
+		// file has different package name than the directory
+		// TODO give notice
 		if not full_name.ends_with(name) {
-			// TODO is this ever reached??
 			return ''
 		}
 	}
@@ -225,6 +217,14 @@ fun (mut p Parser) peek() token.Token {
 	return p.next_tok
 }
 
+fun (p Parser) file_error() ast.File {
+	return ast.File{
+		path = p.path
+		warnings = p.warnings
+		errors = [p.error]
+	}
+}
+
 fun (p Parser) warn(msg string) {
 	p.warnings.push(errors.Message{
 		kind = .warning
@@ -236,7 +236,7 @@ fun (p Parser) warn(msg string) {
 }
 
 fun (mut p Parser) error(msg string) ! {
-	p.err = errors.Message{
+	p.error = errors.Message{
 		kind = .error
 		path = p.path
 		pos = p.pos

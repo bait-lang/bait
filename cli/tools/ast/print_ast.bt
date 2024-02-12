@@ -40,10 +40,12 @@ fun main() {
 	}
 
 	mut p := parser.new(ast.new_table(), preference.Prefs{})
-	file_ast := p.parse(text, file, '')
-
-	file_ast.warnings.print()
-	file_ast.errors.print_and_exit()
+	p.init(text, file, '')
+	file_ast := p.parse_result() or {
+		p.warnings.print()
+		p.error.print()
+		exit(1)
+	}
 
 	println(file_ast)
 }
