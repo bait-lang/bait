@@ -48,16 +48,15 @@ pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.
 fun (mut p Parser) parse_result(text string, path string, expected_pkg string) !ast.File {
 	p.init(text, path)
 
-	// Start Parsing
-	pkg_decl := p.package_decl()!
+	p.pkg_name = p.package_decl()!
 
 	// Validate the files package name actually matches the desired import
-	if expected_pkg.length > 0 and pkg_decl.full_name != expected_pkg {
+	if expected_pkg.length > 0 and p.pkg_name != expected_pkg {
 		return ast.File{}
 	}
 
 	// Do not parse assert.bt outside of tests
-	if not p.pref.is_test and pkg_decl.name == 'builtin' and path.ends_with('assert.bt') {
+	if not p.pref.is_test and p.pkg_name == 'builtin' and path.ends_with('assert.bt') {
 		return ast.File{
 			path = path
 		}
@@ -74,7 +73,7 @@ fun (mut p Parser) parse_result(text string, path string, expected_pkg string) !
 
 	return ast.File{
 		path = path
-		pkg_decl = pkg_decl
+		pkg_name = p.pkg_name
 		imports = imports
 		stmts = stmts
 		warnings = p.warnings
@@ -101,32 +100,27 @@ fun (p Parser) file_error() ast.File {
 	}
 }
 
-fun (mut p Parser) package_decl() !ast.PackageDecl {
+fun (mut p Parser) package_decl() !string {
 	// Implicit main package
 	if p.tok != .key_package {
-		p.pkg_name = "main"
-		return ast.PackageDecl{
-			name = "main"
-			full_name = "main"
-		}
+		return 'main'
 	}
 
+	// Package declaration
 	p.next()
 	name := p.check_name()!
 	mut full_name := name
+	// REFAC consider moving into builder as it is only relevant for imports
 	lib_part := os.PATH_SEP + 'lib' + os.PATH_SEP
 	if full_name != 'main' and p.path.contains(lib_part) {
 		rel_path := p.path.substr(p.path.index(lib_part) + lib_part.length, p.path.length)
 		full_name = rel_path.substr(0, rel_path.index_last(os.PATH_SEP)).replace(os.PATH_SEP, '.')
 		if not full_name.ends_with(name) {
-			return ast.PackageDecl{}
+			// TODO is this ever reached??
+			return ''
 		}
 	}
-	p.pkg_name = full_name
-	return ast.PackageDecl{
-		name = name
-		full_name = full_name
-	}
+	return full_name
 }
 
 // Parses one or more attributes

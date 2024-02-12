@@ -426,12 +426,6 @@ pub:
 	pos token.Pos
 }
 
-pub struct PackageDecl{
-pub:
-	name string
-	full_name string
-}
-
 pub struct Import{
 pub:
 	name string
@@ -449,7 +443,7 @@ global:
 	generic_funs []FunDecl
 pub:
 	path string
-	pkg_decl PackageDecl
+	pkg_name string // Full package name
 	imports []Import
 	stmts []Stmt
 }

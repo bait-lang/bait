@@ -56,7 +56,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 
 	for file in files {
 		g.path = file.path
-		g.pkg = file.pkg_decl.full_name
+		g.pkg = file.pkg_name
 
 		g.process_imports(file.imports)
 		g.stmts(file.stmts)

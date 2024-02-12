@@ -84,7 +84,7 @@ fun (mut c Checker) change_file(file ast.File) {
 	c.file = file
 	c.path = file.path
 	c.is_js_file = c.path.contains('.js.')
-	c.pkg = file.pkg_decl.full_name
+	c.pkg = file.pkg_name
 
 	c.scope = ast.Scope{
 		// TODO how to handle recursive sturct inits?
