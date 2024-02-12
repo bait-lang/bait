@@ -38,22 +38,18 @@ pub fun new(table ast.Table, pref preference.Prefs) Parser {
 	}
 }
 
+
 pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.File {
-	// Init Parser
-	p.lexer.init(text, .discard)
-	p.path = path
-	p.eofs = 0
-	p.import_aliases = map[string]string
-	p.expr_pkg = ''
-	p.is_for_init = false
-	p.is_struct_possible = true
-	p.warnings = []
-	p.next()
+	return p.parse_result(text, path, expected_pkg) or {
+		p.file_error()
+	}
+}
+
+fun (mut p Parser) parse_result(text string, path string, expected_pkg string) !ast.File {
+	p.init(text, path)
 
 	// Start Parsing
-	pkg_decl := p.package_decl() or {
-		return p.file_error()
-	}
+	pkg_decl := p.package_decl()!
 
 	// Validate the files package name actually matches the desired import
 	if expected_pkg.length > 0 and pkg_decl.full_name != expected_pkg {
@@ -67,18 +63,12 @@ pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.
 		}
 	}
 
-	imports := p.import_stmts() or {
-		return p.file_error()
-	}
+	imports := p.import_stmts()!
 
 	mut stmts := []ast.Stmt
 	for p.tok != .eof {
-		p.parse_attributes() or {
-			return p.file_error()
-		}
-		ts := p.toplevel_stmt() or {
-			return p.file_error()
-		}
+		p.parse_attributes()!
+		ts := p.toplevel_stmt()!
 		stmts.push(ts)
 	}
 
@@ -91,7 +81,19 @@ pub fun (mut p Parser) parse(text string, path string, expected_pkg string) ast.
 	}
 }
 
-pub fun (p Parser) file_error() ast.File {
+pub fun (mut p Parser) init(text string, path string) {
+	p.lexer.init(text, .discard)
+	p.path = path
+	p.eofs = 0
+	p.import_aliases = map[string]string
+	p.expr_pkg = ''
+	p.is_for_init = false
+	p.is_struct_possible = true
+	p.warnings = []
+	p.next()
+}
+
+fun (p Parser) file_error() ast.File {
 	return ast.File{
 		path = p.path
 		warnings = p.warnings
