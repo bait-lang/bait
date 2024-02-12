@@ -99,13 +99,15 @@ _unreleased_
     - `exec`, `system`
 
 ### CLI and Tooling
-- `init`
+- `init`:
   - Add `--template` option to allow choosing a template
   - Add `bin` and `lib` templates
   - Prevent overwriting existing files
 - `build`: Add `-cc` option to use a custom C compiler
 - `self`: Use $BAITEXE as default out name
-- `ast`: Print parser warnings and errors
+- `ast`:
+  - `--tokens`: Print value of all tokens that have one
+  - Print parser warnings and errors
 
 ### Other Changes
 - _[JS]_ Fix integer division assign that could result in a float

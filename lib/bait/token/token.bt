@@ -3,15 +3,20 @@
 package token
 
 pub enum Token {
+	// Tokens with value
 	error
-	eof
 	attr // @name
+	hash // #LANG
 	comment
 	name
 	string
 	char
 	float
 	integer
+	_last_with_val
+
+	// Simple tokens
+	eof
 	dot // .
 	colon // :
 	comma // ,
@@ -49,7 +54,6 @@ pub enum Token {
 	rshift // >>
 	dollar // $
 	str_dollar // $
-	hash // #LANG
 	key_and
 	key_as
 	key_assert
@@ -112,6 +116,10 @@ pub fun kind_from_string(name string) Token {
 		'typeof' { .key_typeof }
 		else { .name }
 	}
+}
+
+pub fun (tok Token) has_val() bool {
+	return tok < ._last_with_val
 }
 
 const COMPARE_KINDS := [Token.eq, .ne, .lt, .gt, .le, .ge, .key_is]
@@ -204,6 +212,7 @@ pub fun (kind Token) str() string {
 		.char { 'char' }
 		.float { 'float' }
 		.integer { 'integer' }
+		._last_with_val { '_last_with_val' }
 		.dot { 'dot' }
 		.colon { 'colon' }
 		.comma { 'comma' }

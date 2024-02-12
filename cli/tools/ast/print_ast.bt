@@ -29,11 +29,7 @@ fun main() {
 		l.init(text, .discard)
 		mut tok := l.next()
 		for tok != .eof {
-			if tok == .name or tok == .string  {
-				println('${tok}: ${l.val}')
-			} else {
-				println(tok)
-			}
+			println(if tok.has_val() { '${tok}: ${l.val}' } else { tok.str() })
 			tok = l.next()
 		}
 		return
