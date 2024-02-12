@@ -16,13 +16,13 @@ fun main() {
 		eprintln('error: please specify a file to print the ast')
 		exit(1)
 	}
-	file := args[0]
-	if not file.ends_with('.bt') {
+	path := args[0]
+	if not path.ends_with('.bt') {
 		eprintln('error: file must have ".bt" extension')
 		exit(1)
 	}
 
-	text := os.read_file(file)
+	text := os.read_file(path)
 
 	if PRINT_TOKENS {
 		mut l := lexer.Lexer{}
@@ -36,7 +36,7 @@ fun main() {
 	}
 
 	mut p := parser.new(ast.new_table(), preference.Prefs{})
-	p.init(text, file, '')
+	p.init(text, path, '')
 	file_ast := p.parse_result() or {
 		p.warnings.print()
 		p.error.print()

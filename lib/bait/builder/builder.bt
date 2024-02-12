@@ -110,6 +110,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 				parsed_file := b.parse_file(p, imp.name)
 
 				if parsed_file.path.length == 0 {
+					b.print_infos(parsed_file.infos)
 					continue
 				}
 
@@ -241,6 +242,17 @@ fun (mut b Builder) code_gen_c() i32 {
 	return 0
 }
 
+fun (b Builder) print_infos(infos []errors.Message) {
+	// -w hides info messages too
+	if b.prefs.hide_warnings {
+		return
+	}
+
+	for info in infos {
+		info.print()
+	}
+}
+
 fun (b Builder) print_errors_and_warnings(parser_errs bool) bool {
 	mut nr_warns := 0
 	mut nr_errors := 0
@@ -249,12 +261,7 @@ fun (b Builder) print_errors_and_warnings(parser_errs bool) bool {
 		nr_warns += f.warnings.length
 		nr_errors += f.errors.length
 
-		// -w hides info messages too
-		if not b.prefs.hide_warnings {
-			for info in f.infos {
-				info.print()
-			}
-		}
+		b.print_infos(f.infos)
 
 		if b.prefs.warn_is_error {
 			for warn in f.warnings {

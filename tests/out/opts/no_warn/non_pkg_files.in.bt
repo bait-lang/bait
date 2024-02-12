@@ -1,0 +1,3 @@
+import bait.test_pkgs.non_pkg_files
+
+// Has to be in no_warn due to the package mismatch note containing an absolute path.

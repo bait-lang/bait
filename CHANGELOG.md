@@ -114,6 +114,7 @@ _unreleased_
 - gen:
   - Fix `!=` when `==` is overloaded
 - parser:
+  - Show an info message if a file is not parsed due to package mismatch
   - Fix hangs on unexpected eof
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
@@ -121,6 +122,8 @@ _unreleased_
   - Fix position of multiline strings
   - Unclosed string error now points to the opening quote
   - Prevent rare crash due to huge sequences of comments overflowing the call stack
+- Many refactorings, cleanups and performance improvements
+- Documentation improvements
 
 
 ## 0.0.6

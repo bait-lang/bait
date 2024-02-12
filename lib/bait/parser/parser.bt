@@ -27,6 +27,7 @@ mut:
 pub mut:
 	table ast.Table
 	lexer lexer.Lexer
+	infos []errors.Message
 	warnings []errors.Message
 	error errors.Message
 }
@@ -47,6 +48,7 @@ pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
 	p.expr_pkg = ''
 	p.is_for_init = false
 	p.is_struct_possible = true
+	p.infos = []
 	p.warnings = []
 	p.next()
 }
@@ -60,9 +62,11 @@ pub fun (mut p Parser) parse() ast.File {
 pub fun (mut p Parser) parse_result() !ast.File {
 	p.pkg_name = p.package_decl()!
 
-	// Validate the files package name actually matches the desired import
-	if p.expected_pkg.length > 0 and p.pkg_name != p.expected_pkg {
-		return ast.File{}
+	// Package name did not match, stop parsing
+	if p.pkg_name.length == 0 {
+		return ast.File{
+			infos = p.infos
+		}
 	}
 
 	// Do not parse assert.bt outside of tests
@@ -86,6 +90,7 @@ pub fun (mut p Parser) parse_result() !ast.File {
 		pkg_name = p.pkg_name
 		imports = imports
 		stmts = stmts
+		infos = p.infos
 		warnings = p.warnings
 	}
 }
@@ -99,20 +104,18 @@ fun (mut p Parser) package_decl() !string {
 	// Package declaration
 	p.next()
 	name := p.check_name()!
-	mut full_name := name
-	// REFAC consider moving into builder as it is only relevant for imports
-	lib_part := '/lib/'
-	if full_name != 'main' and p.path.contains(lib_part) {
-		rel_path := p.path.substr(p.path.index(lib_part) + lib_part.length, p.path.length)
-		full_name = rel_path.substr(0, rel_path.index_last('/')).replace('/', '.')
 
-		// file has different package name than the directory
-		// TODO give notice
-		if not full_name.ends_with(name) {
-			return ''
-		}
+	if p.expected_pkg.length == 0 {
+		return name
 	}
-	return full_name
+
+	// Validate that this files package matches the desired import
+	if not p.expected_pkg.ends_with(name) {
+		p.info('skipped due to package mismatch. Expected `${p.expected_pkg}`, got `${name}`')
+		return ''
+	}
+
+	return p.expected_pkg
 }
 
 // Parses one or more attributes
@@ -220,12 +223,23 @@ fun (mut p Parser) peek() token.Token {
 fun (p Parser) file_error() ast.File {
 	return ast.File{
 		path = p.path
+		infos = p.infos
 		warnings = p.warnings
 		errors = [p.error]
 	}
 }
 
-fun (p Parser) warn(msg string) {
+fun (mut p Parser) info(msg string) {
+	p.infos.push(errors.Message{
+		kind = .info
+		path = p.path
+		pos = p.pos
+		title = 'note'
+		msg = msg
+	})
+}
+
+fun (mut p Parser) warn(msg string) {
 	p.warnings.push(errors.Message{
 		kind = .warning
 		path = p.path
