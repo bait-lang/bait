@@ -51,7 +51,8 @@ fun (b Builder) collect_user_files(path string) []string {
 
 fun (b Builder) parse_file(path string, pkg string) ast.File {
 	text := os.read_file(path)
-	return b.parser.parse(text, path, pkg)
+	b.parser.init(text, path, pkg)
+	return b.parser.parse()
 }
 
 pub fun compile(prefs preference.Prefs) i32 {
@@ -109,6 +110,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 				parsed_file := b.parse_file(p, imp.name)
 
 				if parsed_file.path.length == 0 {
+					b.print_infos(parsed_file.infos)
 					continue
 				}
 
@@ -138,24 +140,22 @@ pub fun compile(prefs preference.Prefs) i32 {
 	// Build a dependency map for each file
 	mut deps := map[string][]string
 	for f in ast_files {
-		pkg_name := f.pkg_decl.full_name
-
 		for imp in f.imports {
 			if imp.lang != .bait {
 				continue
 			}
-			deps[pkg_name].push(imp.name)
+			deps[f.pkg_name].push(imp.name)
 		}
 	}
 
 	// Sort the packages, so type checking works properly
 	mut looked := []string
 	mut pkg_order := []string
-	order_pkgs(pkg_order, ast_files[0].pkg_decl.full_name, deps, looked)
+	order_pkgs(pkg_order, ast_files[0].pkg_name, deps, looked)
 	mut sorted_files := []ast.File
 	for pkg in pkg_order {
 		for f in ast_files {
-			if f.pkg_decl.full_name == pkg {
+			if f.pkg_name == pkg {
 				sorted_files.push(f)
 			}
 		}
@@ -242,6 +242,17 @@ fun (mut b Builder) code_gen_c() i32 {
 	return 0
 }
 
+fun (b Builder) print_infos(infos []errors.Message) {
+	// -w hides info messages too
+	if b.prefs.hide_warnings {
+		return
+	}
+
+	for info in infos {
+		info.print()
+	}
+}
+
 fun (b Builder) print_errors_and_warnings(parser_errs bool) bool {
 	mut nr_warns := 0
 	mut nr_errors := 0
@@ -250,12 +261,7 @@ fun (b Builder) print_errors_and_warnings(parser_errs bool) bool {
 		nr_warns += f.warnings.length
 		nr_errors += f.errors.length
 
-		// -w hides info messages too
-		if not b.prefs.hide_warnings {
-			for info in f.infos {
-				info.print()
-			}
-		}
+		b.print_infos(f.infos)
 
 		if b.prefs.warn_is_error {
 			for warn in f.warnings {

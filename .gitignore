@@ -3,6 +3,7 @@
 !*.*
 !*/
 *.js
+bin/
 
 # editor files
 *.code-workspace

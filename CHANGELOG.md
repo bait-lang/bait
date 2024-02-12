@@ -99,13 +99,15 @@ _unreleased_
     - `exec`, `system`
 
 ### CLI and Tooling
-- `init`
+- `init`:
   - Add `--template` option to allow choosing a template
   - Add `bin` and `lib` templates
   - Prevent overwriting existing files
 - `build`: Add `-cc` option to use a custom C compiler
 - `self`: Use $BAITEXE as default out name
-- `ast`: Print parser warnings and errors
+- `ast`:
+  - `--tokens`: Print value of all tokens that have one
+  - Print parser warnings and errors
 
 ### Other Changes
 - _[JS]_ Fix integer division assign that could result in a float
@@ -113,6 +115,7 @@ _unreleased_
   - Fix `!=` when `==` is overloaded
   - Fix if/match expr in struct init
 - parser:
+  - Show an info message if a file is not parsed due to package mismatch
   - Fix hangs on unexpected eof
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
@@ -120,6 +123,8 @@ _unreleased_
   - Fix position of multiline strings
   - Unclosed string error now points to the opening quote
   - Prevent rare crash due to huge sequences of comments overflowing the call stack
+- Many refactorings, cleanups and performance improvements
+- Documentation improvements
 
 
 ## 0.0.6
