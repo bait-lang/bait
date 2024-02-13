@@ -48,6 +48,7 @@ pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
 	p.expr_pkg = ''
 	p.is_for_init = false
 	p.is_struct_possible = true
+	p.attributes = []
 	p.infos = []
 	p.warnings = []
 	p.next()
@@ -106,8 +107,6 @@ fun (mut p Parser) package_decl() !string {
 	p.next()
 	name := p.check_name()!
 
-	p.attributes = []
-
 	if p.expected_pkg.length == 0 {
 		return name
 	}
@@ -121,6 +120,8 @@ fun (mut p Parser) package_decl() !string {
 		p.info('skipped due to package mismatch: expected `${p.expected_pkg}`, got `${name}`.\nUse `@silent_mismatch` to suppress this info.')
 		return ''
 	}
+
+	p.attributes = []
 
 	return p.expected_pkg
 }
