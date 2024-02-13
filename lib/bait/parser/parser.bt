@@ -40,7 +40,7 @@ pub fun new(table ast.Table, pref preference.Prefs) Parser {
 
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
 	p.lexer.init(text, .discard)
-	p.path = path.replace('\\', '/')
+	p.path = path
 	p.pkg_name = expected_pkg
 	p.eofs = 0
 	p.import_aliases = map[string]string

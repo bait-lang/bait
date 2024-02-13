@@ -1,3 +1,4 @@
+@suppress_mismatch
 package main
 
 // This is a file with package main inside the folder of the `shadow` package.
