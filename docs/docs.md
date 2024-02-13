@@ -28,6 +28,20 @@ fun print_monday() {
 }
 ```
 
+### Deprecation of Functions
+Functions can be marked as deprecated to trigger compiler warnings when they are used.
+```bait
+@deprecated('Use bar() instead.')
+@deprecated_after('2023-06-12')
+pub fun foo() {}
+```
+
+Calling this function will cause a message like:
+```
+warning: function "foo" will be deprecated after 2023-06-12; Use bar() instead.
+```
+
+
 ## Variables
 Variables are declared with the `:=` operator.
 ```bait
@@ -368,6 +382,17 @@ global:
 }
 ```
 
+### Required Fields
+```bait
+struct FooBar {
+    @required a i32
+    b i32
+    @required
+    c i32
+}
+```
+
+
 ## Enums
 ```bait
 enum Language {
@@ -449,34 +474,11 @@ This is for example useful to create and clean up temporary directories.
 
 
 ## Attributes
-Various attributes are supported that change the behaviour of functions and struct fields.
-They are written as `@name: 'value'` before the respective declaration.
+Various attributes are supported that change the behaviour of functions, struct fields and other statements.
+They are defined with `@name` or `@name('value')` before the statement they should apply to.
 
-### Deprecation of Functions
-Functions can be marked as deprecated to trigger compiler warnings when they are used.
-```bait
-@deprecated: 'Use bar() instead.'
-@deprecated_after: '2023-06-12'
-pub fun foo() {}
-```
-
-Calling this function will cause a message like:
-```
-warning: function "foo" will be deprecated after 2023-06-12; Use bar() instead.
-```
-
-### Required Struct Fields
-```bait
-struct FooBar {
-    @required a i32
-    b i32
-    @required
-    c i32
-}
-```
-
-### List Attributes
-**Only apply to functions:**
+### List of all supported Attributes
+**Apply to functions:**
 | Name                | Description                                  | Value                  |
 | ------------------- | -------------------------------------------- | ---------------------- |
 | `@deprecated`       | Marks a function as deprecated.              | Custom message _(opt)_ |
@@ -484,10 +486,15 @@ struct FooBar {
 | `@export`           | Export a function under a different name.    | Name _(req)_           |
 | `@overload`         | Use a method to overload the given operator. | Operator _(req)_       |
 
-**Only apply to struct fields:**
-| Name        | Description                                 | Value  |
-| ----------- | ------------------------------------------- | ------ |
-| `@required` | The field must be initialized with a value. | _none_ |
+**Apply to struct fields:**
+| Name        | Description                                 | Value |
+| ----------- | ------------------------------------------- | ----- |
+| `@required` | The field must be initialized with a value. | -     |
+
+**Apply to package declaration:**
+| Name               | Description                                 | Value |
+| ------------------ | ------------------------------------------- | ----- |
+| `@silent_mismatch` | Suppress the package mismatch info message. | -     |
 
 
 ## Compile Time Code Evaluation (CompTime)

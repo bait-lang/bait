@@ -134,7 +134,7 @@ fun (c Checker) info(msg string, pos token.Pos){
 		kind = .info
 		path = c.path
 		pos = pos
-		title = 'note'
+		title = 'info'
 		msg = msg
 	})
 }

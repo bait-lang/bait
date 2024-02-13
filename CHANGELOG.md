@@ -8,6 +8,7 @@ All notable changes are documented in this file.
 _unreleased_
 
 ### Breaking
+- Change syntax for attributes with value to `@attr('value')`
 - Change operator for pointer dereferencing from `^` to `*`
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
 - `os`: Rename struct `Result` to `CmdRes`
@@ -116,6 +117,7 @@ _unreleased_
   - Fix if/match expr in struct init
 - parser:
   - Show an info message if a file is not parsed due to package mismatch
+    - Add `@silent_mismatch` attribute to suppress this message
   - Fix hangs on unexpected eof
   - Fix duplication of warnings
   - Fix typeless array inits used as call arg
