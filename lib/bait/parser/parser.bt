@@ -17,7 +17,6 @@ mut:
 	next_tok token.Token
 	val string
 	pos token.Pos
-	expected_pkg string
 	pkg_name string
 	import_aliases map[string]string
 	attributes []ast.Attribute
@@ -42,7 +41,7 @@ pub fun new(table ast.Table, pref preference.Prefs) Parser {
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
 	p.lexer.init(text, .discard)
 	p.path = path.replace('\\', '/')
-	p.expected_pkg = expected_pkg
+	p.pkg_name = expected_pkg
 	p.eofs = 0
 	p.import_aliases = map[string]string
 	p.expr_pkg = ''
@@ -107,23 +106,23 @@ fun (mut p Parser) package_decl() !string {
 	p.next()
 	name := p.check_name()!
 
-	if p.expected_pkg.length == 0 {
+	if p.pkg_name.length == 0 {
 		return name
 	}
 
 	// Validate that this files package matches the desired import
-	if not p.expected_pkg.ends_with(name) {
+	if not p.pkg_name.ends_with(name) {
 		if p.attributes.has('silent_mismatch') {
 			return ''
 		}
 
-		p.info('skipped due to package mismatch: expected `${p.expected_pkg}`, got `${name}`.\nUse `@silent_mismatch` to suppress this info.')
+		p.info('skipped due to package mismatch: expected `${p.pkg_name}`, got `${name}`.\nUse `@silent_mismatch` to suppress this info.')
 		return ''
 	}
 
 	p.attributes = []
 
-	return p.expected_pkg
+	return p.pkg_name
 }
 
 // Parses one or more attributes
