@@ -124,12 +124,20 @@ fun (mut p Parser) parse_attributes() ! {
 		pos := p.pos
 		name := p.val
 		p.next()
+
 		mut value := ''
 		if p.tok == .colon {
+			p.warn("this syntax is deprecated, use `@${name}('value') instead")
 			p.next()
 			value = p.val
 			p.check(.string)!
+		} else if p.tok == .lpar {
+			p.next()
+			value = p.val
+			p.check(.string)!
+			p.check(.rpar)!
 		}
+
 		p.attributes.push(ast.Attribute{
 			name = name
 			value = value
