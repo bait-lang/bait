@@ -5,14 +5,26 @@ import bait.ast
 import bait.parser
 import bait.preference
 
-fun test_valid_numbers() {
+fun test_mismatch_info() {
 	text := 'package different'
 
 	mut p := parser.new(ast.new_table(), preference.Prefs{})
-	p.init(text, '/just/for/test/file.bt', 'match')
+	p.init(text, '/just/for/test/file.bt', 'wanted')
 
 	file := p.parse()
 	assert file.path.length == 0
 	assert file.infos.length == 1
 	assert file.infos[0].msg.contains('package mismatch')
+}
+
+fun test_attribute_silent_mismatch() {
+	text := '@silent_mismatch
+package different'
+
+	mut p := parser.new(ast.new_table(), preference.Prefs{})
+	p.init(text, '/just/for/test/file.bt', 'wanted')
+
+	file := p.parse()
+	assert file.path.length == 0
+	assert file.infos.length == 0
 }
