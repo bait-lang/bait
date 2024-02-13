@@ -194,7 +194,7 @@ pub fun (s string) repeat(count i32) string {
 	}
 }
 
-@overload: '+'
+@overload('+')
 fun (a string) add (b string) string {
 	new_len := a.length + b.length
 	res := string{
@@ -211,7 +211,7 @@ fun (a string) add (b string) string {
 	return res
 }
 
-@overload: '=='
+@overload('==')
 fun (a string) eq (b string) bool {
 	if a.length != b.length {
 		return false

@@ -5,7 +5,7 @@ struct Point{
 	x i32
 }
 
-@overload: '-'
+@overload('-')
 fun (p Point) minus_x(p2 Point) i32 {
 	return p.x - p2.x
 }

@@ -108,12 +108,12 @@ fun (s string) str() string {
 	return s
 }
 
-@overload: '+'
+@overload('+')
 fun (a string) add (b string) string {
 	return from_js_string(a.str + b.str)
 }
 
-@overload: '=='
+@overload('==')
 fun (a string) eq (b string) bool {
 	if a.length != b.length {
 		return false
