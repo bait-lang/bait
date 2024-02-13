@@ -70,8 +70,6 @@ pub fun (mut p Parser) parse_result() !ast.File {
 		}
 	}
 
-	p.attributes = []
-
 	// Do not parse assert.bt outside of tests
 	if not p.pref.is_test and p.pkg_name == 'builtin' and p.path.ends_with('assert.bt') {
 		return ast.File{
@@ -107,6 +105,8 @@ fun (mut p Parser) package_decl() !string {
 	// Package declaration
 	p.next()
 	name := p.check_name()!
+
+	p.attributes = []
 
 	if p.expected_pkg.length == 0 {
 		return name
