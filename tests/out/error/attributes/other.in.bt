@@ -5,6 +5,6 @@ fun unknown_attr() {}
 fun missing_value(){}
 
 struct Foo {
-	@required: 'this should have no value'
+	@required('this should have no value')
 	myfield bool
 }

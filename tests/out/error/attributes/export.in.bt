@@ -1,7 +1,7 @@
 package mypkg
 
-@export: 'spameggs'
+@export('spameggs')
 fun spam() {}
 
-@export: 'spameggs'
+@export('spameggs')
 fun eggs() {}

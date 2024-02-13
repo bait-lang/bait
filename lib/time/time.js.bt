@@ -29,7 +29,7 @@ pub fun now() Time {
 	return res
 }
 
-@overload: '-'
+@overload('-')
 fun (a Time) minus (b Time) i64 {
 	return a.unix - b.unix
 }

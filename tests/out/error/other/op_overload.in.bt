@@ -1,24 +1,24 @@
-@overload: '*'
+@overload('*')
 fun some_function(a i32) i32 {
 	return a
 }
 
 struct Foo{}
 
-@overload: '+'
+@overload('+')
 fun (a Foo) plus (b Foo) Foo {
 	return a
 }
 
-@overload: '+'
+@overload('+')
 fun (a Foo) also_plus (b Foo) Foo {
 	return a
 }
 
-@overload: '!='
+@overload('!=')
 fun (a Foo) not_equals (b Foo) bool {
 	return true
 }
 
-@overload: '+='
+@overload('+=')
 fun (a Foo) plus_equals (b Foo) {}

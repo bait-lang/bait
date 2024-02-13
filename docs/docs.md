@@ -569,7 +569,7 @@ Bait functions can be exported to JS using the export attribute:
 ```bait
 package lib
 
-@export: 'func'
+@export('func')
 fun some_func() {}
 ```
 
