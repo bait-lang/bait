@@ -82,8 +82,7 @@ pub fun (mut p Parser) parse_result() !ast.File {
 	mut stmts := []ast.Stmt
 	for p.tok != .eof {
 		p.parse_attributes()!
-		ts := p.toplevel_stmt()!
-		stmts.push(ts)
+		stmts.push(p.toplevel_stmt()!)
 	}
 
 	return ast.File{

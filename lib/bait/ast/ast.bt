@@ -428,10 +428,9 @@ pub:
 
 pub struct Import{
 pub:
-	name string
-	alias string
+	name string // Full import name
+	alias string // Custom alias or the part after the last dot
 	lang Language
-global:
 	pos token.Pos
 }
 
