@@ -234,6 +234,7 @@ pub struct CallArg {
 global:
 	typ Type
 pub:
+	is_mut bool
 	expr Expr
 }
 

@@ -1,0 +1,16 @@
+struct Foo {
+mut:
+	x i32
+}
+
+fun change_me(mut f Foo){
+	f.x = 5
+}
+
+fun immutable(f Foo) {}
+
+fun call_change() {
+	mut f := Foo{}
+	change_me(f) // err
+	immutable(mut f) // err
+}

@@ -33,6 +33,9 @@ _unreleased_
 - _[JS]_ Add `testsuite_begin()` and `testsuite_end()` functions
 - _[JS]_ Implement generic structs
 
+### Immutability
+- Require mutable function argument if paramter is mutable
+
 ### Error Checks
 - Fixes and improvements regarding error positions
 - Disallow leading zeros in decimal numbers
