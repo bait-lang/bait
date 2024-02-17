@@ -5,32 +5,32 @@ package checker
 import bait.ast
 import bait.token
 
-fun (mut c Checker) expr(expr ast.Expr) ast.Type {
+fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
 	expected_save := c.expected_type
 	t := match expr {
 		ast.AnonFun { c.anon_fun(expr) }
-		ast.ArrayInit { c.array_init(expr) }
-		ast.AsCast { c.as_cast(expr) }
+		ast.ArrayInit { c.array_init(mut expr) }
+		ast.AsCast { c.as_cast(mut expr) }
 		ast.BoolLiteral { ast.BOOL_TYPE }
-		ast.CallExpr { c.call_expr(expr) }
+		ast.CallExpr { c.call_expr(mut expr) }
 		ast.CharLiteral { ast.U8_TYPE }
 		ast.ComptimeVar { c.comptime_var(expr) }
-		ast.EnumVal { c.enum_val(expr) }
+		ast.EnumVal { c.enum_val(mut expr) }
 		ast.FloatLiteral { ast.F64_TYPE }
 		ast.HashExpr { c.hash_expr(expr) }
-		ast.Ident { c.ident(expr) }
-		ast.IfMatch { c.if_match(expr) }
-		ast.IndexExpr { c.index_expr(expr) }
-		ast.InfixExpr { c.infix_expr(expr) }
+		ast.Ident { c.ident(mut expr) }
+		ast.IfMatch { c.if_match(mut expr) }
+		ast.IndexExpr { c.index_expr(mut expr) }
+		ast.InfixExpr { c.infix_expr(mut expr) }
 		ast.IntegerLiteral { c.integer_literal(expr) }
-		ast.MapInit { c.map_init(expr) }
+		ast.MapInit { c.map_init(mut expr) }
 		ast.ParExpr { c.par_expr(expr) }
 		ast.PrefixExpr { c.prefix_expr(expr) }
-		ast.SelectorExpr { c.selector_expr(expr) }
+		ast.SelectorExpr { c.selector_expr(mut expr) }
 		ast.StringLiteral { c.string_literal(expr) }
 		ast.StringInterLiteral { c.string_inter_literal(expr) }
-		ast.StructInit { c.struct_init(expr) }
-		ast.TypeOf { c.type_of(expr) }
+		ast.StructInit { c.struct_init(mut expr) }
+		ast.TypeOf { c.type_of(mut expr) }
 		ast.Void { ast.VOID_TYPE }
 		ast.EmptyExpr { panic('unexpected EmptyExpr at ${expr.pos}') }
 	}
@@ -69,8 +69,8 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 	}
 
 	// Expressions init
-	for i, e in node.exprs {
-		typ := c.expr(e)
+	for i, mut e in node.exprs {
+		typ := c.expr(mut e)
 		if i == 0 {
 			node.elem_type = typ
 			c.expected_type = typ
@@ -231,8 +231,8 @@ fun (mut c Checker) map_init(mut node ast.MapInit) ast.Type {
 	}
 
 	// Literal init
-	for i, key in node.keys {
-		key_type := c.expr(key)
+	for i, mut key in node.keys {
+		key_type := c.expr(mut key)
 		if i >= 1 {
 			c.expected_type = node.val_type
 		}
@@ -332,9 +332,10 @@ fun (c Checker) string_literal(node ast.StringLiteral) ast.Type {
 	return ast.STRING_TYPE
 }
 
+// FIXME node should be mut
 fun (mut c Checker) string_inter_literal(node ast.StringInterLiteral) ast.Type {
-	for e in node.exprs {
-		typ := c.expr(e)
+	for mut e in node.exprs {
+		typ := c.expr(mut e)
 		node.expr_types.push(typ)
 	}
 	return ast.STRING_TYPE

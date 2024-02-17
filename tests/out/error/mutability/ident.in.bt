@@ -1,0 +1,8 @@
+struct Static {}
+
+fun change(mut s Static) {}
+
+fun call() {
+	s := Static{}
+	change(mut s) // err
+}

@@ -204,7 +204,9 @@ fun (mut p Parser) method_call(left ast.Expr) !ast.CallExpr {
 fun (mut p Parser) call_args() ![]ast.CallArg {
 	mut args := []ast.CallArg
 	for p.tok != .rpar {
+		is_mut := p.tok == .key_mut
 		args.push(ast.CallArg{
+			is_mut = is_mut // FIXME: gen mixes up order of code here and puts result before
 			expr = p.expr(.lowest)!
 		})
 		if p.tok != .rpar {

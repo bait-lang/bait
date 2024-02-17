@@ -47,7 +47,7 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 
 fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 	if node.op == .decl_assign {
-		c.decl_assign(node)
+		c.decl_assign(mut node)
 		return
 	}
 

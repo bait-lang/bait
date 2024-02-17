@@ -6,27 +6,27 @@ import bait.ast
 import bait.token
 
 fun (mut c Checker) stmts(stmts []ast.Stmt){
-	for stmt in stmts{
-		c.stmt(stmt)
+	for mut stmt in stmts{
+		c.stmt(mut stmt)
 	}
 }
 
-fun (mut c Checker) stmt(stmt ast.Stmt){
+fun (mut c Checker) stmt(mut stmt ast.Stmt){
 	match stmt {
 		ast.AssertStmt { c.assert_stmt(stmt) }
-		ast.AssignStmt { c.assign_stmt(stmt) }
-		ast.ConstDecl { c.const_decl(stmt) }
-		ast.ExprStmt { c.expr_stmt(stmt) }
+		ast.AssignStmt { c.assign_stmt(mut stmt) }
+		ast.ConstDecl { c.const_decl(mut stmt) }
+		ast.ExprStmt { c.expr_stmt(mut stmt) }
 		ast.EnumDecl { c.enum_decl(stmt) }
 		ast.ForLoop { c.for_loop(stmt) }
 		ast.ForClassicLoop { c.for_classic_loop(stmt) }
-		ast.ForInLoop { c.for_in_loop(stmt) }
-		ast.FunDecl { c.fun_decl(stmt) }
-		ast.GlobalDecl { c.global_decl(stmt) }
-		ast.IfMatch { c.if_match(stmt) }
+		ast.ForInLoop { c.for_in_loop(mut stmt) }
+		ast.FunDecl { c.fun_decl(mut stmt) }
+		ast.GlobalDecl { c.global_decl(mut stmt) }
+		ast.IfMatch { c.if_match(mut stmt) }
 		ast.InterfaceDecl { c.interface_decl(stmt) }
 		ast.LoopControlStmt { c.loop_control_stmt(stmt) }
-		ast.ReturnStmt { c.return_stmt(stmt) }
+		ast.ReturnStmt { c.return_stmt(mut stmt) }
 		ast.StructDecl { c.struct_decl(stmt) }
 		ast.TypeDecl { c.type_decl(stmt) }
 		else {
@@ -55,8 +55,8 @@ fun (mut c Checker) const_decl(mut node ast.ConstDecl) {
 }
 
 fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
-	expr := node.expr
-	node.typ = c.expr(expr)
+	mut expr := node.expr
+	node.typ = c.expr(mut expr)
 
 	// Used are all exprs inside if/match expr and or blocks, functions calls, if/match stmt and HashExprs
 	if c.is_if_match_expr or c.is_or_block or expr is ast.CallExpr or expr is ast.IfMatch or expr is ast.HashExpr {

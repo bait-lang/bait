@@ -49,7 +49,17 @@ pub fun (s Scope) get(name string) ScopeObject {
 }
 
 pub fun (s Scope) update_type(name string, typ Type) {
-	s.objects[name].typ = typ
+	mut obj := s.get(name)
+	// FIXME `obj` should be a copy on js backend and below code not modify the original
+	// obj.typ = typ
+	// s.objects[name] = obj
+	s.objects[name] = ScopeObject{
+		typ = typ
+		kind = obj.kind
+		is_pub = obj.is_pub
+		is_mut = obj.is_mut
+		pkg = obj.pkg
+	}
 }
 
 pub fun (s Scope) is_known(name string) bool {
