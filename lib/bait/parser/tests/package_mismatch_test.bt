@@ -6,7 +6,8 @@ import bait.parser
 import bait.preference
 
 fun test_mismatch_info() {
-	text := 'package different'
+	text := 'package different
+struct Content {}'
 
 	mut p := parser.new(ast.new_table(), preference.Prefs{})
 	p.init(text, '/just/for/test/file.bt', 'wanted')
@@ -15,6 +16,7 @@ fun test_mismatch_info() {
 	assert file.path.length == 0
 	assert file.infos.length == 1
 	assert file.infos[0].msg.contains('package mismatch')
+	assert file.stmts.length == 0 // Test parser exits after mismatch
 }
 
 fun test_attribute_silent_mismatch() {
