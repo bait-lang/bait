@@ -1,0 +1,23 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+struct Assert{}
+struct Const{}
+
+type Stmt := Assert | Const
+
+fun assert_stmt(mut stmt Assert) {}
+fun const_stmt(mut stmt Const) {}
+
+fun stmt(mut s Stmt) {
+	match s {
+		// In the branche scopes the type of `s` is updated.
+		// This test ensures that the mutability and other properties are preserved.
+		Assert { assert_stmt(mut s) }
+		Const { const_stmt(mut s) }
+	}
+}
+
+fun test_code_compiles() {
+	assert true
+}
