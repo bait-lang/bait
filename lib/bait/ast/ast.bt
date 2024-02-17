@@ -421,6 +421,10 @@ pub:
 	pos token.Pos
 }
 
+pub fun empty_expr() Expr {
+	return EmptyExpr{}
+}
+
 pub struct EmptyStmt{
 pub:
 	pos token.Pos
@@ -428,10 +432,9 @@ pub:
 
 pub struct Import{
 pub:
-	name string
-	alias string
+	name string // Full import name
+	alias string // Custom alias or the part after the last dot
 	lang Language
-global:
 	pos token.Pos
 }
 

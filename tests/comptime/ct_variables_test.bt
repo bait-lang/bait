@@ -3,9 +3,9 @@
 
 fun test_comptime_vars() {
 	assert $PKG == 'main'
-	assert $FILE == 'tests/comptime/ct_variables_test.bt'
+	assert $FILE.replace('\\', '/') == 'tests/comptime/ct_variables_test.bt'
 	assert $LINE == '7'
-	assert $FILE_LINE == 'tests/comptime/ct_variables_test.bt:8'
+	assert $FILE_LINE.replace('\\', '/') == 'tests/comptime/ct_variables_test.bt:8'
 	assert $FUN == 'test_comptime_vars'
 
 	// The following vars are hard to test

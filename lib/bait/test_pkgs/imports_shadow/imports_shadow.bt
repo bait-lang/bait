@@ -1,3 +1,0 @@
-package imports_shadow
-
-import bait.test_pkgs.shadow

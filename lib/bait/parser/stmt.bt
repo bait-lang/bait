@@ -6,77 +6,53 @@ import bait.ast
 import bait.token
 
 fun (mut p Parser) toplevel_stmt() !ast.Stmt {
-	match p.tok {
-		.key_pub{
-			return p.pub_stmt()!
-		}
-		.hash {
-			return p.expr_stmt()!
-		}
-		.key_const{
-			return p.const_decl()!
-		}
-		.key_enum{
-			return p.enum_decl()!
-		}
-		.key_fun{
-			return p.fun_decl()!
-		}
-		.key_global{
-			return p.global_decl()!
-		}
-		.key_interface{
-			return p.interface_decl()!
-		}
-		.key_struct{
-			return p.struct_decl()!
-		}
-		.key_type{
-			return p.type_decl()!
-		}
-		else{
-			if p.pkg_name == 'main' {
-				return p.script_mode_main()!
-			}
-			p.error('bad toplevel token: kind = ${p.tok}, val = ${p.val}')!
-			return ast.EmptyStmt{}
-		}
+	return match p.tok {
+		.key_pub{ p.pub_stmt()! }
+		.hash { p.expr_stmt()! }
+		.key_const{ p.const_decl()! }
+		.key_enum{ p.enum_decl()! }
+		.key_fun{ p.fun_decl()! }
+		.key_global{ p.global_decl()! }
+		.key_interface{ p.interface_decl()! }
+		.key_struct{ p.struct_decl()! }
+		.key_type{ p.type_decl()! }
+		else { p.script_mode_or_error()! }
 	}
 }
 
 fun (mut p Parser) pub_stmt() !ast.Stmt {
-	match p.peek() {
-		.key_const{
-			return p.const_decl()!
-		}
-		.key_enum{
-			return p.enum_decl()!
-		}
-		.key_fun{
-			return p.fun_decl()!
-		}
-		.key_interface{
-			return p.interface_decl()!
-		}
-		.key_struct{
-			return p.struct_decl()!
-		}
+	return match p.peek() {
+		.key_const{ p.const_decl()! }
+		.key_enum{ p.enum_decl()! }
+		.key_fun{ p.fun_decl()! }
+		.key_interface{ p.interface_decl()! }
+		.key_struct{ p.struct_decl()! }
 		else{
 			p.error('cannot use pub keyword before ${p.peek()}')!
-			return ast.EmptyStmt{}
+			ast.EmptyStmt{}
 		}
 	}
+}
+
+fun (mut p Parser) script_mode_or_error() !ast.Stmt {
+	if p.pkg_name == 'main' {
+		return p.script_mode_main()!
+	}
+
+	p.error('bad toplevel token: kind = ${p.tok}, val = ${p.val}')!
+	return ast.EmptyStmt{}
 }
 
 fun (mut p Parser) script_mode_main() !ast.FunDecl {
 	if not p.pref.is_script {
 		p.warn('declare the main function or use the --script option')
 	}
+
 	mut stmts := []ast.Stmt
 	for p.tok != .eof {
-		println(99)
 		stmts.push(p.stmt()!)
 	}
+
 	mut node := ast.FunDecl{
 		name = 'main'
 		return_type = ast.VOID_TYPE
@@ -87,38 +63,21 @@ fun (mut p Parser) script_mode_main() !ast.FunDecl {
 }
 
 fun (mut p Parser) stmt() !ast.Stmt {
-	match p.tok {
-		.name {
-			return p.stmt_with_name()!
-		}
-		.key_assert {
-			return p.assert_stmt()!
-		}
-		.key_break, .key_continue {
-			return p.loop_control_stmt()!
-		}
-		.key_for {
-			return p.for_loop('')!
-		}
-		.key_if {
-			return p.if_match(false)!
-		}
-		.key_match {
-			return p.match_as_if_expr(false)!
-		}
-		.key_mut {
-			return p.assign_stmt()!
-		}
-		.key_return {
-			return p.return_stmt()!
-		}
-		else{
-			return p.expr_stmt()!
-		}
+	return match p.tok {
+		.name { p.stmt_with_name()! }
+		.key_assert { p.assert_stmt()! }
+		.key_break, .key_continue { p.loop_control_stmt()! }
+		.key_for { p.for_loop('')! }
+		.key_if { p.if_match(false)! }
+		.key_match { p.match_as_if_expr(false)! }
+		.key_mut { p.assign_stmt()! }
+		.key_return { p.return_stmt()! }
+		else{ p.expr_stmt()! }
 	}
 }
 
 fun (mut p Parser) stmt_with_name() !ast.Stmt{
+	// Loop label
 	if p.peek() == .colon {
 		label := p.val
 		p.next()
@@ -130,6 +89,7 @@ fun (mut p Parser) stmt_with_name() !ast.Stmt{
 	if p.tok.is_assign() {
 		return p.partial_assign_stmt(left)!
 	}
+
 	return ast.ExprStmt{expr = left}
 }
 
@@ -154,12 +114,14 @@ fun (mut p Parser) partial_assign_stmt(left ast.Expr) !ast.AssignStmt {
 	mut right := p.expr(.lowest)!
 
 	// Convert math assign to normal assign
+	// `x += 1` --> `x = x + 1`
 	if op.is_math_assign() {
 		right = ast.InfixExpr{
 			op = op.math_from_assign()
 			left = left
 			right = right
 		}
+
 		op = .assign
 	}
 
@@ -192,7 +154,8 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	}
 
 	p.check(.decl_assign)!
-	mut expr := ast.EmptyExpr{} as ast.Expr
+
+	mut expr := ast.empty_expr()
 	mut typ := ast.PLACEHOLDER_TYPE
 	if lang == .bait {
 		expr = p.expr(.lowest)!
@@ -223,10 +186,8 @@ fun (mut p Parser) loop_control_stmt() !ast.LoopControlStmt{
 	kind := p.tok
 	p.next()
 
-	mut label := ''
-	if p.tok == .name and p.pos.line == pos.line {
-		label = p.check_name()!
-	}
+	label := if p.tok == .semicolon { '' } else { p.check_name()! }
+	p.skip(.semicolon)
 
 	return ast.LoopControlStmt{
 		kind = kind
@@ -249,11 +210,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 
 	lang := p.parse_lang()!
 	mut name := p.check_name()!
-	if lang == .bait {
-		name = p.prepend_pkg(name)
-	} else {
-		name = lang.prepend_to(name)
-	}
+	name = if lang == .bait { p.prepend_pkg(name) } else { lang.prepend_to(name) }
 
 	p.check(.lcur)!
 	mut variants := []string
@@ -264,6 +221,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 		mut expr := ast.EmptyExpr{} as ast.Expr
 		if p.tok == .decl_assign {
 			p.next()
+
 			expr = p.expr(.lowest)!
 		}
 		variants.push(fname)

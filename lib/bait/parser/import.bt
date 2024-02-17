@@ -17,6 +17,7 @@ fun (p Parser) add_builtin_imports() []ast.Import {
 		alias = 'builtin'
 	})
 
+	// Internal package test
 	if p.pref.is_test and p.pkg_name != 'main' {
 		imports.push(ast.Import{
 			name = p.pkg_name
@@ -26,7 +27,8 @@ fun (p Parser) add_builtin_imports() []ast.Import {
 	return imports
 }
 
-fun (mut p Parser) foreign_import() !ast.Import {
+// `import 'name' as #JS.name`
+fun (mut p Parser) foreign_import(pos token.Pos) !ast.Import {
 	name := p.val
 	p.next()
 	p.check(.key_as)!
@@ -45,19 +47,21 @@ fun (mut p Parser) foreign_import() !ast.Import {
 		name = name
 		alias = alias
 		lang = lang
+		pos = pos
 	}
 }
 
-fun (mut p Parser) bait_import() !ast.Import {
-	mut name_parts := []string
-	name_parts.push(p.check_name()!)
+fun (mut p Parser) bait_import(pos token.Pos) !ast.Import {
+	// Import name, e.g. `bait.gen.c`
+	mut name_parts := [p.check_name()!]
 	for p.tok == .dot {
 		p.next()
 		name_parts.push(p.check_name()!)
 	}
 	name := name_parts.join('.')
 
-	mut alias := name_parts[name_parts.length - 1]
+	// Optional alias, e.g. `as cgen`
+	mut alias := name_parts.last()
 	if p.tok == .key_as {
 		p.next()
 		alias = p.check_name()!
@@ -66,26 +70,22 @@ fun (mut p Parser) bait_import() !ast.Import {
 	return ast.Import{
 		name = name
 		alias = alias
+		pos = pos
 	}
 }
 
 fun (mut p Parser) import_stmts() ![]ast.Import{
 	mut imports := p.add_builtin_imports()
+
 	for p.tok == .key_import {
 		pos := p.pos
 		p.next()
 
-		mut imp := ast.Import{}
-		if p.tok == .string {
-			imp = p.foreign_import()!
-		} else {
-			imp = p.bait_import()!
-		}
+		mut imp := if p.tok == .string { p.foreign_import(pos)! } else { p.bait_import(pos)! }
 
 		p.import_aliases[imp.alias] = imp.name
-
-		imp.pos = pos
 		imports.push(imp)
 	}
+
 	return imports
 }

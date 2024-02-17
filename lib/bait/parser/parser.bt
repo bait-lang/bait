@@ -17,7 +17,6 @@ mut:
 	next_tok token.Token
 	val string
 	pos token.Pos
-	expected_pkg string
 	pkg_name string
 	import_aliases map[string]string
 	attributes []ast.Attribute
@@ -41,8 +40,8 @@ pub fun new(table ast.Table, pref preference.Prefs) Parser {
 
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
 	p.lexer.init(text, .discard)
-	p.path = path.replace('\\', '/')
-	p.expected_pkg = expected_pkg
+	p.path = path
+	p.pkg_name = expected_pkg
 	p.eofs = 0
 	p.import_aliases = map[string]string
 	p.expr_pkg = ''
@@ -83,8 +82,7 @@ pub fun (mut p Parser) parse_result() !ast.File {
 	mut stmts := []ast.Stmt
 	for p.tok != .eof {
 		p.parse_attributes()!
-		ts := p.toplevel_stmt()!
-		stmts.push(ts)
+		stmts.push(p.toplevel_stmt()!)
 	}
 
 	return ast.File{
@@ -107,23 +105,23 @@ fun (mut p Parser) package_decl() !string {
 	p.next()
 	name := p.check_name()!
 
-	if p.expected_pkg.length == 0 {
+	if p.pkg_name.length == 0 {
 		return name
 	}
 
 	// Validate that this files package matches the desired import
-	if not p.expected_pkg.ends_with(name) {
+	if not p.pkg_name.ends_with(name) {
 		if p.attributes.has('silent_mismatch') {
 			return ''
 		}
 
-		p.info('skipped due to package mismatch: expected `${p.expected_pkg}`, got `${name}`.\nUse `@silent_mismatch` to suppress this info.')
+		p.info('skipped due to package mismatch: expected `${p.pkg_name}`, got `${name}`.\nUse `@silent_mismatch` to suppress this info.')
 		return ''
 	}
 
 	p.attributes = []
 
-	return p.expected_pkg
+	return p.pkg_name
 }
 
 // Parses one or more attributes
@@ -151,12 +149,12 @@ fun (mut p Parser) parse_attributes() ! {
 
 fun (mut p Parser) parse_block() ![]ast.Stmt {
 	p.check(.lcur)!
-	mut bstmts := []ast.Stmt
-	for not [token.Token.eof, .rcur].contains(p.tok) {
-		bstmts.push(p.stmt()!)
+	mut stmts := []ast.Stmt
+	for p.tok != .rcur and p.tok != .eof {
+		stmts.push(p.stmt()!)
 	}
 	p.check(.rcur)!
-	return bstmts
+	return stmts
 }
 
 fun (mut p Parser) skip(tok token.Token) {
@@ -190,6 +188,7 @@ fun (mut p Parser) parse_lang() !ast.Language {
 	if p.tok != .hash {
 		return .bait
 	}
+
 	lang := ast.prefix_to_lang(p.val)
 	p.next()
 	p.check(.dot)!
@@ -197,7 +196,7 @@ fun (mut p Parser) parse_lang() !ast.Language {
 }
 
 fun (p Parser) prepend_pkg(val string) string {
-	if p.pkg_name == 'builtin' or p.pkg_name == 'main' or p.pkg_name.length == 0{
+	if p.pkg_name == 'builtin' or p.pkg_name == 'main' {
 		return val
 	}
 	return p.pkg_name + '.' + val
