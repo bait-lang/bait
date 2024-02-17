@@ -149,12 +149,12 @@ fun (mut p Parser) parse_attributes() ! {
 
 fun (mut p Parser) parse_block() ![]ast.Stmt {
 	p.check(.lcur)!
-	mut bstmts := []ast.Stmt
-	for not [token.Token.eof, .rcur].contains(p.tok) {
-		bstmts.push(p.stmt()!)
+	mut stmts := []ast.Stmt
+	for p.tok != .rcur and p.tok != .eof {
+		stmts.push(p.stmt()!)
 	}
 	p.check(.rcur)!
-	return bstmts
+	return stmts
 }
 
 fun (mut p Parser) skip(tok token.Token) {
@@ -188,6 +188,7 @@ fun (mut p Parser) parse_lang() !ast.Language {
 	if p.tok != .hash {
 		return .bait
 	}
+
 	lang := ast.prefix_to_lang(p.val)
 	p.next()
 	p.check(.dot)!
@@ -195,7 +196,7 @@ fun (mut p Parser) parse_lang() !ast.Language {
 }
 
 fun (p Parser) prepend_pkg(val string) string {
-	if p.pkg_name == 'builtin' or p.pkg_name == 'main' or p.pkg_name.length == 0{
+	if p.pkg_name == 'builtin' or p.pkg_name == 'main' {
 		return val
 	}
 	return p.pkg_name + '.' + val

@@ -421,6 +421,10 @@ pub:
 	pos token.Pos
 }
 
+pub fun empty_expr() Expr {
+	return EmptyExpr{}
+}
+
 pub struct EmptyStmt{
 pub:
 	pos token.Pos

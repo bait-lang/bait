@@ -257,7 +257,7 @@ fun (mut l Lexer) name_val() {
 fun (mut l Lexer) name_or_key() token.Token {
 	l.name_val()
 	tok := token.kind_from_string(l.val)
-	if tok == .key_return {
+	if tok == .key_return or tok == .key_break or tok == .key_continue {
 		l.insert_semi = true
 	}
 	return tok
