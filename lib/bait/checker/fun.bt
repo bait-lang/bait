@@ -16,7 +16,7 @@ fun (mut c Checker) anon_fun(node ast.AnonFun) ast.Type {
 	return node.typ
 }
 
-fun (mut c Checker) fun_decl(node ast.FunDecl) {
+fun (mut c Checker) fun_decl(mut node ast.FunDecl) {
 	if node.lang != .bait {
 		return
 	}
@@ -55,13 +55,13 @@ fun (mut c Checker) fun_decl(node ast.FunDecl) {
 		return
 	}
 
-	c.fun_instance(node)
+	c.fun_instance(mut node)
 }
 
-fun (mut c Checker) fun_instance(node ast.FunDecl) {
+fun (mut c Checker) fun_instance(mut node ast.FunDecl) {
 	c.returns = false
 	c.cur_fun = node
-	c.check_fun_attrs(node) // FIXME this should error because node is not mut
+	c.check_fun_attrs(mut node) // FIXME this should error because node is not mut
 
 	c.open_scope()
 	c.fun_params(node.params)
@@ -130,12 +130,12 @@ fun (mut c Checker) check_main_fun(stmts []ast.Stmt) {
 	}
 }
 
-fun (mut c Checker) call_expr(node ast.CallExpr) ast.Type {
+fun (mut c Checker) call_expr(mut node ast.CallExpr) ast.Type {
 	if node.is_method{
-		return c.method_call(node)
+		return c.method_call(mut node)
 	}
 
-	return c.fun_call(node)
+	return c.fun_call(mut node)
 }
 
 fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
@@ -183,9 +183,9 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 	// Check argument types
 	c.call_args(def, mut node, 0)
 
-	c.or_block(node)
+	c.or_block(mut node)
 
-	c.set_conc_types(node, def)
+	c.set_conc_types(mut node, mut def)
 
 	if node.name == 'error' {
 		node.return_type = c.cur_fun.return_type
@@ -318,9 +318,9 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		return (left_sym.info as ast.ArrayInfo).elem_type
 	}
 
-	c.or_block(node)
+	c.or_block(mut node)
 
-	c.set_conc_types(node, def)
+	c.set_conc_types(mut node, mut def)
 
 	return node.return_type
 }
@@ -432,11 +432,11 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 }
 
 fun (mut c Checker) resolve_generics_funs() {
-	for fn in c.file.generic_funs {
+	for mut fn in c.file.generic_funs {
 		gtypes := c.table.generic_fun_types[fn.key()]
 		for concrete in gtypes {
 			c.cur_concrete_types = concrete
-			c.fun_instance(fn)
+			c.fun_instance(mut fn)
 		}
 	}
 }

@@ -151,7 +151,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	// Sort the packages, so type checking works properly
 	mut looked := []string
 	mut pkg_order := []string
-	order_pkgs(pkg_order, ast_files[0].pkg_name, deps, looked)
+	order_pkgs(mut pkg_order, ast_files[0].pkg_name, deps, mut looked)
 	mut sorted_files := []ast.File
 	for pkg in pkg_order {
 		for f in ast_files {
@@ -335,7 +335,7 @@ fun order_pkgs(mut ordered []string, pkg string, deps map[string][]string, mut l
 			// TODO warn on cyclic deps
 			continue
 		}
-		order_pkgs(ordered, d, deps, looked)
+		order_pkgs(mut ordered, d, deps, mut looked)
 	}
 	if not ordered.contains(pkg) {
 		ordered.push(pkg)
