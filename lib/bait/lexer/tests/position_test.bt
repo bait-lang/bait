@@ -13,7 +13,7 @@ string"'
 	l.init(text, .discard)
 
 	assert l.next() == .string
-	assert l.get_pos() == token.Pos {
+	assert l.pos() == token.Pos {
 		line = 1
 		col = 2
 	}
@@ -29,7 +29,7 @@ after'
 
 	assert l.next() == .string
 	assert l.next() == .name
-	assert l.get_pos() == token.Pos {
+	assert l.pos() == token.Pos {
 		line = 3
 		col = 1
 	}
@@ -44,7 +44,7 @@ next_line'
 
 	assert l.next() == .name
 	assert l.next() == .name
-	assert l.get_pos() == token.Pos {
+	assert l.pos() == token.Pos {
 		line = 2
 		col = 1
 	}

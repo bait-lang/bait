@@ -9,25 +9,25 @@ fun test_valid_numbers() {
 	// Integer
 	l.init('123', .discard)
 	assert l.next() == .integer
-	assert l.val == '123'
+	assert l.val() == '123'
 
 	// Float
 	l.init('12.34', .discard)
 	assert l.next() == .float
-	assert l.val == '12.34'
+	assert l.val() == '12.34'
 
 	// Different bases
 	l.init('0b0101', .discard)
 	assert l.next() == .integer
-	assert l.val == '0b0101'
+	assert l.val() == '0b0101'
 
 	l.init('0o755', .discard)
 	assert l.next() == .integer
-	assert l.val == '0o755'
+	assert l.val() == '0o755'
 
 	l.init('0xff', .discard)
 	assert l.next() == .integer
-	assert l.val == '0xff'
+	assert l.val() == '0xff'
 }
 
 fun test_leading_zero() {
@@ -40,7 +40,7 @@ fun test_leading_zero() {
 	// Valid: zeros in fraction
 	l.init('0.001', .discard)
 	assert l.next() == .float
-	assert l.val == '0.001'
+	assert l.val() == '0.001'
 
 	// Invalid: leading zeros
 	l.init('00', .discard)

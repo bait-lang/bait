@@ -219,8 +219,8 @@ fun (mut p Parser) next() {
 		p.next_tok = .error
 	}
 
-	p.val = p.lexer.val
-	p.pos = p.lexer.get_pos()
+	p.val = p.lexer.val()
+	p.pos = p.lexer.pos()
 }
 
 fun (mut p Parser) peek() token.Token {

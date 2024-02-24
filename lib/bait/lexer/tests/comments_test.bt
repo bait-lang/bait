@@ -15,7 +15,7 @@ fun test_discard_mode() {
 	assert l.next() == .key_package
 
 	assert l.next() == .name
-	assert l.val == 'test'
+	assert l.val() == 'test'
 }
 
 fun test_store_mode() {
@@ -23,13 +23,13 @@ fun test_store_mode() {
 	l.init(TEXT, .store)
 
 	assert l.next() == .comment
-	assert l.val == ' my comment'
+	assert l.val() == ' my comment'
 
 	l.next()
 	l.next()
 
 	assert l.next() == .comment
-	assert l.val == '   spaces'
+	assert l.val() == '   spaces'
 
 	assert l.next() == .comment
 }
@@ -46,5 +46,5 @@ fun test_skip_comments() {
 	l.init(MANY_COMMENTS, .discard)
 
 	l.skip_comments()
-	assert l.get_pos().line == 7
+	assert l.pos().line == 7
 }

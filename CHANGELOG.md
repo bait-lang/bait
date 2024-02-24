@@ -19,6 +19,9 @@ _unreleased_
 - Remove `cli.cmdline`
   - `parse_string()` was moved into `cli`
   - `options()` was replaced by the `cli.options` package
+- `bait.lexer`:
+  - Rename `Lexer.get_pos()` to `Lexer.pos()`
+  - Make `Lexer.val` private. Use `Lexer.val()` instead
 
 ### New Language Features
 - Implement Result type (e.g. `fun foo() !<type> {}`)

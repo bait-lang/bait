@@ -13,8 +13,8 @@ const €'
 	l.next()
 
 	assert l.next() == .error
-	assert l.val == 'unexpected char € [L0001]'
-	assert l.get_pos() == token.Pos{
+	assert l.val() == 'unexpected char € [L0001]'
+	assert l.pos() == token.Pos{
 		line = 2
 		col = 7
 	}
