@@ -11,7 +11,7 @@ import bait.token
 pub struct Parser {
 	pref preference.Prefs
 mut:
-	path string // File path with slashes normalized to `/`
+	path string
 	eofs i32
 	tok token.Token
 	next_tok token.Token

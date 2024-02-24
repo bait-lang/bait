@@ -17,7 +17,7 @@ fun (mut p Parser) expr(precedence token.Precedence) !ast.Expr {
 		} else if p.tok.is_infix() {
 			node = p.infix_expr(node)!
 		} else {
-			return node
+			panic('precedence not implemented: ${p.tok} at ${p.pos}')
 		}
 	}
 	return node
@@ -98,7 +98,7 @@ fun (mut p Parser) expr_list() ![]ast.Expr{
 		if p.tok != .comma {
 			break
 		}
-		p.check(.comma)!
+		p.next()
 	}
 	return exprs
 }
