@@ -11,7 +11,7 @@ import bait.token
 pub struct Parser {
 	pref preference.Prefs
 mut:
-	path string // File path with slashes normalized to `/`
+	path string
 	eofs i32
 	tok token.Token
 	next_tok token.Token
@@ -219,8 +219,8 @@ fun (mut p Parser) next() {
 		p.next_tok = .error
 	}
 
-	p.val = p.lexer.val
-	p.pos = p.lexer.get_pos()
+	p.val = p.lexer.val()
+	p.pos = p.lexer.pos()
 }
 
 fun (mut p Parser) peek() token.Token {

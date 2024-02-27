@@ -574,3 +574,81 @@ fun some_func() {}
 ```
 
 In the generated code, this won't change the function name but add the line `module.exports.func = lib__some_func`.
+
+
+## Appendix A: Keywords
+Bait has 28 reserved keywords:
+```
+and
+as
+assert
+break
+const
+continue
+else
+enum
+false
+for
+fun
+global
+if
+import
+in
+interface
+is
+match
+mut
+not
+or
+package
+pub
+return
+struct
+true
+type
+typeof
+```
+
+
+## Appendix B: Operators
+| Operator | Description           | Applicable Types          |
+| -------- | --------------------- | ------------------------- |
+| `+`      | addition              | integers, floats, strings |
+| `-`      | subtraction           | integers, floats          |
+| `*`      | multiplication        | integers, floats          |
+| `/`      | division              | integers, floats          |
+| `%`      | remainder / modulo    | integers                  |
+|          |                       |                           |
+| `~`      | bitwise NOT           | integers                  |
+| `&`      | bitwise AND           | integers                  |
+| `\|`     | bitwise OR            | integers                  |
+| `^`      | bitwise XOR           | integers                  |
+| `<<`     | left shift            | integers                  |
+| `>>`     | right shift           | integers                  |
+|          |                       |                           |
+| `not`    | logical NOT           | bools                     |
+| `and`    | logical AND           | bools                     |
+| `or`     | logical OR            | bools                     |
+|          |                       |                           |
+| `==`     | equals                | all                       |
+| `!=`     | not equals            | all                       |
+| `<`      | less than             | integers, floats          |
+| `<=`     | less than or equal    | integers, floats          |
+| `>`      | greater than          | integers, floats          |
+| `>=`     | greater than or equal | integers, floats          |
+
+Assignment operators:
+```
+:=  =
++=  -=
+*=  /=  %=
+```
+
+### Precedence
+Highest to lowest:
+- `not`
+- `* / % & << >>`
+- `+ - | ^`
+- `== != < <= > >=`
+- `as is`
+- `and or`

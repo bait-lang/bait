@@ -10,12 +10,11 @@ pub enum CommentMode {
 }
 
 pub struct Lexer {
-pub mut:
-	val string // Value of the current token
 mut:
 	comment_mode CommentMode
 	text string
 	insert_semi bool // Insert a semicolon on \n
+	val string // Value of the current token
 
 	// Position tracking
 	line_starts []i32 // Array with positions of the \n before each line
@@ -37,7 +36,11 @@ pub fun (mut l Lexer) init(text string, comment_mode CommentMode) {
 	l.pos = 0
 }
 
-pub fun (l Lexer) get_pos() token.Pos {
+pub fun (l Lexer) val() string {
+	return l.val
+}
+
+pub fun (l Lexer) pos() token.Pos {
 	return token.Pos{
 		line = l.cur_line + 1
 		col = l.start - l.line_starts[l.cur_line]
