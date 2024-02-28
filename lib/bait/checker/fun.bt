@@ -44,7 +44,7 @@ fun (mut c Checker) fun_decl(mut node ast.FunDecl) {
 			param_types.push(param.typ)
 		}
 		c.scope.register(node.name, ast.ScopeObject{
-			typ = c.table.find_or_register_fun(param_types, node.return_type)
+			typ = c.table.find_or_register_fun(param_types, node.return_type, false)
 			kind = .function
 		})
 	}
@@ -108,6 +108,12 @@ fun (c Checker) fun_params(params []ast.Param){
 		}
 
 		if sym.kind == .fun_ {
+			info := sym.info as ast.FunInfo
+			c.table.fun_decls[p.name] = ast.FunDecl{
+				pkg = c.pkg
+				return_type = info.return_type
+				params = info.to_params()
+			}
 			c.scope.register(p.name, ast.ScopeObject{
 				typ = p.typ
 				kind = .function

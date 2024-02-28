@@ -16,6 +16,7 @@ pub:
 
 pub struct FunInfo{
 pub:
+	is_alias bool
 	param_types []Type
 	return_type Type
 }

@@ -8,7 +8,7 @@ import bait.util
 
 fun (mut g Gen) expr(expr ast.Expr) {
 	match expr {
-		ast.AnonFun { panic('not implemented') } // TODO
+		ast.AnonFun { g.anon_fun(expr) }
 		ast.ArrayInit { g.array_init(expr) }
 		ast.AsCast { g.as_cast(expr) }
 		ast.BoolLiteral { g.bool_literal(expr) }
@@ -16,14 +16,14 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.CharLiteral { g.char_literal(expr) }
 		ast.ComptimeVar { g.comptime_var(expr) }
 		ast.EnumVal { g.enum_val(expr) }
-		ast.FloatLiteral { panic('not implemented') } // TODO
+		ast.FloatLiteral { panic('floats not implemented') } // TODO
 		ast.HashExpr { g.hash_expr(expr) }
 		ast.Ident { g.ident(expr) }
 		ast.IfMatch { g.if_match(expr) }
 		ast.IndexExpr { g.index_expr(expr) }
 		ast.InfixExpr { g.infix_expr(expr) }
 		ast.IntegerLiteral { g.integer_literal(expr) }
-		ast.MapInit { panic('not implemented') } // TODO
+		ast.MapInit { panic('maps not implemented') } // TODO
 		ast.ParExpr { g.par_expr(expr) }
 		ast.PrefixExpr { g.prefix_expr(expr)}
 		ast.SelectorExpr { g.selector_expr(expr) }

@@ -20,11 +20,11 @@ mut:
 	path string
 	pkg string
 	main_inits_out string
-	type_defs_out string
-	fun_decls_out string
-	type_impls_out string
-	globals_out string
-	out string
+	type_defs_out string := '// Type definitions\n'
+	fun_decls_out string := '// Function declarations\n'
+	type_impls_out string := '// Type implementations\n'
+	globals_out string := '// Globals\n'
+	out string := '// Main code\n'
 	indent i32 := -1
 	empty_line bool := true
 	stmt_offsets []i32
@@ -82,7 +82,7 @@ fun (g Gen) process_imports(imports []ast.Import) {
 }
 
 fun (g Gen) headers() string {
-	mut headers := ''
+	mut headers := '// Headers and includes\n'
 	for name in g.foreign_imports {
 		headers += '#include <${name}>\n'
 	}
