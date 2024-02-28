@@ -1,0 +1,25 @@
+type CheckInt := fun (i32) bool
+
+// You can use the alias like any other type, for example as parameter
+fun check_nums(nums []i32, c CheckInt) {
+    for n in nums {
+        if c(n) {
+            println(n)
+        }
+    }
+}
+
+// This implicitly matches the signature of `CheckInt`
+fun greater_two(n i32) bool {
+    return n > 2
+}
+
+fun main() {
+	// You can use `greater_two` everywhere, where `CheckInt` is expected
+	check_nums([2, 3, 4], greater_two)
+
+	// Anonymous functions work as well
+	check_nums([1, 2, 3, 4], fun (n i32) bool {
+		return n % 2 == 0
+	})
+}
