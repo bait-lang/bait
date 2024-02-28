@@ -1,12 +1,15 @@
-<img align="left" width=110 src="docs/img/bait-logo.png">
+<div align="center">
 
-# Bait programming language
+<img width="120" src="docs/img/bait-logo.png">
+<h1>Bait programming language</h1>
+
 [![CI][ci-badge]][gh-actions]
 [![Discord][discord-badge]][discord-invite]
----
 
-Simple compiled language for building reliable software.
+</div>
 
+
+## Introduction
 This repository contains the compiler, cli, standard library and documentation for Bait.
 
 ```bait
@@ -15,31 +18,37 @@ fun main() {
 }
 ```
 
-## Key Features
-> **Note:** Bait is under heavy development. Incomplete features are marked with :construction:.
-> While it is quite stable already, breaking changes might happen.
 
-- Clean, simple and consistent syntax
+## Key Features
+> **Status:** Bait is in active development.
+> It is stable for personal use,
+> but please be prepared for possible breaking changes and evolving features (:construction:).
+
+- Consistent syntax balancing simplicity for newcomers with power for experienced developers
 - Type and memory safety with immutability by default
-- Explicit error handling using Result types
+- Explicit and predictable error handling using Result types
 - JavaScript backend (NodeJS, :construction: Web)
 - :construction: C backend
-- Cross-platform support (Linux, Windows)
+- Cross-platform support (Linux, :construction: Windows)
+
 
 ## Documentation
-> A website, extensive language docs and a documentation generater are in the works.
-> The Language specification will be formalized and released during the beta phase.
+> A dedicated website, comprehensive language documentation and a documentation generator are work in progress.<br>
+> The language specification will be formalized and released during the beta phase.
 
 The [Language Overview](docs/docs.md) provides a brief introduction to the syntax and features.
 
-## Examples
-Some basic example programs are in the [examples](examples) directory.
 
-More complex programs can be found in the [Rosetta Code repo][rosetta].
+## Examples
+Some basic example programs can be found in the [examples](examples) directory.
+
+For a much larger list of examples, check out the [Rosetta Code solutions][rosetta].
+
 
 ## Installation
 Right now Bait has to be compiled from source.
 Precompiled binaries will be available in the future.
+
 
 ## Building from source
 > Required dependencies: `git` and `NodeJS >= 18`
@@ -64,19 +73,25 @@ cd bait
 
 Now you should have Bait compiled to JS at `<repo>/bait.js`.
 
-Due to the symlinked wrapper script, the compiler can be used like `bait run examples/hello_world.bt`.
+Thanks to the symlinked wrapper script,
+you can use the compiler with a simple command like `bait run examples/hello_world.bt`.
+
 
 ### Upgrading to the latest version
 To update Bait to the latest commit, run `bait up`.
 
 
 ## Contributing
-Contributions are always welcome! To get started, please take a look at [CONTRIBUTING.md](./CONTRIBUTING.md).
+Your contributions are always welcome and highly appreciated!
+To get started, please take a look at [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-There is also a [Discord server][discord-invite] to ask questions and discuss the language.
+
+## Community
+For progress updates, discussions and support, join the [official Discord server][discord-invite].
+
 
 ## License
-Bait is licensed under the Mozilla Public License (MPL-2.0).
+Bait is provided under the Mozilla Public License (MPL-2.0).
 See [LICENSE](./LICENSE.txt) for details.
 
 <!-- links -->
