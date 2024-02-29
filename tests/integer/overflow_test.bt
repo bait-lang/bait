@@ -1,0 +1,30 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun test_signed_overflow() {
+	assert MIN_I8 - 1 == MAX_I8
+	assert MAX_I8 + 1 == MIN_I8
+
+	assert MIN_I16 - 1 == MAX_I16
+	assert MAX_I16 + 1 == MIN_I16
+
+	assert MIN_I32 - 1 == MAX_I32
+	assert MAX_I32 + 1 == MIN_I32
+
+	assert MIN_I64 - 1 == MAX_I64
+	assert MAX_I64 + 1 == MIN_I64
+}
+
+fun test_unsigned_overflow() {
+	assert MIN_U8 - 1 == MAX_U8
+	assert MAX_U8 + 1 == MIN_U8
+
+	assert MIN_U16 - 1 == MAX_U16
+	assert MAX_U16 + 1 == MIN_U16
+
+	assert MIN_U32 - 1 == MAX_U32
+	assert MAX_U32 + 1 == MIN_U32
+
+	assert MIN_U64 - 1 == MAX_U64
+	assert MAX_U64 + 1 == MIN_U64
+}

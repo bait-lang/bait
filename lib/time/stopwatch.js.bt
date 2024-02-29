@@ -9,25 +9,29 @@ mut:
 	elapsed u64
 }
 
+fun perf_now() u64 {
+	return #JS.'Math.floor(performance.now())' as u64
+}
+
 pub fun (mut w Stopwatch) start() {
-	w.start = #JS.'performance.now()' as u64
+	w.start = perf_now()
 	w.end = 0 as u64
 }
 
 pub fun (mut w Stopwatch) stop() {
-	w.end = #JS.'performance.now()' as u64
+	w.end = perf_now()
 	w.elapsed += w.end - w.start
 }
 
 pub fun (mut w Stopwatch) restart() {
-	w.start = #JS.'performance.now()' as u64
+	w.start = perf_now()
 	w.end = 0 as u64
 	w.elapsed = 0 as u64
 }
 
 pub fun (mut w Stopwatch) elapsed() u64 {
 	if w.start > 0 as u64 and w.end == 0 as u64 {
-		return w.elapsed + (#JS.'performance.now()' as u64 - w.start)
+		return w.elapsed + (perf_now() - w.start)
 	}
 
 	return w.elapsed
