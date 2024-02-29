@@ -82,9 +82,13 @@ fun (mut g Gen) array_init(node ast.ArrayInit) {
 }
 
 fun (mut g Gen) as_cast(node ast.AsCast) {
-	target_sym := g.table.get_sym(node.target)
-	if target_sym.kind == .alias_type {
+	if node.target == ast.I64_TYPE or node.target == ast.U64_TYPE {
+		g.write('BigInt(')
 		g.expr(node.expr)
+		if node.expr is ast.IntegerLiteral {
+			g.write('n')
+		}
+		g.write(')')
 		return
 	}
 

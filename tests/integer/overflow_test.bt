@@ -11,8 +11,8 @@ fun test_signed_overflow() {
 	assert MIN_I32 - 1 == MAX_I32
 	assert MAX_I32 + 1 == MIN_I32
 
-	// assert MIN_I64 - 1 == MAX_I64
-	// assert MAX_I64 + 1 == MIN_I64
+	assert MIN_I64 - 1 == MAX_I64
+	assert MAX_I64 + 1 == MIN_I64
 }
 
 fun test_unsigned_overflow() {
@@ -25,6 +25,6 @@ fun test_unsigned_overflow() {
 	assert MIN_U32 - 1 == MAX_U32
 	assert MAX_U32 + 1 == MIN_U32
 
-	// assert MIN_U64 - 1 == MAX_U64
-	// assert MAX_U64 + 1 == MIN_U64
+	assert MIN_U64 - 1 == MAX_U64
+	assert MAX_U64 + 1 == MIN_U64
 }

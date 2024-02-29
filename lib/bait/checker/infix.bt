@@ -32,6 +32,13 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 		c.error(err_msg, node.pos)
 	}
 
+	if node.left_type == ast.I64_TYPE or node.left_type == ast.U64_TYPE {
+		node.right = ast.AsCast{
+			expr = node.right
+			target = node.left_type
+		}
+	}
+
 	if node.op.is_compare() {
 		return ast.BOOL_TYPE
 	}

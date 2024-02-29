@@ -17,9 +17,8 @@ pub fun i32(n #JS.Any) i32 {
 	return #JS.'v > MAX_I32 ? -v : v' as i32
 }
 
-// TODO use BigInt
 pub fun i64(n #JS.Any) i64 {
-	return #JS.'Math.floor(n)' as i64
+	return #JS.'BigInt.asIntN(64, n)' as i64
 }
 
 pub fun u8(v #JS.Any) u8 {
@@ -46,7 +45,7 @@ pub fun u32(n #JS.Any) u32 {
 }
 
 pub fun u64(n #JS.Any) u64 {
-	return #JS.'Math.floor(n)' as u64
+	return #JS.'BigInt.asUintN(64, n)' as u64
 }
 
 pub fun (n i8) str() string {

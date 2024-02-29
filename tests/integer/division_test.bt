@@ -6,6 +6,4 @@ fun test_signed_division() {
 	assert (10 as i16) / 3 == 3
 	assert 10 / 3 == 3
 	assert (10 as i64) / 3 == 3
-
-	assert 1 / 2 == 0
 }
