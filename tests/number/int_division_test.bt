@@ -1,15 +1,11 @@
 // SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
 
-fun test_integer_division() {
-	i := 10
-	res := i / 3
-	assert res == 3
+fun test_signed_division() {
+	assert (10 as i8) / 3 == 3
+	assert (10 as i16) / 3 == 3
+	assert 10 / 3 == 3
+	assert (10 as i64) / 3 == 3
 
-	mut n := 2
-	n /= 2
-	assert n == 1
-
-	n /= 2
-	assert n == 0
+	assert 1 / 2 == 0
 }
