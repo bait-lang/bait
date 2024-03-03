@@ -1,0 +1,55 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+// Basic CRC32 implementation without architecture specific optimizations
+package crc32
+
+// Polynomials in reversed bit order
+pub const IEEE := 0xedb88320 as u32
+pub const CASTAGNOLI := 0x82f63b78 as u32
+pub const KOOPMAN := 0xeb31d82e as u32
+
+// TODO use fixed size array
+// TODO use type Table := [256]u32 instead of struct
+struct CrcTable {
+mut:
+	table []u32
+}
+
+pub fun generate_table(poly u32) CrcTable {
+	mut c := CrcTable{
+		table = []u32
+	}
+
+	for i := 0; i < 256; i += 1 {
+		mut crc := i as u32
+		for j := 0; j < 8; j += 1 {
+			if (crc & 1) == 1 {
+				crc = (crc >> 1) ^ poly
+			} else {
+				crc = crc >> 1
+			}
+		}
+		c.table.push(crc)
+	}
+
+	return c
+}
+
+pub fun (c CrcTable) checksum(data []u8) u32 {
+	mut crc := MAX_U32
+
+	for byte in data {
+		crc = c.table[crc as u8 ^ byte] ^ (crc >> 8)
+	}
+
+	// FIXME js: ~ also inverts the sign bit and not stays in the u32 bounds.
+	// The "& MAX_U32" is a workaround and should be inserted by the compiler
+	return ~crc & MAX_U32
+}
+
+// Calculates the CRC32 checksum of `data` using the IEEE polynomial
+pub fun checksum(data []u8) u32 {
+	c := generate_table(IEEE)
+	return c.checksum(data)
+}

@@ -1,0 +1,18 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+import hash.crc32
+
+fun test_table_generation() {
+	c := crc32.generate_table(crc32.IEEE)
+	sum := c.checksum('crc32'.bytes())
+	assert sum == 2947273566
+	assert sum.hex() == 'afabd35e'
+}
+
+fun test_crc32() {
+	data := 'hello world'.bytes()
+	sum := crc32.checksum(data)
+	assert sum == 222957957
+	assert sum.hex() == 'd4a1185'
+}

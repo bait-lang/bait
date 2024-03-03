@@ -82,6 +82,7 @@ _unreleased_
 
 ### Standard Library
 - Add new package `encoding.binary`
+- Add new package `hash.crc32`
 - Add new package `cli.options`
 - Add work in progress `math` package
 - `builtin`
