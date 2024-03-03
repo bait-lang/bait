@@ -12,6 +12,14 @@ fun (s string) get(i i32) u8 {
 	return u8(s.str.charCodeAt(i as #JS.Number) as #JS.Any)
 }
 
+pub fun (s string) bytes() []u8 {
+	mut arr := []u8
+	for c in s {
+		arr.push(c)
+	}
+	return arr
+}
+
 pub fun (s string) replace(val string, with string) string {
 	return from_js_string(s.str.replaceAll(val.str, with.str))
 }

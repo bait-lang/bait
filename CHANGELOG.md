@@ -86,6 +86,7 @@ _unreleased_
 - Add work in progress `math` package
 - `builtin`
   - Add new string method: `index_after(search, pos) i32`
+  - Add `hex()` method for all integer types
   - _[C]_ Implement string methods:
     - `all_before`, `all_before_last`, `all_after`, `all_after_last`
     - `index`, `last_index`, `contains`
@@ -94,6 +95,7 @@ _unreleased_
     - `replace`, `substr`, `repeat`
   - _[C]_ Implement array method `contains`
   - _JS backend_
+    - New string method `bytes() []u8`
     - New array method `delete()`
     - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
     - New `[]u8` method: `to_string()`
