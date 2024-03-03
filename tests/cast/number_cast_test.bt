@@ -1,0 +1,8 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun test_number_casts() {
+	a := 123 as u64
+	b := 17 as u8
+	assert (a as u8) + b == 140
+}
