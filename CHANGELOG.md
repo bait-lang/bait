@@ -83,6 +83,7 @@ _unreleased_
 - Add new package `cli.options`
 - Add work in progress `math` package
 - `builtin`
+  - Add functions `print(msg)`, `eprint(msg)`
   - New string methods: `index_after(search, pos) i32`, `bytes() []u8`
   - Add `hex()` method for all integer types
   - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
