@@ -69,7 +69,7 @@ _unreleased_
 ### JS Backend
 - Improve performance of string comparison
 - Fix integer over- and underflows
-- Fix i64 and u64 implementations by internally using BigInt
+- Fix i64, u32 and u64 implementations by internally using BigInt
 
 ### C Backend
 - Experimental generics support

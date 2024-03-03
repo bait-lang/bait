@@ -41,7 +41,7 @@ pub fun u16(n #JS.Any) u16 {
 }
 
 pub fun u32(n #JS.Any) u32 {
-	return #JS.'(n & 0xFFFFFFFF) >>> 0' as u32
+	return #JS.'BigInt.asUintN(32, n)' as u32
 }
 
 pub fun u64(n #JS.Any) u64 {

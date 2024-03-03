@@ -13,3 +13,9 @@ fun test_bitwise_operators() {
 	assert a << 2 == 0b100100
 	assert a >> 2 == 0b10
 }
+
+fun test_bitwise_u32() {
+	a := 0b11101101101110001000001100100000 as u32 // 3988292384
+	b := 0b1110110110111000100000110010000 as u32 // 1994146192
+	assert a >> 1 == b
+}
