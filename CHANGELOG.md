@@ -83,7 +83,7 @@ _unreleased_
 - Add new package `cli.options`
 - Add work in progress `math` package
 - `builtin`
-  - Add new string method: `index_after(search, pos) i32`
+  - New string methods: `index_after(search, pos) i32`, `bytes() []u8`
   - Add `hex()` method for all integer types
   - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
   - New `[]u8` method: `to_string()`
@@ -95,7 +95,6 @@ _unreleased_
     - `replace`, `substr`, `repeat`
   - _[C]_ Implement array method `contains`
   - _[C]_ Implement u8 method `ascii() string`
-  - _[JS]_ New string method `bytes() []u8`
   - _[JS]_ New array method `delete()`
 - `os`:
   - New function `read_bytes(path) []u8`
