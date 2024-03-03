@@ -181,7 +181,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	// Handle special builtin functions
-	if node.name == 'println' or node.name == 'eprintln' {
+	if node.name == 'println' or node.name == 'eprintln' or node.name == 'print' or node.name == 'eprint' {
 		node.args[0].typ = c.expr(node.args[0].expr)
 		return ast.VOID_TYPE
 	}

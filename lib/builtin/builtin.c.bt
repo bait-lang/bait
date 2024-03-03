@@ -10,6 +10,14 @@ pub fun eprintln(s string) {
 	#C.fprintf(#C.stderr, '%s\n'.str, s.str)
 }
 
+pub fun print(s string) {
+	#C.printf('%s'.str, s.str)
+}
+
+pub fun eprint(s string) {
+	#C.fprintf(#C.stderr, '%s'.str, s.str)
+}
+
 @noreturn
 pub fun exit(code i32) {
 	#C.exit(code)

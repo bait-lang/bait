@@ -110,7 +110,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 
 	g.write(name)
 
-	if ['println', 'eprintln'].contains(node.name) {
+	if ['println', 'eprintln', 'print', 'eprint'].contains(node.name) {
 		g.write('(')
 		g.expr_to_string(node.args[0].expr, node.args[0].typ)
 		g.write(')')

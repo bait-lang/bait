@@ -10,6 +10,14 @@ pub fun eprintln(msg string) {
 	#JS.console.error(msg.str as #JS.Any)
 }
 
+pub fun print(msg string) {
+	#JS.'JS.process.stdout.write(msg.str)'
+}
+
+pub fun eprint(msg string) {
+	#JS.'JS.process.stderr.write(msg.str)'
+}
+
 @noreturn
 pub fun exit(code i32) {
 	#JS.process.exit(code as #JS.Number)
