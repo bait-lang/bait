@@ -3,5 +3,13 @@
 package builtin
 
 pub fun (c u8) ascii() string {
-	return from_js_string(#JS.'String.fromCharCode(c)' as #JS.String)
+	mut s := string{
+		str = #C.calloc(1, 2)
+		length = 1
+	}
+
+	s.str[0] = c
+	s.str[1] = 0 as u8
+
+	return s
 }

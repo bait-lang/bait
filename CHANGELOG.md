@@ -75,7 +75,7 @@ _unreleased_
 - Experimental generics support
 - Minimal windows support (`os` package won't work)
 - builder: Fixes for using the C backend on windows
-- gen: Implement `assert`, `break` `continue`, `enum`, `global` and compile time variables
+- gen: Implement `assert`, `break` `continue`, `enum`, `global`, char literals and compile time variables
 - Fix compiling libraries
 - Fix string interpolation C error with tcc
 - Fix C error when calling a method on a mutable array instance
@@ -88,6 +88,8 @@ _unreleased_
 - `builtin`
   - Add new string method: `index_after(search, pos) i32`
   - Add `hex()` method for all integer types
+  - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
+  - New `[]u8` method: `to_string()`
   - _[C]_ Implement string methods:
     - `all_before`, `all_before_last`, `all_after`, `all_after_last`
     - `index`, `last_index`, `contains`
@@ -95,11 +97,9 @@ _unreleased_
     - `trim_left`, `trim_right`
     - `replace`, `substr`, `repeat`
   - _[C]_ Implement array method `contains`
-  - _JS backend_
-    - New string method `bytes() []u8`
-    - New array method `delete()`
-    - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
-    - New `[]u8` method: `to_string()`
+  - _[C]_ Implement u8 method `ascii() string`
+  - _[JS]_ New string method `bytes() []u8`
+  - _[JS]_ New array method `delete()`
 - `os`:
   - New function `read_bytes(path) []u8`
   - _[JS]_ New function `is_root(path) bool`
