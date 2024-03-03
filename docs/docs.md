@@ -431,7 +431,33 @@ enum AnsiColor {
 type NewType := ExistingType
 ```
 
-### SumType
+
+### Function Type
+Type aliases can also name a specific function signature:
+
+```bait
+type CheckInt := fun (i32) bool
+
+// You can use the alias like any other type, for example as parameter
+fun check_nums(nums []i32, c CheckInt) {
+    for n in nums {
+        c(n)
+    }
+}
+
+// This implicitly matches the signature of `CheckInt`
+fun greater_two(n i32) bool {
+    return n > 2
+}
+
+// You can use `greater_two` everywhere, where `CheckInt` is expected
+check_nums([2,3,4], greater_two)
+```
+
+Also take a look at the [complete example](../examples/function_types.bt).
+
+
+### Sum Type
 ```bait
 struct Triangle{}
 
@@ -441,6 +467,7 @@ struct Circle{}
 
 type Shape := Triangle | Rectangle | Circle
 ```
+
 
 ## Assert and Unit Testing
 Unit testing is built right into the Bait Compiler with the `test` command.

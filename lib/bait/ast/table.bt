@@ -91,8 +91,9 @@ pub fun (t Table) register_sym(sym TypeSymbol) Type {
 			return idx
 		}
 
-		if BUILTIN_STRUCT_TYPES.contains(idx) {
+		if idx < USER_TYPES_SPACE {
 			mut new_sym := sym
+			new_sym.is_pub = true
 			new_sym.kind = cur_sym.kind
 			new_sym.methods = cur_sym.methods
 			t.type_symbols[idx] = new_sym
@@ -144,16 +145,19 @@ pub fun (t Table) find_or_register_map(key_type Type, val_type Type) Type {
 	})
 }
 
-pub fun (t Table) find_or_register_fun(param_types []Type, return_type Type) Type {
+// FIXME/REFAC register fun aliases as alias with fun info
+pub fun (t Table) find_or_register_fun(param_types []Type, return_type Type, alias bool) Type {
 	name := 'fun_' + t.fun_type_signature(param_types, return_type)
 	idx := t.get_idx(name)
 	if idx > 0 as Type {
 		return idx
 	}
+
 	return t.register_sym(TypeSymbol{
 		kind = .fun_
 		name = name
 		info = FunInfo{
+			is_alias = alias
 			param_types = param_types
 			return_type = return_type
 		}
@@ -171,9 +175,11 @@ pub fun (t Table) fun_type_signature(param_types []Type, return_type Type) strin
 
 pub fun (t Table) find_type_or_add_placeholder(name string, pkg string) Type {
 	idx := t.get_idx(name)
+
 	if idx > 0 as Type {
 		return idx
 	}
+
 	return t.register_sym(TypeSymbol{
 		kind = .placeholder
 		name = name

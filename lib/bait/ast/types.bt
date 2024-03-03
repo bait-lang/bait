@@ -21,6 +21,7 @@ pub const STRING_TYPE := new_type(13)
 pub const ARRAY_TYPE := new_type(14)
 pub const MAP_TYPE := new_type(15)
 pub const ANY_TYPE := new_type(16)
+pub const USER_TYPES_SPACE := 17
 
 pub fun new_type(t i32) Type {
 	return t as Type

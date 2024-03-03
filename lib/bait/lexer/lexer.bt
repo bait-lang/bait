@@ -36,6 +36,10 @@ pub fun (mut l Lexer) init(text string, comment_mode CommentMode) {
 	l.pos = 0
 }
 
+pub fun (l Lexer) offset() i32 {
+	return l.pos
+}
+
 pub fun (l Lexer) val() string {
 	return l.val
 }

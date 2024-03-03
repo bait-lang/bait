@@ -15,6 +15,7 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 
 fun (g Gen) typ(typ ast.Type) string {
 	sym := g.concrete_sym(typ)
+
 	name := sym.name.replace('[]', 'Array_').replace('C.', '').replace('.', '__')
 	ptrs := '*'.repeat(typ.get_nr_amp())
 	prefix := if sym.kind == .enum_ { 'enum ' } else { '' }
@@ -40,7 +41,22 @@ fun (mut g Gen) write_types() {
 			g.type_impls_out += '};\n'
 		} else if sym.info is ast.ArrayInfo {
 			g.type_defs_out += 'typedef Array ${cname};\n'
-		} else if sym.kind == .alias_type {
+		} else if sym.kind == .fun_ {
+			info := sym.info as ast.FunInfo
+			if not info.is_alias {
+				continue
+			}
+
+			g.type_defs_out += 'typedef ${g.typ(info.return_type)} (*${cname})('
+			for i, param in info.param_types {
+				g.type_defs_out += g.typ(param)
+				if i < info.param_types.length - 1 {
+					g.type_defs_out += ', '
+				}
+			}
+			g.type_defs_out += ');\n'
+		}
+		 else if sym.kind == .alias_type or sym.kind == .number {
 			g.type_defs_out += 'typedef ${g.typ(sym.parent)} ${cname};\n'
 		} else if sym.kind == .enum_ {
 			info := sym.info as ast.EnumInfo
