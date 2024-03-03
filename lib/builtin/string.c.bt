@@ -194,6 +194,16 @@ pub fun (s string) repeat(count i32) string {
 	}
 }
 
+pub fun (s string) bytes() []u8 {
+	if s.length == 0 {
+		return []u8
+	}
+
+	mut buf := []u8{length = s.length}
+	#C.memcpy(buf.data, s.str, s.length)
+	return buf
+}
+
 @overload('+')
 fun (a string) add (b string) string {
 	new_len := a.length + b.length
