@@ -36,9 +36,6 @@ _unreleased_
 - _[JS]_ Add `testsuite_begin()` and `testsuite_end()` functions
 - _[JS]_ Implement generic structs
 
-### Immutability
-- Require mutable function argument if paramter is mutable
-
 ### Error Checks
 - Fixes and improvements regarding error positions
 - Disallow leading zeros in decimal numbers
@@ -75,7 +72,7 @@ _unreleased_
 - Experimental generics support
 - Minimal windows support (`os` package won't work)
 - builder: Fixes for using the C backend on windows
-- gen: Implement `assert`, `break` `continue`, `enum`, `global`, char literals and compile time variables
+- gen: Implement `assert`, `break` `continue`, `enum`, `global`, anonymous functions, character literals and compile time variables
 - Fix compiling libraries
 - Fix string interpolation C error with tcc
 - Fix C error when calling a method on a mutable array instance
@@ -122,6 +119,8 @@ _unreleased_
   - Print parser warnings and errors
 
 ### Other Changes
+- Require mutable function argument if paramter is mutable
+- Fix function types
 - _[JS]_ Fix integer division assign that could result in a float
 - gen:
   - Fix `!=` when `==` is overloaded
