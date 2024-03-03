@@ -92,6 +92,13 @@ fun (mut g Gen) as_cast(node ast.AsCast) {
 		return
 	}
 
+	if node.expr_type == ast.I64_TYPE or node.expr_type == ast.U64_TYPE {
+		g.write('Number(')
+		g.expr(node.expr)
+		g.write(')')
+		return
+	}
+
 	g.expr(node.expr)
 }
 
