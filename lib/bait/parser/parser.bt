@@ -7,11 +7,13 @@ import bait.errors
 import bait.ast
 import bait.lexer
 import bait.token
+import hash.crc32
 
 pub struct Parser {
 	pref preference.Prefs
 mut:
 	path string
+	file_hash string
 	eofs i32
 	tok token.Token
 	next_tok token.Token
@@ -41,6 +43,7 @@ pub fun new(table ast.Table, pref preference.Prefs) Parser {
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
 	p.lexer.init(text, .discard)
 	p.path = path
+	p.file_hash = crc32.checksum(path.bytes()).str()
 	p.pkg_name = expected_pkg
 	p.eofs = 0
 	p.import_aliases = map[string]string

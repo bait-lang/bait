@@ -15,6 +15,9 @@ fun (mut g Gen) anon_fun(node ast.AnonFun) {
 
 	g.out = g.out.substr(0, start)
 	g.indent = last_indent
+	g.empty_line = was_line_empty
+
+	g.write(node.decl.name)
 }
 
 fun (mut g Gen) fun_decl(node ast.FunDecl) {
