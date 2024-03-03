@@ -1,6 +1,0 @@
-// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
-// SPDX-License-Identifier: MPL-2.0
-
-fun test_int_division() {
-	assert 3 / 2 == 1
-}

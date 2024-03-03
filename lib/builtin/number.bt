@@ -25,3 +25,66 @@ pub const MAX_U32 := 4294967295 as u32
 
 pub const MIN_U64 := 0 as u64
 pub const MAX_U64 := 18446744073709551615 as u64
+
+// TODO number promotion
+
+pub fun (n u8) hex() string {
+	return to_hex_padded(n as u64, 2)
+}
+
+pub fun (n u16) hex() string {
+	return to_hex(n as u64, 4)
+}
+
+pub fun (n u32) hex() string {
+	return to_hex(n as u64, 8)
+}
+
+pub fun (n u64) hex() string {
+	return to_hex(n as u64, 16)
+}
+
+pub fun (n i8) hex() string {
+	return (n as u8).hex()
+}
+
+pub fun (n i16) hex() string {
+	return (n as u16).hex()
+}
+
+pub fun (n i32) hex() string {
+	return (n as u32).hex()
+}
+
+pub fun (n i64) hex() string {
+	return (n as u64).hex()
+}
+
+fun to_hex(num u64, len u8) string {
+	mut n := num
+	mut buf := []u8{ length = len as i32 }
+	mut i := (len - 1) as i32
+	for i >= 0 {
+		d := (n & 0xF) as u8
+		d2 := if d < 10 { d + `0` } else { d + 87 }
+		buf[i] = d2
+		n = n >> 4
+		if n == 0 {
+			break
+		}
+		i -= 1
+	}
+	return buf.slice(i, buf.length).to_string()
+}
+
+fun to_hex_padded(num u64, len u8) string {
+	mut n := num
+	mut buf := []u8{ length = len as i32 }
+	for i := (len - 1) as i32; i >= 0; i -= 1 {
+		d := (n & 0xF) as u8
+		d2 := if d < 10 { d + `0` } else { d + 87 }
+		buf[i] = d2
+		n = n >> 4
+	}
+	return buf.to_string()
+}

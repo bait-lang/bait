@@ -82,7 +82,7 @@ fun (mut g Gen) array_init(node ast.ArrayInit) {
 }
 
 fun (mut g Gen) as_cast(node ast.AsCast) {
-	if node.target == ast.I64_TYPE or node.target == ast.U64_TYPE {
+	if node.target == ast.I64_TYPE or node.target == ast.U64_TYPE or node.target == ast.U32_TYPE {
 		g.write('BigInt(')
 		g.expr(node.expr)
 		if node.expr is ast.IntegerLiteral {
@@ -92,7 +92,7 @@ fun (mut g Gen) as_cast(node ast.AsCast) {
 		return
 	}
 
-	if node.expr_type == ast.I64_TYPE or node.expr_type == ast.U64_TYPE {
+	if node.expr_type == ast.I64_TYPE or node.expr_type == ast.U64_TYPE or node.expr_type == ast.U32_TYPE {
 		g.write('Number(')
 		g.expr(node.expr)
 		g.write(')')

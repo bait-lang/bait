@@ -1,0 +1,9 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+fun test_to_hex() {
+	assert (0 as u8).hex() == '00'
+	i := 44444 // TODO fix methods on number literals `44444.hex()`
+	assert i.hex() == 'ad9c'
+	assert (12345 as u64).hex() == '3039'
+}

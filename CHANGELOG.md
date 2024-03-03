@@ -69,23 +69,27 @@ _unreleased_
 ### JS Backend
 - Improve performance of string comparison
 - Fix integer over- and underflows
-- Fix i64 and u64 implementations by internally using BigInt
+- Fix i64, u32 and u64 implementations by internally using BigInt
 
 ### C Backend
 - Experimental generics support
 - Minimal windows support (`os` package won't work)
 - builder: Fixes for using the C backend on windows
-- gen: Implement `assert`, `break` `continue`, `enum`, `global` and compile time variables
+- gen: Implement `assert`, `break` `continue`, `enum`, `global`, char literals and compile time variables
 - Fix compiling libraries
 - Fix string interpolation C error with tcc
 - Fix C error when calling a method on a mutable array instance
 
 ### Standard Library
 - Add new package `encoding.binary`
+- Add new package `hash.crc32`
 - Add new package `cli.options`
 - Add work in progress `math` package
 - `builtin`
   - Add new string method: `index_after(search, pos) i32`
+  - Add `hex()` method for all integer types
+  - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
+  - New `[]u8` method: `to_string()`
   - _[C]_ Implement string methods:
     - `all_before`, `all_before_last`, `all_after`, `all_after_last`
     - `index`, `last_index`, `contains`
@@ -93,10 +97,9 @@ _unreleased_
     - `trim_left`, `trim_right`
     - `replace`, `substr`, `repeat`
   - _[C]_ Implement array method `contains`
-  - _JS backend_
-    - New array method `delete()`
-    - New u8 methods: `is_lower()`, `is_upper()`, `is_digit()`, `is_hex_digit()`, `is_bin_digit()`
-    - New `[]u8` method: `to_string()`
+  - _[C]_ Implement u8 method `ascii() string`
+  - _[JS]_ New string method `bytes() []u8`
+  - _[JS]_ New array method `delete()`
 - `os`:
   - New function `read_bytes(path) []u8`
   - _[JS]_ New function `is_root(path) bool`
