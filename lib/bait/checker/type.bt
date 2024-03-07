@@ -81,7 +81,7 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 }
 
 fun (c Checker) does_type_exist(sym ast.TypeSymbol, pos token.Pos) bool {
-	if sym.kind == .placeholder and sym.name != '_' {
+	if (sym.kind == .placeholder and sym.name != '_') or (sym.kind == .generic and not (c.cur_generic_names.contains(sym.name))) {
 		c.error('unknown type ${sym.name}', pos)
 		return false
 	}

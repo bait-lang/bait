@@ -162,6 +162,7 @@ pub:
 	name string
 	typ Type
 	fields []StructField
+	generic_names []string
 	pos token.Pos
 }
 

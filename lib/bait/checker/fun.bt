@@ -63,10 +63,15 @@ fun (mut c Checker) fun_instance(mut node ast.FunDecl) {
 	c.cur_fun = node
 	c.check_fun_attrs(mut node) // FIXME this should error because node is not mut
 
+	// save current generic names in outer scope and override them with
+	// the funs' generic names (so does_type_exist can detect nonexistent generic names)
+	prev_generic_names := c.cur_generic_names
+	c.cur_generic_names = node.generic_names
 	c.open_scope()
 	c.fun_params(node.params)
 	c.stmts(node.stmts)
 	c.close_scope()
+	c.cur_generic_names = prev_generic_names
 
 	ret_sym := c.table.get_sym(node.return_type)
 	is_void := node.return_type == ast.VOID_TYPE or ret_sym.parent == ast.VOID_TYPE

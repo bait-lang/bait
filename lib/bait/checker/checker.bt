@@ -21,6 +21,7 @@ mut:
 	cur_fun ast.FunDecl
 	cur_concrete_types []ast.Type
 	need_generic_resolve bool
+	cur_generic_names []string
 	expected_type ast.Type
 	is_lhs_assign bool
 	is_if_match_expr bool

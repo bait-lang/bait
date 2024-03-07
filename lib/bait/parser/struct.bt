@@ -105,6 +105,7 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 		name = name
 		typ = typ
 		fields = fields
+		generic_names = generic_names
 		pos = pos
 	}
 }

@@ -10,6 +10,12 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 	// TODO remove exceptions for string and map
 	// TODO error
 	// TODO test
+
+	// save current generic names and override them with the structs' generic names
+	// so does_type_exist can detect nonexistent generic names
+	prev_generic_names := c.cur_generic_names
+	c.cur_generic_names = node.generic_names
+	
 	if not node.name[0].is_upper() and node.name != 'string' and node.name != 'map' {
 		c.warn('struct name `${node.name}` must start with a capital letter', node.pos)
 	}
@@ -39,6 +45,8 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 			c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.EmptyExpr).pos)
 		}
 	}
+
+	c.cur_generic_names = prev_generic_names
 }
 
 fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
