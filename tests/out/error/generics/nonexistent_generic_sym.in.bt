@@ -1,0 +1,12 @@
+// This adds a new .generic TypeSymbol `T` to the table
+fun define_t[T]() {}
+// the table still has T!
+
+fun max(x T, y T) T {
+    return if x > y { x } else { y }
+}
+
+fun test_nonexistent_generic_sym() {
+    x := max(5, 6)
+    println(typeof(x))
+}

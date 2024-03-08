@@ -7,3 +7,4 @@ bin/
 
 # editor files
 *.code-workspace
+*.vscode
