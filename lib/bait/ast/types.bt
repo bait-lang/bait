@@ -138,7 +138,7 @@ pub fun (t Table) register_builtins(){
 		kind = .array
 	})
 	t.register_sym(TypeSymbol{
-		name = 'map'
+		name = 'Map'
 		kind = .map
 	})
 	t.register_sym(TypeSymbol{ name = 'any'})
