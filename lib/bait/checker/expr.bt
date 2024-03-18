@@ -114,18 +114,6 @@ fun (mut c Checker) as_cast(mut node ast.AsCast) ast.Type {
 	return node.target
 }
 
-const SUPPORTED_COMPTIME_VARS := [
-	'PKG',
-	'FILE',
-	'ABS_FILE',
-	'LINE',
-	'FILE_LINE',
-	'FUN',
-	'BAITEXE',
-	'BAITDIR',
-	'BAITHASH',
-]
-
 fun (mut c Checker) enum_val(mut node ast.EnumVal) ast.Type {
 	if node.name.length == 0 {
 		node.typ = c.expected_type

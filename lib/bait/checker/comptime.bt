@@ -5,9 +5,6 @@ package checker
 import bait.ast
 
 fun (mut c Checker) comptime_var(node ast.ComptimeVar) ast.Type {
-	if not SUPPORTED_COMPTIME_VARS.contains(node.name) {
-		c.error('unsupported comptime var "${node.name}"', node.pos)
-	}
 	return ast.STRING_TYPE
 }
 

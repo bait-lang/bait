@@ -8,28 +8,31 @@ import bait.token
 
 fun (mut g Gen) comptime_var(node ast.ComptimeVar){
 	g.write('from_c_string("')
-	g.write(g.get_comptime_val(node.name, node.pos))
+	g.write(g.get_comptime_val(node.kind, node.pos))
 	g.write('")')
 }
 
-fun (mut g Gen) get_comptime_val(name string, pos token.Pos) string {
-	return match name {
+fun (mut g Gen) get_comptime_val(kind token.ComptimeVar, pos token.Pos) string {
+	return match kind {
 		// Dynamic
-		'PKG' { g.pkg }
-		'ABS_FILE' { os.abs_path(g.path).replace('\\', '\\\\') }
-		'FILE' { g.path.replace('\\', '\\\\') }
-		'LINE' { pos.line.str() }
-		'FILE_LINE' {
-			file := g.get_comptime_val('FILE', pos)
-			line := g.get_comptime_val('LINE', pos)
+		.pkg { g.pkg }
+		.abs_file { os.abs_path(g.path).replace('\\', '\\\\') }
+		.file { g.path.replace('\\', '\\\\') }
+		.line { pos.line.str() }
+		.file_line {
+			file := g.get_comptime_val(.file, pos)
+			line := g.get_comptime_val(.line, pos)
 			'${file}:${line}'
 		}
-		'FUN' { g.cur_fun.name }
+		.fun_ { g.cur_fun.name }
+
 		// Cached
-		'BAITEXE' { g.comptime_baitexe() }
-		'BAITDIR' { g.comptime_baitdir() }
-		'BAITHASH' { g.comptime_baithash() }
-		else { '' }
+		.baitexe { g.comptime_baitexe() }
+		.baitdir { g.comptime_baitdir() }
+		.baithash { g.comptime_baithash() }
+
+		// Error
+		.unknown { panic('this should never happen') }
 	}
 }
 

@@ -10,7 +10,7 @@ pub fun (e Expr) repr() string {
 		BoolLiteral { e.str() }
 		CallExpr{ e.name + '()'} // TODO left.repr, args
 		CharLiteral { e.val }
-		ComptimeVar { e.name }
+		ComptimeVar { e.kind.str() }
 		EnumVal{ e.val }
 		FloatLiteral { e.val }
 		HashExpr { '#XX' } // TODO lang
