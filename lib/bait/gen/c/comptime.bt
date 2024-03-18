@@ -25,10 +25,13 @@ fun (mut g Gen) get_comptime_val(kind token.ComptimeVar, pos token.Pos) string {
 			'${file}:${line}'
 		}
 		.fun_ { g.cur_fun.name }
+
 		// Cached
 		.baitexe { g.comptime_baitexe() }
 		.baitdir { g.comptime_baitdir() }
 		.baithash { g.comptime_baithash() }
+
+		// Error
 		.unknown { panic('this should never happen') }
 	}
 }

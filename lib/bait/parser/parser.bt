@@ -40,6 +40,10 @@ pub fun new(table ast.Table, pref preference.Prefs) Parser {
 	}
 }
 
+pub fun new_default() Parser {
+	return new(ast.new_table(), preference.Prefs{})
+}
+
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
 	p.lexer.init(text, .discard)
 	p.path = path

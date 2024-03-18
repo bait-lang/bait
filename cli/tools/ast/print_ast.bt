@@ -35,7 +35,7 @@ fun main() {
 		return
 	}
 
-	mut p := parser.new(ast.new_table(), preference.Prefs{})
+	mut p := parser.new_default()
 	p.init(text, path, '')
 	file_ast := p.parse_result() or {
 		p.warnings.print()

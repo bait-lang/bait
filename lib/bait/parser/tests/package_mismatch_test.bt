@@ -9,7 +9,7 @@ fun test_mismatch_info() {
 	text := 'package different
 struct Content {}'
 
-	mut p := parser.new(ast.new_table(), preference.Prefs{})
+	mut p := parser.new_default()
 	p.init(text, '/just/for/test/file.bt', 'wanted')
 
 	file := p.parse()
@@ -23,7 +23,7 @@ fun test_attribute_silent_mismatch() {
 	text := '@silent_mismatch
 package different'
 
-	mut p := parser.new(ast.new_table(), preference.Prefs{})
+	mut p := parser.new_default()
 	p.init(text, '/just/for/test/file.bt', 'wanted')
 
 	file := p.parse()
