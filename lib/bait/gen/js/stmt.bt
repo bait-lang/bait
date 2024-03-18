@@ -126,7 +126,7 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 		g.write('.${node.field_name}')
 	} else if node is ast.ComptimeVar {
 		g.write('$')
-		g.write(node.name)
+		g.write(node.kind.str())
 	} else {
 		g.write('UNHANDLED EXPR')
 	}

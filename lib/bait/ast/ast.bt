@@ -259,7 +259,7 @@ pub:
 
 pub struct ComptimeVar{
 pub:
-	name string
+	kind token.ComptimeVar
 	pos token.Pos
 }
 

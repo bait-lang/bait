@@ -524,7 +524,7 @@ They are defined with `@name` or `@name('value')` before the statement they shou
 | `@silent_mismatch` | Suppress the package mismatch info message. | -     |
 
 
-## Compile Time Code Evaluation (CompTime)
+## Compile Time Code Evaluation (Comptime)
 ### Compile Time Pseudo Variables
 Bait supports a few pseudo variables, which are replaced by their actual values during compilation.
 They are all of the type `string`.
@@ -532,9 +532,9 @@ They are all of the type `string`.
 | Variable     | Description                       | Example                 |
 | ------------ | --------------------------------- | ----------------------- |
 | `$PKG`       | Current package name              | `main`                  |
-| `$ABS_FILE`  | Absolute source file path         | `/path/to/file.bt`      |
-| `$FILE`      | Relative source file path         | `lib/builtin/file.bt`   |
-| `$LINE`      | Line number where it is used      | `123`                   |
+| `$ABS_FILE`  | Absolute file path                | `/path/to/lib/file.bt`  |
+| `$FILE`      | File path relative to working dir | `lib/file.bt`           |
+| `$LINE`      | Line number of the variable       | `123`                   |
 | `$FILE_LINE` | Relative path and the line        | `tests/my_test.bt:27`   |
 | `$FUN`       | Current function name             | `test_read_line`        |
 | `$BAITEXE`   | Absolut path to the Bait compiler | `/path/to/bait/bait.js` |

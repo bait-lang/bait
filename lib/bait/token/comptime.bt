@@ -1,0 +1,31 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package token
+
+pub enum ComptimeVar {
+	unknown
+	pkg
+	file
+	abs_file
+	line
+	file_line
+	fun_
+	baitexe
+	baitdir
+	baithash
+}
+
+pub fun comptime_var_from_string(name string) ComptimeVar {
+	return match name {
+		'PKG' { .pkg }
+		'FILE' { .file }
+		'ABS_FILE' { .abs_file }
+		'LINE' { .line }
+		'FILE_LINE' { .file_line }
+		'FUN' { .fun_ }
+		'BAITEXE' { .baitexe }
+		'BAITDIR' { .baitdir }
+		'BAITHASH' { .baithash }
+		else { .unknown }
+	}
+}
