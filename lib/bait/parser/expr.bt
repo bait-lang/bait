@@ -205,7 +205,7 @@ fun (mut p Parser) comptime_var() !ast.ComptimeVar{
 	kind := token.comptime_var_from_string(name)
 
 	if kind == .unknown {
-		p.error('unsupported comptime var "${name}"')!
+		p.error('unsupported comptime var `$${name}`')!
 	}
 
 	return ast.ComptimeVar{
