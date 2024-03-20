@@ -11,5 +11,5 @@ fun test_unknown_comptime_var() {
 
 	file := p.parse()
 	assert file.errors.length == 1
-	assert file.errors[0].msg == 'unsupported comptime var `$CT_VAR_XXX`'
+	assert file.errors[0].msg == 'invalid comptime var `$CT_VAR_XXX`'
 }

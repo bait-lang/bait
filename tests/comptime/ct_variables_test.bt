@@ -1,16 +1,23 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
 
+import os
+
 fun test_comptime_vars() {
 	assert $PKG == 'main'
 	assert $FILE.replace('\\', '/') == 'tests/comptime/ct_variables_test.bt'
-	assert $LINE == '7'
-	assert $FILE_LINE.replace('\\', '/') == 'tests/comptime/ct_variables_test.bt:8'
+	assert $LINE == '9'
+	assert $FILE_LINE.replace('\\', '/') == 'tests/comptime/ct_variables_test.bt:10'
 	assert $FUN == 'test_comptime_vars'
 
 	// The following vars are hard to test
 
 	assert $ABS_FILE.length > $FILE.length
+	assert $ABS_FILE.ends_with($FILE)
+
+	assert $DIR.length < $ABS_FILE.length
+	assert not $DIR.ends_with('.bt')
+	assert not $DIR.ends_with(os.PATH_SEP)
 
 	assert $BAITEXE.length > 0
 

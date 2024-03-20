@@ -18,6 +18,7 @@ fun (mut g Gen) get_comptime_val(kind token.ComptimeVar, pos token.Pos) string {
 		.pkg { g.pkg }
 		.abs_file { os.abs_path(g.path).replace('\\', '\\\\') }
 		.file { g.path.replace('\\', '\\\\') }
+		.dir { os.dir(g.get_comptime_val(.abs_file, pos)) }
 		.line { pos.line.str() }
 		.file_line {
 			file := g.get_comptime_val(.file, pos)

@@ -534,6 +534,7 @@ They are all of the type `string`.
 | `$PKG`       | Current package name              | `main`                  |
 | `$ABS_FILE`  | Absolute file path                | `/path/to/lib/file.bt`  |
 | `$FILE`      | File path relative to working dir | `lib/file.bt`           |
+| `$DIR`       | Absolute path to file's directory | `/path/to/lib`          |
 | `$LINE`      | Line number of the variable       | `123`                   |
 | `$FILE_LINE` | Relative path and the line        | `tests/my_test.bt:27`   |
 | `$FUN`       | Current function name             | `test_read_line`        |
