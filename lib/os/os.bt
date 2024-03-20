@@ -33,7 +33,7 @@ pub fun dir(path string) string {
 		return '/'
 	}
 
-	return path.substr(0, pos)
+	return path.substr(0, pos).trim_right(PATH_SEP)
 }
 
 // Returns whether a given path exists and is a directory.
