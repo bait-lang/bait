@@ -11,6 +11,10 @@ fun test_comptime_vars() {
 	// The following vars are hard to test
 
 	assert $ABS_FILE.length > $FILE.length
+	assert $ABS_FILE.ends_with($FILE)
+
+	assert $DIR.length < $ABS_FILE.length
+	assert not $DIR.ends_with('.bt')
 
 	assert $BAITEXE.length > 0
 

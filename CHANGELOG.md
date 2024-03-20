@@ -119,6 +119,7 @@ _unreleased_
   - Print parser warnings and errors
 
 ### Other Changes
+- Add `$DIR` compile time variable
 - Require mutable function argument if paramter is mutable
 - Fix function types
 - _[JS]_ Fix integer division assign that could result in a float
