@@ -36,7 +36,7 @@ pub fun generate_table(poly u32) CrcTable {
 	return c
 }
 
-pub fun (c CrcTable) checksum(data []u8) u32 {
+pub fun (c CrcTable) sum(data []u8) u32 {
 	mut crc := MAX_U32
 
 	for byte in data {
@@ -49,7 +49,7 @@ pub fun (c CrcTable) checksum(data []u8) u32 {
 }
 
 // Calculates the CRC32 checksum of `data` using the IEEE polynomial
-pub fun checksum(data []u8) u32 {
+pub fun sum(data []u8) u32 {
 	c := generate_table(IEEE)
-	return c.checksum(data)
+	return c.sum(data)
 }
