@@ -47,7 +47,7 @@ pub fun new_default() Parser {
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
 	p.lexer.init(text, .discard)
 	p.path = path
-	p.file_hash = crc32.checksum(path.bytes()).str()
+	p.file_hash = crc32.sum(path.bytes()).str()
 	p.pkg_name = expected_pkg
 	p.eofs = 0
 	p.import_aliases = map[string]string

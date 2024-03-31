@@ -1,0 +1,26 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+import hash.fnv1a
+
+fun test_fnv1a_32() {
+	s := 'input'
+	hash := 'f9d86f7b'
+
+	a := fnv1a.sum32_string(s)
+	b := fnv1a.sum32(s.bytes())
+
+	assert a.hex() == hash
+	assert a == b
+}
+
+fun test_fnv1a_64() {
+	s := 'input'
+	hash := '1ebbae8f5810b65b'
+
+	a := fnv1a.sum64_string(s)
+	b := fnv1a.sum64(s.bytes())
+
+	assert a.hex() == hash
+	assert a == b
+}

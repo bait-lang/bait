@@ -1,0 +1,41 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+package fnv1a
+
+const prime_32 := 16777619 as u32
+const offset_basis_32 := 2166136261 as u32
+const prime_64 := 1099511628211 as u64
+const offset_basis_64 := 14695981039346656037 as u64
+
+pub fun sum32(data []u8) u32 {
+	mut hash := offset_basis_32
+	for d in data {
+		hash = (hash ^ (d as u32)) * prime_32
+	}
+	return hash
+}
+
+pub fun sum64(data []u8) u64 {
+	mut hash := offset_basis_64
+	for d in data {
+		hash = (hash ^ (d as u64)) * prime_64
+	}
+	return hash
+}
+
+pub fun sum32_string(data string) u32 {
+	mut hash := offset_basis_32
+	for d in data {
+		hash = (hash ^ (d as u32)) * prime_32
+	}
+	return hash
+}
+
+pub fun sum64_string(data string) u64 {
+	mut hash := offset_basis_64
+	for d in data {
+		hash = (hash ^ (d as u64)) * prime_64
+	}
+	return hash
+}
