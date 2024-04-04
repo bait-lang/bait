@@ -1,0 +1,37 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package c
+
+import os
+import bait.ast
+import bait.errors
+
+fun (mut g Gen) get_str_fun(typ ast.Type) string {
+	g.table.needed_str_funs.push(typ)
+	sym := g.table.get_sym(typ)
+	return c_name('${sym.name}_str')
+}
+
+fun (mut g Gen) generate_str_fun(typ ast.Type) {
+	sym := g.table.get_sym(typ)
+	if g.generated_str_funs.contains(typ) {
+		return
+	}
+
+	if sym.has_method('str') {
+		return
+	}
+
+	g.generated_str_funs.push(typ)
+
+	name := c_name('${sym.name}_str')
+
+	if sym.kind == .struct_ {
+		// TODO
+	}
+
+	// TODO other types
+
+	errors.generic_error('cannot convert ${sym.name} to string')
+	exit(1)
+}
