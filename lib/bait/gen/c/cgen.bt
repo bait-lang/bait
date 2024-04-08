@@ -23,6 +23,7 @@ mut:
 	type_defs_out string := '// Type definitions\n'
 	fun_decls_out string := '// Function declarations\n'
 	type_impls_out string := '// Type implementations\n'
+	auto_funs_out string := '// Generated functions\n'
 	globals_out string := '// Globals\n'
 	out string := '// Main code\n'
 	indent i32 := -1
@@ -78,7 +79,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	}
 
 	// Join all parts
-	return g.headers() + g.type_defs_out + g.fun_decls_out + g.type_impls_out + g.globals_out + '\n' + g.out
+	return g.headers() + g.type_defs_out + g.fun_decls_out + g.type_impls_out + g.auto_funs_out + g.globals_out + '\n' + g.out
 }
 
 fun (g Gen) process_imports(imports []ast.Import) {

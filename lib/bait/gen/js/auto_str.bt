@@ -62,7 +62,8 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 			str_fun_name := g.get_str_fun(field.typ)
 			g.fun_decls_out += '\ts += space + "  ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "${LB}"\n'
 		}
-		g.fun_decls_out += '\treturn from_js_string(s + space + "}")\n}\n\n'
+		g.fun_decls_out += '\treturn from_js_string(s + space + "}")
+}\n\n'
 		return
 	}
 
