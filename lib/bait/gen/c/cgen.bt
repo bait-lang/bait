@@ -23,6 +23,7 @@ mut:
 	type_defs_out string := '// Type definitions\n'
 	fun_decls_out string := '// Function declarations\n'
 	type_impls_out string := '// Type implementations\n'
+	auto_funs_out string := '// Generated functions\n'
 	globals_out string := '// Globals\n'
 	out string := '// Main code\n'
 	indent i32 := -1
@@ -30,6 +31,7 @@ mut:
 	stmt_offsets []i32
 	foreign_imports []string // C header files
 	generated_eq_funs []ast.Type
+	generated_str_funs []ast.Type
 	tmp_counter i32
 	cur_concrete_types map[string]ast.Type
 	cur_fun ast.FunDecl
@@ -62,13 +64,22 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.stmts(file.stmts)
 		g.out += "\n"
 	}
+
+	// Main
 	if pref.is_test {
 		g.gen_test_main()
 	}
 	if not g.pref.is_library {
 		g.c_main()
 	}
-	return g.headers() + g.type_defs_out + g.fun_decls_out + g.type_impls_out + g.globals_out + '\n' + g.out
+
+	// Auto string functions
+	for typ in g.table.needed_str_funs {
+		g.generate_str_fun(typ)
+	}
+
+	// Join all parts
+	return g.headers() + g.type_defs_out + g.fun_decls_out + g.type_impls_out + g.auto_funs_out + g.globals_out + '\n' + g.out
 }
 
 fun (g Gen) process_imports(imports []ast.Import) {

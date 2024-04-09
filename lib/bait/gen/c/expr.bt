@@ -302,7 +302,8 @@ fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 		return
 	}
 
-	e := expr as ast.EmptyExpr
-	errors.error(g.path, expr.pos, 'cannot convert ${sym.name} to string')
-	exit(1)
+	name := g.get_str_fun(typ)
+	g.write('${name}(')
+	g.expr(expr)
+	g.write(')')
 }

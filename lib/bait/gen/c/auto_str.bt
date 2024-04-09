@@ -1,0 +1,73 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package c
+
+import os
+import bait.ast
+import bait.errors
+
+const LB := if os.platform() == 'win32' { '\\r\\n' } else { '\\n' }
+
+fun (mut g Gen) get_str_fun(typ ast.Type) string {
+	g.table.needed_str_funs.push(typ)
+	sym := g.table.get_sym(typ)
+	return c_name('${sym.name}_str')
+}
+
+fun (mut g Gen) generate_str_fun(typ ast.Type) {
+	sym := g.table.get_sym(typ)
+	if g.generated_str_funs.contains(typ) {
+		return
+	}
+
+	if sym.has_method('str') {
+		return
+	}
+
+	g.generated_str_funs.push(typ)
+
+	sname := c_name(sym.name)
+	fname := sname + '_str'
+
+	if sym.kind == .struct_ {
+		info := sym.info as ast.StructInfo
+
+		g.fun_decls_out += 'string ${fname}(${sname} it);'
+
+		g.auto_funs_out += 'string ${fname}(${sname} it) {
+	int indent = 0;
+	string space = string_repeat(from_c_string(" "), indent * 2);
+	strings__Builder b = strings__new_builder(100);
+	strings__Builder_write(&b, space);
+	strings__Builder_write(&b, from_c_string("${sym.name}{"));\n'
+		if info.fields.length > 0 {
+			g.auto_funs_out += '\tstrings__Builder_write(&b, from_c_string("${LB}"));\n'
+		}
+		for field in info.fields {
+			if typ == field.typ {
+				g.auto_funs_out += '\tstrings__Builder_write(&b, space);
+	strings__Builder_write(&b, from_c_string("  ${field.name} = ${sym.name}{...}${LB}"));\n'
+				continue
+			}
+
+			str_fun_name := g.get_str_fun(field.typ)
+			// TODO pass indent to str fun if needed
+			g.auto_funs_out += '\tstrings__Builder_write(&b, space);
+	strings__Builder_write(&b, from_c_string("  ${field.name} = "));
+	string val = ${str_fun_name}(it.${field.name});
+	strings__Builder_write(&b, val);
+	strings__Builder_write(&b, from_c_string("${LB}"));\n'
+		}
+
+		g.auto_funs_out += '\tstrings__Builder_write(&b, space);
+	strings__Builder_write_u8(&b, \'}\');
+	return strings__Builder_str(b);
+}\n\n'
+		return
+	}
+
+	// TODO other types
+
+	errors.generic_error('cannot convert ${sym.name} to string')
+	exit(1)
+}
