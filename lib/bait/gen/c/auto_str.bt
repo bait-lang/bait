@@ -31,8 +31,11 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 
 	if sym.kind == .struct_ {
 		info := sym.info as ast.StructInfo
-		// TODO add to fun decls
-		g.auto_funs_out += 'string ${fname}(${sname} it, int indent) {
+
+		g.fun_decls_out += 'string ${fname}(${sname} it);'
+
+		g.auto_funs_out += 'string ${fname}(${sname} it) {
+	int indent = 0;
 	string space = string_repeat(from_c_string(" "), indent * 2);
 	strings__Builder b = strings__new_builder(100);
 	strings__Builder_write(&b, space);
