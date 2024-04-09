@@ -12,4 +12,6 @@ fun main(){
 	println('Git: ${git_version}')
 	node_version := os.exec('node --version').stdout.trim_space()
 	println('Node.js: ${node_version}')
+	cc_version := os.exec('cc --version').stdout.all_before('\n').trim_space()
+	println('CC: ${cc_version}')
 }
