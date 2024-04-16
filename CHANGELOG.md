@@ -72,7 +72,9 @@ _unreleased_
 - Experimental generics support
 - Minimal windows support (`os` package won't work)
 - builder: Fixes for using the C backend on windows
-- gen: Implement `assert`, `break` `continue`, `enum`, `global`, anonymous functions, character literals and compile time variables
+- gen:
+  - Implement `assert`, `break` `continue`, `enum`, `global`, anonymous functions, character literals and compile time variables
+  - Auto str method generation for structs
 - Fix compiling libraries
 - Fix string interpolation C error with tcc
 - Fix C error when calling a method on a mutable array instance
@@ -118,6 +120,7 @@ _unreleased_
 - `ast`:
   - `--tokens`: Print value of all tokens that have one
   - Print parser warnings and errors
+- `doctor`: Include `cc` version
 
 ### Other Changes
 - Add `$DIR` compile time variable
