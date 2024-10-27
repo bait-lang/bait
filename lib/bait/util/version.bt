@@ -2,5 +2,5 @@
 // SPDX-License-Identifier: MPL-2.0
 package util
 
-pub const VERSION := '0.0.6'
+pub const VERSION := '0.0.7'
 pub const FULL_VERSION := '${VERSION} ${$BAITHASH}'

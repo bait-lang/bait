@@ -4,8 +4,7 @@ All notable changes are documented in this file.
 > Bait is currently in an Alpha State (`0.0.x`). Breaking changes may occur at any time.
 
 
-## 0.0.7
-_unreleased_
+## 0.0.7 - 2024-10-27
 
 ### Breaking
 - Change syntax for attributes with value to `@attr('value')`
