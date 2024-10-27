@@ -9,11 +9,19 @@ fun (mut c Checker) comptime_var(node ast.ComptimeVar) ast.Type {
 }
 
 fun (mut c Checker) comptime_if_condition(node ast.Expr) bool {
+	// TODO smartcast: improve logic to allow the following
+	// if not (node is ast.Ident) { error }
+	// match ...
+
 	if node is ast.Ident {
 		match node.name {
 			// Backend
 			'C' { return c.prefs.backend == .c }
 			'JS' { return c.prefs.backend == .js }
+			// Operating System
+			'LINUX' { return c.prefs.os == .linux }
+			'WINDOWS' { return c.prefs.os == .windows }
+			// Error
 			else {
 				c.error('invalid $if condition "${node.name}"', node.pos)
 				return false

@@ -4,8 +4,12 @@ All notable changes are documented in this file.
 > Bait is currently in an Alpha State (`0.0.x`). Breaking changes may occur at any time.
 
 
-## 0.0.7 - 2024-10-27
+## 0.0.8 - unreleased
+### Other Changes
+- Comptime if: Add `LINUX` and `WINDOWS` conditions
 
+
+## 0.0.7 - 2024-10-27
 ### Breaking
 - Change syntax for attributes with value to `@attr('value')`
 - Change operator for pointer dereferencing from `^` to `*`
