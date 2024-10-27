@@ -10,6 +10,11 @@ pub enum Backend {
 	c
 }
 
+pub enum OperatingSystem {
+	linux
+	windows
+}
+
 pub struct Prefs {
 global:
 	command string
@@ -24,6 +29,7 @@ pub mut:
 	is_verbose bool
 	show_timings bool
 	backend Backend
+	os OperatingSystem
 
 	// Compile mode
 	is_test bool
@@ -40,6 +46,7 @@ pub mut:
 pub fun parse_args(args []string) Prefs {
 	mut p := Prefs{
 		backend = .js
+		os = os_from_string(os.platform())
 	}
 	// Default action in case of no arguments: help
 	if args.length == 0 {
@@ -59,13 +66,19 @@ pub fun parse_args(args []string) Prefs {
 				p.build_options.push(arg)
 				p.build_options.push(args[i])
 			}
+			'-os', '--os' {
+				i += 1
+				p.os = os_from_string(args[i])
+				p.build_options.push(arg)
+				p.build_options.push(args[i])
+			}
 			"-o", '--out' {
 				i += 1
 				p.out_name = args[i]
 				p.build_options.push(arg)
 				p.build_options.push(p.out_name)
 			}
-			'-cc' {
+			'-cc', '--cc' {
 				i += 1
 				p.cc = args[i]
 				p.build_options.push(arg)
@@ -158,5 +171,13 @@ fun backend_from_string(s string) Backend {
 		'js' { Backend.js }
 		'c' { .c }
 		else { panic('Invalid backend: ${s}') }
+	}
+}
+
+fun os_from_string(s string) OperatingSystem {
+	return match s {
+		'linux' { OperatingSystem.linux }
+		'win', 'windows' { .windows }
+		else { panic('Invalid OS: ${s}') }
 	}
 }

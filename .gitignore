@@ -3,6 +3,7 @@
 !*.*
 !*/
 *.js
+*.bin
 bin/
 
 # editor files

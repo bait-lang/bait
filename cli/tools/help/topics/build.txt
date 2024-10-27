@@ -9,6 +9,9 @@ Options:
     Supported are:
     * js  Output JS source code that can be run with NodeJS.
     * c   [EXPERIMENTAL] Output C source code, which is passed to a C compiler.
+  -os
+    Change the target OS. Default is the host operating system.
+    Supported are: `linux`, `windows`
 
   -cc        Use a custom C compiler.
   --library  Generate as a shared library without the main function.

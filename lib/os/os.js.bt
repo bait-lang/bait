@@ -35,7 +35,7 @@ pub fun symlink(src string, dest string) {
 }
 
 pub fun is_root(path string) bool {
-	if platform() == 'win32' {
+	if platform() == 'windows' {
 		return path.length == 2 and path[1] == `:`
 	}
 
@@ -148,7 +148,11 @@ pub fun arch() string {
 }
 
 pub fun platform() string {
-	return from_js_string(#JS.process.platform)
+	p := from_js_string(#JS.process.platform)
+	if p == 'win32' or p == 'win64' {
+		return 'windows'
+	}
+	return p
 }
 
 pub fun input(prompt string) string {
