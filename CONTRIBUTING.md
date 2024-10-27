@@ -9,5 +9,5 @@ You can contribute to Bait in many ways:
 
 ---
 
-> Here should be documentation on the project structure and how to contribute.
-> **Until then, please ask your questions in the discord.**
+> Project structure and contribution workflow are not yet documented.
+> **Please ask your questions in the discord.**

@@ -1,8 +1,9 @@
-# Ignore binary files without extension
+# Binary files without extension
 *
 !*/
 !*.*
 
-# Ignore other bineries
+# Other executabe files and build outputs
+*.bin
 *.exe
 *.js
