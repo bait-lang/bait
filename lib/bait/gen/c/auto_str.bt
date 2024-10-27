@@ -6,7 +6,7 @@ import os
 import bait.ast
 import bait.errors
 
-const LB := if os.platform() == 'win32' { '\\r\\n' } else { '\\n' }
+const LB := if os.platform() == 'windows' { '\\r\\n' } else { '\\n' }
 
 fun (mut g Gen) get_str_fun(typ ast.Type) string {
 	g.table.needed_str_funs.push(typ)

@@ -28,7 +28,7 @@ pub fun escape_char(s string, esc_char u8) string {
 }
 
 pub fun escape_linebreak(s string) string {
-	return if os.platform() == 'win32' {
+	return if os.platform() == 'windows' {
 		s.replace('\r\n', '\\r\\n')
 	} else {
 		s.replace('\n', '\\n')
