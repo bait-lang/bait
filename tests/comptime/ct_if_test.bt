@@ -1,12 +1,24 @@
 // SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
 
-fun test_comptime_if(){
+fun test_backend(){
 	mut text := ''
 	$if C {
 		text = 'c'
 	} $else $if JS {
 		text = 'js'
+	}
+
+	// TODO come up with a way to better test this
+	assert text.length > 0
+}
+
+fun test_os() {
+	mut text := ''
+	$if LINUX {
+		text = 'linux'
+	} $else $if WINDOWS {
+		text = 'windows'
 	}
 
 	// TODO come up with a way to better test this

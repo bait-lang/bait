@@ -557,13 +557,13 @@ $if C {
 ```
 
 > [!IMPORTANT]
-> Infix and prefix operations are not yet implemented.
+> Infix and prefix operations are not yet implemented for compile time ifs.
 > Support for combining conditions using `and`, `or` and `not` will be added in a future version.
 
 The following conditions are currently supported:
-| Backend   |
-| --------- |
-| `C`, `JS` |
+| Backend   | Operating System   |
+| --------- | ------------------ |
+| `C`, `JS` | `LINUX`, `WINDOWS` |
 
 ## Global Variables
 While the use of global variables is discouraged, they are important in some cases.
