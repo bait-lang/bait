@@ -9,6 +9,10 @@ fun (mut c Checker) comptime_var(node ast.ComptimeVar) ast.Type {
 }
 
 fun (mut c Checker) comptime_if_condition(node ast.Expr) bool {
+	// TODO smartcast: improve logic to allow the following
+	// if not (node is ast.Ident) { error }
+	// match ...
+
 	if node is ast.Ident {
 		match node.name {
 			// Backend
