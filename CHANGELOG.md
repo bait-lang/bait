@@ -11,7 +11,9 @@ _unreleased_
 - Change syntax for attributes with value to `@attr('value')`
 - Change operator for pointer dereferencing from `^` to `*`
 - `strings.Builder`: Replace `write_chars(data []u8)` with `write_u8(c u8)`
-- `os`: Rename struct `Result` to `CmdRes`
+- `os`:
+  - Rename struct `Result` to `CmdRes`
+  - `platform()` now returns `windows` instead of `win32` and `win64`
 - `builtin`:
   - Remove `u8.is_capital()`
     - Use `u8.is_upper()` instead
@@ -115,7 +117,9 @@ _unreleased_
   - Add `--template` option to allow choosing a template
   - Add `bin` and `lib` templates
   - Prevent overwriting existing files
-- `build`: Add `-cc` option to use a custom C compiler
+- `build`:
+  - Add `-cc` option to use a custom C compiler
+  - Add `-os` option to override target OS
 - `self`: Use $BAITEXE as default out name
 - `ast`:
   - `--tokens`: Print value of all tokens that have one
