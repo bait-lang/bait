@@ -5,6 +5,9 @@ All notable changes are documented in this file.
 
 
 ## 0.0.8 - unreleased
+### Error Checks
+- Require initialization of struct fields holding a function pointer
+
 ### C Backend
 - checker: Auto deref of method receiver
 - gen: Fix escape of `'` char literal
