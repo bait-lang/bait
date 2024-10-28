@@ -95,7 +95,8 @@ fun (mut g Gen) bool_literal(node ast.BoolLiteral) {
 }
 
 fun (mut g Gen) char_literal(node ast.CharLiteral) {
-	g.write("'${node.val}'")
+	val := util.escape_char(node.val, `'`)
+	g.write("'${val}'")
 }
 
 fun (mut g Gen) enum_val(node ast.EnumVal) {
