@@ -82,7 +82,11 @@ fun (mut g Gen) fun_params(params []ast.Param){
 fun (mut g Gen) call_expr(node ast.CallExpr) {
 	if node.is_field {
 		g.expr(node.left)
-		g.write('.')
+		if node.left_type.get_nr_amp() > 0 {
+			g.write('->')
+		} else {
+			g.write('.')
+		}
 		g.write(node.name)
 		g.write('(')
 		g.call_args(node.args)
