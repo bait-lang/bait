@@ -5,6 +5,9 @@ All notable changes are documented in this file.
 
 
 ## 0.0.8 - unreleased
+### CLI and Tooling
+- _[C]_: Change `-o foo.c` to output the generated C code without compiling it
+
 ### Other Changes
 - Comptime if: Add `LINUX` and `WINDOWS` conditions
 
