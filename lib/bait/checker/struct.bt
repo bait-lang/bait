@@ -87,7 +87,7 @@ fun (c Checker) check_init_field_values(init ast.StructInit, info ast.StructInfo
 	for def_field in info.fields {
 		// Field requires initialization if it's a sum type or has the attribute
 		def_sym := c.table.get_sym(def_field.typ)
-		mut is_required := def_sym.kind == .sum_type
+		mut is_required := def_sym.kind == .sum_type or def_sym.kind == .fun_
 		for attr in def_field.attrs {
 			if attr.name == 'required' {
 				is_required = true

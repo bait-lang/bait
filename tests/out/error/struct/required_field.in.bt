@@ -7,6 +7,10 @@ struct Spam{
 	n Number
 }
 
+struct Foo {
+	f fun ()
+}
+
 s := Spam{
 	eggs = true
 }
@@ -14,3 +18,5 @@ s := Spam{
 s2 := Spam{
 	n = 5
 }
+
+f := Foo{}
