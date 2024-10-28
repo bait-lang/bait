@@ -9,6 +9,7 @@ All notable changes are documented in this file.
 - Require initialization of struct fields holding a function pointer
 
 ### C Backend
+- Support callable struct fields
 - checker: Auto deref of method receiver
 - gen: Fix escape of `'` char literal
 
@@ -262,7 +263,7 @@ _26 December 2023_
 - Implement real `if` and `match` expressions
 - Add attribute `@noreturn`
 - _[JS]_ Add support for float literals
-- Support struct fields of function type that are callable like methods
+- _[JS]_ Support struct fields of function type that are callable like methods
 - Move compiler tests from `lib/bait/tests/` into `tests/`
 - Complete tokenizer rewrite and rename to `lexer`
 - Many refactorings, cleanups and performance enhancements
