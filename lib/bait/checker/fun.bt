@@ -386,14 +386,6 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 			continue
 		}
 
-		// Auto deref pointer
-		// if param_type.get_nr_amp() == arg.typ.get_nr_amp() - 1 and param_type != ast.ANY_TYPE {
-			// arg.expr = ast.PrefixExpr{
-			// 	op = .amp
-			// 	right = arg.expr
-			// }
-		// }
-
 		if save_as_concrete {
 			node.concrete_types.push(arg.typ)
 			save_as_concrete = false
