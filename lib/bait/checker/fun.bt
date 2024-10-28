@@ -260,6 +260,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	node.lang = def.lang
 	node.noreturn = def.noreturn
 	node.return_type = def.return_type
+	node.left_type = left_expr_type
 
 	if not node.is_field {
 		// Check if the receiver is and should be mutable
