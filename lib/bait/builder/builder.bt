@@ -217,6 +217,11 @@ fun (mut b Builder) code_gen_c() i32 {
 	}
 	ensure_dir_exists(os.dir(b.prefs.out_name))
 
+	if b.prefs.out_name.ends_with('.c') {
+		os.write_file( b.prefs.out_name, res)
+		return 0
+	}
+
 	tmp_c_path := os.join_path(os.tmp_dir(), [os.file_name(b.prefs.out_name) + '.c'])
 	os.write_file(tmp_c_path, res)
 	mut cflags := ''
