@@ -299,6 +299,7 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 	}
 	typ := p.table.register_sym(tsym)
 
+	// TODO DEPRECATED 2024-11-03 remove code for modifier groups
 	mut mut_idx := -1
 	mut pub_idx := -1
 	mut pub_mut_idx := -1
