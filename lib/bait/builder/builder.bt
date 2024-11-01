@@ -13,12 +13,11 @@ import bait.preference
 import bait.util.timers
 
 struct Builder {
-mut:
-	prefs preference.Prefs
-	parsed_files []ast.File
-	parsed_pkgs []string
-	checker checker.Checker
-	parser parser.Parser
+	mut prefs preference.Prefs
+	mut parsed_files []ast.File
+	mut parsed_pkgs []string
+	mut checker checker.Checker
+	mut parser parser.Parser
 }
 
 // Returns the absolute paths to all bait files in a directory that should be compiled

@@ -3,20 +3,17 @@
 package ast
 
 pub struct Scope {
-pub:
-	parent Scope
-	objects map[string]ScopeObject
+	pub parent Scope
+	pub objects map[string]ScopeObject
 }
 
 pub struct ScopeObject{
-global:
-	typ Type
-pub mut:
-	kind ObjectKind
-	is_pub bool
-	is_mut bool
-	pkg string
-	expr Expr := EmptyExpr{} // Only for constants. Allows resolving their type early
+	global typ Type
+	pub mut kind ObjectKind
+	pub mut is_pub bool
+	pub mut is_mut bool
+	pub mut pkg string
+	pub mut expr Expr := EmptyExpr{} // Only for constants. Allows resolving their type early
 }
 
 pub enum ObjectKind {

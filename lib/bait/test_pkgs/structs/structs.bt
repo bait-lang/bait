@@ -4,14 +4,10 @@ package structs
 
 pub struct Foo {
 	priv_f i32 := 1
-mut:
-	mut_f i32 := 2
-pub:
-	pub_f i32 := 3
-pub mut:
-	pub_mut_f i32 := 4
-global:
-	global_f i32 := 5
+	mut mut_f i32 := 2
+	pub pub_f i32 := 3
+	pub mut pub_mut_f i32 := 4
+	global global_f i32 := 5
 }
 
 pub fun (f Foo) get_priv() i32 {

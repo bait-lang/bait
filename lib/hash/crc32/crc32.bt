@@ -12,8 +12,7 @@ pub const KOOPMAN := 0xeb31d82e as u32
 // TODO use fixed size array
 // TODO use type Table := [256]u32 instead of struct
 struct CrcTable {
-mut:
-	table []u32
+	mut table []u32
 }
 
 pub fun generate_table(poly u32) CrcTable {

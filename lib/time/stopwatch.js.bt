@@ -3,10 +3,9 @@
 package time
 
 pub struct Stopwatch{
-mut:
-	start u64
-	end u64
-	elapsed u64
+	mut start u64
+	mut end u64
+	mut elapsed u64
 }
 
 fun perf_now() u64 {

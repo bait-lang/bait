@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MPL-2.0
 
 struct Foo[T]{
-mut:
-	x T
-global:
-	y T
+	mut x T
+	global y T
 }
 
 fun test_generic_struct() {

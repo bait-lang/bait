@@ -10,233 +10,197 @@ type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop
 type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | Void | EmptyExpr
 
 pub struct AssertStmt {
-pub:
-	expr Expr
-	pos token.Pos
+	pub expr Expr
+	pub pos token.Pos
 }
 
-pub struct AssignStmt{
-global:
-	left_type Type
-	right_type Type
-pub:
-	op token.Token
-	left Expr
-	right Expr
-	pos token.Pos
+pub struct AssignStmt {
+	global left_type Type
+	global right_type Type
+	pub op token.Token
+	pub left Expr
+	pub right Expr
+	pub pos token.Pos
 }
 
-pub struct ConstDecl{
-pub:
-	name string
-	expr Expr
-	pos token.Pos
-	lang Language
-global:
-	typ Type
+pub struct ConstDecl {
+	pub name string
+	pub expr Expr
+	pub pos token.Pos
+	pub lang Language
+	global typ Type
 }
 
-pub struct EnumDecl{
-pub:
-	lang Language
-	name string
-	fields []EnumField
-	pos token.Pos
+pub struct EnumDecl {
+	pub lang Language
+	pub name string
+	pub fields []EnumField
+	pub pos token.Pos
 }
 
-pub struct EnumField{
-global:
-	expr Expr
-pub:
-	name string
-	pos token.Pos
+pub struct EnumField {
+	global expr Expr
+	pub name string
+	pub pos token.Pos
 }
 
-pub struct ExprStmt{
-pub:
-	expr Expr
-global:
-	typ Type
+pub struct ExprStmt {
+	pub expr Expr
+	global typ Type
 }
 
-pub struct ForLoop{
-pub:
-	label string
-	cond Expr
-	stmts []Stmt
-	pos token.Pos
+pub struct ForLoop {
+	pub label string
+	pub cond Expr
+	pub stmts []Stmt
+	pub pos token.Pos
 }
 
-pub struct ForClassicLoop{
-pub:
-	label string
-	init Stmt
-	cond Expr
-	inc Stmt
-	stmts []Stmt
-	pos token.Pos
+pub struct ForClassicLoop {
+	pub label string
+	pub init Stmt
+	pub cond Expr
+	pub inc Stmt
+	pub stmts []Stmt
+	pub pos token.Pos
 }
 
-pub struct ForInLoop{
-global:
-	expr_type Type
-pub:
-	label string
-	idxvar string
-	valvar Param
-	expr Expr
-	stmts []Stmt
-	pos token.Pos
+pub struct ForInLoop {
+	global expr_type Type
+	pub label string
+	pub idxvar string
+	pub valvar Param
+	pub expr Expr
+	pub stmts []Stmt
+	pub pos token.Pos
 }
 
-pub struct AnonFun{
-pub:
-	decl FunDecl
-	typ Type
-	pos token.Pos
+pub struct AnonFun {
+	pub decl FunDecl
+	pub typ Type
+	pub pos token.Pos
 }
 
-pub struct FunDecl{
-pub:
-	is_pub bool
-	lang Language
-	name string
-	pkg string
-	params []Param
-	return_type Type
-	is_test bool
-	attrs []Attribute
-	pos token.Pos
-global:
-	is_method bool
-	noreturn bool
-	stmts []Stmt
-	generic_names []string
+pub struct FunDecl {
+	pub is_pub bool
+	pub lang Language
+	pub name string
+	pub pkg string
+	pub params []Param
+	pub return_type Type
+	pub is_test bool
+	pub attrs []Attribute
+	pub pos token.Pos
+	global is_method bool
+	global noreturn bool
+	global stmts []Stmt
+	global generic_names []string
 }
 
-pub struct Param{
-pub:
-	is_mut bool
-	name string
-	typ Type
-	pos token.Pos
+pub struct Param {
+	pub is_mut bool
+	pub name string
+	pub typ Type
+	pub pos token.Pos
 }
 
-pub struct LoopControlStmt{
-pub:
-	kind token.Token
-	label string
-	pos token.Pos
+pub struct LoopControlStmt {
+	pub kind token.Token
+	pub label string
+	pub pos token.Pos
 }
 
-pub struct GlobalDecl{
-global:
-	typ Type
-pub:
-	name string
-	expr Expr
-	pos token.Pos
+pub struct GlobalDecl {
+	global typ Type
+	pub name string
+	pub expr Expr
+	pub pos token.Pos
 }
 
 pub struct InterfaceDecl {
-pub:
-	lang Language
-	name string
-	typ Type
-	methods []FunDecl
-	fields []StructField
-	pos token.Pos
+	pub lang Language
+	pub name string
+	pub typ Type
+	pub methods []FunDecl
+	pub fields []StructField
+	pub pos token.Pos
 }
 
-pub struct ReturnStmt{
-global:
-	expr Expr
-pub:
-	pos token.Pos
+pub struct ReturnStmt {
+	global expr Expr
+	pub pos token.Pos
 }
 
-pub struct StructDecl{
-pub:
-	lang Language
-	pkg_prefix string
-	name string
-	typ Type
-	fields []StructField
-	generic_names []string
-	pos token.Pos
+pub struct StructDecl {
+	pub lang Language
+	pub pkg_prefix string
+	pub name string
+	pub typ Type
+	pub fields []StructField
+	pub generic_names []string
+	pub pos token.Pos
 }
 
-pub struct StructField{
-pub:
-	name string
-	typ Type
-	expr Expr := EmptyExpr{}
-	pos token.Pos
-	is_mut bool
-	is_pub bool
-	is_global bool
-	attrs []Attribute
+pub struct StructField {
+	pub name string
+	pub typ Type
+	pub expr Expr := EmptyExpr{}
+	pub pos token.Pos
+	pub is_mut bool
+	pub is_pub bool
+	pub is_global bool
+	pub attrs []Attribute
 }
 
 // SumType, Alias, Fun Type
 pub struct TypeDecl {
-pub:
-	lang Language
-	name string
-	typ Type
-	pos token.Pos
+	pub lang Language
+	pub name string
+	pub typ Type
+	pub pos token.Pos
 }
 
-pub struct ArrayInit{
-global:
-	typ Type
-	elem_type Type
-pub:
-	exprs []Expr
-	length_expr Expr := EmptyExpr{}
-	cap_expr Expr := EmptyExpr{}
-	pos token.Pos
+pub struct ArrayInit {
+	global typ Type
+	global elem_type Type
+	pub exprs []Expr
+	pub length_expr Expr := EmptyExpr{}
+	pub cap_expr Expr := EmptyExpr{}
+	pub pos token.Pos
 }
 
-pub struct AsCast{
-global:
-	expr_type Type
-pub:
-	expr Expr
-	target Type
-	pos token.Pos
+pub struct AsCast {
+	global expr_type Type
+	pub expr Expr
+	pub target Type
+	pub pos token.Pos
 }
 
-pub struct BoolLiteral{
-pub:
-	val bool
-	pos token.Pos
+pub struct BoolLiteral {
+	pub val bool
+	pub pos token.Pos
 }
 
-pub struct CallExpr{
-global:
-	lang Language
-	name string
-	return_type Type
-	left_type Type
-	left Expr := EmptyExpr{}
-	concrete_types []Type
-	is_field bool
-	noreturn bool
-pub:
-	args []CallArg
-	or_block OrBlock
-	is_method bool
-	pkg string
-	pos token.Pos
+pub struct CallExpr {
+	global lang Language
+	global name string
+	global return_type Type
+	global left_type Type
+	global left Expr := EmptyExpr{}
+	global concrete_types []Type
+	global is_field bool
+	global noreturn bool
+	pub args []CallArg
+	pub or_block OrBlock
+	pub is_method bool
+	pub pkg string
+	pub pos token.Pos
 }
 
 pub struct CallArg {
-global:
-	typ Type
-pub:
-	is_mut bool
-	expr Expr
+	global typ Type
+	pub is_mut bool
+	pub expr Expr
 }
 
 pub enum OrKind {
@@ -246,211 +210,176 @@ pub enum OrKind {
 }
 
 pub struct OrBlock {
-pub:
-	kind OrKind
-	stmts []Stmt
+	pub kind OrKind
+	pub stmts []Stmt
 }
 
-pub struct CharLiteral{
-pub:
-	val string
-	pos token.Pos
+pub struct CharLiteral {
+	pub val string
+	pub pos token.Pos
 }
 
-pub struct ComptimeVar{
-pub:
-	kind token.ComptimeVar
-	pos token.Pos
+pub struct ComptimeVar {
+	pub kind token.ComptimeVar
+	pub pos token.Pos
 }
 
 pub struct EnumVal {
-global:
-	name string
-	typ Type
-pub:
-	val string
-	pos token.Pos
+	global name string
+	global typ Type
+	pub val string
+	pub pos token.Pos
 }
 
-pub struct FloatLiteral{
-pub:
-	val string
-	pos token.Pos
+pub struct FloatLiteral {
+	pub val string
+	pub pos token.Pos
 }
 
-pub struct HashExpr{
-pub:
-	lang Language
-	val string
-	pos token.Pos
+pub struct HashExpr {
+	pub lang Language
+	pub val string
+	pub pos token.Pos
 }
 
-pub struct Ident{
-global:
-	name string
-	is_mut bool
-pub:
-	pkg string
-	pos token.Pos
-	lang Language
+pub struct Ident {
+	global name string
+	global is_mut bool
+	pub pkg string
+	pub pos token.Pos
+	pub lang Language
 }
 
-pub struct IfMatch{
-global:
-	typ Type := VOID_TYPE
-	is_expr bool
-	ct_eval_branch i32 := -1
-pub:
-	is_comptime bool
-	is_match bool // Note: match cannot be comptime
-	has_else bool
-	branches []IfBranch
-	pos token.Pos
+pub struct IfMatch {
+	global typ Type := VOID_TYPE
+	global is_expr bool
+	global ct_eval_branch i32 := -1
+	pub is_comptime bool
+	pub is_match bool // Note: match cannot be comptime
+	pub has_else bool
+	pub branches []IfBranch
+	pub pos token.Pos
 }
 
-pub struct IfBranch{
-pub:
-	cond Expr
-	stmts []Stmt
-	pos token.Pos
+pub struct IfBranch {
+	pub cond Expr
+	pub stmts []Stmt
+	pub pos token.Pos
 }
 
-pub struct IndexExpr{
-global:
-	is_selector bool
-	left_type Type
-pub:
-	left Expr
-	index Expr
-	pos token.Pos
+pub struct IndexExpr {
+	global is_selector bool
+	global left_type Type
+	pub left Expr
+	pub index Expr
+	pub pos token.Pos
 }
 
-pub struct InfixExpr{
-global:
-	left_type Type
-	right_type Type
-	op token.Token
-	right Expr
-pub:
-	is_match bool
-	left Expr
-	pos token.Pos
+pub struct InfixExpr {
+	global left_type Type
+	global right_type Type
+	global op token.Token
+	global right Expr
+	pub is_match bool
+	pub left Expr
+	pub pos token.Pos
 }
 
-pub struct IntegerLiteral{
-pub:
-	val string
-	pos token.Pos
+pub struct IntegerLiteral {
+	pub val string
+	pub pos token.Pos
 }
 
-pub struct MapInit{
-global:
-	typ Type
-	key_type Type
-	val_type Type
-pub:
-	keys []Expr
-	vals []Expr
-	pos token.Pos
+pub struct MapInit {
+	global typ Type
+	global key_type Type
+	global val_type Type
+	pub keys []Expr
+	pub vals []Expr
+	pub pos token.Pos
 }
 
 pub struct ParExpr {
-pub:
-	expr Expr
-	pos token.Pos
+	pub expr Expr
+	pub pos token.Pos
 }
 
-pub struct PrefixExpr{
-pub:
-	op token.Token
-	right Expr
-	pos token.Pos
+pub struct PrefixExpr {
+	pub op token.Token
+	pub right Expr
+	pub pos token.Pos
 }
 
-pub struct SelectorExpr{
-global:
-	expr_type Type
-pub:
-	expr Expr
-	field_name string
-	pos token.Pos
+pub struct SelectorExpr {
+	global expr_type Type
+	pub expr Expr
+	pub field_name string
+	pub pos token.Pos
 }
 
-pub struct StringLiteral{
-pub:
-	lang Language
-	val string
-	pos token.Pos
+pub struct StringLiteral {
+	pub lang Language
+	pub val string
+	pub pos token.Pos
 }
 
-pub struct StringInterLiteral{
-pub:
-	vals []string
-	exprs []Expr
-	expr_types []Type
-	pos token.Pos
+pub struct StringInterLiteral {
+	pub vals []string
+	pub exprs []Expr
+	pub expr_types []Type
+	pub pos token.Pos
 }
 
-pub struct StructInit{
-pub:
-	typ Type
-	pos token.Pos
-global:
-	name string
-	fields []StructInitField
-	concrete_types []Type
+pub struct StructInit {
+	pub typ Type
+	pub pos token.Pos
+	global name string
+	global fields []StructInitField
+	global concrete_types []Type
 }
 
-pub struct StructInitField{
-pub:
-	name string
-	expr Expr
-	pos token.Pos
+pub struct StructInitField {
+	pub name string
+	pub expr Expr
+	pub pos token.Pos
 }
 
 pub struct TypeOf {
-global:
-	typ Type
-pub:
-	expr Expr
-	pos token.Pos
+	global typ Type
+	pub expr Expr
+	pub pos token.Pos
 }
 
 pub struct Void {}
 
-pub struct EmptyExpr{
-pub:
-	pos token.Pos
+pub struct EmptyExpr {
+	pub pos token.Pos
 }
 
 pub fun empty_expr() Expr {
 	return EmptyExpr{}
 }
 
-pub struct EmptyStmt{
-pub:
-	pos token.Pos
+pub struct EmptyStmt {
+	pub pos token.Pos
 }
 
-pub struct Import{
-pub:
-	name string // Full import name
-	alias string // Custom alias or the part after the last dot
-	lang Language
-	pos token.Pos
+pub struct Import {
+	pub name string // Full import name
+	pub alias string // Custom alias or the part after the last dot
+	pub lang Language
+	pub pos token.Pos
 }
 
-pub struct File{
-global:
-	infos []errors.Message
-	warnings []errors.Message
-	errors []errors.Message
-	generic_funs []FunDecl
-pub:
-	path string
-	pkg_name string // Full package name
-	imports []Import
-	stmts []Stmt
+pub struct File {
+	global infos []errors.Message
+	global warnings []errors.Message
+	global errors []errors.Message
+	global generic_funs []FunDecl
+	pub path string
+	pub pkg_name string // Full package name
+	pub imports []Import
+	pub stmts []Stmt
 }
 
 pub fun (fn FunDecl) is_main() bool {

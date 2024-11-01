@@ -5,15 +5,14 @@ package builtin
 global test_runner := TestRunner{}
 
 struct TestRunner{
-mut:
-	passes i32
-	fails i32
-	file string
-	fun_name string
-	line i32
-	expr_string string
-	exp_val string
-	got_val string
+	mut passes i32
+	mut fails i32
+	mut file string
+	mut fun_name string
+	mut line i32
+	mut expr_string string
+	mut exp_val string
+	mut got_val string
 }
 
 fun (mut tr TestRunner) set_test_info(file string, name string) {

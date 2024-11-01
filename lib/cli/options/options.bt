@@ -9,8 +9,7 @@ pub fun new_option_parser(args []string) OptParser {
 }
 
 struct OptParser {
-mut:
-	args []string
+	mut args []string
 }
 
 fun (mut op OptParser) option_index(long string, short u8) i32 {

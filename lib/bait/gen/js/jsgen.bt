@@ -46,30 +46,29 @@ const JS_RESERVED := [
 struct Gen {
 	pref preference.Prefs
 	table ast.Table
-mut:
-	path string
-	pkg string
-	type_defs_out string
-	global_out string
-	fun_decls_out string
-	out string
-	indent i32
-	empty_line bool
-	stmt_offsets []i32
-	foreign_imports map[string]string // alias: name
-	generated_str_funs []ast.Type
-	tmp_counter i32
-	cur_concrete_types map[string]ast.Type
-	cur_fun ast.FunDecl
-	is_for_loop_head bool
-	is_lhs_assign bool
-	is_array_map_set bool
-	has_test_begin bool
-	has_test_end bool
+	mut path string
+	mut pkg string
+	mut type_defs_out string
+	mut global_out string
+	mut fun_decls_out string
+	mut out string
+	mut indent i32
+	mut empty_line bool
+	mut stmt_offsets []i32
+	mut foreign_imports map[string]string // alias: name
+	mut generated_str_funs []ast.Type
+	mut tmp_counter i32
+	mut cur_concrete_types map[string]ast.Type
+	mut cur_fun ast.FunDecl
+	mut is_for_loop_head bool
+	mut is_lhs_assign bool
+	mut is_array_map_set bool
+	mut has_test_begin bool
+	mut has_test_end bool
 	// Cached comptime variables
-	baitexe string
-	baitdir string
-	baithash string
+	mut baitexe string
+	mut baitdir string
+	mut baithash string
 }
 
 pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {

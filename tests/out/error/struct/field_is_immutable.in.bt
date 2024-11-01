@@ -2,10 +2,8 @@ import bait.test_pkgs.structs
 
 struct Spam{
 	priv_f i32
-pub:
-	pub_f i32
-pub mut:
-	pub_mut_f i32
+	pub pub_f i32
+	pub mut pub_mut_f i32
 }
 
 mut f := structs.Foo{}

@@ -11,9 +11,8 @@ const TMPL := os.dir($FILE) + '/templates'
 const COMMON := os.dir($FILE) + '/common'
 
 struct Init {
-mut:
-	name string
-	tmpl_map map[string]string
+	mut name string
+	mut tmpl_map map[string]string
 }
 
 fun main() {

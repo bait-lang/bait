@@ -68,16 +68,14 @@ pub enum TypeKind {
 }
 
 pub struct TypeSymbol{
-pub mut:
-	name string
-	kind TypeKind
-	methods []FunDecl
-	parent Type
-	overloads map[string]FunDecl
-	is_pub bool
-	pkg string
-global:
-	info TypeInfo := EmptyInfo{}
+	pub mut name string
+	pub mut kind TypeKind
+	pub mut methods []FunDecl
+	pub mut parent Type
+	pub mut overloads map[string]FunDecl
+	pub mut is_pub bool
+	pub mut pkg string
+	global info TypeInfo := EmptyInfo{}
 }
 
 pub fun (sym TypeSymbol) find_field(name string, t Table) StructField {

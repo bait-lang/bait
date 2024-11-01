@@ -3,9 +3,8 @@
 package builtin
 
 struct string {
-pub mut:
-	str #JS.String
-	length i32
+	pub mut str #JS.String
+	pub mut length i32
 }
 
 fun (s string) get(i i32) u8 {

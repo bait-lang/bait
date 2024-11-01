@@ -3,8 +3,7 @@ struct Alpha {
 }
 
 struct Bravo {
-mut:
-	x i32
+	mut x i32
 }
 
 mut a := Alpha{}

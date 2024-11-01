@@ -1,6 +1,5 @@
 struct Foo {
-mut:
-	x i32
+	mut x i32
 }
 
 fun change_me(mut f Foo){
