@@ -6,7 +6,7 @@ All notable changes are documented in this file.
 
 ## 0.0.8 - unreleased
 ### Breaking
-- Replace field modifier groups of structs and interfaces with per-field modifiers ([GH-223](https://github.com/bait-lang/bait/pull/233))
+- Replace field modifier groups of structs and interfaces with per-field modifiers ([GH-233](https://github.com/bait-lang/bait/pull/233))
 
 ### Error Checks
 - Require initialization of struct fields holding a function pointer
