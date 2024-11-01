@@ -299,92 +299,25 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 	}
 	typ := p.table.register_sym(tsym)
 
-	// TODO DEPRECATED 2024-11-03 remove code for modifier groups
-	mut mut_idx := -1
-	mut pub_idx := -1
-	mut pub_mut_idx := -1
-	mut global_idx := -1
-	mut one_time_pub := false
-	mut field_is_mut := false
-	mut field_is_pub := false
-	mut field_is_global := false
-
 	mut methods := []ast.FunDecl
 	mut fields := []ast.StructField
 
 	p.check(.lcur)!
 	for p.tok != .rcur {
-		if p.tok == .key_mut and p.peek() == .colon {
-			p.warn('Modifier groups are deprecated. Please define modifiers per field')
-			if mut_idx != -1 {
-				p.error('redefinition of "mut" section')!
-				return ast.InterfaceDecl{}
+		f_is_pub := p.tok == .key_pub
+		if f_is_pub {
+			p.next()
+		}
+		f_is_mut := p.tok == .key_mut
+		if f_is_mut {
+			p.next()
+		}
+		f_is_global := p.tok == .key_global
+		if f_is_global {
+			if f_is_pub or f_is_mut {
+				p.error('unexpected `global`')!
 			}
 			p.next()
-			p.check(.colon)!
-			mut_idx = fields.length
-			field_is_mut = true
-			field_is_pub = false
-			field_is_global = false
-		} else if p.tok == .key_pub {
-			p.next()
-			if p.tok == .key_mut and p.peek() == .colon {
-				p.warn('Modifier groups are deprecated. Please define modifiers per field')
-				if pub_mut_idx != -1 {
-					p.error('redefinition of "pub mut" section')!
-					return ast.InterfaceDecl{}
-				}
-				p.next()
-				pub_mut_idx = fields.length
-				field_is_mut = true
-				field_is_pub = true
-				field_is_global = false
-				p.check(.colon)!
-			} else if p.tok == .colon {
-				p.warn('Modifier groups are deprecated. Please define modifiers per field')
-				if pub_idx != -1 {
-					p.error('redefinition of "pub" section')!
-					return ast.InterfaceDecl{}
-				}
-				pub_idx = fields.length
-				field_is_mut = false
-				field_is_pub = true
-				field_is_global = false
-				p.check(.colon)!
-			} else {
-				one_time_pub = true
-			}
-		} else if p.tok == .key_global and p.peek() == .colon {
-			p.warn('Modifier groups are deprecated. Please define modifiers per field')
-			if global_idx != -1 {
-				p.error('redefinition of "global" section')!
-				return ast.InterfaceDecl{}
-			}
-			p.next()
-			p.check(.colon)!
-			global_idx = fields.length
-			field_is_mut = true
-			field_is_pub = true
-			field_is_global = true
-		}
-
-		mut pub2 := field_is_pub
-		mut mut2 := field_is_mut
-		mut glob2 := field_is_global
-
-		if p.tok == .key_pub {
-			p.next()
-			pub2 = true
-		}
-		if p.tok == .key_mut {
-			p.next()
-			mut2 = true
-		}
-		if p.tok == .key_global {
-			p.next()
-			pub2 = true
-			mut2 = true
-			glob2 = true
 		}
 
 		fname := p.check_name()!
@@ -398,12 +331,10 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 		fields.push(ast.StructField{
 			name = fname
 			typ = p.parse_type()!
-			is_mut = mut2
-			is_pub = pub2 or one_time_pub
-			is_global = glob2
+			is_mut = f_is_mut or f_is_global
+			is_pub = f_is_pub or f_is_global
+			is_global = f_is_global
 		})
-
-		one_time_pub = false
 	}
 	p.next()
 
