@@ -1,0 +1,1 @@
+tests/out/error/struct/unexpected_global.in.bt:2:6 error: unexpected `global`
