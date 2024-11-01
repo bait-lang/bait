@@ -3,10 +3,8 @@
 package builtin
 
 struct Array {
-mut:
-	data #JS.Array
-pub mut:
-	length i32
+	mut data #JS.Array
+	pub mut length i32
 }
 
 fun (a Array) get(i i32) any {

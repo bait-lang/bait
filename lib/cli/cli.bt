@@ -10,17 +10,14 @@ pub struct Command {
 	name string
 	exec Callback
 	required_args []string
-mut:
-	nr_required_args i32
-pub mut:
-	options []Option
-	args []string
+	mut nr_required_args i32
+	pub mut options []Option
+	pub mut args []string
 }
 
 pub struct Option {
 	name string
-mut:
-	found bool
+	mut found bool
 }
 
 pub fun (mut cmd Command) parse(args []string) {

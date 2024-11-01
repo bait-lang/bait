@@ -5,10 +5,9 @@ package ast
 import bait.token
 
 pub struct Attribute{
-pub:
-	name string
-	value string
-	pos token.Pos
+	pub name string
+	pub value string
+	pub pos token.Pos
 }
 
 pub fun (attrs []Attribute) has(name string) bool {

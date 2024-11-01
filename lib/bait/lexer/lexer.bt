@@ -10,22 +10,21 @@ pub enum CommentMode {
 }
 
 pub struct Lexer {
-mut:
-	comment_mode CommentMode
-	text string
-	insert_semi bool // Insert a semicolon on \n
-	val string // Value of the current token
+	mut comment_mode CommentMode
+	mut text string
+	mut insert_semi bool // Insert a semicolon on \n
+	mut val string // Value of the current token
 
 	// Position tracking
-	line_starts []i32 // Array with positions of the \n before each line
-	cur_line i32 // Current line number
-	start i32 // Start of the current token
-	pos i32 // Always points to the next char in text
+	mut line_starts []i32 // Array with positions of the \n before each line
+	mut cur_line i32 // Current line number
+	mut start i32 // Start of the current token
+	mut pos i32 // Always points to the next char in text
 
 	// String interpolation state
-	is_str_interpol bool // True for the whole expr (`${...}`)
-	is_str_dollar bool // True only for the opening `$`
-	str_quote u8
+	mut is_str_interpol bool // True for the whole expr (`${...}`)
+	mut is_str_dollar bool // True only for the opening `$`
+	mut str_quote u8
 }
 
 pub fun (mut l Lexer) init(text string, comment_mode CommentMode) {

@@ -13,14 +13,12 @@ pub enum Kind {
 }
 
 pub struct Message{
-pub:
-	kind Kind
-	path string
-	pos token.Pos
-	title string
-	msg string
-global:
-	infos []Message
+	pub kind Kind
+	pub path string
+	pub pos token.Pos
+	pub title string
+	pub msg string
+	global infos []Message
 }
 
 pub fun (msg Message) print() {

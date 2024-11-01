@@ -16,35 +16,34 @@ const C_RESERVED := [
 struct Gen {
 	pref preference.Prefs
 	table ast.Table
-mut:
-	path string
-	pkg string
-	main_inits_out string
-	type_defs_out string := '// Type definitions\n'
-	fun_decls_out string := '// Function declarations\n'
-	type_impls_out string := '// Type implementations\n'
-	auto_funs_out string := '// Generated functions\n'
-	globals_out string := '// Globals\n'
-	out string := '// Main code\n'
-	indent i32 := -1
-	empty_line bool := true
-	stmt_offsets []i32
-	foreign_imports []string // C header files
-	generated_eq_funs []ast.Type
-	generated_str_funs []ast.Type
-	tmp_counter i32
-	cur_concrete_types map[string]ast.Type
-	cur_fun ast.FunDecl
-	is_lhs_assign bool
-	is_array_map_set bool
-	is_for_loop_head bool
+	mut path string
+	mut pkg string
+	mut main_inits_out string
+	mut type_defs_out string := '// Type definitions\n'
+	mut fun_decls_out string := '// Function declarations\n'
+	mut type_impls_out string := '// Type implementations\n'
+	mut auto_funs_out string := '// Generated functions\n'
+	mut globals_out string := '// Globals\n'
+	mut out string := '// Main code\n'
+	mut indent i32 := -1
+	mut empty_line bool := true
+	mut stmt_offsets []i32
+	mut foreign_imports []string // C header files
+	mut generated_eq_funs []ast.Type
+	mut generated_str_funs []ast.Type
+	mut tmp_counter i32
+	mut cur_concrete_types map[string]ast.Type
+	mut cur_fun ast.FunDecl
+	mut is_lhs_assign bool
+	mut is_array_map_set bool
+	mut is_for_loop_head bool
 	// Testing
-	has_test_begin bool
-	has_test_end bool
+	mut has_test_begin bool
+	mut has_test_end bool
 	// Cached comptime variables
-	baitexe string
-	baitdir string
-	baithash string
+	mut baitexe string
+	mut baitdir string
+	mut baithash string
 }
 
 pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {

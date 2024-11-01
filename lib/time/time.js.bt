@@ -3,15 +3,14 @@
 package time
 
 struct Time {
-pub:
-	year i32
-	month i32
-	day i32
-	hour i32
-	minute i32
-	second i32
-	millisecond i32
-	unix i64
+	pub year i32
+	pub month i32
+	pub day i32
+	pub hour i32
+	pub minute i32
+	pub second i32
+	pub millisecond i32
+	pub unix i64
 }
 
 pub fun now() Time {

@@ -1,1 +1,1 @@
-tests/out/error/struct/immut_field_nested.in.bt:11:2 error: field `Alpha.b` is immutable
+tests/out/error/struct/immut_field_nested.in.bt:10:2 error: field `Alpha.b` is immutable

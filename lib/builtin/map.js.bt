@@ -3,10 +3,8 @@
 package builtin
 
 struct Map{
-mut:
-	data #JS.Map
-pub mut:
-	length i32
+	mut data #JS.Map
+	pub mut length i32
 }
 
 fun (m Map) get(key string) any {

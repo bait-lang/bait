@@ -16,31 +16,29 @@ pub enum OperatingSystem {
 }
 
 pub struct Prefs {
-global:
-	command string
-	out_name string
+	global command string
+	global out_name string
 
-pub mut:
-	args []string
-	user_args []string
-	build_options []string
+	pub mut args []string
+	pub mut user_args []string
+	pub mut build_options []string
 
-	should_run bool
-	is_verbose bool
-	show_timings bool
-	backend Backend
-	os OperatingSystem
+	pub mut should_run bool
+	pub mut is_verbose bool
+	pub mut show_timings bool
+	pub mut backend Backend
+	pub mut os OperatingSystem
 
 	// Compile mode
-	is_test bool
-	is_script bool
-	is_library bool
-	keep_exe bool
-	cc string := 'cc'
+	pub mut is_test bool
+	pub mut is_script bool
+	pub mut is_library bool
+	pub mut keep_exe bool
+	pub mut cc string := 'cc'
 
 	// Error related
-	hide_warnings bool
-	warn_is_error bool
+	pub mut hide_warnings bool
+	pub mut warn_is_error bool
 }
 
 pub fun parse_args(args []string) Prefs {

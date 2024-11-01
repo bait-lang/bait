@@ -7,9 +7,8 @@ import time
 global g_timers := Timers{}
 
 pub struct Timers{
-mut:
-	watches map[string]time.Stopwatch
-	show bool := true
+	mut watches map[string]time.Stopwatch
+	mut show bool := true
 }
 
 pub fun (mut t Timers) start(name string) {

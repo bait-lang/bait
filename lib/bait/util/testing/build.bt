@@ -12,13 +12,11 @@ pub enum BuildTarget {
 
 pub struct BuildRunner{
 	root string
-pub mut:
-	oks i32
-	fails i32
-	targets BuildTarget
-	dir_suffix string
-global:
-	cmd_options string
+	pub mut oks i32
+	pub mut fails i32
+	pub mut targets BuildTarget
+	pub mut dir_suffix string
+	global cmd_options string
 }
 
 pub fun (mut runner BuildRunner) build_single(name string) {

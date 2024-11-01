@@ -10,31 +10,29 @@ import bait.token
 pub struct Checker{
 	prefs preference.Prefs
 	table ast.Table
-mut:
-	file ast.File
-	scope ast.Scope
-	path string
-	pkg string
-	has_main_pkg_files bool
-	has_main_fun bool
-	is_js_file bool
-	cur_fun ast.FunDecl
-	cur_concrete_types []ast.Type
-	need_generic_resolve bool
-	cur_generic_names []string
-	expected_type ast.Type
-	is_lhs_assign bool
-	is_if_match_expr bool
-	is_sumtype_match bool
-	is_or_block bool
-	is_loop bool
-	returns bool
-	export_names []string
-	redefined_funs []string
-pub mut:
-	infos []errors.Message
-	warnings []errors.Message
-	errors []errors.Message
+	mut file ast.File
+	mut scope ast.Scope
+	mut path string
+	mut pkg string
+	mut has_main_pkg_files bool
+	mut has_main_fun bool
+	mut is_js_file bool
+	mut cur_fun ast.FunDecl
+	mut cur_concrete_types []ast.Type
+	mut need_generic_resolve bool
+	mut cur_generic_names []string
+	mut expected_type ast.Type
+	mut is_lhs_assign bool
+	mut is_if_match_expr bool
+	mut is_sumtype_match bool
+	mut is_or_block bool
+	mut is_loop bool
+	mut returns bool
+	mut export_names []string
+	mut redefined_funs []string
+	pub mut infos []errors.Message
+	pub mut warnings []errors.Message
+	pub mut errors []errors.Message
 }
 
 pub fun (mut c Checker) check_files(files []ast.File) {

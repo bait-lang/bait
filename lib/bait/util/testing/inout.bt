@@ -7,10 +7,9 @@ import os
 pub struct InOutRunner {
 	fix_out_file bool // CAUTION: Overwrites out files with the actual output
 	check_stdout bool // Compare expected to stdout instead of stderr
-global:
-	root string // Root directory to search tests in
-	cmd_options string // Additional cmd options for compiling the tests
-	skips []string
+	global root string // Root directory to search tests in
+	global cmd_options string // Additional cmd options for compiling the tests
+	global skips []string
 }
 
 pub fun (runner InOutRunner) test_dir(dir string) {

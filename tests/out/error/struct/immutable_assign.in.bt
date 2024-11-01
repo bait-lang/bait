@@ -1,6 +1,5 @@
 struct Foo {
-mut:
-	a i32
+	mut a i32
 }
 
 f := Foo{}

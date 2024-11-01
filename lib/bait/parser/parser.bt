@@ -11,26 +11,24 @@ import hash.crc32
 
 pub struct Parser {
 	pref preference.Prefs
-mut:
-	path string
-	file_hash string
-	eofs i32
-	tok token.Token
-	next_tok token.Token
-	val string
-	pos token.Pos
-	pkg_name string
-	import_aliases map[string]string
-	attributes []ast.Attribute
-	expr_pkg string
-	is_for_init bool
-	is_struct_possible bool
-pub mut:
-	table ast.Table
-	lexer lexer.Lexer
-	infos []errors.Message
-	warnings []errors.Message
-	error errors.Message
+	mut path string
+	mut file_hash string
+	mut eofs i32
+	mut tok token.Token
+	mut next_tok token.Token
+	mut val string
+	mut pos token.Pos
+	mut pkg_name string
+	mut import_aliases map[string]string
+	mut attributes []ast.Attribute
+	mut expr_pkg string
+	mut is_for_init bool
+	mut is_struct_possible bool
+	pub mut table ast.Table
+	pub mut lexer lexer.Lexer
+	pub mut infos []errors.Message
+	pub mut warnings []errors.Message
+	pub mut error errors.Message
 }
 
 pub fun new(table ast.Table, pref preference.Prefs) Parser {
