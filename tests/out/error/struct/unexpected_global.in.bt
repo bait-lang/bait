@@ -1,0 +1,3 @@
+struct Bar {
+	mut global e i32
+}

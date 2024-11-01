@@ -18,76 +18,28 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 
 	generic_names := p.generic_type_names()!
 
-	// TODO DEPRECATED 2024-11-03 remove code for modifier groups
-	mut mut_idx := -1
-	mut pub_idx := -1
-	mut pub_mut_idx := -1
-	mut global_idx := -1
-	mut one_time_pub := false
-	mut field_is_mut := false
-	mut field_is_pub := false
-	mut field_is_global := false
 	mut fields := []ast.StructField
 
 	p.check(.lcur)!
 	for p.tok != .rcur {
-		if p.tok == .key_mut and p.peek() == .colon {
-			p.warn('Modifier groups are deprecated. Please define modifiers per field')
-			if mut_idx != -1 {
-				p.error('redefinition of "mut" section')!
-				return ast.StructDecl{}
+		f_is_pub := p.tok == .key_pub
+		if f_is_pub {
+			p.next()
+		}
+		f_is_mut := p.tok == .key_mut
+		if f_is_mut {
+			p.next()
+		}
+		f_is_global := p.tok == .key_global
+		if f_is_global {
+			if f_is_pub or f_is_mut {
+				p.error('unexpected `global`')!
 			}
 			p.next()
-			p.check(.colon)!
-			mut_idx = fields.length
-			field_is_mut = true
-			field_is_pub = false
-			field_is_global = false
-		} else if p.tok == .key_pub {
-			p.next()
-			if p.tok == .key_mut and p.peek() == .colon {
-				p.warn('Modifier groups are deprecated. Please define modifiers per field')
-				if pub_mut_idx != -1 {
-					p.error('redefinition of "pub mut" section')!
-					return ast.StructDecl{}
-				}
-				p.next()
-				pub_mut_idx = fields.length
-				field_is_mut = true
-				field_is_pub = true
-				field_is_global = false
-				p.check(.colon)!
-			} else if p.tok == .colon {
-				p.warn('Modifier groups are deprecated. Please define modifiers per field')
-				if pub_idx != -1 {
-					p.error('redefinition of "pub" section')!
-					return ast.StructDecl{}
-				}
-				pub_idx = fields.length
-				field_is_mut = false
-				field_is_pub = true
-				field_is_global = false
-				p.check(.colon)!
-			} else {
-				one_time_pub = true
-			}
-		} else if p.tok == .key_global and p.peek() == .colon {
-			p.warn('Modifier groups are deprecated. Please define modifiers per field')
-			if global_idx != -1 {
-				p.error('redefinition of "global" section')!
-				return ast.StructDecl{}
-			}
-			p.next()
-			p.check(.colon)!
-			global_idx = fields.length
-			field_is_mut = true
-			field_is_pub = true
-			field_is_global = true
 		}
 
 		p.parse_attributes()!
-		fields.push(p.struct_decl_field(field_is_mut, field_is_pub or one_time_pub, field_is_global)!)
-		one_time_pub = false
+		fields.push(p.struct_decl_field(f_is_mut, f_is_pub, f_is_global)!)
 	}
 	p.check(.rcur)!
 
@@ -123,25 +75,6 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) !ast.StructField {
 	pos := p.pos
 
-	mut pub2 := is_pub
-	mut mut2 := is_mut
-	mut glob2 := is_global
-
-	if p.tok == .key_pub {
-		p.next()
-		pub2 = true
-	}
-	if p.tok == .key_mut {
-		p.next()
-		mut2 = true
-	}
-	if p.tok == .key_global {
-		p.next()
-		pub2 = true
-		mut2 = true
-		glob2 = true
-	}
-
 	fname := p.check_name()!
 	ftyp := p.parse_type()!
 	mut expr := ast.EmptyExpr{} as ast.Expr
@@ -154,9 +87,9 @@ fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) !
 		typ = ftyp
 		expr = expr
 		pos = pos
-		is_mut = mut2
-		is_pub = pub2
-		is_global = glob2
+		is_mut = is_mut or is_global
+		is_pub = is_pub or is_global
+		is_global = is_global
 		attrs = p.attributes
 	}
 
