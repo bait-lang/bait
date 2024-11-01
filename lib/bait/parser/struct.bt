@@ -137,6 +137,8 @@ fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) !
 	}
 	if p.tok == .key_global {
 		p.next()
+		pub2 = true
+		mut2 = true
 		glob2 = true
 	}
 

@@ -382,6 +382,8 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 		}
 		if p.tok == .key_global {
 			p.next()
+			pub2 = true
+			mut2 = true
 			glob2 = true
 		}
 
