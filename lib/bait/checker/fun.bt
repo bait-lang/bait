@@ -218,11 +218,18 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 
 	mut arg_offset := 1
 	mut def := c.table.get_method(left_sym, node.name)
+
 	if def.name.length == 0 {
+		// Check for callable struct field
 		if left_sym.kind == .struct_ {
 			field := left_sym.find_field(node.name, c.table)
 			if field.name.length > 0 {
 				field_sym := c.table.get_sym(field.typ)
+				if field_sym.kind != .fun_ {
+					c.error('struct field `${field.name}` is not a method', node.pos)
+					return ast.PLACEHOLDER_TYPE
+				}
+
 				info := field_sym.info as ast.FunInfo
 				arg_offset = 0
 				node.is_field = true

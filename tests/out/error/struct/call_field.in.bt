@@ -1,0 +1,6 @@
+struct Foo{
+	my_field i32
+}
+
+f := Foo{}
+f.my_field()

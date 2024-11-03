@@ -5,7 +5,7 @@ on:
   push:
 
 jobs:
-  linux:
+  linux-js:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,9 +21,7 @@ jobs:
       - name: Build tools
         run: bait build-tools
       - name: Build examples
-        run: |
-          bait build-examples -b js
-          bait build-examples -b c
+        run: bait build-examples -b js
       - name: Run compiler tests
         run: bait test tests
       - name: Run lib tests
@@ -35,7 +33,22 @@ jobs:
           bait check-md docs/docs.md
           bait check-md README.md
 
-  windows:
+  linux-c:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      # Note: this job still uses bait.js
+      - name: Bootstrap
+        run: |
+          ./make.sh
+          ./bait symlink
+      - name: Build examples
+        run: bait build-examples -b c
+
+  windows-js:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
