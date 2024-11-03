@@ -10,6 +10,7 @@ All notable changes are documented in this file.
 
 ### Error Checks
 - Require initialization of struct fields holding a function pointer
+- Prevent calling struct fields that are not callable
 
 ### C Backend
 - Support callable struct fields
@@ -21,6 +22,7 @@ All notable changes are documented in this file.
 
 ### Other Changes
 - Comptime if: Add `LINUX` and `WINDOWS` conditions
+- `gen`: Generate `assert` as panic outside of tests
 
 
 ## 0.0.7 - 2024-10-27
