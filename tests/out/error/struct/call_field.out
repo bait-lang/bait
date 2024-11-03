@@ -1,0 +1,1 @@
+tests/out/error/struct/call_field.in.bt:6:3 error: struct field `my_field` is not a method
