@@ -95,10 +95,9 @@ pub fun platform() string {
 }
 
 pub struct CmdRes {
-pub:
-	code i32
-	stdout string
-	stderr string
+	pub code i32
+	pub stdout string
+	pub stderr string
 }
 
 pub fun exec(cmd string) CmdRes {

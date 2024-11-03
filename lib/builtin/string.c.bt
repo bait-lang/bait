@@ -5,9 +5,8 @@ package builtin
 import strings
 
 struct string {
-pub mut:
-	str &u8
-	length i32
+	pub mut str &u8
+	pub mut length i32
 }
 
 fun (s string) get(i i32) u8 {
