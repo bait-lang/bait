@@ -1,0 +1,27 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package preference
+
+pub enum Backend {
+	js
+	c
+}
+
+pub fun (b Backend) matches_file(file string) bool {
+	if b != .c and file.ends_with('.c.bt') {
+		return false
+	}
+	if b != .js and file.ends_with('.js.bt') {
+		return false
+	}
+
+	return true
+}
+
+fun backend_from_string(s string) Backend {
+	return match s {
+		'js' { Backend.js }
+		'c' { .c }
+		else { panic('Invalid backend: ${s}') }
+	}
+}

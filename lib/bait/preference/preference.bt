@@ -5,11 +5,6 @@ package preference
 import os
 import bait.errors
 
-pub enum Backend {
-	js
-	c
-}
-
 pub enum OperatingSystem {
 	linux
 	windows
@@ -162,14 +157,6 @@ pub fun parse_args(args []string) Prefs {
 	}
 
 	return p
-}
-
-fun backend_from_string(s string) Backend {
-	return match s {
-		'js' { Backend.js }
-		'c' { .c }
-		else { panic('Invalid backend: ${s}') }
-	}
 }
 
 fun os_from_string(s string) OperatingSystem {

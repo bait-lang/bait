@@ -26,12 +26,25 @@ fun (b Builder) bait_files_in_dir(dir string) []string {
 
 	mut files := []string
 	for f in all_files {
-		if b.prefs.should_compile_file(f) {
+		if b.should_compile_file(f) {
 			files.push(os.join_path(dir, [f]))
 		}
 	}
 
 	return files
+}
+
+fun (b Builder) should_compile_file(file string) bool {
+	if not file.ends_with('.bt') {
+		return false
+	}
+
+	// Exclude test files from compilation
+	if file.contains('_test.') {
+		return false
+	}
+
+	return b.prefs.backend.matches_file(file)
 }
 
 fun (b Builder) collect_user_files(path string) []string {
