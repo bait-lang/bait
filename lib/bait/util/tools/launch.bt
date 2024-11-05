@@ -3,13 +3,12 @@
 package tools
 
 import os
-
-const VERBOSE := os.ARGS.contains('--verbose') or os.ARGS.contains('-v')
+import bait.preference
 
 // TODO prepare for C backend (respect -b option)
 
-pub fun launch_tool(name string, args []string) i32 {
-	base_path := os.join_path($BAITDIR, ['cli', 'tools', name])
+pub fun launch_tool(prefs preference.Prefs) i32 {
+	base_path := os.join_path($BAITDIR, ['cli', 'tools', prefs.command])
 	tool_source := find_tool_source(base_path)
 	tool_exe := base_path + '.js'
 
@@ -17,13 +16,13 @@ pub fun launch_tool(name string, args []string) i32 {
 	baitexe := os.executable()
 	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
 	if comp_res.code != 0 {
-		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
+		eprintln('Failed to compile tool "${prefs.command}" with error: ${comp_res.stderr}')
 		return 1
 	}
 
 	// Execute
-	args_string := args.join(' ')
-	if VERBOSE {
+	args_string := prefs.build_options.join(' ')
+	if prefs.is_verbose {
 		println('launching tool')
 		println('  source: ${tool_source}')
 		println('  exe:    ${tool_exe}')

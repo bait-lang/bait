@@ -32,9 +32,9 @@ fun main() {
 	timers.set_show(prefs.show_timings)
 	timers.show('PREFS')
 
-	// Handle tool commands
+	// Launch tool and exit
 	if TOOLS.contains(prefs.command) {
-		exit(tools.launch_tool(prefs.command, prefs.build_options))
+		exit(tools.launch_tool(prefs))
 	}
 
 	// Handle builtin commands
