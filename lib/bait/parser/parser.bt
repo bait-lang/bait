@@ -10,7 +10,7 @@ import bait.token
 import hash.crc32
 
 pub struct Parser {
-	pref preference.Prefs
+	prefs preference.Prefs
 	mut path string
 	mut file_hash string
 	mut eofs i32
@@ -31,10 +31,10 @@ pub struct Parser {
 	pub mut error errors.Message
 }
 
-pub fun new(table ast.Table, pref preference.Prefs) Parser {
+pub fun new(table ast.Table, prefs preference.Prefs) Parser {
 	return Parser{
 		table = table
-		pref = pref
+		prefs = prefs
 	}
 }
 
@@ -76,7 +76,7 @@ pub fun (mut p Parser) parse_result() !ast.File {
 	}
 
 	// Do not parse assert.bt outside of tests
-	if not p.pref.is_test and p.pkg_name == 'builtin' and p.path.ends_with('assert.bt') {
+	if not p.prefs.is_test and p.pkg_name == 'builtin' and p.path.ends_with('assert.bt') {
 		return ast.File{
 			path = p.path
 		}

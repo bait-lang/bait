@@ -44,7 +44,7 @@ const JS_RESERVED := [
 ]
 
 struct Gen {
-	pref preference.Prefs
+	prefs preference.Prefs
 	table ast.Table
 	mut path string
 	mut pkg string
@@ -71,9 +71,9 @@ struct Gen {
 	mut baithash string
 }
 
-pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
+pub fun gen(files []ast.File, table ast.Table, prefs preference.Prefs) string {
 	mut g := Gen{
-		pref = pref
+		prefs = prefs
 		table = table
 		indent = -1
 		empty_line = true
@@ -88,10 +88,10 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.out += "\n"
 	}
 
-	if pref.is_test {
+	if prefs.is_test {
 		g.gen_test_main()
 	}
-	if not pref.is_library {
+	if not prefs.is_library {
 		g.main_call()
 	}
 

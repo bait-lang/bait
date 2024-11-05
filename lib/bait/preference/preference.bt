@@ -19,7 +19,7 @@ pub struct Prefs {
 	global command string
 	global out_name string
 
-	pub mut args []string
+	pub mut args []string // Args passed to the compiler
 	pub mut user_args []string
 	pub mut build_options []string
 

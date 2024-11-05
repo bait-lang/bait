@@ -18,7 +18,7 @@ fun (p Parser) add_builtin_imports() []ast.Import {
 	})
 
 	// Internal package test
-	if p.pref.is_test and p.pkg_name != 'main' {
+	if p.prefs.is_test and p.pkg_name != 'main' {
 		imports.push(ast.Import{
 			name = p.pkg_name
 		})
