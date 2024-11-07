@@ -1,0 +1,38 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+package builder
+
+import os
+
+pub fun (b Builder) run_if_needed() i32 {
+	if not b.prefs.should_run {
+		return 0
+	}
+
+	return match b.prefs.backend {
+		.c { b.run_c() }
+		.js { b.run_js() }
+	}
+}
+
+fun (b Builder) run_js() i32 {
+	argstr := b.prefs.user_args.join(' ')
+	run_res := os.system('node ${b.prefs.out_name} ${argstr}')
+	if not b.prefs.keep_exe {
+		os.rm(b.prefs.out_name)
+	}
+	return run_res
+}
+
+fun (b Builder) run_c() i32 {
+	argstr := b.prefs.user_args.join(' ')
+	mut run_cmd := '${b.prefs.out_name} ${argstr}'.replace('/', os.PATH_SEP)
+	if not run_cmd.starts_with('/') {
+		run_cmd = '.' + os.PATH_SEP + run_cmd
+	}
+	run_res := os.system(run_cmd)
+	if not b.prefs.keep_exe {
+		os.rm(b.prefs.out_name)
+	}
+	return run_res
+}

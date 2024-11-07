@@ -189,37 +189,33 @@ pub fun compile(prefs preference.Prefs) i32 {
 		return 1
 	}
 
-	if b.prefs.backend == .c {
-		return b.code_gen_c()
+	gen_res := b.code_gen()
+	if gen_res == 0 {
+		return b.run_if_needed()
 	}
+	return gen_res
+}
 
-	return b.code_gen_js()
+fun (mut b Builder) code_gen() i32 {
+	return match b.prefs.backend {
+		.c { b.code_gen_c() }
+		.js { b.code_gen_js() }
+	}
 }
 
 fun (b Builder) code_gen_js() i32 {
 	// Run JSGen and write it to the outfile
 	timers.start('GEN')
-	res := jsgen.gen(b.parsed_files, b.parser.table, b.prefs) + '\n'
+	out_text := jsgen.gen(b.parsed_files, b.parser.table, b.prefs) + '\n'
 	timers.show('GEN')
 	ensure_dir_exists(os.dir(b.prefs.out_name))
-	os.write_file(b.prefs.out_name, res)
-
-	// Execute the resulting file with NodeJS if required
-	if b.prefs.should_run{
-		argstr := b.prefs.user_args.join(' ')
-		run_res := os.system('node ${b.prefs.out_name} ${argstr}')
-		if not b.prefs.keep_exe {
-			os.rm(b.prefs.out_name)
-		}
-		return run_res
-	}
-
+	os.write_file(b.prefs.out_name, out_text)
 	return 0
 }
 
 fun (mut b Builder) code_gen_c() i32 {
 	timers.start('GEN')
-	res := cgen.gen(b.parsed_files, b.parser.table, b.prefs) + '\n'
+	out_text := cgen.gen(b.parsed_files, b.parser.table, b.prefs) + '\n'
 	timers.show('GEN')
 
 	if b.prefs.os == .windows {
@@ -230,35 +226,17 @@ fun (mut b Builder) code_gen_c() i32 {
 	ensure_dir_exists(os.dir(b.prefs.out_name))
 
 	if b.prefs.out_name.ends_with('.c') {
-		os.write_file( b.prefs.out_name, res)
+		os.write_file( b.prefs.out_name, out_text)
 		return 0
 	}
 
 	tmp_c_path := os.join_path(os.tmp_dir(), [os.file_name(b.prefs.out_name) + '.c'])
-	os.write_file(tmp_c_path, res)
+	os.write_file(tmp_c_path, out_text)
 	mut cflags := ''
 	if b.prefs.is_library {
 		cflags += '-shared -fPIC '
 	}
-	comp_res := os.system('${b.prefs.cc} ${tmp_c_path} ${cflags} -o ${b.prefs.out_name}')
-	if comp_res != 0 {
-		return comp_res
-	}
-
-	if b.prefs.should_run{
-		argstr := b.prefs.user_args.join(' ')
-		mut run_cmd := '${b.prefs.out_name} ${argstr}'.replace('/', os.PATH_SEP)
-		if not run_cmd.starts_with('/') {
-			run_cmd = '.' + os.PATH_SEP + run_cmd
-		}
-		run_res := os.system(run_cmd)
-		if not b.prefs.keep_exe {
-			os.rm(b.prefs.out_name)
-		}
-		return run_res
-	}
-
-	return 0
+	return os.system('${b.prefs.cc} ${tmp_c_path} ${cflags} -o ${b.prefs.out_name}')
 }
 
 fun (b Builder) print_infos(infos []errors.Message) {
