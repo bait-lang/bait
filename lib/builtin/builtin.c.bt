@@ -22,3 +22,14 @@ pub fun eprint(s string) {
 pub fun exit(code i32) {
 	#C.exit(code)
 }
+
+@noreturn
+pub fun panic(msg string) {
+	eprintln('Panic: ${msg}\n${c_backtrace()}')
+	exit(1)
+}
+
+fun c_backtrace() string {
+	// TODO backtrace
+	return 'TODO backtrace'
+}

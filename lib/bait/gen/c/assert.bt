@@ -6,6 +6,15 @@ import bait.ast
 import bait.util
 
 fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
+	if not g.pref.is_test {
+		g.write('if (!')
+		g.expr(node.expr)
+		g.writeln(') {')
+		g.writeln('\tpanic(from_c_string("assert failed"));')
+		g.writeln('}')
+		return
+	}
+
 	g.write('if (')
 	g.expr(node.expr)
 	g.writeln(') {')

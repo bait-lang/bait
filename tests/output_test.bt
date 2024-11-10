@@ -4,8 +4,6 @@
 import os
 import bait.util.testing
 
-const ERR_SKIP := []string
-
 const DIR := os.dir($FILE)
 const ENABLE_FIX := os.ARGS.contains('--fix')
 
@@ -21,7 +19,6 @@ fun test_error_in_outs() {
 	testing.in_out_runner(testing.InOutRunner{
 		root = '${DIR}/out/error'
 		cmd_options = '--script'
-		skips = ERR_SKIP
 		fix_out_file = ENABLE_FIX
 	})
 }
