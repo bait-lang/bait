@@ -22,14 +22,14 @@ fun main() {
 ## Key Features
 > **Status:** Bait is in active development.
 > It is stable for personal use,
-> but please be prepared for possible breaking changes and evolving features (:construction:).
+> but please be prepared for possible breaking changes and evolving features (🚧).
 
 - Consistent syntax balancing simplicity for newcomers with power for experienced developers
 - Type and memory safety with immutability by default
 - Explicit and predictable error handling using Result types
-- JavaScript backend (NodeJS, :construction: Web)
-- :construction: C backend
-- Cross-platform support (Linux, :construction: Windows)
+- JavaScript backend (NodeJS, 🚧 Web)
+- 🚧 C backend
+- Cross-platform support (Linux, 🚧 Windows)
 
 
 ## Documentation
