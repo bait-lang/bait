@@ -36,7 +36,7 @@ pub struct Prefs {
 	pub mut warn_is_error bool
 }
 
-pub fun parse_args(args []string) Prefs {
+pub fun parse_args(args []string) !Prefs {
 	mut p := Prefs{
 		backend = .js
 		os = os_from_string(os.platform())
@@ -126,17 +126,28 @@ pub fun parse_args(args []string) Prefs {
 		exit(1)
 	}
 
+	// TODO unify redundant args length check for build, run, test
+
 	// `build` is just an optional alias and replaced with the filepath
 	if p.command == 'build' {
+		if p.args.length == 0 {
+			return error('build: missing argument <path>')
+		}
 		p.command = p.args[0]
 	}
 	// `run` is the same but with `should_run` set to true
 	if p.command == 'run' {
+		if p.args.length == 0 {
+			return error('run: missing argument <path>')
+		}
 		p.command = p.args[0]
 		p.should_run = true
 	}
 
 	if p.command == 'test' {
+		if p.args.length == 0 {
+			return error('test: missing argument <path>')
+		}
 		p.should_run = true
 		p.keep_exe = true
 		p.is_test = true
