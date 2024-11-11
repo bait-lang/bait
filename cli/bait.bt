@@ -41,16 +41,12 @@ fun main() {
 	}
 
 	// Handle builtin commands
-	if prefs.command == 'test' {
-		exit(builder.run_tests(prefs))
-	}
 	if prefs.command == 'version' {
 		println('Bait ${util.FULL_VERSION}')
 		return
 	}
-	// build, run: prefs.command is equal to the file or folder
 	if os.exists(prefs.command) {
-		exit(builder.compile(prefs))
+		exit(builder.compile_or_test(prefs))
 	}
 
 	eprintln('error: unknown file or command: "${prefs.command}"')

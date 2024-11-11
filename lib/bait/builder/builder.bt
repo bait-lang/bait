@@ -67,6 +67,14 @@ fun (b Builder) parse_file(path string, pkg string) ast.File {
 	return b.parser.parse()
 }
 
+pub fun compile_or_test(prefs preference.Prefs) i32 {
+	if prefs.is_test {
+		return run_tests(prefs)
+	}
+
+	return compile(prefs)
+}
+
 pub fun compile(prefs preference.Prefs) i32 {
 	mut b := Builder{
 		prefs = prefs

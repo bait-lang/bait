@@ -126,31 +126,25 @@ pub fun parse_args(args []string) !Prefs {
 		exit(1)
 	}
 
-	// TODO unify redundant args length check for build, run, test
-
-	// `build` is just an optional alias and replaced with the filepath
+	// `build`, `run` and `test` are replaced with the filepath
+	mut replace_cmd_with_arg := false
 	if p.command == 'build' {
-		if p.args.length == 0 {
-			return error('build: missing argument <path>')
-		}
-		p.command = p.args[0]
-	}
-	// `run` is the same but with `should_run` set to true
-	if p.command == 'run' {
-		if p.args.length == 0 {
-			return error('run: missing argument <path>')
-		}
-		p.command = p.args[0]
+		replace_cmd_with_arg = true
+	} else if p.command == 'run' {
+		replace_cmd_with_arg = true
 		p.should_run = true
-	}
-
-	if p.command == 'test' {
-		if p.args.length == 0 {
-			return error('test: missing argument <path>')
-		}
+	} else if p.command == 'test' {
+		replace_cmd_with_arg = true
 		p.should_run = true
 		p.keep_exe = true
 		p.is_test = true
+	}
+
+	if replace_cmd_with_arg {
+		if p.args.length == 0 {
+			return error('${p.command}: missing argument <path>')
+		}
+		p.command = p.args[0]
 	}
 
 	// Set default out name if empty

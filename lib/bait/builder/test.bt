@@ -5,27 +5,28 @@ package builder
 import os
 import bait.preference
 
-pub fun run_tests(prefs preference.Prefs) i32 {
-	// Collect test files
-	mut files_to_test := []string
-	for a in prefs.args {
-		if os.exists(a) and a.ends_with('.bt') and a.contains('_test.') {
-			files_to_test.push(a)
-		} else if os.exists_dir(a){
-			t := os.walk_ext(a, '.bt').filter(fun (f string) bool {
-				return f.contains('_test.') and not f.contains('.in.')
-			})
-			files_to_test.push_many(t)
-		} else {
-			eprintln('Unrecognized test file or directory: "${a}"')
-			exit(1)
-		}
+fun collect_test_files(path string) []string {
+	if os.exists(path) and path.ends_with('.bt') and path.contains('_test.') {
+		return [path]
 	}
 
+	if os.exists_dir(path){
+		return os.walk_ext(path, '.bt').filter(fun (f string) bool {
+			return f.contains('_test.') and not f.contains('.in.')
+		})
+	}
+
+
+	eprintln('Unrecognized test file or directory: "${path}"')
+	exit(1)
+}
+
+pub fun run_tests(prefs preference.Prefs) i32 {
 	mut test_prefs := prefs
 	mut has_fails := false
 
 	// Compile and run all tests
+	files_to_test := collect_test_files(prefs.command)
 	for i, file in files_to_test {
 		test_prefs.command = file
 		if prefs.backend == .js {
