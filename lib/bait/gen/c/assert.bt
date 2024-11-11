@@ -6,7 +6,7 @@ import bait.ast
 import bait.util
 
 fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
-	if not g.pref.is_test {
+	if not g.prefs.is_test {
 		g.write('if (!')
 		g.expr(node.expr)
 		g.writeln(') {')
