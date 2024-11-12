@@ -1,0 +1,28 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MPL-2.0
+
+import os
+
+fun testsuite_begin() {
+	os.chdir($DIR)
+}
+
+fun test_implicit_folder() {
+	// `help` is a folder in the current working directory.
+	// By default however, it is treated as command and the tool is launched.
+	res := os.exec('node ${$BAITEXE} help')
+	assert res.code == 0
+	assert res.stdout.length > 25
+}
+
+fun test_explicit_command() {
+	// Using `build`, you can compile the folder
+	res := os.exec('node ${$BAITEXE} build help')
+	assert res.code == 0
+	assert res.stdout.length == 0
+}
+
+fun testsuite_end() {
+	assert os.exists('help.js')
+	os.rm('help.js')
+}

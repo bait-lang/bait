@@ -5,9 +5,28 @@ package tools
 import os
 import bait.preference
 
+// List of commands implemented as tool
+const TOOLS := [
+	'ast',
+	'init',
+	'self',
+	'up',
+	'symlink',
+	'doctor',
+	'help',
+	'test-all',
+	'build-examples',
+	'build-tools',
+	'check-md',
+]
+
+pub fun is_tool(name string) bool {
+	return TOOLS.contains(name)
+}
+
 // TODO prepare for C backend (respect -b option)
 
-pub fun launch_tool(prefs preference.Prefs) i32 {
+pub fun launch(prefs preference.Prefs) i32 {
 	base_path := os.join_path($BAITDIR, ['cli', 'tools', prefs.command])
 	tool_source := find_tool_source(base_path)
 	tool_exe := base_path + '.js'

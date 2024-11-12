@@ -519,7 +519,7 @@ They are defined with `@name` or `@name('value')` before the statement they shou
 | `@silent_mismatch` | Suppress the package mismatch info message. | -     |
 
 
-## Compile Time Code Evaluation (Comptime)
+## Compile Time Code Evaluation (comptime)
 ### Compile Time Pseudo Variables
 Bait supports a few pseudo variables, which are replaced by their actual values during compilation.
 They are all of the type `string`.

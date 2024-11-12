@@ -25,6 +25,7 @@ pub struct Prefs {
 	pub mut os OperatingSystem
 
 	// Compile mode
+	pub mut compile bool
 	pub mut is_test bool
 	pub mut is_script bool
 	pub mut is_library bool
@@ -41,7 +42,8 @@ pub fun parse_args(args []string) !Prefs {
 		backend = .js
 		os = os_from_string(os.platform())
 	}
-	// Default action in case of no arguments: help
+
+	// Show help if no arguments are given
 	if args.length == 0 {
 		p.command = 'help'
 		return p
@@ -126,21 +128,20 @@ pub fun parse_args(args []string) !Prefs {
 		exit(1)
 	}
 
-	// `build`, `run` and `test` are replaced with the filepath
-	mut replace_cmd_with_arg := false
+	// `build`, `run` and `test` are defined by various compile flags
 	if p.command == 'build' {
-		replace_cmd_with_arg = true
+		p.compile = true
 	} else if p.command == 'run' {
-		replace_cmd_with_arg = true
+		p.compile = true
 		p.should_run = true
 	} else if p.command == 'test' {
-		replace_cmd_with_arg = true
+		p.compile = true
 		p.should_run = true
 		p.keep_exe = true
 		p.is_test = true
 	}
 
-	if replace_cmd_with_arg {
+	if p.compile {
 		if p.args.length == 0 {
 			return error('${p.command}: missing argument <path>')
 		}
