@@ -14,7 +14,6 @@ pub struct Prefs {
 	global command string
 	global out_name string
 
-	pub mut args []string
 	pub mut user_args []string
 	pub mut build_options []string
 
@@ -49,7 +48,7 @@ pub fun parse_args(args []string) !Prefs {
 		return p
 	}
 
-	mut after_double_dash := false
+	mut cmd_arg := ''
 
 	// Parse options and commands
 	for i := 0; i < args.length; i += 1{
@@ -107,21 +106,19 @@ pub fun parse_args(args []string) !Prefs {
 				p.show_timings = true
 			}
 			'--' {
-				after_double_dash = true
+				p.user_args = args.slice(i + 1, args.length)
+				break
 			}
 			else{
 				if p.command.length == 0 {
 					p.command = arg
-				} else if after_double_dash {
-					p.user_args.push(arg)
 				} else {
-					p.args.push(arg)
+					cmd_arg = arg
+					p.build_options.push(arg)
 				}
 			}
 		}
 	}
-
-	p.build_options.push_many(p.args)
 
 	if p.hide_warnings and p.warn_is_error {
 		errors.generic_error('Cannot use -w and -W together.')
@@ -142,10 +139,10 @@ pub fun parse_args(args []string) !Prefs {
 	}
 
 	if p.compile {
-		if p.args.length == 0 {
+		if cmd_arg.length == 0 {
 			return error('${p.command}: missing argument <path>')
 		}
-		p.command = p.args[0]
+		p.command = cmd_arg
 	}
 
 	// Set default out name if empty
