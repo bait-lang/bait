@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MPL-2.0
 package main
 
-import bait.util
+import bait.util.version
 import os
 
 fun main(){
-	println('Version: Bait ${util.FULL_VERSION}')
+	println('Version: Bait ${version.FULL_VERSION}')
 	println('OS: ${os.user_os()}/${os.arch()}')
 	git_version := os.exec('git --version').stdout.trim_space()
 	println('Git: ${git_version}')

@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MPL-2.0
-package util
+package version
 
 pub const VERSION := '0.0.7'
 pub const FULL_VERSION := '${VERSION} ${$BAITHASH}'

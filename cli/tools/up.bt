@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 package main
 
-import bait.util
+import bait.util.version
 import os
 
 fun main() {
@@ -18,7 +18,7 @@ fun main() {
 		exit(1)
 	}
 	if pull_res.stdout.contains('Already up to date.') {
-		println('Bait ${util.FULL_VERSION} is up to date.')
+		println('Bait ${version.FULL_VERSION} is up to date.')
 		return
 	}
 	if is_verbose {

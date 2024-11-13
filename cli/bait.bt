@@ -4,7 +4,7 @@ package main
 
 import bait.preference
 import bait.builder
-import bait.util
+import bait.util.version
 import bait.util.timers
 import bait.util.tools
 import os
@@ -22,7 +22,7 @@ fun main() {
 
 	// `version`
 	if prefs.command == 'version' {
-		println('Bait ${util.FULL_VERSION}')
+		println('Bait ${version.FULL_VERSION}')
 		return
 	}
 
