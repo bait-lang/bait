@@ -4,7 +4,7 @@ package js
 
 import bait.ast
 import bait.token
-import bait.util
+import bait.util.escape
 import bait.errors
 import os
 
@@ -112,7 +112,7 @@ fun (mut g Gen) bool_literal(node ast.BoolLiteral){
 
 fun (mut g Gen) char_literal(node ast.CharLiteral) {
 	g.write('u8("')
-	g.write(util.escape_char(node.val, `\"`))
+	g.write(escape.char(node.val, `\"`))
 	g.write('")')
 }
 
@@ -282,7 +282,7 @@ fun (mut g Gen) selector_expr(node ast.SelectorExpr) {
 }
 
 fun (mut g Gen) string_literal(node ast.StringLiteral) {
-	val := util.escape_char(util.escape_linebreak(node.val), `\"`)
+	val := escape.char(escape.linebreak(node.val), `\"`)
 
 	if node.lang == .js {
 		g.write('"')
@@ -298,7 +298,7 @@ fun (mut g Gen) string_literal(node ast.StringLiteral) {
 fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
 	g.write('from_js_string(`')
 	for i, val in node.vals {
-		g.write(util.escape_char(val, `\``))
+		g.write(escape.char(val, `\``))
 		if i < node.exprs.length {
 			g.write('\${')
 			g.expr_to_string(node.exprs[i], node.expr_types[i])

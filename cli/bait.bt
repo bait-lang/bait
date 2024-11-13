@@ -13,7 +13,7 @@ fun main() {
 	// Parse arguments into Prefs struct
 	args := os.user_args()
 	timers.start('PREFS')
-	mut prefs := preference.parse_args(args) or {
+	prefs := preference.parse_args(args) or {
 		eprintln(err)
 		exit(1)
 	}
