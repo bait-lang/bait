@@ -3,6 +3,7 @@
 package tools
 
 import os
+import bait.builder
 import bait.preference
 
 // List of commands implemented as tool
@@ -29,6 +30,12 @@ pub fun is_tool(name string) bool {
 pub fun launch(prefs preference.Prefs) i32 {
 	base_path := os.join_path($BAITDIR, ['cli', 'tools', prefs.command])
 	tool_source := find_tool_source(base_path)
+
+	mut tool_prefs := prefs
+	tool_prefs.command = tool_source
+	tool_prefs.should_run = true
+	return builder.compile(tool_prefs)
+
 	tool_exe := base_path + '.js'
 
 	// Run Bait to compile the tool
@@ -40,7 +47,8 @@ pub fun launch(prefs preference.Prefs) i32 {
 	}
 
 	// Execute
-	args_string := prefs.build_options.join(' ')
+	// args_string := prefs.build_options.join(' ')
+	args_string := ''
 	if prefs.is_verbose {
 		println('launching tool')
 		println('  source: ${tool_source}')

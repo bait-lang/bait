@@ -14,10 +14,10 @@ pub struct Prefs {
 	global command string
 	global out_name string
 
+	pub mut has_double_dash bool
 	pub mut user_args []string
-	pub mut build_options []string
 
-	pub mut should_run bool
+	global should_run bool
 	pub mut is_verbose bool
 	pub mut show_timings bool
 	pub mut backend Backend
@@ -48,7 +48,7 @@ pub fun parse_args(args []string) !Prefs {
 		return p
 	}
 
-	mut cmd_arg := ''
+	mut other_args := []string
 
 	// Parse options and commands
 	for i := 0; i < args.length; i += 1{
@@ -57,30 +57,21 @@ pub fun parse_args(args []string) !Prefs {
 			'-b', '--backend' {
 				i += 1
 				p.backend = backend_from_string(args[i])
-				p.build_options.push(arg)
-				p.build_options.push(args[i])
 			}
 			'-os', '--os' {
 				i += 1
 				p.os = os_from_string(args[i])
-				p.build_options.push(arg)
-				p.build_options.push(args[i])
 			}
 			"-o", '--out' {
 				i += 1
 				p.out_name = args[i]
-				p.build_options.push(arg)
-				p.build_options.push(p.out_name)
 			}
 			'-cc', '--cc' {
 				i += 1
 				p.cc = args[i]
-				p.build_options.push(arg)
-				p.build_options.push(p.out_name)
 			}
 			'-v', '--verbose' {
 				p.is_verbose = true
-				p.build_options.push(arg)
 			}
 			'-k', '--keep' {
 				p.keep_exe = true
@@ -90,11 +81,9 @@ pub fun parse_args(args []string) !Prefs {
 			}
 			'-w' {
 				p.hide_warnings = true
-				p.build_options.push(arg)
 			}
 			'-W' {
 				p.warn_is_error = true
-				p.build_options.push(arg)
 			}
 			'--nocolor' {
 				os.setenv('BAITCOLOR', '0')
@@ -106,6 +95,7 @@ pub fun parse_args(args []string) !Prefs {
 				p.show_timings = true
 			}
 			'--' {
+				p.has_double_dash = true
 				p.user_args = args.slice(i + 1, args.length)
 				break
 			}
@@ -113,8 +103,7 @@ pub fun parse_args(args []string) !Prefs {
 				if p.command.length == 0 {
 					p.command = arg
 				} else {
-					cmd_arg = arg
-					p.build_options.push(arg)
+					other_args.push(arg)
 				}
 			}
 		}
@@ -139,10 +128,12 @@ pub fun parse_args(args []string) !Prefs {
 	}
 
 	if p.compile {
-		if cmd_arg.length == 0 {
+		if other_args.length == 0 {
 			return error('${p.command}: missing argument <path>')
 		}
-		p.command = cmd_arg
+		p.command = other_args[0]
+	} else if not p.has_double_dash {
+		p.user_args = other_args
 	}
 
 	// Set default out name if empty

@@ -48,6 +48,5 @@ fun test_errors() {
 }
 
 fun testsuite_end() {
-	os.chdir('..')
-	os.rmdir_all(TMP)
+	// os.rmdir_all(TMP)
 }

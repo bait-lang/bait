@@ -44,6 +44,8 @@ fun main() {
 
 fun (init Init) check_preconditions() !bool {
 	if init.name == '.' {
+		eprintln(os.getwd())
+		eprintln(os.ls('.'))
 		if os.ls('.').length > 0 {
 			return error('cannot run init in non-empty directory')
 		}
