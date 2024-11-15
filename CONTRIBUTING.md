@@ -31,7 +31,7 @@ Compiler packages are located in `lib/bait/`. The main stages are:
   - Perform error and type checks
 - Code generation
   - `gen.js`: JavaScript backend
-  - `gen.c`: :construction: C backend
+  - `gen.c`: 🚧 C backend
 
 The following packages are also used during compilation:
 - `token`: Defines tokens and their precedence

@@ -4,7 +4,7 @@ SPDX-License-Identifier: MIT
 -->
 
 # Bait Documentation
-> Documentation of the standard library is work in progress :construction:
+> Documentation of the standard library is work in progress 🚧
 
 ## Entry Point
 The entry point of any program is the `main` function. It is automatically called when the program starts.
@@ -563,7 +563,7 @@ The following conditions are currently supported:
 ## Global Variables
 While the use of global variables is discouraged, they are important in some cases.
 
-> :construction: In a future version, global variables will require a compiler flag to be enabled.
+> 🚧 In a future version, global variables will require a compiler flag to be enabled.
 
 ```bait
 global my_global := 123
