@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
-package util
+package escape
 
 import os
 
-pub fun escape_char(s string, esc_char u8) string {
+// TODO simplify and refactor this function
+pub fun char(s string, esc_char u8) string {
 	mut res := ''
 	mut is_escaped := false
 	mut i := 0
@@ -27,7 +28,7 @@ pub fun escape_char(s string, esc_char u8) string {
 	return res
 }
 
-pub fun escape_linebreak(s string) string {
+pub fun linebreak(s string) string {
 	return if os.platform() == 'windows' {
 		s.replace('\r\n', '\\r\\n')
 	} else {
@@ -35,6 +36,6 @@ pub fun escape_linebreak(s string) string {
 	}
 }
 
-pub fun shell_escape(s string) string {
-	return escape_char(s, `\``)
+pub fun shell(s string) string {
+	return char(s, `\``)
 }

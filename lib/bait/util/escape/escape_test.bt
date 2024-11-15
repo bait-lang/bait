@@ -1,0 +1,12 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+import bait.util.escape
+
+fun test_escape_char(){
+	assert true
+	// TODO raw strings
+	// assert escape.char('"', `\"`) == '\"'
+	// assert escape.char('\"', `\"`) == '\"'
+	// assert escape.char('\\"', `\"`) == '\\\"'
+	// assert escape.char('\\\"', `\"`) == '\\\"'
+}

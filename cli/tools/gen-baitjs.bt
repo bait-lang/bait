@@ -3,7 +3,7 @@
 package main
 
 import os
-import bait.util
+import bait.util.escape
 
 const GIT_USER := 'tiabeast-bot'
 const GIT_MAIL := '131296262+tiabeast-bot@users.noreply.github.com'
@@ -81,6 +81,6 @@ fun main() {
 }
 
 fun git_command(cmd string) i32 {
-	esc_cmd := util.shell_escape(cmd)
+	esc_cmd := escape.shell(cmd)
 	return os.system('git ${esc_cmd}')
 }
