@@ -6,6 +6,7 @@ All notable changes are documented in this file.
 
 ## 0.0.8 - unreleased
 ### Breaking
+- `bait.util`: Move escape related functions into `bait.util.escape`
 - Replace field modifier groups of structs and interfaces with per-field modifiers ([GH-233](https://github.com/bait-lang/bait/pull/233))
 
 ### Error Checks

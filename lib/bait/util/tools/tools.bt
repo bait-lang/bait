@@ -4,6 +4,25 @@ package tools
 
 import os
 
+// List of commands implemented as tool
+const TOOLS := [
+	'ast',
+	'init',
+	'self',
+	'up',
+	'symlink',
+	'doctor',
+	'help',
+	'test-all',
+	'build-examples',
+	'build-tools',
+	'check-md',
+]
+
+pub fun is_tool(name string) bool {
+	return TOOLS.contains(name)
+}
+
 const VERBOSE := os.ARGS.contains('--verbose') or os.ARGS.contains('-v')
 
 // TODO prepare for C backend (respect -b option)

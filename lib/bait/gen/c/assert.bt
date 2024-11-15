@@ -3,7 +3,7 @@
 package c
 
 import bait.ast
-import bait.util
+import bait.util.escape
 
 fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 	if not g.pref.is_test {
@@ -48,7 +48,7 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 		g.integer_literal(node)
 	} else if node is ast.StringLiteral {
 		g.write("'")
-		g.write(util.escape_linebreak(node.val))
+		g.write(escape.linebreak(node.val))
 		g.write("'")
 	} else if node is ast.CharLiteral {
 		g.write("`")

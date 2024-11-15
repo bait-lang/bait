@@ -4,7 +4,7 @@ package c
 
 import bait.ast
 import bait.errors
-import bait.util
+import bait.util.escape
 
 fun (mut g Gen) expr(expr ast.Expr) {
 	match expr {
@@ -95,7 +95,7 @@ fun (mut g Gen) bool_literal(node ast.BoolLiteral) {
 }
 
 fun (mut g Gen) char_literal(node ast.CharLiteral) {
-	val := util.escape_char(node.val, `'`)
+	val := escape.char(node.val, `'`)
 	g.write("'${val}'")
 }
 
@@ -223,7 +223,7 @@ fun (mut g Gen) selector_expr(node ast.SelectorExpr) {
 }
 
 fun (mut g Gen) string_literal(node ast.StringLiteral) {
-	val := util.escape_char(node.val.replace('\n', '\\n'), `\"`)
+	val := escape.char(node.val.replace('\n', '\\n'), `\"`)
 	g.write('from_c_string("')
 	g.write(val)
 	g.write('")')
@@ -233,7 +233,7 @@ fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
 	len := node.vals.length + node.exprs.length
 	g.write('interpolate(new_array_from_c(${len}, ${len}, sizeof(string), (string[${len}]){')
 	for i, val in node.vals {
-		esc_val := util.escape_char(val.replace('\n', '\\n'), `\"`)
+		esc_val := escape.char(val.replace('\n', '\\n'), `\"`)
 		g.write('from_c_string("${esc_val}")')
 		g.write(', ')
 		if i < node.exprs.length {
