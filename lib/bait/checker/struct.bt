@@ -85,12 +85,22 @@ fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 
 fun (c Checker) check_init_field_values(init ast.StructInit, info ast.StructInfo) {
 	for def_field in info.fields {
-		// Field requires initialization if it's a sum type or has the attribute
-		def_sym := c.table.get_sym(def_field.typ)
-		mut is_required := def_sym.kind == .sum_type or def_sym.kind == .fun_
-		for attr in def_field.attrs {
-			if attr.name == 'required' {
-				is_required = true
+		// Field requires initialization if ...
+		// ... reference
+		mut is_required := def_field.typ.get_nr_amp() > 0
+
+		// ... sum types and functions
+		if not is_required {
+			def_sym := c.table.get_sym(def_field.typ)
+			is_required = def_sym.kind == .sum_type or def_sym.kind == .fun_
+		}
+
+		// ... @required attribute
+		if not is_required {
+			for attr in def_field.attrs {
+				if attr.name == 'required' {
+					is_required = true
+				}
 			}
 		}
 

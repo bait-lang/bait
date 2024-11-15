@@ -1,3 +1,5 @@
-tests/out/error/struct/required_field.in.bt:14:6 error: field "Spam.n" requires initialization
-tests/out/error/struct/required_field.in.bt:18:7 error: field "Spam.eggs" requires initialization
-tests/out/error/struct/required_field.in.bt:22:6 error: field "Foo.f" requires initialization
+tests/out/error/struct/required_field.in.bt:17:6 error: field "Bar.sum" requires initialization
+tests/out/error/struct/required_field.in.bt:20:7 error: field "Bar.attr" requires initialization
+tests/out/error/struct/required_field.in.bt:25:6 error: field "Foo.func" requires initialization
+tests/out/error/struct/required_field.in.bt:27:6 error: field "Spam.ref" requires initialization
+tests/out/error/struct/required_field.in.bt:27:6 error: field "Spam.ref2" requires initialization
