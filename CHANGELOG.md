@@ -10,7 +10,9 @@ All notable changes are documented in this file.
 - Replace field modifier groups of structs and interfaces with per-field modifiers ([GH-233](https://github.com/bait-lang/bait/pull/233))
 
 ### Error Checks
-- Require initialization of struct fields holding a function pointer
+- Require initialization of struct fields containing a ...
+  - function pointer
+  - reference
 - Prevent calling struct fields that are not callable
 
 ### C Backend
