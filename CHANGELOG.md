@@ -23,6 +23,7 @@ All notable changes are documented in this file.
 ### Other Changes
 - Comptime if: Add `LINUX` and `WINDOWS` conditions
 - `gen`: Generate `assert` as panic outside of tests
+- License: Change from MPL-2.0 to MIT
 
 
 ## 0.0.7 - 2024-10-27
