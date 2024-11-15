@@ -9,21 +9,6 @@ import bait.util.timers
 import bait.util.tools
 import os
 
-// List of commands implemented as tool
-const TOOLS := [
-	'ast',
-	'init',
-	'self',
-	'up',
-	'symlink',
-	'doctor',
-	'help',
-	'test-all',
-	'build-examples',
-	'build-tools',
-	'check-md',
-]
-
 fun main() {
 	// Parse arguments into Prefs struct
 	args := os.user_args()
@@ -32,8 +17,8 @@ fun main() {
 	timers.set_show(prefs.show_timings)
 	timers.show('PREFS')
 
-	// Handle tool commands
-	if TOOLS.contains(prefs.command) {
+	// Launch external tool
+	if tools.is_tool(prefs.command) {
 		exit(tools.launch_tool(prefs.command, prefs.build_options))
 	}
 
