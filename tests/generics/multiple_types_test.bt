@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: MIT
 
 fun more_generic_types[G, H](g G, h H) string {
 	return typeof(g) + '_' + typeof(h)

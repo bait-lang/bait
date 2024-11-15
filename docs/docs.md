@@ -1,6 +1,6 @@
 <!--
 SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
-SPDX-License-Identifier: MPL-2.0
+SPDX-License-Identifier: MIT
 -->
 
 # Bait Documentation

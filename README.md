@@ -91,8 +91,8 @@ For progress updates, discussions and support, join the [official Discord server
 
 
 ## License
-Bait is provided under the Mozilla Public License (MPL-2.0).
-See [LICENSE](./LICENSE.txt) for details.
+Bait is provided under the [MIT License](./LICENSE.txt).
+
 
 <!-- links -->
 [ci-badge]: https://github.com/bait-lang/bait/actions/workflows/ci.yml/badge.svg?branch=main
