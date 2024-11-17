@@ -1,0 +1,15 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+struct SelfRef {
+	parent &SelfRef
+}
+
+struct Holder {
+	sr SelfRef
+}
+
+fun test_holder_init() {
+	h := Holder{}
+	assert true // Code has to compile
+}

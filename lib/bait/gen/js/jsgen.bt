@@ -226,6 +226,11 @@ fun (mut g Gen) write_default_value(typ ast.Type) {
 			g.write('from_js_string("")')
 		}
 		else {
+			if typ.get_nr_amp() > 0 {
+				g.write('null')
+				return
+			}
+
 			sym := g.table.get_sym(typ)
 			if sym.kind == .array {
 				g.array_init(ast.ArrayInit{
