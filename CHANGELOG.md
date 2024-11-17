@@ -20,6 +20,9 @@ All notable changes are documented in this file.
 - checker: Auto deref of method receiver
 - gen: Fix escape of `'` char literal
 
+### JS Backend
+- Fix recursive struct inits
+
 ### CLI and Tooling
 - _[C]_: Change `-o foo.c` to output the generated C code without compiling it
 
