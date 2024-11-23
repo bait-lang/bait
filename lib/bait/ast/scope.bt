@@ -3,7 +3,7 @@
 package ast
 
 pub struct Scope {
-	pub parent Scope
+	pub parent &Scope
 	pub objects map[string]ScopeObject
 }
 
@@ -24,6 +24,29 @@ pub enum ObjectKind {
 	global_
 	package_
 	label
+}
+
+pub fun (mut t Table) preregister_scopes(pkg_name string) &Scope {
+	// FFI scopes
+	t.get_pkg_scope("C", 0 as any)
+	t.get_pkg_scope("JS", 0 as any)
+
+	// Packages
+	builtin_scope := t.get_pkg_scope("builtin", 0 as any)
+	pkg_scope := t.get_pkg_scope(pkg_name, builtin_scope)
+	return pkg_scope
+}
+
+pub fun (mut t Table) get_pkg_scope(pkg string, parent &Scope) &Scope {
+	if t.scopes.contains(pkg) {
+		return t.scopes[pkg]
+	}
+
+	s := &Scope{
+		parent = parent
+	}
+	t.scopes[pkg] = s
+	return s
 }
 
 pub fun (s Scope) register(name string, obj ScopeObject) {

@@ -3,7 +3,8 @@
 package ast
 
 pub struct Table {
-	pub mut global_scope Scope
+	pub mut global_scope &Scope // TODO entirely replace by scopes
+	pub mut scopes map[string]&Scope
 	pub mut fun_decls map[string]FunDecl
 	pub mut type_idxs map[string]Type
 	pub mut type_symbols []TypeSymbol
