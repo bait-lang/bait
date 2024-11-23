@@ -28,14 +28,14 @@ fun (mut g Gen) write_types() {
 			continue
 		}
 
-		cname := c_name(sym.name)
+		cname := c_esc(sym.name)
 		if sym.info is ast.StructInfo {
 			info := sym.info as ast.StructInfo
 			g.type_defs_out += 'typedef struct ${cname} ${cname};\n'
 			g.type_impls_out += 'struct ${cname} {\n'
 			for field in info.fields {
 				type_str := g.typ(field.typ)
-				field_name := c_name(field.name)
+				field_name := c_esc(field.name)
 				g.type_impls_out += '\t${type_str} ${field_name};\n'
 			}
 			g.type_impls_out += '};\n'
@@ -62,7 +62,7 @@ fun (mut g Gen) write_types() {
 			info := sym.info as ast.EnumInfo
 			g.type_defs_out += 'enum ${cname} {\n'
 			for val in info.vals {
-				g.type_defs_out += '\t${c_name(val)},\n'
+				g.type_defs_out += '\t${c_esc(val)},\n'
 			}
 			g.type_defs_out += '};\n'
 		}

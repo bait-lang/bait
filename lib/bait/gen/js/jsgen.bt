@@ -187,7 +187,7 @@ fun (mut g Gen) gen_test_main() {
 	for key, func in g.table.fun_decls {
 		if func.is_test {
 			nr_test_funs += 1
-			name := js_name(func.name)
+			name := js_esc(func.name)
 			esc_path := g.path.replace('\\', '\\\\')
 			g.writeln('TestRunner_set_test_info(test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))')
 			g.writeln('${name}()')
@@ -241,7 +241,7 @@ fun (mut g Gen) write_default_value(typ ast.Type) {
 					keys = []ast.Expr
 				})
 			} else if sym.kind == .struct_ {
-				g.write('new ${js_name(sym.name)}({})')
+				g.write('new ${js_esc(sym.name)}({})')
 			} else if sym.kind == .alias_type {
 				g.write_default_value(sym.parent)
 			} else if sym.kind == .enum_ {
@@ -259,7 +259,7 @@ fun (g Gen) get_concrete_name(name string, concrete_types []ast.Type) string {
 	for t in concrete_types {
 		full_name += '_' + g.table.get_sym(t).name
 	}
-	return js_name(full_name)
+	return js_esc(full_name)
 }
 
 fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
@@ -272,7 +272,11 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 }
 
 fun js_name(n string) string {
-	name := n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_')
+	return n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_')
+}
+
+fun js_esc(n string) string {
+	name := js_name(n)
 	// TODO this might have bad performance impact due to array size and frequent use
 	if JS_RESERVED.contains(name) {
 		return 'bait_${name}'

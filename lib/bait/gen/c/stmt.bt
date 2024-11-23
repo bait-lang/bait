@@ -53,7 +53,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	if lsym.overloads.contains(node.op.c_repr()) {
 		g.write(' = ')
 		overload := lsym.overloads[node.op.c_repr()]
-		g.write(c_name(lsym.name + '_' + overload.name))
+		g.write(c_esc(lsym.name + '_' + overload.name))
 		g.write('(')
 		g.expr(node.left)
 		g.write(', ')
@@ -84,7 +84,7 @@ fun (mut g Gen) const_decl(node ast.ConstDecl){
 		return
 	}
 
-	name := c_name(node.name)
+	name := c_esc(node.name)
 	val := g.expr_string(node.expr)
 
 	if node.expr is ast.ArrayInit or node.expr is ast.CallExpr or node.expr is ast.MapInit {
@@ -162,7 +162,7 @@ fun (mut g Gen) loop_control_stmt(node ast.LoopControlStmt){
 }
 
 fun (mut g Gen) global_decl(node ast.GlobalDecl){
-	name := c_name(node.name)
+	name := c_esc(node.name)
 	expr := g.expr_string(node.expr)
 	typ := g.typ(node.typ)
 	g.globals_out += '${typ} ${name} = ${expr};\n'

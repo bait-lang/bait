@@ -109,7 +109,7 @@ fun (mut g Gen) gen_test_main() {
 	for key, func in g.table.fun_decls {
 		if func.is_test {
 			nr_test_funs += 1
-			name := c_name(func.name)
+			name := c_esc(func.name)
 			esc_path := g.path.replace('\\', '\\\\')
 			g.writeln('TestRunner_set_test_info(&test_runner, from_c_string("${esc_path}"), from_c_string("${name}"));')
 			g.writeln('${name}();')
@@ -142,7 +142,7 @@ fun (g Gen) get_concrete_name(name string, concrete_types []ast.Type) string {
 	for t in concrete_types {
 		full_name += '_' + g.table.get_sym(t).name
 	}
-	return c_name(full_name)
+	return c_esc(full_name)
 }
 
 fun (mut g Gen) new_temp_var() string {
@@ -203,7 +203,11 @@ fun (mut g Gen) save_stmt_offset() {
 }
 
 fun c_name(n string) string {
-	name := n.replace('.', '__').replace('[]', 'Array_')
+	return n.replace('.', '__').replace('[]', 'Array_')
+}
+
+fun c_esc(n string) string {
+	name := c_name(n)
 	if C_RESERVED.contains(name) {
 		return 'bait_${name}'
 	}

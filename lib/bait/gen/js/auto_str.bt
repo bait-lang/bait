@@ -11,7 +11,7 @@ const LB := if os.platform() == 'windows' { '\\r\\n' } else { '\\n' }
 fun (mut g Gen) get_str_fun(typ ast.Type) string {
 	g.table.needed_str_funs.push(typ)
 	sym := g.table.get_sym(typ)
-	return js_name('${sym.name}_str')
+	return js_esc('${sym.name}_str')
 }
 
 fun (mut g Gen) generate_str_fun(typ ast.Type) {
@@ -26,7 +26,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 
 	g.generated_str_funs.push(typ)
 
-	name := js_name('${sym.name}_str')
+	name := js_esc('${sym.name}_str')
 
 	if sym.kind == .array {
 		info := sym.info as ast.ArrayInfo
@@ -103,7 +103,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		g.fun_decls_out += 'function ${name}(it, indent) {\n'
 		for var in info.variants {
 			var_sym := g.table.get_sym(var)
-			g.fun_decls_out += '\tif (it instanceof ${js_name(var_sym.name)}) {
+			g.fun_decls_out += '\tif (it instanceof ${js_esc(var_sym.name)}) {
 		return ${g.get_str_fun(var)}(it, indent)
 	}
 '
@@ -117,7 +117,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	switch(it) {\n'
 		info := sym.info as ast.EnumInfo
 		for val in info.vals {
-			g.fun_decls_out += '\t\tcase ${js_name(sym.name)}.${val}: return from_js_string("${val}")\n'
+			g.fun_decls_out += '\t\tcase ${js_esc(sym.name)}.${val}: return from_js_string("${val}")\n'
 		}
 		g.fun_decls_out += '\t}\n}\n\n'
 		return

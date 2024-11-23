@@ -117,7 +117,7 @@ fun (mut g Gen) char_literal(node ast.CharLiteral) {
 }
 
 fun (mut g Gen) enum_val(node ast.EnumVal) {
-	g.write(js_name(node.name) + '.' + node.val)
+	g.write(js_esc(node.name) + '.' + node.val)
 }
 
 fun (mut g Gen) float_literal(node ast.FloatLiteral){
@@ -134,7 +134,7 @@ fun (mut g Gen) ident(node ast.Ident) {
 		return
 	}
 
-	g.write(js_name(node.name))
+	g.write(js_esc(node.name))
 }
 
 fun (mut g Gen) integer_literal(node ast.IntegerLiteral){
@@ -205,7 +205,7 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr){
 		if node.op == .ne {
 			g.write('!')
 		}
-		g.write(js_name(lsym.name + '_' + overload.name))
+		g.write(js_esc(lsym.name + '_' + overload.name))
 		g.write('(')
 		g.expr(node.left)
 		g.write(', ')
@@ -324,7 +324,7 @@ fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 	str_def := g.table.get_method(sym, 'str')
 	if str_def.name.length > 0 {
 		final_sym := g.table.get_sym(str_def.params[0].typ)
-		mut name := js_name(final_sym.name)
+		mut name := js_esc(final_sym.name)
 		g.write('${name}_str(')
 		g.expr(expr)
 		g.write(')')
