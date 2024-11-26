@@ -189,14 +189,14 @@ fun (mut g Gen) gen_test_main() {
 			nr_test_funs += 1
 			name := js_esc(func.name)
 			esc_path := g.path.replace('\\', '\\\\')
-			g.writeln('TestRunner_set_test_info(test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))')
+			g.writeln('TestRunner_set_test_info(builtin__test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))')
 			g.writeln('${name}()')
 		}
 	}
 	if g.has_test_end {
 		g.writeln('testsuite_end()')
 	}
-	g.writeln('exit(TestRunner_exit_code(test_runner))')
+	g.writeln('exit(TestRunner_exit_code(builtin__test_runner))')
 	g.indent -= 1
 	g.writeln('}')
 
@@ -271,6 +271,8 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 	return g.table.get_sym(g.cur_concrete_types[sym.name])
 }
 
+// TODO evaluate where js_esc can be replaced by this (see also cgen)
+// TODO consider splitting this up even further for different places
 fun js_name(n string) string {
 	return n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_')
 }

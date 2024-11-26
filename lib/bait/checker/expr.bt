@@ -156,6 +156,11 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		c.error('const ${node.name} is private', node.pos)
 	}
 
+	// TMP
+	if obj.kind == .global_ {
+		node.name = node.pkg + '.' + node.name
+	}
+
 	if obj.typ != ast.PLACEHOLDER_TYPE {
 		node.is_mut = obj.is_mut
 		return obj.typ

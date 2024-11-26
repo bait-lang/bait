@@ -162,10 +162,11 @@ fun (mut g Gen) loop_control_stmt(node ast.LoopControlStmt){
 }
 
 fun (mut g Gen) global_decl(node ast.GlobalDecl){
-	name := c_esc(node.name)
+	name := c_name(node.name)
+	pkg := c_name(node.pkg)
 	expr := g.expr_string(node.expr)
 	typ := g.typ(node.typ)
-	g.globals_out += '${typ} ${name} = ${expr};\n'
+	g.globals_out += '${typ} ${pkg}__${name} = ${expr};\n'
 }
 
 fun (g Gen) interface_decl(node ast.InterfaceDecl){

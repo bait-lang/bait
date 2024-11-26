@@ -69,11 +69,11 @@ fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 	g.write('if (')
 	g.expr(node.expr)
 	g.writeln(') {')
-	g.writeln('\tTestRunner_assert_pass(test_runner)')
+	g.writeln('\tTestRunner_assert_pass(builtin__test_runner)')
 	g.writeln('} else {')
 	if node.expr is ast.InfixExpr {
 		expr := node.expr as ast.InfixExpr
-		g.write('\tTestRunner_set_assert_info(test_runner, ${node.pos.line}, from_js_string("assert ')
+		g.write('\tTestRunner_set_assert_info(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
 		g.assert_side_expr(expr.left)
 		g.write(' ${expr.op.js_repr()} ')
 		g.assert_side_expr(expr.right)
@@ -82,12 +82,12 @@ fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 		g.write(', ')
 		g.expr_to_string(expr.right, expr.right_type)
 		g.writeln(')')
-		g.writeln('\tTestRunner_assert_fail_infix(test_runner)')
+		g.writeln('\tTestRunner_assert_fail_infix(builtin__test_runner)')
 	} else {
-		g.write('\tTestRunner_set_assert_info(test_runner, ${node.pos.line}, from_js_string("assert ')
+		g.write('\tTestRunner_set_assert_info(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
 		g.assert_side_expr(node.expr)
 		g.writeln('"), from_js_string(""), from_js_string(""), from_js_string(""))')
-		g.writeln('\tTestRunner_assert_fail(test_runner)')
+		g.writeln('\tTestRunner_assert_fail(builtin__test_runner)')
 	}
 	g.writeln('}')
 }
@@ -294,9 +294,10 @@ fun (mut g Gen) for_in_map(node ast.ForInLoop){
 }
 
 fun (mut g Gen) global_decl(node ast.GlobalDecl){
-	name := js_esc(node.name)
+	name := js_name(node.name)
+	pkg := js_name(node.pkg)
 	expr := g.expr_string(node.expr)
-	g.global_out += 'var ${name} = ${expr}\n'
+	g.global_out += 'var ${pkg}__${name} = ${expr}\n'
 }
 
 fun (mut g Gen) interface_decl(node ast.InterfaceDecl){

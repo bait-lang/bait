@@ -246,17 +246,20 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 fun (mut p Parser) global_decl() !ast.GlobalDecl{
 	pos := p.pos
 	p.check(.key_global)!
-	name := p.prepend_pkg(p.check_name()!)
+	name := p.check_name()!
 	p.check(.decl_assign)!
 	expr := p.expr(.lowest)!
 	typ := p.infer_expr_type(expr)
-	p.table.global_scope.register(name, ast.ScopeObject{
+	reg_name := p.prepend_pkg(name)
+	p.table.global_scope.register(reg_name, ast.ScopeObject{
 		is_mut = true
 		typ = typ
 		kind = .global_
 	})
 	return ast.GlobalDecl{
 		name = name
+		pkg = p.pkg_name
+		reg_name = reg_name
 		expr = expr
 		pos = pos
 	}

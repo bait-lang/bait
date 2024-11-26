@@ -111,14 +111,14 @@ fun (mut g Gen) gen_test_main() {
 			nr_test_funs += 1
 			name := c_esc(func.name)
 			esc_path := g.path.replace('\\', '\\\\')
-			g.writeln('TestRunner_set_test_info(&test_runner, from_c_string("${esc_path}"), from_c_string("${name}"));')
+			g.writeln('TestRunner_set_test_info(&builtin__test_runner, from_c_string("${esc_path}"), from_c_string("${name}"));')
 			g.writeln('${name}();')
 		}
 	}
 	if g.has_test_end {
 		g.writeln('testsuite_end();')
 	}
-	g.writeln('exit(TestRunner_exit_code(test_runner));')
+	g.writeln('exit(TestRunner_exit_code(builtin__test_runner));')
 	g.indent -= 2
 	g.writeln('}\n')
 
@@ -202,6 +202,8 @@ fun (mut g Gen) save_stmt_offset() {
 	g.stmt_offsets.push(g.out.length)
 }
 
+// TODO evaluate where c_esc can be replaced by this (see also jsgen)
+// TODO consider splitting this up even further for different places
 fun c_name(n string) string {
 	return n.replace('.', '__').replace('[]', 'Array_')
 }
