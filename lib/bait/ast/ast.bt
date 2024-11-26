@@ -114,7 +114,6 @@ pub struct GlobalDecl {
 	global typ Type
 	pub name string
 	pub pkg string
-	pub reg_name string // TMP
 	pub expr Expr
 	pub pos token.Pos
 }

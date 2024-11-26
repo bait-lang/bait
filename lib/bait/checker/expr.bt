@@ -156,7 +156,10 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		c.error('const ${node.name} is private', node.pos)
 	}
 
-	// TMP
+	if obj.typ == ast.PLACEHOLDER_TYPE {
+		obj = c.table.scopes[node.pkg].get(node.name)
+	}
+
 	if obj.kind == .global_ {
 		node.name = node.pkg + '.' + node.name
 	}
