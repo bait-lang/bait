@@ -113,18 +113,6 @@ fun (mut p Parser) partial_assign_stmt(left ast.Expr) !ast.AssignStmt {
 	p.next()
 	mut right := p.expr(.lowest)!
 
-	// Convert math assign to normal assign
-	// `x += 1` --> `x = x + 1`
-	if op.is_math_assign() {
-		right = ast.InfixExpr{
-			op = op.math_from_assign()
-			left = left
-			right = right
-		}
-
-		op = .assign
-	}
-
 	return ast.AssignStmt{
 		op = op
 		left = left
