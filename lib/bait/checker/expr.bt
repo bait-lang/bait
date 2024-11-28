@@ -149,7 +149,7 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 	return ast.VOID_TYPE
 }
 
-// TODO cleanup and add comments
+// TODO SCOPES cleanup and add comments
 fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	mut obj := c.scope.get(node.name)
 
@@ -158,15 +158,21 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	}
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
-		if node.lang != .bait {
-			obj = c.table.ffi_scope.get(node.name)
-		} else {
-			obj = c.table.scopes[node.pkg].get(node.name)
+		obj = c.table.scopes[node.pkg].get(node.name)
+	}
+
+	if obj.kind == .constant or obj.kind == .global_ {
+		if not node.name.contains('.') {
+			if obj.pkg == "" {
+				node.name = node.pkg + '.' + node.name
+			} else {
+				node.name = obj.pkg + '.' + node.name
+			}
 		}
 	}
 
-	if obj.kind == .global_ {
-		node.name = node.pkg + '.' + node.name
+	if obj.typ == ast.PLACEHOLDER_TYPE and node.lang != .bait {
+		obj = c.table.ffi_scope.get(node.name)
 	}
 
 	if obj.typ != ast.PLACEHOLDER_TYPE {

@@ -25,6 +25,8 @@ pub struct AssignStmt {
 
 pub struct ConstDecl {
 	pub name string
+	pub pkg string
+	pub reg_name string
 	pub expr Expr := InvalidExpr{}
 	pub pos token.Pos
 	pub lang Language

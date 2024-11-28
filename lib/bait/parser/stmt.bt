@@ -129,31 +129,21 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	lang := p.parse_lang()!
 	mut name := ''
 
-	// foreign package
+	// foreign package, e.g. `#JS.process.argv`
 	if lang == .js and p.peek() == .dot {
 		name = p.check_name()! + '.'
 		p.next()
 	}
 
-	// normal name and bait package
+	// actual const name
 	name += p.check_name()!
-	if lang == .bait {
-		name = p.prepend_pkg(name)
-	}
 
 	p.check(.decl_assign)!
 
-	mut expr := ast.InvalidExpr{} as ast.Expr
-	mut typ := ast.PLACEHOLDER_TYPE
-	if lang == .bait {
-		expr = p.expr(.lowest)!
-		typ = p.infer_expr_type(expr)
-	} else {
-		typ = p.parse_type()!
-	}
-
 	if lang != .bait {
-		// TODO consider not prepending lang (would need update to expr_pkg, I think)
+		typ := p.parse_type()!
+
+		// TODO SCOPES consider not prepending lang. Requires changes to p.hash_expr: do not set expr_pkg and all other FFI constructs
 		p.table.ffi_scope.register(lang.prepend_to(name), ast.ScopeObject{
 			typ = typ
 			kind = .constant
@@ -169,7 +159,13 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 		}
 	}
 
-	p.table.global_scope.register(name, ast.ScopeObject{
+	reg_name := p.prepend_pkg(name)
+
+	expr := p.expr(.lowest)!
+	typ := p.infer_expr_type(expr)
+
+	// p.table.global_scope.register(name, ast.ScopeObject{
+	p.table.global_scope.register(reg_name, ast.ScopeObject{
 		typ = typ
 		kind = .constant
 		is_pub = is_pub
@@ -179,6 +175,8 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 
 	return ast.ConstDecl{
 		name = name
+		pkg = p.pkg_name
+		reg_name = reg_name
 		expr = expr
 		typ = typ
 		pos = pos
