@@ -4,7 +4,7 @@ package timers
 
 import time
 
-global g_timers := Timers{}
+static g_timers := Timers{}
 
 pub struct Timers{
 	mut watches map[string]time.Stopwatch
