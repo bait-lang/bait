@@ -152,7 +152,24 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 		typ = p.parse_type()!
 	}
 
-	p.table.global_scope.register(lang.prepend_to(name), ast.ScopeObject{
+	if lang != .bait {
+		// TODO consider not prepending lang (would need update to expr_pkg, I think)
+		p.table.ffi_scope.register(lang.prepend_to(name), ast.ScopeObject{
+			typ = typ
+			kind = .constant
+			is_pub = is_pub
+			pkg = p.pkg_name
+		})
+
+		return ast.ConstDecl{
+			name = name
+			typ = typ
+			pos = pos
+			lang = lang
+		}
+	}
+
+	p.table.global_scope.register(name, ast.ScopeObject{
 		typ = typ
 		kind = .constant
 		is_pub = is_pub

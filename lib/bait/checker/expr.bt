@@ -149,6 +149,7 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 	return ast.VOID_TYPE
 }
 
+// TODO cleanup and add comments
 fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	mut obj := c.scope.get(node.name)
 
@@ -157,7 +158,11 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	}
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
-		obj = c.table.scopes[node.pkg].get(node.name)
+		if node.lang != .bait {
+			obj = c.table.ffi_scope.get(node.name)
+		} else {
+			obj = c.table.scopes[node.pkg].get(node.name)
+		}
 	}
 
 	if obj.kind == .global_ {

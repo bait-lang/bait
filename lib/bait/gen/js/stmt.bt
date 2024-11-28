@@ -186,6 +186,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 }
 
 fun (mut g Gen) const_decl(node ast.ConstDecl){
+	// TODO remove ffi consts in transformer (also cgen)
 	if node.lang != .bait {
 		return
 	}

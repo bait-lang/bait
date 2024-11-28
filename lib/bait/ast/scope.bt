@@ -27,10 +27,6 @@ pub enum ObjectKind {
 }
 
 pub fun (mut t Table) preregister_scopes(pkg_name string) &Scope {
-	// FFI is used for either C or JS declarations depending on the backend
-	t.get_pkg_scope("FFI", 0 as any)
-
-	// Packages
 	builtin_scope := t.get_pkg_scope("builtin", 0 as any)
 	pkg_scope := t.get_pkg_scope(pkg_name, builtin_scope)
 	return pkg_scope
