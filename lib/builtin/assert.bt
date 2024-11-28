@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 package builtin
 
-global test_runner := TestRunner{}
+static test_runner := TestRunner{}
 
 struct TestRunner{
 	mut passes i32

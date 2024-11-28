@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
-global g_count := 0
+static g_count := 0
 
 fun inc() i32 {
 	g_count += 1

@@ -608,7 +608,7 @@ In the generated code, this won't change the function name but add the line `mod
 
 
 ## Appendix A: Keywords
-Bait has 28 reserved keywords:
+Bait has 29 reserved keywords:
 ```
 and
 as
@@ -634,6 +634,7 @@ or
 package
 pub
 return
+static
 struct
 true
 type

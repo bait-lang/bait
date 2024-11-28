@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
-global g_counter := 0
+static g_counter := 0
 
 fun testsuite_begin() {
 	assert g_counter == 0
