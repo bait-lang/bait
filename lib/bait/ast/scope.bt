@@ -21,9 +21,9 @@ pub enum ObjectKind {
 	variable
 	constant
 	function
-	global_
 	package_
 	label
+	static_
 }
 
 pub fun (mut t Table) preregister_scopes(pkg_name string) &Scope {

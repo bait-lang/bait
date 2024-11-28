@@ -39,8 +39,8 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		g.for_in_loop(stmt)
 	} else if stmt is ast.FunDecl {
 		g.fun_decl(stmt)
-	} else if stmt is ast.GlobalDecl {
-		g.global_decl(stmt)
+	} else if stmt is ast.StaticDecl {
+		g.static_decl(stmt)
 	} else if stmt is ast.IfMatch {
 		g.if_match(stmt)
 	} else if stmt is ast.InterfaceDecl {
@@ -295,7 +295,7 @@ fun (mut g Gen) for_in_map(node ast.ForInLoop){
 	g.writeln('}')
 }
 
-fun (mut g Gen) global_decl(node ast.GlobalDecl){
+fun (mut g Gen) static_decl(node ast.StaticDecl){
 	name := js_name(node.name)
 	pkg := js_name(node.pkg)
 	expr := g.expr_string(node.expr)

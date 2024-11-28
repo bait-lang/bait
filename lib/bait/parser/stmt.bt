@@ -12,8 +12,8 @@ fun (mut p Parser) toplevel_stmt() !ast.Stmt {
 		.key_const{ p.const_decl()! }
 		.key_enum{ p.enum_decl()! }
 		.key_fun{ p.fun_decl()! }
-		.key_global{ p.global_decl()! }
 		.key_interface{ p.interface_decl()! }
+		.key_static, .key_global{ p.static_decl()! } // TODO GLOBAL remove global
 		.key_struct{ p.struct_decl()! }
 		.key_type{ p.type_decl()! }
 		else { p.script_mode_or_error()! }
@@ -256,9 +256,14 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 	}
 }
 
-fun (mut p Parser) global_decl() !ast.GlobalDecl{
+fun (mut p Parser) static_decl() !ast.StaticDecl{
 	pos := p.pos
-	p.check(.key_global)!
+	if p.tok == .key_global {
+		p.warn("`global` will soon be removed, use `static` instead")
+		p.next()
+	} else {
+		p.check(.key_static)!
+	}
 	name := p.check_name()!
 	p.check(.decl_assign)!
 	expr := p.expr(.lowest)!
@@ -266,9 +271,9 @@ fun (mut p Parser) global_decl() !ast.GlobalDecl{
 	p.pkg_scope.register(name, ast.ScopeObject{
 		is_mut = true
 		typ = typ
-		kind = .global_
+		kind = .static_
 	})
-	return ast.GlobalDecl{
+	return ast.StaticDecl{
 		name = name
 		pkg = p.pkg_name
 		expr = expr

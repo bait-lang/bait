@@ -80,6 +80,7 @@ pub enum Token {
 	key_package
 	key_pub
 	key_return
+	key_static
 	key_struct
 	key_true
 	key_type
@@ -112,6 +113,7 @@ pub fun kind_from_string(name string) Token {
 		'package' { .key_package }
 		'pub' { .key_pub }
 		'return' { .key_return }
+		'static' { .key_static }
 		'struct' { .key_struct }
 		'true' { .key_true }
 		'type' { .key_type }
@@ -277,6 +279,7 @@ pub fun (kind Token) str() string {
 		.key_package { 'key_package' }
 		.key_pub { 'key_pub' }
 		.key_return { 'key_return' }
+		.key_static { 'key_static' }
 		.key_struct { 'key_struct' }
 		.key_true { 'key_true' }
 		.key_type { 'key_type' }
