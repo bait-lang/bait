@@ -4,17 +4,17 @@ package builtin
 
 pub fun i8(n #JS.Any) i8 {
 	#JS.'const v = n & 0xFF'
-	return #JS.'v > MAX_I8 ? -v : v' as i8
+	return #JS.'v > builtin__MAX_I8 ? -v : v' as i8
 }
 
 pub fun i16(n #JS.Any) i16 {
 	#JS.'const v = n & 0xFFFF'
-	return #JS.'v > MAX_I16 ? -v : v' as i16
+	return #JS.'v > builtin__MAX_I16 ? -v : v' as i16
 }
 
 pub fun i32(n #JS.Any) i32 {
 	#JS.'const v = n & 0xFFFFFFFF'
-	return #JS.'v > MAX_I32 ? -v : v' as i32
+	return #JS.'v > builtin__MAX_I32 ? -v : v' as i32
 }
 
 pub fun i64(n #JS.Any) i64 {
