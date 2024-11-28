@@ -32,7 +32,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.ReturnStmt { g.return_stmt(stmt) }
 		ast.StructDecl {} // see write_types()
 		ast.TypeDecl {} // see write_types()
-		ast.EmptyStmt { panic('unexpected EmptyStmt') }
+		ast.InvalidStmt { panic('unexpected InvalidStmt') }
 	}
 }
 
@@ -53,7 +53,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	if lsym.overloads.contains(node.op.c_repr()) {
 		g.write(' = ')
 		overload := lsym.overloads[node.op.c_repr()]
-		g.write(c_name(lsym.name + '_' + overload.name))
+		g.write(c_esc(lsym.name + '_' + overload.name))
 		g.write('(')
 		g.expr(node.left)
 		g.write(', ')
@@ -80,19 +80,22 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 }
 
 fun (mut g Gen) const_decl(node ast.ConstDecl){
+	// TODO SCOPES remove ffi consts in transformer (also jsgen)
 	if node.lang != .bait {
 		return
 	}
 
+	pkg := c_name(node.pkg)
 	name := c_name(node.name)
+	full_name := pkg + '__' + name
 	val := g.expr_string(node.expr)
 
 	if node.expr is ast.ArrayInit or node.expr is ast.CallExpr or node.expr is ast.MapInit {
 		typ := g.typ(node.typ)
-		g.type_defs_out += '${typ} ${name};\n'
-		g.main_inits_out += '\t${name} = ${val};\n'
+		g.type_defs_out += '${typ} ${full_name};\n'
+		g.main_inits_out += '\t${full_name} = ${val};\n'
 	} else {
-		g.type_impls_out += '#define ${name} ${val}\n'
+		g.type_impls_out += '#define ${full_name} ${val}\n'
 	}
 }
 
@@ -163,9 +166,10 @@ fun (mut g Gen) loop_control_stmt(node ast.LoopControlStmt){
 
 fun (mut g Gen) global_decl(node ast.GlobalDecl){
 	name := c_name(node.name)
+	pkg := c_name(node.pkg)
 	expr := g.expr_string(node.expr)
 	typ := g.typ(node.typ)
-	g.globals_out += '${typ} ${name} = ${expr};\n'
+	g.globals_out += '${typ} ${pkg}__${name} = ${expr};\n'
 }
 
 fun (g Gen) interface_decl(node ast.InterfaceDecl){
@@ -179,7 +183,7 @@ fun (g Gen) interface_decl(node ast.InterfaceDecl){
 fun (mut g Gen) return_stmt(node ast.ReturnStmt){
 	g.save_stmt_offset()
 	g.write('return')
-	if not (node.expr is ast.EmptyExpr) {
+	if not (node.expr is ast.InvalidExpr) {
 		g.write(" ")
 		g.expr(node.expr)
 	}

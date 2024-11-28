@@ -30,7 +30,7 @@ fun (mut c Checker) stmt(mut stmt ast.Stmt){
 		ast.StructDecl { c.struct_decl(stmt) }
 		ast.TypeDecl { c.type_decl(stmt) }
 		else {
-			s := stmt as ast.EmptyStmt
+			s := stmt as ast.InvalidStmt
 			c.error('unexpected stmt: ${s}', s.pos)
 		}
 	}
@@ -51,7 +51,7 @@ fun (mut c Checker) const_decl(mut node ast.ConstDecl) {
 	}
 
 	node.typ = c.expr(node.expr)
-	c.table.global_scope.update_type(node.name, node.typ)
+	c.table.global_scope.update_type(node.reg_name, node.typ)
 }
 
 fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
@@ -62,7 +62,7 @@ fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
 	if c.is_if_match_expr or c.is_or_block or expr is ast.CallExpr or expr is ast.IfMatch or expr is ast.HashExpr {
 		return
 	}
-	e := expr as ast.EmptyExpr
+	e := expr as ast.InvalidExpr
 	c.error('expression evaluated but not used', e.pos)
 }
 
@@ -85,7 +85,7 @@ fun (c Checker) enum_decl(node ast.EnumDecl) {
 			}
 		}
 
-		if field.expr is ast.EmptyExpr {
+		if field.expr is ast.InvalidExpr {
 			field.expr = ast.IntegerLiteral{ val = '${cur_val}' }
 			cur_val += 1
 			continue
@@ -181,7 +181,7 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 
 fun (mut c Checker) global_decl(mut node ast.GlobalDecl){
 	node.typ = c.expr(node.expr)
-	c.table.global_scope.update_type(node.name, node.typ)
+	c.table.scopes[node.pkg].update_type(node.name, node.typ)
 }
 
 fun (c Checker) interface_decl(node ast.InterfaceDecl){

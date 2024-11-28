@@ -86,7 +86,6 @@ fun (mut c Checker) change_file(file ast.File) {
 	c.pkg = file.pkg_name
 
 	c.scope = ast.Scope{
-		// TODO how to handle recursive sturct inits?
 		parent = c.table.global_scope
 	}
 }

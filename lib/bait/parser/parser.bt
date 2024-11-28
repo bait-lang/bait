@@ -19,6 +19,7 @@ pub struct Parser {
 	mut val string
 	mut pos token.Pos
 	mut pkg_name string
+	mut pkg_scope &ast.Scope := 0 as any
 	mut import_aliases map[string]string
 	mut attributes []ast.Attribute
 	mut expr_pkg string
@@ -81,6 +82,8 @@ pub fun (mut p Parser) parse_result() !ast.File {
 			path = p.path
 		}
 	}
+
+	p.pkg_scope = p.table.preregister_scopes(p.pkg_name)
 
 	imports := p.import_stmts()!
 

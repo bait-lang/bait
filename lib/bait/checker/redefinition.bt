@@ -50,7 +50,7 @@ fun (mut c Checker) check_redefinitions(redefs_list []string, kind RedefKind, fi
 				if stmt_is_redef(stmt, name, kind) {
 					redefinitions.push(Redefinition{
 						path = file.path
-						pos = (stmt as ast.EmptyStmt).pos
+						pos = (stmt as ast.InvalidStmt).pos
 						name = name
 						signature = c.stmt_signature(stmt)
 					})

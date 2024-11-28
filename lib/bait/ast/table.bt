@@ -3,7 +3,9 @@
 package ast
 
 pub struct Table {
-	pub mut global_scope Scope
+	pub mut global_scope &Scope // TODO SCOPES entirely replace by scopes
+	pub mut ffi_scope &Scope // Contains the C or JS declarations depending on the backend
+	pub mut scopes map[string]&Scope
 	pub mut fun_decls map[string]FunDecl
 	pub mut type_idxs map[string]Type
 	pub mut type_symbols []TypeSymbol
@@ -16,6 +18,9 @@ pub struct Table {
 pub fun new_table() Table {
 	mut t := Table{
 		global_scope = Scope{
+			parent = 0 as any
+		}
+		ffi_scope = Scope{
 			parent = 0 as any
 		}
 	}

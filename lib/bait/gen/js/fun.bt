@@ -34,9 +34,9 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	mut name := ''
 	if node.is_method {
 		sym := g.table.get_sym(node.params[0].typ)
-		name = js_name(sym.name + '_' + node.name)
+		name = js_esc(sym.name + '_' + node.name)
 	} else {
-		name = js_name(node.name)
+		name = js_esc(node.name)
 	}
 	if g.cur_concrete_types.length > 0 {
 		name = g.get_concrete_name(name, g.cur_concrete_types.values())
@@ -50,7 +50,7 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 
 	export_attr := node.attrs.find_attr('export')
 	if export_attr.name != '' {
-		g.writeln('module.exports.${export_attr.value} = ${js_name(node.name)}')
+		g.writeln('module.exports.${export_attr.value} = ${js_esc(node.name)}')
 	}
 
 	g.writeln('')
@@ -58,7 +58,7 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 
 fun (mut g Gen) fun_params(params []ast.Param){
 	for i, p in params {
-		g.write(js_name(p.name))
+		g.write(js_esc(p.name))
 		if i < params.length - 1 {
 			g.write(", ")
 		}
@@ -142,9 +142,9 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 			return
 		}
 
-		name = js_name(sym.name + '_' + node.name)
+		name = js_esc(sym.name + '_' + node.name)
 	} else if node.lang == .bait{
-		name = js_name(node.name)
+		name = js_esc(node.name)
 	}
 
 	if node.concrete_types.length > 0 {

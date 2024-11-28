@@ -10,14 +10,14 @@ fun (mut g Gen) struct_decl(node ast.StructDecl){
 	}
 
 	g.write('function ')
-	jsname := js_name(node.pkg_prefix + node.name)
+	jsname := js_esc(node.pkg_prefix + node.name)
 	g.write(jsname)
 	g.write('({ ')
 	for i, field in node.fields {
 		g.write('${field.name} = ')
 		if node.typ == field.typ {
 			g.write('this')
-		} else if not (field.expr is ast.EmptyExpr) {
+		} else if not (field.expr is ast.InvalidExpr) {
 			g.expr(field.expr)
 		} else {
 			g.write_default_value(field.typ)
@@ -39,7 +39,7 @@ fun (mut g Gen) struct_decl(node ast.StructDecl){
 }
 
 fun (mut g Gen) struct_init(node ast.StructInit) {
-	g.write('new ' + js_name(node.name) + '({')
+	g.write('new ' + js_esc(node.name) + '({')
 	if node.fields.length == 0 {
 		g.write('})')
 		return

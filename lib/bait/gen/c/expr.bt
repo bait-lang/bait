@@ -32,7 +32,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.StructInit { g.struct_init(expr) }
 		ast.TypeOf{ g.type_of(expr)}
 		ast.Void {} // nothing to do
-		ast.EmptyExpr { panic('unexpected EmptyExpr') }
+		ast.InvalidExpr { panic('unexpected InvalidExpr') }
 	}
 }
 
@@ -51,13 +51,13 @@ fun (mut g Gen) array_init(node ast.ArrayInit){
 
 	if node.exprs.length == 0 {
 		g.write('new_array(')
-		if node.length_expr is ast.EmptyExpr {
+		if node.length_expr is ast.InvalidExpr {
 			g.write('0, ')
 		} else {
 			g.expr(node.length_expr)
 			g.write(', ')
 		}
-		if node.cap_expr is ast.EmptyExpr {
+		if node.cap_expr is ast.InvalidExpr {
 			g.write('0, ')
 		} else {
 			g.expr(node.cap_expr)
@@ -100,7 +100,7 @@ fun (mut g Gen) char_literal(node ast.CharLiteral) {
 }
 
 fun (mut g Gen) enum_val(node ast.EnumVal) {
-	g.write(c_name(node.val))
+	g.write(c_esc(node.val))
 }
 
 fun (mut g Gen) hash_expr(node ast.HashExpr) {
@@ -109,7 +109,7 @@ fun (mut g Gen) hash_expr(node ast.HashExpr) {
 
 fun (mut g Gen) ident(node ast.Ident) {
 	if node.lang == .bait {
-		g.write(c_name(node.name))
+		g.write(c_esc(node.name))
 		return
 	}
 	g.write(node.name.replace('C.', ''))
@@ -180,7 +180,7 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 		if node.op == .ne {
 			g.write('!')
 		}
-		g.write(c_name(lsym.name + '_' + overload.name))
+		g.write(c_esc(lsym.name + '_' + overload.name))
 		g.write('(')
 		g.expr(node.left)
 		g.write(', ')
@@ -255,7 +255,7 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 
 	info := g.table.get_sym(node.typ).info as ast.StructInfo
 	for i, field in info.fields {
-		name := c_name(field.name)
+		name := c_esc(field.name)
 		g.write('.${name} = ')
 		init_idx := inited_fields.index(field.name)
 		if init_idx == -1 {
@@ -291,7 +291,7 @@ fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 	str_def := g.table.get_method(sym, 'str')
 	if str_def.name.length > 0 {
 		final_sym := g.table.get_sym(str_def.params[0].typ)
-		mut name := c_name(final_sym.name)
+		mut name := c_esc(final_sym.name)
 		g.write('${name}_str(')
 		g.expr(expr)
 		g.write(')')

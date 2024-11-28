@@ -69,11 +69,11 @@ fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 	g.write('if (')
 	g.expr(node.expr)
 	g.writeln(') {')
-	g.writeln('\tTestRunner_assert_pass(test_runner)')
+	g.writeln('\tTestRunner_assert_pass(builtin__test_runner)')
 	g.writeln('} else {')
 	if node.expr is ast.InfixExpr {
 		expr := node.expr as ast.InfixExpr
-		g.write('\tTestRunner_set_assert_info(test_runner, ${node.pos.line}, from_js_string("assert ')
+		g.write('\tTestRunner_set_assert_info(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
 		g.assert_side_expr(expr.left)
 		g.write(' ${expr.op.js_repr()} ')
 		g.assert_side_expr(expr.right)
@@ -82,12 +82,12 @@ fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 		g.write(', ')
 		g.expr_to_string(expr.right, expr.right_type)
 		g.writeln(')')
-		g.writeln('\tTestRunner_assert_fail_infix(test_runner)')
+		g.writeln('\tTestRunner_assert_fail_infix(builtin__test_runner)')
 	} else {
-		g.write('\tTestRunner_set_assert_info(test_runner, ${node.pos.line}, from_js_string("assert ')
+		g.write('\tTestRunner_set_assert_info(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
 		g.assert_side_expr(node.expr)
 		g.writeln('"), from_js_string(""), from_js_string(""), from_js_string(""))')
-		g.writeln('\tTestRunner_assert_fail(test_runner)')
+		g.writeln('\tTestRunner_assert_fail(builtin__test_runner)')
 	}
 	g.writeln('}')
 }
@@ -160,7 +160,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 	if lsym.overloads.contains(node.op.js_repr()) {
 		g.write(' = ')
 		overload := lsym.overloads[node.op.js_repr()]
-		g.write(js_name(lsym.name + '_' + overload.name))
+		g.write(js_esc(lsym.name + '_' + overload.name))
 		g.write('(')
 		g.expr(node.left)
 		g.write(', ')
@@ -186,14 +186,16 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 }
 
 fun (mut g Gen) const_decl(node ast.ConstDecl){
+	// TODO SCOPES remove ffi consts in transformer (also cgen)
 	if node.lang != .bait {
 		return
 	}
 
+	pkg := js_name(node.pkg)
+	name := js_name(node.name)
+
 	g.save_stmt_offset()
-	g.write('const ')
-	g.write(js_name(node.name))
-	g.write(' = ')
+	g.write('const ${pkg}__${name} = ')
 	g.expr(node.expr)
 	g.writeln('')
 }
@@ -203,7 +205,7 @@ fun (mut g Gen) enum_decl(node ast.EnumDecl){
 		return
 	}
 
-	g.writeln('const ' + js_name(node.name) + ' = {')
+	g.writeln('const ' + js_esc(node.name) + ' = {')
 	g.indent += 1
 	for field in node.fields {
 		g.write('${field.name}: ')
@@ -258,7 +260,7 @@ fun (mut g Gen) for_classic_loop(node ast.ForClassicLoop){
 fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 	g.write_label(node.label)
 
-	mut i := js_name(node.idxvar)
+	mut i := js_esc(node.idxvar)
 	if i == '' {
 		i = g.new_temp_var()
 	}
@@ -269,7 +271,7 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 	}
 	container := g.expr_string(node.expr)
 	g.writeln('for (let ${i} = 0; ${i} < ${container}.length; ${i}++) {')
-	val_name := js_name(node.valvar.name)
+	val_name := js_esc(node.valvar.name)
 	if sym.kind == .array {
 		g.writeln('\tconst ${val_name} = Array_get(${container}, ${i})')
 	} else if sym.kind == .string {
@@ -287,16 +289,17 @@ fun (mut g Gen) for_in_map(node ast.ForInLoop){
 	g.writeln('const ${keys_var} = Map_keys(${container})')
 	i := g.new_temp_var()
 	g.writeln('for (let ${i} = 0; ${i} < ${keys_var}.length; ${i}++) {')
-	g.writeln('\tconst ${js_name(node.idxvar)} = Array_get(${keys_var}, ${i})')
-	g.writeln('\tconst ${js_name(node.valvar.name)} = Map_get(${container}, ${node.idxvar})')
+	g.writeln('\tconst ${js_esc(node.idxvar)} = Array_get(${keys_var}, ${i})')
+	g.writeln('\tconst ${js_esc(node.valvar.name)} = Map_get(${container}, ${node.idxvar})')
 	g.stmts(node.stmts)
 	g.writeln('}')
 }
 
 fun (mut g Gen) global_decl(node ast.GlobalDecl){
 	name := js_name(node.name)
+	pkg := js_name(node.pkg)
 	expr := g.expr_string(node.expr)
-	g.global_out += 'var ${name} = ${expr}\n'
+	g.global_out += 'var ${pkg}__${name} = ${expr}\n'
 }
 
 fun (mut g Gen) interface_decl(node ast.InterfaceDecl){
@@ -311,7 +314,7 @@ fun (mut g Gen) return_stmt(node ast.ReturnStmt){
 	g.save_stmt_offset()
 
 	g.write('return')
-	if not (node.expr is ast.EmptyExpr) {
+	if not (node.expr is ast.InvalidExpr) {
 		g.write(" ")
 		g.expr(node.expr)
 	}
@@ -325,6 +328,6 @@ fun (mut g Gen) type_decl(node ast.TypeDecl){
 	}
 
 	g.write('function ')
-	g.write(js_name(node.name))
+	g.write(js_esc(node.name))
 	g.writeln('(val) { return val }')
 }
