@@ -23,7 +23,7 @@ struct Gen {
 	mut fun_decls_out string := '// Function declarations\n'
 	mut type_impls_out string := '// Type implementations\n'
 	mut auto_funs_out string := '// Generated functions\n'
-	mut globals_out string := '// Globals\n'
+	mut globals_out string := '// Static variables\n'
 	mut out string := '// Main code\n'
 	mut indent i32 := -1
 	mut empty_line bool := true
