@@ -34,7 +34,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.StructInit { g.struct_init(expr) }
 		ast.TypeOf{ g.type_of(expr)}
 		ast.Void {} // nothing to do
-		ast.EmptyExpr { panic('unexpected EmptyExpr') }
+		ast.InvalidExpr { panic('unexpected InvalidExpr') }
 	}
 }
 
@@ -63,7 +63,7 @@ fun (mut g Gen) anon_fun(node ast.AnonFun) {
 
 fun (mut g Gen) array_init(node ast.ArrayInit) {
 	g.write('new bait_Array({ data: ')
-	if node.length_expr is ast.EmptyExpr {
+	if node.length_expr is ast.InvalidExpr {
 		g.write('[')
 		for i, expr in node.exprs {
 			g.expr(expr)

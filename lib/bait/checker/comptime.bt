@@ -28,7 +28,7 @@ fun (mut c Checker) comptime_if_condition(node ast.Expr) bool {
 			}
 		}
 	} else {
-		c.error('invalid $if condition', (node as ast.EmptyExpr).pos)
+		c.error('invalid $if condition', (node as ast.InvalidExpr).pos)
 	}
 	return false
 }

@@ -5,9 +5,9 @@ package ast
 import bait.token
 import bait.errors
 
-type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | EmptyStmt | IfMatch
+type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | GlobalDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | InvalidStmt | IfMatch
 
-type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | Void | EmptyExpr
+type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | Void | InvalidExpr
 
 pub struct AssertStmt {
 	pub expr Expr
@@ -145,7 +145,7 @@ pub struct StructDecl {
 pub struct StructField {
 	pub name string
 	pub typ Type
-	pub expr Expr := EmptyExpr{}
+	pub expr Expr := InvalidExpr{}
 	pub pos token.Pos
 	pub is_mut bool
 	pub is_pub bool
@@ -165,8 +165,8 @@ pub struct ArrayInit {
 	global typ Type
 	global elem_type Type
 	pub exprs []Expr
-	pub length_expr Expr := EmptyExpr{}
-	pub cap_expr Expr := EmptyExpr{}
+	pub length_expr Expr := InvalidExpr{}
+	pub cap_expr Expr := InvalidExpr{}
 	pub pos token.Pos
 }
 
@@ -187,7 +187,7 @@ pub struct CallExpr {
 	global name string
 	global return_type Type
 	global left_type Type
-	global left Expr := EmptyExpr{}
+	global left Expr := InvalidExpr{}
 	global concrete_types []Type
 	global is_field bool
 	global noreturn bool
@@ -353,15 +353,11 @@ pub struct TypeOf {
 
 pub struct Void {}
 
-pub struct EmptyExpr {
+pub struct InvalidExpr {
 	pub pos token.Pos
 }
 
-pub fun empty_expr() Expr {
-	return EmptyExpr{}
-}
-
-pub struct EmptyStmt {
+pub struct InvalidStmt {
 	pub pos token.Pos
 }
 

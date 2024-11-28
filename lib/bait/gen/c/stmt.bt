@@ -32,7 +32,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.ReturnStmt { g.return_stmt(stmt) }
 		ast.StructDecl {} // see write_types()
 		ast.TypeDecl {} // see write_types()
-		ast.EmptyStmt { panic('unexpected EmptyStmt') }
+		ast.InvalidStmt { panic('unexpected InvalidStmt') }
 	}
 }
 
@@ -180,7 +180,7 @@ fun (g Gen) interface_decl(node ast.InterfaceDecl){
 fun (mut g Gen) return_stmt(node ast.ReturnStmt){
 	g.save_stmt_offset()
 	g.write('return')
-	if not (node.expr is ast.EmptyExpr) {
+	if not (node.expr is ast.InvalidExpr) {
 		g.write(" ")
 		g.expr(node.expr)
 	}

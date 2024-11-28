@@ -37,12 +37,12 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 		}
 
 		// Check the default value if present
-		if field.expr is ast.EmptyExpr {
+		if field.expr is ast.InvalidExpr {
 			continue
 		}
 		typ := c.expr(field.expr)
 		if not c.check_types(typ, field.typ) {
-			c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.EmptyExpr).pos)
+			c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.InvalidExpr).pos)
 		}
 	}
 
@@ -108,7 +108,7 @@ fun (c Checker) check_init_field_values(init ast.StructInit, info ast.StructInfo
 			continue
 		}
 
-		if not (def_field.expr is ast.EmptyExpr) {
+		if not (def_field.expr is ast.InvalidExpr) {
 			continue
 		}
 

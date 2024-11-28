@@ -32,7 +32,7 @@ fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
 		ast.StructInit { c.struct_init(mut expr) }
 		ast.TypeOf { c.type_of(mut expr) }
 		ast.Void { ast.VOID_TYPE }
-		ast.EmptyExpr { panic('unexpected EmptyExpr at ${expr.pos}') }
+		ast.InvalidExpr { panic('unexpected InvalidExpr at ${expr.pos}') }
 	}
 	c.expected_type = expected_save
 	return t
@@ -52,13 +52,13 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 		}
 
 		// Validate fields if present
-		if not (node.length_expr is ast.EmptyExpr) {
+		if not (node.length_expr is ast.InvalidExpr) {
 			typ := c.expr(node.length_expr)
 			if not c.check_types(typ, ast.I32_TYPE) {
 				c.error('expected i32, got ${c.table.type_name(typ)}', node.pos)
 			}
 		}
-		if not (node.cap_expr is ast.EmptyExpr) {
+		if not (node.cap_expr is ast.InvalidExpr) {
 			typ := c.expr(node.cap_expr)
 			if not c.check_types(typ, ast.I32_TYPE) {
 				c.error('expected i32, got ${c.table.type_name(typ)}', node.pos)
@@ -76,7 +76,7 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 			c.expected_type = typ
 		}
 		if not c.check_types(typ, node.elem_type) {
-			pos := (e as ast.EmptyExpr).pos
+			pos := (e as ast.InvalidExpr).pos
 			c.error('expected element type ${c.table.type_name(node.elem_type)}, got ${c.table.type_name(typ)}', pos)
 		}
 	}
@@ -239,11 +239,11 @@ fun (mut c Checker) map_init(mut node ast.MapInit) ast.Type {
 			node.val_type = val_type
 		} else {
 			if not c.check_types(key_type, node.key_type) {
-				key_expr := key as ast.EmptyExpr
+				key_expr := key as ast.InvalidExpr
 				c.error('expected key type ${c.table.type_name(node.key_type)}, got ${c.table.type_name(key_type)}', key_expr.pos)
 			}
 			if not c.check_types(val_type, node.val_type) {
-				val_expr := node.vals[i] as ast.EmptyExpr
+				val_expr := node.vals[i] as ast.InvalidExpr
 				c.error('expected value type ${c.table.type_name(node.val_type)}, got ${c.table.type_name(val_type)}', val_expr.pos)
 			}
 		}

@@ -13,7 +13,7 @@ pub struct ScopeObject{
 	pub mut is_pub bool
 	pub mut is_mut bool
 	pub mut pkg string
-	pub mut expr Expr := EmptyExpr{} // Only for constants. Allows resolving their type early
+	pub mut expr Expr := InvalidExpr{} // Only for constants. Allows resolving their type early
 }
 
 pub enum ObjectKind {

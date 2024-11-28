@@ -77,7 +77,7 @@ fun (mut p Parser) struct_decl_field(is_mut bool, is_pub bool, is_global bool) !
 
 	fname := p.check_name()!
 	ftyp := p.parse_type()!
-	mut expr := ast.EmptyExpr{} as ast.Expr
+	mut expr := ast.InvalidExpr{} as ast.Expr
 	if p.tok == .decl_assign {
 		p.next()
 		expr = p.expr(.lowest)!

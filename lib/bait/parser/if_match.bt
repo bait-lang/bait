@@ -27,7 +27,7 @@ fun (mut p Parser) if_match(is_expr bool) !ast.IfMatch {
 				has_else = true
 				stmts := p.parse_block()!
 				branches.push(ast.IfBranch{
-					cond = ast.EmptyExpr{}
+					cond = ast.InvalidExpr{}
 					stmts = stmts
 					pos = bpos
 				})
@@ -86,7 +86,7 @@ fun (mut p Parser) match_as_if_expr(is_expr bool) !ast.IfMatch {
 			has_else = true
 			stmts := p.parse_block()!
 			branches.push(ast.IfBranch{
-				cond = ast.EmptyExpr{}
+				cond = ast.InvalidExpr{}
 				stmts = stmts
 				pos = bpos
 			})

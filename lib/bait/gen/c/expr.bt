@@ -32,7 +32,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.StructInit { g.struct_init(expr) }
 		ast.TypeOf{ g.type_of(expr)}
 		ast.Void {} // nothing to do
-		ast.EmptyExpr { panic('unexpected EmptyExpr') }
+		ast.InvalidExpr { panic('unexpected InvalidExpr') }
 	}
 }
 
@@ -51,13 +51,13 @@ fun (mut g Gen) array_init(node ast.ArrayInit){
 
 	if node.exprs.length == 0 {
 		g.write('new_array(')
-		if node.length_expr is ast.EmptyExpr {
+		if node.length_expr is ast.InvalidExpr {
 			g.write('0, ')
 		} else {
 			g.expr(node.length_expr)
 			g.write(', ')
 		}
-		if node.cap_expr is ast.EmptyExpr {
+		if node.cap_expr is ast.InvalidExpr {
 			g.write('0, ')
 		} else {
 			g.expr(node.cap_expr)
