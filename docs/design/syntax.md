@@ -21,3 +21,17 @@ Why is the syntax the way it is?
 ### References
 - [Discord: Thoughts by @zeozeozeo](https://discord.com/channels/1204569231992295494/1204741190432325652/1302526862982905866)
 - [soc.me: `ident: Type` over `Type ident`](https://soc.me/languages/type-annotations)
+
+
+## Static Variables
+### Benefits
+- **No name collision** with symbols in other packages
+- **Clear scope** and explicit usage
+
+### Alternatives considered
+- Global variables
+  - Hard to trace where a variable and value changes come from
+  - Unintended coupling of independent code parts
+
+### References
+- [GH-249 by @StunxFS](https://github.com/bait-lang/bait/issues/249)

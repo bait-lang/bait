@@ -178,7 +178,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		obj.typ = c.expr(obj.expr)
 	}
 
-	if obj.kind == .constant or obj.kind == .global_ {
+	if obj.kind == .constant or obj.kind == .static_ {
 		if not node.name.contains('.') {
 			if obj.pkg == "" {
 				node.name = node.pkg + '.' + node.name
