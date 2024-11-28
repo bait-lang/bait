@@ -560,14 +560,22 @@ The following conditions are currently supported:
 | --------- | ------------------ |
 | `C`, `JS` | `LINUX`, `WINDOWS` |
 
-## Global Variables
-While the use of global variables is discouraged, they are important in some cases.
 
-> 🚧 In a future version, global variables will require a compiler flag to be enabled.
+## Static Variables
+While Bait has no support for global variables, you can use static package variables for a similar purpose.
 
 ```bait
-global my_global := 123
+static my_static_var := 123
 ```
+
+They are public and mutable from everywhere:
+```bait
+import bait.test_pkgs.demo
+
+demo.shared_var += 7
+println(demo.shared_var) // 130
+```
+
 
 ## Calling JavaScript from Bait
 ### JS Imports and Declarations
