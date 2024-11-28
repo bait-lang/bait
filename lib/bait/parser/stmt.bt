@@ -147,8 +147,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 		p.table.ffi_scope.register(lang.prepend_to(name), ast.ScopeObject{
 			typ = typ
 			kind = .constant
-			is_pub = is_pub
-			pkg = p.pkg_name
+			is_pub = true // TODO rethink ffi pub behaviour (pub by default + warn on pub keyword OR require pub keyword)
 		})
 
 		return ast.ConstDecl{
@@ -164,8 +163,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	expr := p.expr(.lowest)!
 	typ := p.infer_expr_type(expr)
 
-	// p.table.global_scope.register(name, ast.ScopeObject{
-	p.table.global_scope.register(reg_name, ast.ScopeObject{
+	p.table.scopes[p.pkg_name].register(name, ast.ScopeObject{
 		typ = typ
 		kind = .constant
 		is_pub = is_pub

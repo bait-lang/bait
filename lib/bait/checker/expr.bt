@@ -150,15 +150,32 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 }
 
 // TODO SCOPES cleanup and add comments
+// TODO SCOPES reduce lookups if node is from imported pkg / FFI
 fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	mut obj := c.scope.get(node.name)
+
+	if node.lang != .bait {
+		obj = c.table.ffi_scope.get(node.name)
+	}
+
+	if obj.typ == ast.PLACEHOLDER_TYPE {
+		obj = c.table.scopes[node.pkg].get(node.name)
+	}
+
+	// TMP
+	if obj.typ == ast.PLACEHOLDER_TYPE and node.name.contains(".") {
+		pkg_part := node.name.all_before_last(".")
+		name_part := node.name.all_after_last(".")
+		obj = c.table.scopes[pkg_part].get(name_part)
+	}
 
 	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
 		c.error('const ${node.name} is private', node.pos)
 	}
 
-	if obj.typ == ast.PLACEHOLDER_TYPE {
-		obj = c.table.scopes[node.pkg].get(node.name)
+	// unresolved constant
+	if obj.typ == ast.VOID_TYPE {
+		obj.typ = c.expr(obj.expr)
 	}
 
 	if obj.kind == .constant or obj.kind == .global_ {
@@ -171,26 +188,8 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		}
 	}
 
-	if obj.typ == ast.PLACEHOLDER_TYPE and node.lang != .bait {
-		obj = c.table.ffi_scope.get(node.name)
-	}
-
-	if obj.typ != ast.PLACEHOLDER_TYPE {
-		node.is_mut = obj.is_mut
-		return obj.typ
-	}
-
-	if not node.name.contains('.') and node.pkg != 'builtin' and node.pkg != 'main' {
-		node.name = node.pkg + '.' + node.name
-	}
-	obj = c.table.global_scope.get(node.name)
 	if obj.typ == ast.PLACEHOLDER_TYPE {
 		c.error('undefined identifier ${node.name}', node.pos)
-	}
-
-	// unresolved constant
-	if obj.typ == ast.VOID_TYPE {
-		obj.typ = c.expr(obj.expr)
 	}
 
 	node.is_mut = obj.is_mut
