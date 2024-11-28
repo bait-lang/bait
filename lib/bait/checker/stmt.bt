@@ -51,7 +51,7 @@ fun (mut c Checker) const_decl(mut node ast.ConstDecl) {
 	}
 
 	node.typ = c.expr(node.expr)
-	c.table.global_scope.update_type(node.reg_name, node.typ)
+	c.table.scopes[node.pkg].update_type(node.name, node.typ)
 }
 
 fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
