@@ -150,12 +150,9 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 }
 
 // TODO SCOPES cleanup and add comments
+// TODO SCOPES reduce lookups if node is from imported pkg / FFI
 fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	mut obj := c.scope.get(node.name)
-
-	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
-		c.error('const ${node.name} is private', node.pos)
-	}
 
 	if node.lang != .bait {
 		obj = c.table.ffi_scope.get(node.name)
@@ -170,6 +167,10 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		pkg_part := node.name.all_before_last(".")
 		name_part := node.name.all_after_last(".")
 		obj = c.table.scopes[pkg_part].get(name_part)
+	}
+
+	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
+		c.error('const ${node.name} is private', node.pos)
 	}
 
 	// unresolved constant

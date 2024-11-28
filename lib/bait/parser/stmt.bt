@@ -147,7 +147,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 		p.table.ffi_scope.register(lang.prepend_to(name), ast.ScopeObject{
 			typ = typ
 			kind = .constant
-			is_pub = is_pub
+			is_pub = true // TODO rethink ffi pub behaviour (pub by default + warn on pub keyword OR require pub keyword)
 		})
 
 		return ast.ConstDecl{
