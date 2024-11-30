@@ -145,8 +145,8 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 
 		// TODO SCOPES consider not prepending lang. Requires changes to p.hash_expr: do not set expr_pkg and all other FFI constructs
 		p.table.ffi_scope.register(lang.prepend_to(name), ast.ScopeObject{
-			typ = typ
 			kind = .constant
+			typ = typ
 			is_pub = true // TODO rethink ffi pub behaviour (pub by default + warn on pub keyword OR require pub keyword)
 		})
 
@@ -158,14 +158,12 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 		}
 	}
 
-	reg_name := p.prepend_pkg(name)
-
 	expr := p.expr(.lowest)!
 	typ := p.infer_expr_type(expr)
 
 	p.table.scopes[p.pkg_name].register(name, ast.ScopeObject{
-		typ = typ
 		kind = .constant
+		typ = typ
 		is_pub = is_pub
 		pkg = p.pkg_name
 		expr = expr
@@ -174,7 +172,6 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	return ast.ConstDecl{
 		name = name
 		pkg = p.pkg_name
-		reg_name = reg_name
 		expr = expr
 		typ = typ
 		pos = pos
