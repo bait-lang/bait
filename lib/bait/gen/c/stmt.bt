@@ -32,6 +32,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.ReturnStmt { g.return_stmt(stmt) }
 		ast.StructDecl {} // see write_types()
 		ast.TypeDecl {} // see write_types()
+		ast.Void {}
 		ast.InvalidStmt { panic('unexpected InvalidStmt') }
 	}
 }

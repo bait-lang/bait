@@ -26,6 +26,7 @@ The compiler consists of the following core packages that are all in the `bait` 
 - `parser`: Create the AST and perform basic type resolving for constants and globals
 - `preference`: Define preferences and argument parsing
 - `token`: Defines tokens and their precedence
+- `transformer`: Perform some optimizations on the AST
 
 Other packages include:
 

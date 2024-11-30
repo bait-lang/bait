@@ -8,8 +8,8 @@ pub struct Scope {
 }
 
 pub struct ScopeObject{
-	global typ Type
 	pub mut kind ObjectKind
+	global typ Type
 	pub mut is_pub bool
 	pub mut is_mut bool
 	pub mut pkg string // TODO SCOPES remove this

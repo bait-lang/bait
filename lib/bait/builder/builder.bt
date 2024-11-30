@@ -10,11 +10,12 @@ import bait.checker
 import bait.gen.js as jsgen
 import bait.gen.c as cgen
 import bait.preference
+import bait.transformer
 import bait.util.timers
 
 struct Builder {
 	mut prefs preference.Prefs
-	mut parsed_files []ast.File
+	mut parsed_files []&ast.File
 	mut parsed_pkgs []string
 	mut checker checker.Checker
 	mut parser parser.Parser
@@ -135,8 +136,8 @@ pub fun compile(prefs preference.Prefs) i32 {
 
 	// TODO move whole depgraph build and resolve into pkg
 
-	timers.start('DEPGRAPH')
 	// Build a dependency map for each file
+	timers.start('DEPGRAPH')
 	mut deps := map[string][]string
 	for f in ast_files {
 		for imp in f.imports {
@@ -159,7 +160,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 			}
 		}
 	}
-
 	timers.show('DEPGRAPH')
 
 	// Run the type resolver and checker
@@ -176,6 +176,13 @@ pub fun compile(prefs preference.Prefs) i32 {
 		return 1
 	}
 
+	// Transformer
+	timers.start('TRANSFORM')
+	trans := transformer.Transformer{}
+	trans.transform_files(b.parsed_files)
+	timers.show('TRANSFORM')
+
+	// Gen
 	if b.prefs.backend == .c {
 		return b.code_gen_c()
 	}
