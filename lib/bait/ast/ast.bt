@@ -17,9 +17,9 @@ pub struct AssertStmt {
 pub struct AssignStmt {
 	global left_type Type
 	global right_type Type
-	pub op token.Token
+	global op token.Token
 	pub left Expr
-	pub right Expr
+	global right Expr
 	pub pos token.Pos
 }
 

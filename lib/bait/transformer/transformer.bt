@@ -3,8 +3,10 @@
 package transformer
 
 import bait.ast
+import bait.preference
 
 pub struct Transformer {
+	prefs preference.Prefs
 }
 
 pub fun (t Transformer) transform_files(files []&ast.File) {
@@ -23,16 +25,16 @@ pub fun (t Transformer) stmts(mut stmts []ast.Stmt) {
 fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 	match stmt {
 		ast.AssertStmt {}
-		ast.AssignStmt {}
+		ast.AssignStmt { t.assign_stmt(mut stmt) }
 		ast.ConstDecl {}
 		ast.ExprStmt {}
 		ast.EnumDecl {}
-		ast.ForLoop {}
-		ast.ForClassicLoop {}
-		ast.ForInLoop {}
-		ast.FunDecl {}
+		ast.ForLoop { t.for_loop(mut stmt) }
+		ast.ForClassicLoop { t.for_classic_loop(mut stmt) }
+		ast.ForInLoop { t.for_in_loop(mut stmt) }
+		ast.FunDecl { t.fun_decl(mut stmt) }
 		ast.StaticDecl {}
-		ast.IfMatch {}
+		ast.IfMatch { t.if_match(mut stmt)}
 		ast.InterfaceDecl {}
 		ast.LoopControlStmt {}
 		ast.ReturnStmt {}
@@ -73,4 +75,42 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.InvalidExpr {}
 	}
 	return expr
+}
+
+fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
+	// JS: allow for correct number rounding
+	if t.prefs.backend == .js and node.op == .div_assign {
+		node.op = .assign
+		node.right = ast.InfixExpr{
+			op = .div
+			left_type = node.left_type
+			left = node.left
+			right = node.right
+		}
+	}
+}
+
+fun (t Transformer) for_loop(mut node ast.ForLoop) {
+	t.stmts(node.stmts)
+}
+
+// FIXME for all this file: args must be marked mut (missing error)
+fun (t Transformer) for_classic_loop(mut node ast.ForClassicLoop) {
+	t.stmt(node.init)
+	t.stmt(node.inc)
+	t.stmts(node.stmts)
+}
+
+fun (t Transformer) for_in_loop(mut node ast.ForInLoop) {
+	t.stmts(node.stmts)
+}
+
+fun (t Transformer) fun_decl(mut node ast.FunDecl) {
+	t.stmts(node.stmts)
+}
+
+fun (t Transformer) if_match(mut node ast.IfMatch) {
+	for mut branch in node.branches {
+		t.stmts(branch.stmts)
+	}
 }
