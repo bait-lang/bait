@@ -1,5 +1,5 @@
 # Compiler Design
-How are core systems of the compiler designed and currently implemented?
+How are internal core systems of the compiler designed and currently implemented?
 
 See also the [compiler structure](../development/structure.md#compiler-structure).
 

@@ -6,8 +6,9 @@ All notable changes are documented in this file.
 
 ## 0.0.8 - unreleased
 ### Breaking
+- Syntax: Replace field modifier groups of structs and interfaces with per-field modifiers ([GH-233](https://github.com/bait-lang/bait/pull/233))
+- Syntax: Replace toplevel `global` with `static` ([GH-249](https://github.com/bait-lang/bait/issues/249))
 - `bait.util`: Move escape related functions into `bait.util.escape`
-- Replace field modifier groups of structs and interfaces with per-field modifiers ([GH-233](https://github.com/bait-lang/bait/pull/233))
 
 ### Error Checks
 - Require initialization of struct fields containing a ...
@@ -27,6 +28,8 @@ All notable changes are documented in this file.
 - _[C]_: Change `-o foo.c` to output the generated C code without compiling it
 
 ### Other Changes
+- Refactor many internal systems
+- Add `bait.transformer` to handle AST optimizations
 - Comptime if: Add `LINUX` and `WINDOWS` conditions
 - `gen`: Generate `assert` as panic outside of tests
 - License: Change from MPL-2.0 to MIT
