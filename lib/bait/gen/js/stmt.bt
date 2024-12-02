@@ -186,11 +186,6 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 }
 
 fun (mut g Gen) const_decl(node ast.ConstDecl){
-	// TODO SCOPES remove ffi consts in transformer (also cgen)
-	if node.lang != .bait {
-		return
-	}
-
 	pkg := js_name(node.pkg)
 	name := js_name(node.name)
 

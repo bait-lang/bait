@@ -26,7 +26,9 @@ fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 	match stmt {
 		ast.AssertStmt {}
 		ast.AssignStmt { t.assign_stmt(mut stmt) }
-		ast.ConstDecl {}
+		ast.ConstDecl {
+			return t.const_decl(stmt)
+		}
 		ast.ExprStmt {}
 		ast.EnumDecl {}
 		ast.ForLoop { t.for_loop(mut stmt) }
@@ -78,7 +80,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 }
 
 fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
-	// JS: allow for correct number rounding
+	// JS: allow for correct integer rounding
 	if t.prefs.backend == .js and node.op == .div_assign {
 		node.op = .assign
 		node.right = ast.InfixExpr{
@@ -88,6 +90,14 @@ fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
 			right = node.right
 		}
 	}
+}
+
+fun (t Transformer) const_decl(node ast.ConstDecl) ast.Stmt {
+	if node.lang != .bait {
+		return ast.Void{}
+	}
+
+	return node
 }
 
 fun (t Transformer) for_loop(mut node ast.ForLoop) {
