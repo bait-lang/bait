@@ -32,6 +32,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.ReturnStmt { g.return_stmt(stmt) }
 		ast.StructDecl {} // see write_types()
 		ast.TypeDecl {} // see write_types()
+		ast.Void {}
 		ast.InvalidStmt { panic('unexpected InvalidStmt') }
 	}
 }
@@ -80,11 +81,6 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 }
 
 fun (mut g Gen) const_decl(node ast.ConstDecl){
-	// TODO SCOPES remove ffi consts in transformer (also jsgen)
-	if node.lang != .bait {
-		return
-	}
-
 	pkg := c_name(node.pkg)
 	name := c_name(node.name)
 	full_name := pkg + '__' + name

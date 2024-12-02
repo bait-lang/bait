@@ -1,0 +1,126 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package transformer
+
+import bait.ast
+import bait.preference
+
+pub struct Transformer {
+	prefs preference.Prefs
+}
+
+pub fun (t Transformer) transform_files(files []&ast.File) {
+	for mut file in files {
+		t.stmts(mut file.stmts)
+	}
+}
+
+pub fun (t Transformer) stmts(mut stmts []ast.Stmt) {
+	// TODO js: fix for mut stmt in stmts {
+	for i := 0; i < stmts.length; i += 1 {
+		stmts[i] = t.stmt(mut stmts[i])
+	}
+}
+
+fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
+	match stmt {
+		ast.AssertStmt {}
+		ast.AssignStmt { t.assign_stmt(mut stmt) }
+		ast.ConstDecl {
+			return t.const_decl(stmt)
+		}
+		ast.ExprStmt {}
+		ast.EnumDecl {}
+		ast.ForLoop { t.for_loop(mut stmt) }
+		ast.ForClassicLoop { t.for_classic_loop(mut stmt) }
+		ast.ForInLoop { t.for_in_loop(mut stmt) }
+		ast.FunDecl { t.fun_decl(mut stmt) }
+		ast.StaticDecl {}
+		ast.IfMatch { t.if_match(mut stmt)}
+		ast.InterfaceDecl {}
+		ast.LoopControlStmt {}
+		ast.ReturnStmt {}
+		ast.StructDecl {}
+		ast.TypeDecl {}
+		ast.Void {}
+		ast.InvalidStmt {}
+	}
+	return stmt
+}
+
+fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
+	match expr {
+		ast.AnonFun {}
+		ast.ArrayInit {}
+		ast.AsCast {}
+		ast.BoolLiteral {}
+		ast.CallExpr {}
+		ast.CharLiteral {}
+		ast.ComptimeVar {}
+		ast.EnumVal {}
+		ast.FloatLiteral {}
+		ast.HashExpr {}
+		ast.Ident {}
+		ast.IfMatch {}
+		ast.IndexExpr {}
+		ast.InfixExpr {}
+		ast.IntegerLiteral {}
+		ast.MapInit {}
+		ast.ParExpr {}
+		ast.PrefixExpr {}
+		ast.SelectorExpr {}
+		ast.StringLiteral {}
+		ast.StringInterLiteral {}
+		ast.StructInit {}
+		ast.TypeOf {}
+		ast.Void {}
+		ast.InvalidExpr {}
+	}
+	return expr
+}
+
+fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
+	// JS: allow for correct integer rounding
+	if t.prefs.backend == .js and node.op == .div_assign {
+		node.op = .assign
+		node.right = ast.InfixExpr{
+			op = .div
+			left_type = node.left_type
+			left = node.left
+			right = node.right
+		}
+	}
+}
+
+fun (t Transformer) const_decl(node ast.ConstDecl) ast.Stmt {
+	if node.lang != .bait {
+		return ast.Void{}
+	}
+
+	return node
+}
+
+fun (t Transformer) for_loop(mut node ast.ForLoop) {
+	t.stmts(node.stmts)
+}
+
+// FIXME for all this file: args must be marked mut (missing error)
+fun (t Transformer) for_classic_loop(mut node ast.ForClassicLoop) {
+	t.stmt(node.init)
+	t.stmt(node.inc)
+	t.stmts(node.stmts)
+}
+
+fun (t Transformer) for_in_loop(mut node ast.ForInLoop) {
+	t.stmts(node.stmts)
+}
+
+fun (t Transformer) fun_decl(mut node ast.FunDecl) {
+	t.stmts(node.stmts)
+}
+
+fun (t Transformer) if_match(mut node ast.IfMatch) {
+	for mut branch in node.branches {
+		t.stmts(branch.stmts)
+	}
+}

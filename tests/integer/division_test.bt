@@ -7,3 +7,9 @@ fun test_signed_division() {
 	assert 10 / 3 == 3
 	assert (10 as i64) / 3 == 3
 }
+
+fun test_division_assign() {
+	mut i := 1
+	i /= 2
+	assert i == 0
+}

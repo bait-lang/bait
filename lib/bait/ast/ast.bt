@@ -5,7 +5,7 @@ package ast
 import bait.token
 import bait.errors
 
-type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | StaticDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | IfMatch | InvalidStmt
+type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | StaticDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | IfMatch | Void | InvalidStmt
 
 type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | Void | InvalidExpr
 
@@ -17,16 +17,15 @@ pub struct AssertStmt {
 pub struct AssignStmt {
 	global left_type Type
 	global right_type Type
-	pub op token.Token
+	global op token.Token
 	pub left Expr
-	pub right Expr
+	global right Expr
 	pub pos token.Pos
 }
 
 pub struct ConstDecl {
 	pub name string
 	pub pkg string
-	pub reg_name string
 	pub expr Expr := InvalidExpr{}
 	pub pos token.Pos
 	pub lang Language

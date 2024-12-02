@@ -8,11 +8,11 @@ pub struct Scope {
 }
 
 pub struct ScopeObject{
-	global typ Type
 	pub mut kind ObjectKind
+	global typ Type
 	pub mut is_pub bool
 	pub mut is_mut bool
-	pub mut pkg string
+	pub mut pkg string // TODO SCOPES remove this
 	pub mut expr Expr := InvalidExpr{} // Only for constants. Allows resolving their type early
 }
 
@@ -26,7 +26,7 @@ pub enum ObjectKind {
 	static_
 }
 
-pub fun (mut t Table) preregister_scopes(pkg_name string) &Scope {
+pub fun (mut t Table) create_scopes(pkg_name string) &Scope {
 	builtin_scope := t.get_pkg_scope("builtin", 0 as any)
 	pkg_scope := t.get_pkg_scope(pkg_name, builtin_scope)
 	return pkg_scope

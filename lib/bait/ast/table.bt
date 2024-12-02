@@ -3,6 +3,7 @@
 package ast
 
 pub struct Table {
+	// TODO SCOPES consider moving ffi_scope, scopes into new struct that is only shared between parser and checker
 	pub mut ffi_scope &Scope // Contains the C or JS declarations depending on the backend
 	pub mut scopes map[string]&Scope
 	pub mut fun_decls map[string]FunDecl
@@ -145,7 +146,7 @@ pub fun (t Table) find_or_register_map(key_type Type, val_type Type) Type {
 	})
 }
 
-// FIXME/REFAC register fun aliases as alias with fun info
+// FIXME register fun aliases as alias with fun info
 pub fun (t Table) find_or_register_fun(param_types []Type, return_type Type, alias bool) Type {
 	name := 'fun_' + t.fun_type_signature(param_types, return_type)
 	idx := t.get_idx(name)

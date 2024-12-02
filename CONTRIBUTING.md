@@ -9,6 +9,6 @@ You can contribute to Bait in many ways:
 
 ---
 
-Before making code changes, please take a look at the [code and repo structure](./docs/development/structure.md).
+Before making code changes, please take a look at the [code and repo structure](./docs/dev/structure.md).
 
 If there are any questions, feel free to join the Discord or create a GitHub Discussion.

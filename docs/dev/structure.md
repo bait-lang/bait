@@ -1,15 +1,21 @@
 # Structure
+See also the [design of core compiler systems](../design/compiler.md).
+
+
 ## Repository Structure
 ```
-.
-├─ cli/     Compiler CLI, tools and help texts.
-├─ docs/    Documentation files for users and contributors.
-├─ lib/     Root for all standard library packages.
-   ├─ bait/    Core compiler implementation.
+├─ cli/       Compiler CLI, tools and help texts
+├─ docs/      Documentation files
+   ├─ design/   Design of language syntax and compiler core systems
+   ├─ dev/      Contribution flow and high-level code structure
+   └─ .         User documentation
+├─ lib/       Root for all standard library packages
+   ├─ bait/     Core compiler implementation
    └─ ...
-├─ tests/   Tests for general language features that do not belong to specific packages.
+├─ tests/     Tests for general language features
 └─ ...
 ```
+
 
 ## Compiler Structure
 The compiler consists of the following core packages that are all in the `bait` namespace:
@@ -26,6 +32,7 @@ The compiler consists of the following core packages that are all in the `bait` 
 - `parser`: Create the AST and perform basic type resolving for constants and globals
 - `preference`: Define preferences and argument parsing
 - `token`: Defines tokens and their precedence
+- `transformer`: Perform some optimizations on the AST
 
 Other packages include:
 
