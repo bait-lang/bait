@@ -171,7 +171,6 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 
 	return ast.ConstDecl{
 		name = name
-		pkg = p.pkg_name
 		expr = expr
 		typ = typ
 		pos = pos
@@ -272,7 +271,6 @@ fun (mut p Parser) static_decl() !ast.StaticDecl{
 	})
 	return ast.StaticDecl{
 		name = name
-		pkg = p.pkg_name
 		expr = expr
 		pos = pos
 	}

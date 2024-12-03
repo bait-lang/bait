@@ -81,7 +81,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 }
 
 fun (mut g Gen) const_decl(node ast.ConstDecl){
-	pkg := c_name(node.pkg)
+	pkg := c_name(g.pkg) // TODO optimize this by caching (also jsgen)
 	name := c_name(node.name)
 	full_name := pkg + '__' + name
 	val := g.expr_string(node.expr)
@@ -162,7 +162,7 @@ fun (mut g Gen) loop_control_stmt(node ast.LoopControlStmt){
 
 fun (mut g Gen) static_decl(node ast.StaticDecl){
 	name := c_name(node.name)
-	pkg := c_name(node.pkg)
+	pkg := c_name(g.pkg)
 	expr := g.expr_string(node.expr)
 	typ := g.typ(node.typ)
 	g.globals_out += '${typ} ${pkg}__${name} = ${expr};\n'

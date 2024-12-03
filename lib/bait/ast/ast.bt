@@ -25,7 +25,6 @@ pub struct AssignStmt {
 
 pub struct ConstDecl {
 	pub name string
-	pub pkg string
 	pub expr Expr := InvalidExpr{}
 	pub pos token.Pos
 	pub lang Language
@@ -114,7 +113,6 @@ pub struct LoopControlStmt {
 pub struct StaticDecl {
 	global typ Type
 	pub name string
-	pub pkg string
 	pub expr Expr
 	pub pos token.Pos
 }

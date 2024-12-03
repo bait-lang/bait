@@ -186,7 +186,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 }
 
 fun (mut g Gen) const_decl(node ast.ConstDecl){
-	pkg := js_name(node.pkg)
+	pkg := js_name(g.pkg) // TODO optimize this by caching (also cgen)
 	name := js_name(node.name)
 
 	g.save_stmt_offset()
@@ -292,7 +292,7 @@ fun (mut g Gen) for_in_map(node ast.ForInLoop){
 
 fun (mut g Gen) static_decl(node ast.StaticDecl){
 	name := js_name(node.name)
-	pkg := js_name(node.pkg)
+	pkg := js_name(g.pkg)
 	expr := g.expr_string(node.expr)
 	g.global_out += 'var ${pkg}__${name} = ${expr}\n'
 }
