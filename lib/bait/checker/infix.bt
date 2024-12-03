@@ -56,8 +56,8 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 	// Smartcast variable
 	if node.left is ast.Ident {
 		mut right := node.right as ast.Ident
-		if not right.mixed_name.contains('.') and right.pkg != 'main' {
-			right.mixed_name = right.pkg + '.' + right.mixed_name
+		if not right.mixed_name.contains('.') and right.file_pkg != 'main' {
+			right.mixed_name = right.file_pkg + '.' + right.mixed_name
 		}
 		node.right_type = c.table.get_idx(right.mixed_name)
 		left := node.left as ast.Ident
@@ -68,8 +68,8 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 	// Smartcast struct field
 	if node.left is ast.SelectorExpr {
 		mut right := node.right as ast.Ident
-		if not right.mixed_name.contains('.') and right.pkg != 'main' {
-			right.mixed_name = right.pkg + '.' + right.mixed_name
+		if not right.mixed_name.contains('.') and right.file_pkg != 'main' {
+			right.mixed_name = right.file_pkg + '.' + right.mixed_name
 		}
 		node.right_type = c.table.get_idx(right.mixed_name)
 		left := node.left as ast.SelectorExpr
