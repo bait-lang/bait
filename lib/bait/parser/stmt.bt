@@ -161,6 +161,12 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	expr := p.expr(.lowest)!
 	typ := p.infer_expr_type(expr)
 
+	// FIXME: gen of nested or blocks; use register_unique afterwards (also static)
+	// TODO show all places of definition
+	if p.pkg_scope.is_known(name) {
+		p.error('redefinition of ${name}')!
+	}
+
 	p.pkg_scope.register(name, ast.ScopeObject{
 		kind = .constant
 		typ = typ
@@ -259,11 +265,18 @@ fun (mut p Parser) static_decl() !ast.StaticDecl{
 	p.check(.decl_assign)!
 	expr := p.expr(.lowest)!
 	typ := p.infer_expr_type(expr)
+
+	// FIXME: gen of nested or blocks; use register_unique afterwards (also const)
+	// TODO show all places of definition
+	if p.pkg_scope.is_known(name) {
+		p.error('redefinition of ${name}')!
+	}
 	p.pkg_scope.register(name, ast.ScopeObject{
 		is_mut = true
 		typ = typ
 		kind = .static_
 	})
+
 	return ast.StaticDecl{
 		name = name
 		expr = expr

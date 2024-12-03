@@ -46,8 +46,17 @@ pub fun (mut t Table) get_pkg_scope(pkg string, parent &Scope) &Scope {
 	return s
 }
 
-// Register an object in the selected scope. Does not check for duplicates!
+// Register an object in the selected scope
 pub fun (s Scope) register(name string, obj ScopeObject) {
+	s.objects[name] = obj
+}
+
+// Register an object but error for duplicates
+pub fun (s Scope) register_unique(name string, obj ScopeObject) ! {
+	if s.objects.contains(name) {
+		return error('redefinition of ${name}')
+	}
+
 	s.objects[name] = obj
 }
 

@@ -1,2 +1,2 @@
-static my_var := true
-static my_var := 3.14
+static my_static := true
+static my_static := 3.14
