@@ -159,7 +159,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	}
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
-		obj = c.table.scopes[node.pkg].get(node.name)
+		obj = c.table.scopes[c.pkg].get(node.name)
 	}
 
 	// TMP
@@ -181,7 +181,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	if obj.kind == .constant or obj.kind == .static_ {
 		if not node.name.contains('.') {
 			if obj.pkg == "" {
-				node.name = node.pkg + '.' + node.name
+				node.name = c.pkg + '.' + node.name
 			} else {
 				node.name = obj.pkg + '.' + node.name
 			}

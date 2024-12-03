@@ -245,9 +245,11 @@ pub struct HashExpr {
 }
 
 pub struct Ident {
-	global name string // TODO SCOPES should only be name
+	global name string // TMP
+	pub true_name string
 	global is_mut bool
-	pub pkg string // TODO SCOPES should contain expr_pkg
+	pub pkg string // TMP
+	pub true_pkg string
 	pub pos token.Pos
 	pub lang Language
 }
