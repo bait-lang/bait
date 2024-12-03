@@ -254,12 +254,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 
 fun (mut p Parser) static_decl() !ast.StaticDecl{
 	pos := p.pos
-	if p.tok == .key_global {
-		p.warn("`global` will soon be removed, use `static` instead")
-		p.next()
-	} else {
-		p.check(.key_static)!
-	}
+	p.check(.key_static)!
 	name := p.check_name()!
 	p.check(.decl_assign)!
 	expr := p.expr(.lowest)!
