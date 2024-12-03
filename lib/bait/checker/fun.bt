@@ -444,11 +444,13 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 	}
 
 	c.is_or_block = true
+	c.open_scope()
 	c.scope.register('err', ast.ScopeObject{
 		kind = .variable
 		typ = ast.STRING_TYPE
 	})
 	c.stmts(node.or_block.stmts)
+	c.close_scope()
 	c.is_or_block = false
 
 	if ret_sym.parent != ast.VOID_TYPE {

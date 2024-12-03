@@ -12,8 +12,8 @@ pub struct ScopeObject{
 	global typ Type
 	pub mut is_pub bool
 	pub mut is_mut bool
-	pub mut pkg string // TODO SCOPES move this into Scope
-	pub mut expr Expr := InvalidExpr{} // Only for constants. Allows resolving their type early
+	pub mut pkg string // TODO SCOPES move this into Scope (requires multi return)
+	pub mut expr Expr := Void{} // Only for constants. Allows resolving their type early
 }
 
 pub enum ObjectKind {
@@ -47,9 +47,6 @@ pub fun (mut t Table) get_pkg_scope(pkg string, parent &Scope) &Scope {
 }
 
 pub fun (s Scope) register(name string, obj ScopeObject) {
-	if s.objects.contains(name) {
-		return
-	}
 	s.objects[name] = obj
 }
 
