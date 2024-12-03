@@ -152,21 +152,21 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 // TODO SCOPES cleanup and add comments
 // TODO SCOPES reduce lookups if node is from imported pkg / FFI
 fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
-	mut obj := c.scope.get(node.mixed_name)
+	mut obj := c.scope.get_parent(node.mixed_name)
 
 	if node.lang != .bait {
-		obj = c.table.ffi_scope.get(node.mixed_name)
+		obj = c.table.ffi_scope.get_parent(node.mixed_name)
 	}
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
-		obj = c.table.scopes[c.pkg].get(node.mixed_name)
+		obj = c.table.scopes[c.pkg].get_parent(node.mixed_name)
 	}
 
 	// TMP
 	if obj.typ == ast.PLACEHOLDER_TYPE and node.mixed_name.contains(".") {
 		pkg_part := node.mixed_name.all_before_last(".")
 		name_part := node.mixed_name.all_after_last(".")
-		obj = c.table.scopes[pkg_part].get(name_part)
+		obj = c.table.scopes[pkg_part].get_parent(name_part)
 	}
 
 	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {

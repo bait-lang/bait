@@ -25,7 +25,7 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 
 	left := node.left as ast.Ident
 	if c.scope.is_known(left.mixed_name) {
-		obj := c.scope.get(left.mixed_name)
+		obj := c.scope.get_parent(left.mixed_name)
 		msg := if obj.kind == .package_ {
 			'cannot shadow import "${left.mixed_name}"'
 		} else {

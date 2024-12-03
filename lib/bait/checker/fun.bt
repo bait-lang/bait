@@ -32,7 +32,7 @@ fun (mut c Checker) fun_decl(mut node ast.FunDecl) {
 			}
 		}
 	} else {
-		def := c.scope.get(node.name)
+		def := c.scope.get_parent(node.name)
 		if def.kind == .function {
 			c.redefined_funs.push(node.name)
 		} else if def.kind != .unknown {
@@ -97,7 +97,7 @@ fun (mut c Checker) fun_instance(mut node ast.FunDecl) {
 fun (c Checker) fun_params(params []ast.Param){
 	for p in params {
 		if c.scope.is_known(p.name) {
-			obj := c.scope.get(p.name)
+			obj := c.scope.get_parent(p.name)
 			msg := if obj.kind == .package_ {
 				'cannot shadow import "${p.name}"'
 			} else {
@@ -159,7 +159,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 		}
 	}
 	if not found {
-		obj := c.scope.get(node.name)
+		obj := c.scope.get_parent(node.name)
 		if obj.kind == .function {
 			found = true
 		}

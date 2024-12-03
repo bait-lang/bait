@@ -197,7 +197,7 @@ fun (c Checker) loop_control_stmt(node ast.LoopControlStmt) {
 		return
 	}
 
-	obj := c.scope.get(node.label)
+	obj := c.scope.get_parent(node.label)
 	if obj.kind != .label {
 		c.error('label "${node.label}" not found', node.pos)
 	}

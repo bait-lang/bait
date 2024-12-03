@@ -46,6 +46,7 @@ pub fun (mut t Table) get_pkg_scope(pkg string, parent &Scope) &Scope {
 	return s
 }
 
+// Register an object in the selected scope. Does not check for duplicates!
 pub fun (s Scope) register(name string, obj ScopeObject) {
 	s.objects[name] = obj
 }
@@ -54,8 +55,17 @@ pub fun (s Scope) get(name string) ScopeObject {
 	if s.objects.contains(name) {
 		return s.objects[name]
 	}
+	return ScopeObject{
+		kind = .unknown
+	}
+}
+
+pub fun (s Scope) get_parent(name string) ScopeObject {
+	if s.objects.contains(name) {
+		return s.objects[name]
+	}
 	if s.parent != 0 as Scope {
-		return s.parent.get(name)
+		return s.parent.get_parent(name)
 	}
 	return ScopeObject{
 		kind = .unknown
@@ -63,7 +73,7 @@ pub fun (s Scope) get(name string) ScopeObject {
 }
 
 pub fun (s Scope) update_type(name string, typ Type) {
-	mut obj := s.get(name)
+	mut obj := s.get_parent(name)
 	// FIXME `obj` should be a copy on js backend and below code not modify the original
 	// obj.typ = typ
 	// s.objects[name] = obj
@@ -77,6 +87,6 @@ pub fun (s Scope) update_type(name string, typ Type) {
 }
 
 pub fun (s Scope) is_known(name string) bool {
-	obj := s.get(name)
+	obj := s.get_parent(name)
 	return obj.kind != .unknown
 }
