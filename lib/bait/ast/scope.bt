@@ -12,7 +12,7 @@ pub struct ScopeObject{
 	global typ Type
 	pub mut is_pub bool
 	pub mut is_mut bool
-	pub mut pkg string // TODO SCOPES remove this
+	pub mut pkg string // TODO SCOPES move this into Scope
 	pub mut expr Expr := InvalidExpr{} // Only for constants. Allows resolving their type early
 }
 

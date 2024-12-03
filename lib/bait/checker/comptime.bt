@@ -14,7 +14,7 @@ fun (mut c Checker) comptime_if_condition(node ast.Expr) bool {
 	// match ...
 
 	if node is ast.Ident {
-		match node.name {
+		match node.mixed_name {
 			// Backend
 			'C' { return c.prefs.backend == .c }
 			'JS' { return c.prefs.backend == .js }
@@ -23,7 +23,7 @@ fun (mut c Checker) comptime_if_condition(node ast.Expr) bool {
 			'WINDOWS' { return c.prefs.os == .windows }
 			// Error
 			else {
-				c.error('invalid $if condition "${node.name}"', node.pos)
+				c.error('invalid $if condition "${node.mixed_name}"', node.pos)
 				return false
 			}
 		}

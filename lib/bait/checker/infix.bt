@@ -56,25 +56,25 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 	// Smartcast variable
 	if node.left is ast.Ident {
 		mut right := node.right as ast.Ident
-		if not right.name.contains('.') and right.pkg != 'main' {
-			right.name = right.pkg + '.' + right.name
+		if not right.mixed_name.contains('.') and right.pkg != 'main' {
+			right.mixed_name = right.pkg + '.' + right.mixed_name
 		}
-		node.right_type = c.table.get_idx(right.name)
+		node.right_type = c.table.get_idx(right.mixed_name)
 		left := node.left as ast.Ident
-		c.scope.update_type(left.name, node.right_type)
+		c.scope.update_type(left.mixed_name, node.right_type)
 		return ast.BOOL_TYPE
 	}
 
 	// Smartcast struct field
 	if node.left is ast.SelectorExpr {
 		mut right := node.right as ast.Ident
-		if not right.name.contains('.') and right.pkg != 'main' {
-			right.name = right.pkg + '.' + right.name
+		if not right.mixed_name.contains('.') and right.pkg != 'main' {
+			right.mixed_name = right.pkg + '.' + right.mixed_name
 		}
-		node.right_type = c.table.get_idx(right.name)
+		node.right_type = c.table.get_idx(right.mixed_name)
 		left := node.left as ast.SelectorExpr
-		name := (left.expr as ast.Ident).name + '.' + left.field_name
-		c.scope.update_type(name, node.right_type)
+		mixed_name := (left.expr as ast.Ident).mixed_name + '.' + left.field_name
+		c.scope.update_type(mixed_name, node.right_type)
 		return ast.BOOL_TYPE
 	}
 

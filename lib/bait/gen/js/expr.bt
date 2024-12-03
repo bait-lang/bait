@@ -130,11 +130,11 @@ fun (mut g Gen) hash_expr(node ast.HashExpr) {
 
 fun (mut g Gen) ident(node ast.Ident) {
 	if node.lang == .js {
-		g.write(node.name)
+		g.write(node.mixed_name)
 		return
 	}
 
-	g.write(js_esc(node.name))
+	g.write(js_esc(node.mixed_name))
 }
 
 fun (mut g Gen) integer_literal(node ast.IntegerLiteral){

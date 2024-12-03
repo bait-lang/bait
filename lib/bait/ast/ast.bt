@@ -243,11 +243,9 @@ pub struct HashExpr {
 }
 
 pub struct Ident {
-	global name string // TMP
-	pub true_name string
+	global mixed_name string // TMP
 	global is_mut bool
 	pub pkg string // TMP
-	pub true_pkg string
 	pub pos token.Pos
 	pub lang Language
 }
