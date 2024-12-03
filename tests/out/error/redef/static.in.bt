@@ -1,0 +1,2 @@
+static my_static := true
+static my_static := 3.14

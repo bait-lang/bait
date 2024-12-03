@@ -108,7 +108,7 @@ fun (mut c Checker) as_cast(mut node ast.AsCast) ast.Type {
 	// TODO check if expr is part of target
 	if expr_sym.kind == .sum_type and node.expr is ast.Ident {
 		expr := node.expr as ast.Ident
-		c.scope.update_type(expr.name, node.target)
+		c.scope.update_type(expr.mixed_name, node.target)
 	}
 
 	return node.target
@@ -152,25 +152,25 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 // TODO SCOPES cleanup and add comments
 // TODO SCOPES reduce lookups if node is from imported pkg / FFI
 fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
-	mut obj := c.scope.get(node.name)
+	mut obj := c.scope.get_parent(node.mixed_name)
 
 	if node.lang != .bait {
-		obj = c.table.ffi_scope.get(node.name)
+		obj = c.table.ffi_scope.get_parent(node.mixed_name)
 	}
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
-		obj = c.table.scopes[node.pkg].get(node.name)
+		obj = c.table.scopes[c.pkg].get_parent(node.mixed_name)
 	}
 
 	// TMP
-	if obj.typ == ast.PLACEHOLDER_TYPE and node.name.contains(".") {
-		pkg_part := node.name.all_before_last(".")
-		name_part := node.name.all_after_last(".")
-		obj = c.table.scopes[pkg_part].get(name_part)
+	if obj.typ == ast.PLACEHOLDER_TYPE and node.mixed_name.contains(".") {
+		pkg_part := node.mixed_name.all_before_last(".")
+		name_part := node.mixed_name.all_after_last(".")
+		obj = c.table.scopes[pkg_part].get_parent(name_part)
 	}
 
 	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
-		c.error('const ${node.name} is private', node.pos)
+		c.error('const ${node.mixed_name} is private', node.pos)
 	}
 
 	// unresolved constant
@@ -179,17 +179,17 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	}
 
 	if obj.kind == .constant or obj.kind == .static_ {
-		if not node.name.contains('.') {
+		if not node.mixed_name.contains('.') {
 			if obj.pkg == "" {
-				node.name = node.pkg + '.' + node.name
+				node.mixed_name = c.pkg + '.' + node.mixed_name
 			} else {
-				node.name = obj.pkg + '.' + node.name
+				node.mixed_name = obj.pkg + '.' + node.mixed_name
 			}
 		}
 	}
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
-		c.error('undefined identifier ${node.name}', node.pos)
+		c.error('undefined identifier ${node.mixed_name}', node.pos)
 	}
 
 	node.is_mut = obj.is_mut

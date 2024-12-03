@@ -12,8 +12,8 @@ pub struct ScopeObject{
 	global typ Type
 	pub mut is_pub bool
 	pub mut is_mut bool
-	pub mut pkg string // TODO SCOPES remove this
-	pub mut expr Expr := InvalidExpr{} // Only for constants. Allows resolving their type early
+	pub mut pkg string // TODO SCOPES move this into Scope (requires multi return)
+	pub mut expr Expr := Void{} // Only for constants. Allows resolving their type early
 }
 
 pub enum ObjectKind {
@@ -46,10 +46,17 @@ pub fun (mut t Table) get_pkg_scope(pkg string, parent &Scope) &Scope {
 	return s
 }
 
+// Register an object in the selected scope
 pub fun (s Scope) register(name string, obj ScopeObject) {
+	s.objects[name] = obj
+}
+
+// Register an object but error for duplicates
+pub fun (s Scope) register_unique(name string, obj ScopeObject) ! {
 	if s.objects.contains(name) {
-		return
+		return error('redefinition of ${name}')
 	}
+
 	s.objects[name] = obj
 }
 
@@ -57,8 +64,17 @@ pub fun (s Scope) get(name string) ScopeObject {
 	if s.objects.contains(name) {
 		return s.objects[name]
 	}
+	return ScopeObject{
+		kind = .unknown
+	}
+}
+
+pub fun (s Scope) get_parent(name string) ScopeObject {
+	if s.objects.contains(name) {
+		return s.objects[name]
+	}
 	if s.parent != 0 as Scope {
-		return s.parent.get(name)
+		return s.parent.get_parent(name)
 	}
 	return ScopeObject{
 		kind = .unknown
@@ -66,7 +82,7 @@ pub fun (s Scope) get(name string) ScopeObject {
 }
 
 pub fun (s Scope) update_type(name string, typ Type) {
-	mut obj := s.get(name)
+	mut obj := s.get_parent(name)
 	// FIXME `obj` should be a copy on js backend and below code not modify the original
 	// obj.typ = typ
 	// s.objects[name] = obj
@@ -80,6 +96,6 @@ pub fun (s Scope) update_type(name string, typ Type) {
 }
 
 pub fun (s Scope) is_known(name string) bool {
-	obj := s.get(name)
+	obj := s.get_parent(name)
 	return obj.kind != .unknown
 }

@@ -1,0 +1,2 @@
+const MY_CONST := 123
+const MY_CONST := 'foo'

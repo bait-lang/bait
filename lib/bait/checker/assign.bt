@@ -24,18 +24,18 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 	}
 
 	left := node.left as ast.Ident
-	if c.scope.is_known(left.name) {
-		obj := c.scope.get(left.name)
+	if c.scope.is_known(left.mixed_name) {
+		obj := c.scope.get_parent(left.mixed_name)
 		msg := if obj.kind == .package_ {
-			'cannot shadow import "${left.name}"'
+			'cannot shadow import "${left.mixed_name}"'
 		} else {
-			'redefinition of ${left.name}'
+			'redefinition of ${left.mixed_name}'
 		}
 		c.error(msg, node.pos)
 		return
 	}
 
-	c.scope.register(left.name, ast.ScopeObject{
+	c.scope.register(left.mixed_name, ast.ScopeObject{
 		kind = .variable
 		typ = typ
 		is_mut = left.is_mut
@@ -66,7 +66,7 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 	if node.left is ast.Ident {
 		left := node.left as ast.Ident
 		if not left.is_mut {
-			c.error('cannot assign to immutable variable "${left.name}"', left.pos)
+			c.error('cannot assign to immutable variable "${left.mixed_name}"', left.pos)
 			return
 		}
 	} else if node.left is ast.SelectorExpr {
@@ -85,7 +85,7 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 		if left.expr is ast.Ident {
 			lident := left.expr as ast.Ident
 			if not lident.is_mut {
-				c.error('cannot assign to field of immutable variable `${lident.name}`', node.pos)
+				c.error('cannot assign to field of immutable variable `${lident.mixed_name}`', node.pos)
 				return
 			}
 		}

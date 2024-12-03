@@ -278,11 +278,12 @@ fun (mut p Parser) ident(lang ast.Language) !ast.Ident{
 	if p.is_for_init {
 		is_mut = true
 	}
-	name := p.prepend_expr_pkg(p.check_name()!)
+	name := p.check_name()!
+	mixed_name := p.prepend_expr_pkg(name)
 	return ast.Ident{
-		name = name
+		mixed_name = mixed_name
+		file_pkg = p.pkg_name
 		is_mut = is_mut
-		pkg = p.pkg_name
 		pos = pos
 		lang = lang
 	}
