@@ -172,13 +172,12 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		return ast.PLACEHOLDER_TYPE
 	}
 
-	// TODO further cleanup and comments below
-
+	// Check const visibility
 	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
-		c.error('const ${node.mixed_name} is private', node.pos)
+		c.error('const ${node.with_pkg()} is private', node.pos)
 	}
 
-	// unresolved constant
+	// Resolve const / static
 	if obj.typ == ast.VOID_TYPE {
 		obj.typ = c.expr(obj.expr)
 	}
