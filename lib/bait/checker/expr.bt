@@ -182,7 +182,6 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		if obj.pkg == "" {
 			node.mixed_name = c.pkg + '.' + node.name
 		} else {
-			// TODO SCOPES do not break C consts here
 			node.mixed_name = obj.pkg + '.' + node.name
 		}
 	}
