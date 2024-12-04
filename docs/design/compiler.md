@@ -33,18 +33,24 @@ graph TD
 ### Scopes
 #### Foreign Functions Interface (FFI)
 - **Purpose:** Store all C / JS declarations depending on the used backend
-- **Storage:** `table.Table.ffi_scope &ast.Scope`
+- **Storage:**
+  - `table.Table.ffi_scope &ast.Scope`
+  - Key: `"LANG.import.decl_name"`
+  - ScopeObject
+    ```bait
+    is_pub = true
+    ```
 - **Contents:** consts
-- **Relevant ScopeObject fields**
-  ```bait
-  name = "LANG.import.decl_name"
-  is_pub = true
-  ```
 
 #### Package Scopes
 - **Purpose:** Store toplevel declarations and their visibility
 - **Storage:** `table.Table.scopes map["full.pkg"]&ast.Scope`
 - **Contents:** globals, consts
+
+#### Block Scopes
+- **Purpose:** Store local symbols
+- **Contents:** _TODO_
+
 
 ### References
 - [GH-246](https://github.com/bait-lang/bait/issues/246)
