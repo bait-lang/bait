@@ -4,6 +4,7 @@ package ast
 
 pub struct Table {
 	// TODO SCOPES consider moving ffi_scope, scopes into new struct that is only shared between parser and checker
+	// TODO SCOPES make ffi_scope a map too
 	pub mut ffi_scope &Scope // Contains the C or JS declarations depending on the backend
 	pub mut scopes map[string]&Scope
 	pub mut fun_decls map[string]FunDecl

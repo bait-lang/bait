@@ -148,7 +148,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 		// TODO SCOPES consider not prepending lang. Requires changes to p.hash_expr: do not set expr_pkg and all other FFI constructs
 		p.table.ffi_scope.register(lang.prepend_to(ffi_name), ast.ScopeObject{
 			kind = .constant
-			pkg = ffi_pkg
+			pkg = lang.prepend_to(ffi_pkg)
 			typ = typ
 			is_pub = true // TODO rethink ffi pub behaviour (pub by default + warn on pub keyword OR require pub keyword)
 		})
