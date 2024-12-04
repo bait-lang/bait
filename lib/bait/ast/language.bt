@@ -23,3 +23,11 @@ pub fun prefix_to_lang(p string) Language {
 		else { .bait }
 	}
 }
+
+pub fun (l Language) str() string {
+	return match l {
+		.bait { "bait" }
+		.c { "C" }
+		.js { "JS" }
+	}
+}

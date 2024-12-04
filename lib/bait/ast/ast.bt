@@ -104,6 +104,10 @@ pub struct Param {
 	pub pos token.Pos
 }
 
+pub fun (fn FunDecl) is_main() bool {
+	return not fn.is_method and fn.name == 'main'
+}
+
 pub struct LoopControlStmt {
 	pub kind token.Token
 	pub label string
@@ -243,11 +247,21 @@ pub struct HashExpr {
 }
 
 pub struct Ident {
+	pub name string
+	pub pkg string
 	global mixed_name string // TMP
 	global is_mut bool
 	pub file_pkg string // TMP
 	pub pos token.Pos
 	pub lang Language
+}
+
+pub fun (node Ident) with_pkg() string {
+	if node.pkg.length == 0 {
+		return node.name
+	}
+
+	return node.pkg + "." + node.name
 }
 
 pub struct IfMatch {
@@ -376,8 +390,4 @@ pub struct File {
 	pub pkg_name string // Full package name
 	pub imports []Import
 	pub stmts []Stmt
-}
-
-pub fun (fn FunDecl) is_main() bool {
-	return not fn.is_method and fn.name == 'main'
 }

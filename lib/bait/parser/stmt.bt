@@ -127,25 +127,26 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	p.next()
 
 	lang := p.parse_lang()!
-	mut name := ''
 
-	// foreign package, e.g. `#JS.process.argv`
+	// Foreign package, e.g. `process` from `#JS.process.argv`
+	mut ffi_pkg := lang.str()
 	if lang == .js and p.peek() == .dot {
-		name = p.check_name()! + '.'
+		ffi_pkg += "." + p.check_name()!
 		p.next()
 	}
 
-	// actual const name
-	name += p.check_name()!
+	// Actual const name
+	name := p.check_name()!
 
 	p.check(.decl_assign)!
 
 	if lang != .bait {
 		typ := p.parse_type()!
 
-		// TODO SCOPES consider not prepending lang. Requires changes to p.hash_expr: do not set expr_pkg and all other FFI constructs
-		p.table.ffi_scope.register(lang.prepend_to(name), ast.ScopeObject{
+		ffi_scope := p.table.get_root_scope(ffi_pkg)
+		ffi_scope.register(name, ast.ScopeObject{
 			kind = .constant
+			pkg = ffi_pkg
 			typ = typ
 			is_pub = true // TODO rethink ffi pub behaviour (pub by default + warn on pub keyword OR require pub keyword)
 		})
@@ -159,26 +160,23 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	}
 
 	expr := p.expr(.lowest)!
-	typ := p.infer_expr_type(expr)
 
 	// FIXME: gen of nested or blocks; use register_unique afterwards (also static)
 	// TODO show all places of definition
 	if p.pkg_scope.is_known(name) {
 		p.error('redefinition of ${name}')!
 	}
-
 	p.pkg_scope.register(name, ast.ScopeObject{
 		kind = .constant
-		typ = typ
-		is_pub = is_pub
 		pkg = p.pkg_name
+		is_pub = is_pub
 		expr = expr
+		typ = ast.VOID_TYPE
 	})
 
 	return ast.ConstDecl{
 		name = name
 		expr = expr
-		typ = typ
 		pos = pos
 		lang = lang
 	}
@@ -264,7 +262,6 @@ fun (mut p Parser) static_decl() !ast.StaticDecl{
 	name := p.check_name()!
 	p.check(.decl_assign)!
 	expr := p.expr(.lowest)!
-	typ := p.infer_expr_type(expr)
 
 	// FIXME: gen of nested or blocks; use register_unique afterwards (also const)
 	// TODO show all places of definition
@@ -272,9 +269,10 @@ fun (mut p Parser) static_decl() !ast.StaticDecl{
 		p.error('redefinition of ${name}')!
 	}
 	p.pkg_scope.register(name, ast.ScopeObject{
-		is_mut = true
-		typ = typ
 		kind = .static_
+		is_mut = true
+		expr = expr
+		typ = ast.VOID_TYPE
 	})
 
 	return ast.StaticDecl{

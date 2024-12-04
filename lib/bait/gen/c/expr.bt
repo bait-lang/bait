@@ -108,11 +108,12 @@ fun (mut g Gen) hash_expr(node ast.HashExpr) {
 }
 
 fun (mut g Gen) ident(node ast.Ident) {
-	if node.lang == .bait {
-		g.write(c_esc(node.mixed_name))
+	if node.lang != .bait {
+		g.write(node.mixed_name.replace('C.', ''))
 		return
 	}
-	g.write(node.mixed_name.replace('C.', ''))
+
+	g.write(c_esc(node.mixed_name))
 }
 
 fun (mut g Gen) index_expr(node ast.IndexExpr) {

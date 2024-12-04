@@ -13,7 +13,7 @@ pub struct ScopeObject{
 	pub mut is_pub bool
 	pub mut is_mut bool
 	pub mut pkg string // TODO SCOPES move this into Scope (requires multi return)
-	pub mut expr Expr := Void{} // Only for constants. Allows resolving their type early
+	pub mut expr Expr := Void{} // const / static: resolve type on use
 }
 
 pub enum ObjectKind {
@@ -27,9 +27,13 @@ pub enum ObjectKind {
 }
 
 pub fun (mut t Table) create_scopes(pkg_name string) &Scope {
-	builtin_scope := t.get_pkg_scope("builtin", 0 as any)
+	builtin_scope := t.get_root_scope("builtin")
 	pkg_scope := t.get_pkg_scope(pkg_name, builtin_scope)
 	return pkg_scope
+}
+
+pub fun (mut t Table) get_root_scope(pkg string) &Scope {
+	return t.get_pkg_scope(pkg, 0 as any)
 }
 
 pub fun (mut t Table) get_pkg_scope(pkg string, parent &Scope) &Scope {
@@ -81,11 +85,13 @@ pub fun (s Scope) get_parent(name string) ScopeObject {
 	}
 }
 
-pub fun (s Scope) update_type(name string, typ Type) {
-	mut obj := s.get_parent(name)
+pub fun (mut s Scope) update_type(name string, typ Type) {
 	// FIXME `obj` should be a copy on js backend and below code not modify the original
 	// obj.typ = typ
 	// s.objects[name] = obj
+
+	// Smarcasting requires search in parents but insert in current scope
+	obj := s.get_parent(name)
 	s.objects[name] = ScopeObject{
 		typ = typ
 		kind = obj.kind

@@ -149,50 +149,47 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 	return ast.VOID_TYPE
 }
 
-// TODO SCOPES cleanup and add comments
-// TODO SCOPES reduce lookups if node is from imported pkg / FFI
-fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
-	mut obj := c.scope.get_parent(node.mixed_name)
-
-	if node.lang != .bait {
-		obj = c.table.ffi_scope.get_parent(node.mixed_name)
+fun (c Checker) find_ident(node ast.Ident) ast.ScopeObject {
+	// From imported package or FFI
+	if node.pkg.length > 0 {
+		return c.table.scopes[node.pkg].get(node.name)
 	}
+
+	// From current file or package
+	return c.scope.get_parent(node.name)
+}
+
+fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
+	mut obj := c.find_ident(node)
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
-		obj = c.table.scopes[c.pkg].get_parent(node.mixed_name)
+		c.error('undefined identifier ${node.with_pkg()}', node.pos)
+		return ast.PLACEHOLDER_TYPE
 	}
 
-	// TMP
-	if obj.typ == ast.PLACEHOLDER_TYPE and node.mixed_name.contains(".") {
-		pkg_part := node.mixed_name.all_before_last(".")
-		name_part := node.mixed_name.all_after_last(".")
-		obj = c.table.scopes[pkg_part].get_parent(name_part)
-	}
-
+	// Check const visibility
 	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
-		c.error('const ${node.mixed_name} is private', node.pos)
+		c.error('const ${node.with_pkg()} is private', node.pos)
 	}
 
-	// unresolved constant
+	// const/static: Resolve type
 	if obj.typ == ast.VOID_TYPE {
 		obj.typ = c.expr(obj.expr)
 	}
 
+	// const/static: Always prefix with package
 	if obj.kind == .constant or obj.kind == .static_ {
-		if not node.mixed_name.contains('.') {
-			if obj.pkg == "" {
-				node.mixed_name = c.pkg + '.' + node.mixed_name
-			} else {
-				node.mixed_name = obj.pkg + '.' + node.mixed_name
-			}
+		if obj.pkg == "" {
+			node.mixed_name = c.pkg + '.' + node.name
+		} else {
+			// TODO SCOPES do not break C consts here
+			node.mixed_name = obj.pkg + '.' + node.name
 		}
 	}
 
-	if obj.typ == ast.PLACEHOLDER_TYPE {
-		c.error('undefined identifier ${node.mixed_name}', node.pos)
-	}
-
+	// Set mutability for other checks
 	node.is_mut = obj.is_mut
+
 	return obj.typ
 }
 
