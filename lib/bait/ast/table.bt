@@ -3,10 +3,8 @@
 package ast
 
 pub struct Table {
-	// TODO SCOPES consider moving ffi_scope, scopes into new struct that is only shared between parser and checker
-	// TODO SCOPES make ffi_scope a map too
-	pub mut ffi_scope &Scope // Contains the C or JS declarations depending on the backend
-	pub mut scopes map[string]&Scope
+	// TODO SCOPES consider moving scopes into new struct that is only shared between parser and checker
+	pub mut scopes map[string]&Scope // Pakcage and FFI scopes
 	pub mut fun_decls map[string]FunDecl
 	pub mut type_idxs map[string]Type
 	pub mut type_symbols []TypeSymbol
@@ -17,11 +15,7 @@ pub struct Table {
 }
 
 pub fun new_table() Table {
-	mut t := Table{
-		ffi_scope = Scope{
-			parent = 0 as any
-		}
-	}
+	mut t := Table{}
 	t.register_builtins()
 	return t
 }

@@ -150,12 +150,7 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 }
 
 fun (c Checker) find_ident(node ast.Ident) ast.ScopeObject {
-	// FFI
-	if node.lang != .bait {
-		return c.table.ffi_scope.get(node.with_pkg())
-	}
-
-	// From imported package
+	// From imported package or FFI
 	if node.pkg.length > 0 {
 		return c.table.scopes[node.pkg].get(node.name)
 	}
@@ -187,6 +182,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		if obj.pkg == "" {
 			node.mixed_name = c.pkg + '.' + node.name
 		} else {
+			// TODO SCOPES do not break C consts here
 			node.mixed_name = obj.pkg + '.' + node.name
 		}
 	}

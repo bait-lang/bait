@@ -34,8 +34,7 @@ graph TD
 #### Foreign Functions Interface (FFI)
 - **Purpose:** Store all C / JS declarations depending on the used backend
 - **Storage:**
-  - `table.Table.ffi_scope &ast.Scope`
-  - Key: `"LANG.foreign_pkg.decl_name"`
+  - `table.Table.scopes["LANG.foreign_pkg"]`
   - ScopeObject
     ```bait
     pkg = "foreign_pkg"
@@ -45,7 +44,7 @@ graph TD
 
 #### Package Scopes
 - **Purpose:** Store toplevel declarations and their visibility
-- **Storage:** `table.Table.scopes map["full.pkg"]&ast.Scope`
+- **Storage:** `table.Table.scopes["full.pkg"]`
 - **Contents:** globals, consts
 
 #### Block Scopes
