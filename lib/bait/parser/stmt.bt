@@ -127,31 +127,34 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	p.next()
 
 	lang := p.parse_lang()!
-	mut name := ''
 
-	// foreign package, e.g. `#JS.process.argv`
+	// Foreign package, e.g. `process` from `#JS.process.argv`
+	mut ffi_pkg := ""
 	if lang == .js and p.peek() == .dot {
-		name = p.check_name()! + '.'
+		ffi_pkg = p.check_name()!
 		p.next()
 	}
 
-	// actual const name
-	name += p.check_name()!
+	// Actual const name
+	name := p.check_name()!
 
 	p.check(.decl_assign)!
 
 	if lang != .bait {
 		typ := p.parse_type()!
 
+		ffi_name := if ffi_pkg.length > 0 { ffi_pkg + '.' + name } else { name }
+
 		// TODO SCOPES consider not prepending lang. Requires changes to p.hash_expr: do not set expr_pkg and all other FFI constructs
-		p.table.ffi_scope.register(lang.prepend_to(name), ast.ScopeObject{
+		p.table.ffi_scope.register(lang.prepend_to(ffi_name), ast.ScopeObject{
 			kind = .constant
+			pkg = ffi_pkg
 			typ = typ
 			is_pub = true // TODO rethink ffi pub behaviour (pub by default + warn on pub keyword OR require pub keyword)
 		})
 
 		return ast.ConstDecl{
-			name = name
+			name = ffi_name
 			typ = typ
 			pos = pos
 			lang = lang

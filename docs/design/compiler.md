@@ -35,9 +35,10 @@ graph TD
 - **Purpose:** Store all C / JS declarations depending on the used backend
 - **Storage:**
   - `table.Table.ffi_scope &ast.Scope`
-  - Key: `"LANG.import.decl_name"`
+  - Key: `"LANG.foreign_pkg.decl_name"`
   - ScopeObject
     ```bait
+    pkg = "foreign_pkg"
     is_pub = true
     ```
 - **Contents:** consts
