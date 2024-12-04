@@ -1,0 +1,10 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+fun test_values() {
+	assert LATE_CONST == 1
+	assert typeof(LATE_VAR) == "[]string"
+}
+
+const LATE_CONST := 1
+static LATE_VAR := ["a", "b"]
