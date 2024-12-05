@@ -18,7 +18,7 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 		return true
 	}
 
-	if expected.idx() == 1 and expected.get_nr_amp() >= 1 and got.get_nr_amp() >= 1 {
+	if expected.idx() == ast.VOID_TYPE as i32 and expected.get_nr_amp() >= 1 and got.get_nr_amp() >= 1 {
 		return true
 	}
 
