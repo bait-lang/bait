@@ -123,26 +123,27 @@ fun (mut c Checker) enum_val(mut node ast.EnumVal) ast.Type {
 	sym := c.table.get_sym(node.typ)
 	if sym.kind == .placeholder {
 		c.error('undefined enum ${node.name}', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 	if sym.kind != .enum_ {
 		c.error('expected type is not an enum, got ${sym.name}', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 	if not sym.is_pub and sym.name.contains('.') and sym.pkg != c.pkg {
 		c.error('enum ${sym.name} is private', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 	info := sym.info as ast.EnumInfo
 	if not info.vals.contains(node.val) {
 		c.error('enum ${sym.name} has no value ${node.val}', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 	node.name = sym.name
 	return node.typ
 }
 
 fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
+	// TODO adjust for C backend
 	if node.lang == .js and not c.is_js_file {
 		c.warn('JS code can only be used in .js.bt files', node.pos)
 	}
@@ -164,7 +165,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
 		c.error('undefined identifier ${node.with_pkg()}', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 
 	// Check const visibility
@@ -269,18 +270,18 @@ fun (mut c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
 	// TODO disallow on unsigned numbers too
 	if node.op == .minus and sym.kind != .number {
 		c.error('cannot negate ${c.table.type_name(typ)}', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 
 	if node.op == .key_not and typ != ast.BOOL_TYPE {
 		c.error('cannot use `not` on ${c.table.type_name(typ)}', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 
 	if node.op == .mul {
 		if typ.get_nr_amp() == 0 {
 			c.error('cannot dereference ${c.table.type_name(typ)}', node.pos)
-			return ast.PLACEHOLDER_TYPE
+			return ast.ERROR_TYPE
 		}
 
 		return typ.set_nr_amp(typ.get_nr_amp() - 1)
@@ -303,7 +304,7 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
 			c.error('${sym.name} has no field ${node.field_name}', node.pos)
-			return ast.PLACEHOLDER_TYPE
+			return ast.ERROR_TYPE
 		}
 
 		if not field.is_pub and sym.pkg != c.pkg {
@@ -327,7 +328,7 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 	}
 
 	c.error('cannot select from ${c.table.type_name(node.expr_type)}', node.pos)
-	return ast.PLACEHOLDER_TYPE
+	return ast.ERROR_TYPE
 }
 
 fun (c Checker) string_literal(node ast.StringLiteral) ast.Type {

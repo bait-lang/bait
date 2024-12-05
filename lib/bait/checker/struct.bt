@@ -54,11 +54,11 @@ fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 	mut sym := c.table.unwrap_generic(gen_sym)
 	if sym.kind == .placeholder {
 		c.error('undefined struct ${node.name}', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 	if not sym.is_pub and sym.name.contains('.') and sym.pkg != c.pkg {
 		c.error('struct ${sym.name} is private', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 
 	c.check_init_field_values(node, sym.info as ast.StructInfo)
@@ -72,8 +72,7 @@ fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 		}
 		c.expected_type = def.typ
 		expr_type := c.expr(field.expr)
-		if def.typ == ast.PLACEHOLDER_TYPE {
-			// Another error was already raised
+		if def.typ == ast.ERROR_TYPE {
 			continue
 		}
 		if not c.check_types(expr_type, def.typ) {

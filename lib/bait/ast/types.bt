@@ -97,7 +97,9 @@ pub fun (sym TypeSymbol) find_field(name string, t Table) StructField {
 		return parent_sym.find_field(name, t)
 	}
 
-	return StructField{}
+	return StructField{
+		typ = ERROR_TYPE
+	}
 }
 
 pub fun (sym TypeSymbol) has_method(name string) bool {
@@ -112,7 +114,7 @@ pub fun (sym TypeSymbol) has_method(name string) bool {
 pub fun (t Table) register_builtins(){
 	// IMPORTANT: Order of registration must match the order of the constants above
 	t.register_sym(TypeSymbol{ name = '_' }) // PLACEHOLDER_TYPE
-	t.register_sym(TypeSymbol{ name = '_' }) // ERROR_TYPE
+	t.register_sym(TypeSymbol{ name = '_err' }) // ERROR_TYPE
 	t.register_sym(TypeSymbol{ name = 'void' })
 	t.register_num('i8')
 	t.register_num('i16')

@@ -7,8 +7,8 @@ import bait.token
 
 fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 	node.left_type = c.expr(node.left)
-	if node.left_type == ast.PLACEHOLDER_TYPE {
-		return ast.PLACEHOLDER_TYPE
+	if node.left_type == ast.ERROR_TYPE {
+		return ast.ERROR_TYPE
 	}
 
 	c.table.needed_equality_funs.push(node.left_type)
@@ -22,6 +22,10 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 
 	c.expected_type = node.left_type
 	node.right_type = c.expr(node.right)
+	if node.right_type == ast.ERROR_TYPE {
+		return ast.ERROR_TYPE
+	}
+
 	if not c.check_types(node.right_type, node.left_type) {
 		mut err_msg := ''
 		if node.is_match {

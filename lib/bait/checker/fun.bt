@@ -166,7 +166,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 	}
 	if not found {
 		c.error('unknown function ${node.name}', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 
 	mut def := c.table.fun_decls[node.name]
@@ -208,9 +208,8 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	left_expr_type := c.expr(node.left)
 
-	if left_expr_type == ast.PLACEHOLDER_TYPE {
-		// Another error was already raised
-		return ast.PLACEHOLDER_TYPE
+	if left_expr_type == ast.ERROR_TYPE {
+		return ast.ERROR_TYPE
 	}
 
 	left_sym := c.table.get_sym(left_expr_type)
@@ -227,7 +226,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 				field_sym := c.table.get_sym(field.typ)
 				if field_sym.kind != .fun_ {
 					c.error('struct field `${field.name}` is not a method', node.pos)
-					return ast.PLACEHOLDER_TYPE
+					return ast.ERROR_TYPE
 				}
 
 				info := field_sym.info as ast.FunInfo
@@ -257,7 +256,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		}
 
 		c.error('method ${node.name} not found on type ${left_sym.name}', node.pos)
-		return ast.PLACEHOLDER_TYPE
+		return ast.ERROR_TYPE
 	}
 
 	if not def.is_pub and left_sym.pkg != c.pkg {
@@ -388,8 +387,7 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 
 		c.expected_type = param_type
 		arg.typ = c.expr(arg.expr)
-		if arg.typ == ast.VOID_TYPE and not (arg.expr is ast.CallExpr) {
-			// Another error was already raised
+		if arg.typ == ast.ERROR_TYPE or (arg.typ == ast.VOID_TYPE and not (arg.expr is ast.CallExpr)) {
 			continue
 		}
 
