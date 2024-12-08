@@ -248,15 +248,13 @@ pub struct HashExpr {
 
 pub struct Ident {
 	pub name string
-	pub pkg string
-	global mixed_name string // TMP
+	global pkg string
 	global is_mut bool
-	pub file_pkg string // TMP
 	pub pos token.Pos
 	pub lang Language
 }
 
-pub fun (node Ident) with_pkg() string {
+pub fun (node Ident) full_name() string {
 	if node.pkg.length == 0 {
 		return node.name
 	}

@@ -108,7 +108,7 @@ fun (mut c Checker) as_cast(mut node ast.AsCast) ast.Type {
 	// TODO check if expr is part of target
 	if expr_sym.kind == .sum_type and node.expr is ast.Ident {
 		expr := node.expr as ast.Ident
-		c.scope.update_type(expr.mixed_name, node.target)
+		c.scope.update_type(expr.full_name(), node.target)
 	}
 
 	return node.target
@@ -164,13 +164,13 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	mut obj := c.find_ident(node)
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
-		c.error('undefined identifier ${node.with_pkg()}', node.pos)
+		c.error('undefined identifier ${node.full_name()}', node.pos)
 		return ast.ERROR_TYPE
 	}
 
 	// Check const visibility
 	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
-		c.error('const ${node.with_pkg()} is private', node.pos)
+		c.error('const ${node.full_name()} is private', node.pos)
 	}
 
 	// const/static: Resolve type
@@ -179,12 +179,8 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	}
 
 	// const/static: Always prefix with package
-	if obj.kind == .constant or obj.kind == .static_ {
-		if obj.pkg == "" {
-			node.mixed_name = c.pkg + '.' + node.name
-		} else {
-			node.mixed_name = obj.pkg + '.' + node.name
-		}
+	if (obj.kind == .constant or obj.kind == .static_) and node.pkg == "" {
+		node.pkg = obj.pkg
 	}
 
 	// Set mutability for other checks
