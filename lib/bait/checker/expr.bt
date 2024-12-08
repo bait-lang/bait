@@ -181,7 +181,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	// const/static: Always prefix with package
 	if (obj.kind == .constant or obj.kind == .static_) and node.pkg == "" {
 		node.pkg = obj.pkg
-		node.mixed_name = obj.pkg + '.' + node.name
+		node.mixed_name = obj.pkg + '.' + node.name // TMP
 	}
 
 	// Set mutability for other checks
