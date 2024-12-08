@@ -83,7 +83,7 @@ pub fun (mut p Parser) parse_result() !ast.File {
 		}
 	}
 
-	p.pkg_scope = p.table.create_scopes(p.pkg_name)
+	p.pkg_scope = p.table.obtain_pkg_scope(p.pkg_name)
 
 	imports := p.import_stmts()!
 
