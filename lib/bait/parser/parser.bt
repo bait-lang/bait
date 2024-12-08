@@ -210,6 +210,12 @@ fun (p Parser) prepend_pkg(val string) string {
 	return p.pkg_name + '.' + val
 }
 
+fun (mut p Parser) get_expr_pkg() string {
+	pkg := p.expr_pkg
+	p.expr_pkg = ""
+	return pkg
+}
+
 fun (mut p Parser) prepend_expr_pkg(val string) string {
 	if p.expr_pkg.length == 0 or p.expr_pkg == p.pkg_name {
 		return val

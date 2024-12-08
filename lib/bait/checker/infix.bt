@@ -60,10 +60,6 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 	// Smartcast variable
 	if node.left is ast.Ident {
 		mut right := node.right as ast.Ident
-		// TMP
-		if not right.mixed_name.contains('.') and c.pkg != 'main' {
-			right.mixed_name = c.pkg + '.' + right.mixed_name
-		}
 		if right.pkg == "" and c.pkg != 'main' {
 			right.pkg = c.pkg
 		}
@@ -76,10 +72,6 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 	// Smartcast struct field
 	if node.left is ast.SelectorExpr {
 		mut right := node.right as ast.Ident
-		// TMP
-		if not right.mixed_name.contains('.') and c.pkg != 'main' {
-			right.mixed_name = c.pkg + '.' + right.mixed_name
-		}
 		if right.pkg == "" and c.pkg != 'main' {
 			right.pkg = c.pkg
 		}
