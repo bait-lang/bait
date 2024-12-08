@@ -69,7 +69,7 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 		}
 		node.right_type = c.table.get_idx(right.full_name())
 		left := node.left as ast.Ident
-		c.scope.update_type(left.mixed_name, node.right_type)
+		c.scope.update_type(left.full_name(), node.right_type)
 		return ast.BOOL_TYPE
 	}
 
@@ -85,7 +85,7 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 		}
 		node.right_type = c.table.get_idx(right.full_name())
 		left := node.left as ast.SelectorExpr
-		name := (left.expr as ast.Ident).mixed_name + '.' + left.field_name
+		name := (left.expr as ast.Ident).full_name() + '.' + left.field_name
 		c.scope.update_type(name, node.right_type)
 		return ast.BOOL_TYPE
 	}

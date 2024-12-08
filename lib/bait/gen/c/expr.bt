@@ -113,7 +113,7 @@ fun (mut g Gen) ident(node ast.Ident) {
 		return
 	}
 
-	g.write(c_esc(node.mixed_name))
+	g.write(c_esc(node.full_name()))
 }
 
 fun (mut g Gen) index_expr(node ast.IndexExpr) {
