@@ -67,7 +67,7 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 		if right.pkg == "" and c.pkg != 'main' {
 			right.pkg = c.pkg
 		}
-		node.right_type = c.table.get_idx(right.mixed_name)
+		node.right_type = c.table.get_idx(right.full_name())
 		left := node.left as ast.Ident
 		c.scope.update_type(left.mixed_name, node.right_type)
 		return ast.BOOL_TYPE
@@ -83,7 +83,7 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 		if right.pkg == "" and c.pkg != 'main' {
 			right.pkg = c.pkg
 		}
-		node.right_type = c.table.get_idx(right.mixed_name)
+		node.right_type = c.table.get_idx(right.full_name())
 		left := node.left as ast.SelectorExpr
 		name := (left.expr as ast.Ident).mixed_name + '.' + left.field_name
 		c.scope.update_type(name, node.right_type)

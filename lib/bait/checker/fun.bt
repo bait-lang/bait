@@ -405,10 +405,10 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 
 			if arg.is_mut {
 				if not param.is_mut {
-					c.error('unnecessary `mut` for argument `${expr.mixed_name}`', expr.pos)
+					c.error('unnecessary `mut` for argument `${expr.name}`', expr.pos)
 				}
 				if not expr.is_mut {
-					c.error('`${expr.mixed_name}` is not declared as mutable', expr.pos)
+					c.error('`${expr.name}` is not declared as mutable', expr.pos)
 				}
 			} else if param.is_mut {
 				c.error('add `mut` to argument for parameter `${param.name}`', expr.pos)
