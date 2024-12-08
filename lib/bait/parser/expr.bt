@@ -285,7 +285,6 @@ fun (mut p Parser) ident(lang ast.Language) !ast.Ident{
 		name = name
 		pkg = expr_pkg
 		mixed_name = mixed_name
-		file_pkg = p.pkg_name
 		is_mut = is_mut
 		pos = pos
 		lang = lang

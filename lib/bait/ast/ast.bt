@@ -251,7 +251,6 @@ pub struct Ident {
 	pub pkg string
 	global mixed_name string // TMP
 	global is_mut bool
-	pub file_pkg string // TMP
 	pub pos token.Pos
 	pub lang Language
 }
