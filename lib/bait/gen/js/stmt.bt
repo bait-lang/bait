@@ -115,7 +115,7 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 		}
 		g.write(']')
 	} else if node is ast.Ident {
-		g.write(node.with_pkg())
+		g.write(node.full_name())
 	} else if node is ast.ArrayInit {
 		g.write('[')
 		for i, expr in node.exprs {

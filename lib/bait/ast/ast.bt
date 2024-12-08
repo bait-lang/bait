@@ -255,7 +255,7 @@ pub struct Ident {
 	pub lang Language
 }
 
-pub fun (node Ident) with_pkg() string {
+pub fun (node Ident) full_name() string {
 	if node.pkg.length == 0 {
 		return node.name
 	}
