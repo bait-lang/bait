@@ -14,7 +14,7 @@ pub fun (e Expr) repr() string {
 		EnumVal{ e.val }
 		FloatLiteral { e.val }
 		HashExpr { '#XX' } // TODO lang
-		Ident { e.mixed_name } // FIXME why does anything else break????
+		Ident { e.full_name() }
 		IfMatch { 'if/match' } // TODO branches
 		IndexExpr { e.left.repr() + '[' + e.index.repr() + ']' }
 		InfixExpr { e.left.repr() + ' ' + e.op.js_repr() + ' ' + e.right.repr() }
