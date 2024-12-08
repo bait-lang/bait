@@ -26,15 +26,13 @@ fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 	match stmt {
 		ast.AssertStmt {}
 		ast.AssignStmt { t.assign_stmt(mut stmt) }
-		ast.ConstDecl {
-			return t.const_decl(stmt)
-		}
+		ast.ConstDecl { return t.const_decl(stmt) }
 		ast.ExprStmt {}
 		ast.EnumDecl {}
 		ast.ForLoop { t.for_loop(mut stmt) }
 		ast.ForClassicLoop { t.for_classic_loop(mut stmt) }
 		ast.ForInLoop { t.for_in_loop(mut stmt) }
-		ast.FunDecl { t.fun_decl(mut stmt) }
+		ast.FunDecl { return t.fun_decl(mut stmt) }
 		ast.StaticDecl {}
 		ast.IfMatch { t.if_match(mut stmt)}
 		ast.InterfaceDecl {}
@@ -115,8 +113,13 @@ fun (t Transformer) for_in_loop(mut node ast.ForInLoop) {
 	t.stmts(node.stmts)
 }
 
-fun (t Transformer) fun_decl(mut node ast.FunDecl) {
+fun (t Transformer) fun_decl(mut node ast.FunDecl) ast.Stmt {
+	if node.lang != .bait {
+		return ast.Void{}
+	}
+
 	t.stmts(node.stmts)
+	return node
 }
 
 fun (t Transformer) if_match(mut node ast.IfMatch) {
