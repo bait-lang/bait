@@ -30,6 +30,7 @@ fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
 		ast.StringLiteral { c.string_literal(expr) }
 		ast.StringInterLiteral { c.string_inter_literal(expr) }
 		ast.StructInit { c.struct_init(mut expr) }
+		ast.TmpVar { ast.PLACEHOLDER_TYPE }
 		ast.TypeOf { c.type_of(mut expr) }
 		ast.Void { ast.VOID_TYPE }
 		ast.InvalidExpr { panic('unexpected InvalidExpr at ${expr.pos}') }

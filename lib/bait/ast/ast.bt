@@ -7,7 +7,7 @@ import bait.errors
 
 type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | StaticDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | IfMatch | Void | InvalidStmt
 
-type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TypeOf | Void | InvalidExpr
+type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TmpVar | TypeOf | Void | InvalidExpr
 
 pub struct AssertStmt {
 	pub expr Expr
@@ -195,7 +195,7 @@ pub struct CallExpr {
 	global is_field bool
 	global noreturn bool
 	pub args []CallArg
-	pub or_block OrBlock
+	global or_block OrBlock
 	pub is_method bool
 	pub pkg string
 	pub pos token.Pos
@@ -215,7 +215,7 @@ pub enum OrKind {
 
 pub struct OrBlock {
 	pub kind OrKind
-	pub stmts []Stmt
+	global stmts []Stmt
 }
 
 pub struct CharLiteral {
@@ -355,6 +355,9 @@ pub struct StructInitField {
 	pub expr Expr
 	pub pos token.Pos
 }
+
+// Placeholder for temporary variables used by gen
+pub struct TmpVar {}
 
 pub struct TypeOf {
 	global typ Type

@@ -26,17 +26,20 @@ pub enum ObjectKind {
 	static_
 }
 
-pub fun (mut t Table) create_scopes(pkg_name string) &Scope {
-	builtin_scope := t.get_root_scope("builtin")
-	pkg_scope := t.get_pkg_scope(pkg_name, builtin_scope)
+// Get or add scope without parent
+pub fun (mut t Table) obtain_root_scope(pkg string) &Scope {
+	return t.obtain_scope(pkg, 0 as any)
+}
+
+// Get or add scope below "builtin"
+pub fun (mut t Table) obtain_pkg_scope(pkg_name string) &Scope {
+	builtin_scope := t.obtain_root_scope("builtin")
+	pkg_scope := t.obtain_scope(pkg_name, builtin_scope)
 	return pkg_scope
 }
 
-pub fun (mut t Table) get_root_scope(pkg string) &Scope {
-	return t.get_pkg_scope(pkg, 0 as any)
-}
-
-pub fun (mut t Table) get_pkg_scope(pkg string, parent &Scope) &Scope {
+// Get or add scope below the given parent
+pub fun (mut t Table) obtain_scope(pkg string, parent &Scope) &Scope {
 	// Existing scope
 	if t.scopes.contains(pkg) {
 		return t.scopes[pkg]

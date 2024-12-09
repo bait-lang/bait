@@ -26,20 +26,18 @@ fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 	match stmt {
 		ast.AssertStmt {}
 		ast.AssignStmt { t.assign_stmt(mut stmt) }
-		ast.ConstDecl {
-			return t.const_decl(stmt)
-		}
-		ast.ExprStmt {}
+		ast.ConstDecl { return t.const_decl(stmt) }
+		ast.ExprStmt { t.expr(mut stmt.expr) }
 		ast.EnumDecl {}
 		ast.ForLoop { t.for_loop(mut stmt) }
 		ast.ForClassicLoop { t.for_classic_loop(mut stmt) }
 		ast.ForInLoop { t.for_in_loop(mut stmt) }
-		ast.FunDecl { t.fun_decl(mut stmt) }
+		ast.FunDecl { return t.fun_decl(mut stmt) }
 		ast.StaticDecl {}
 		ast.IfMatch { t.if_match(mut stmt)}
 		ast.InterfaceDecl {}
 		ast.LoopControlStmt {}
-		ast.ReturnStmt {}
+		ast.ReturnStmt { t.return_stmt(mut stmt) }
 		ast.StructDecl {}
 		ast.TypeDecl {}
 		ast.Void {}
@@ -54,7 +52,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.ArrayInit {}
 		ast.AsCast {}
 		ast.BoolLiteral {}
-		ast.CallExpr {}
+		ast.CallExpr { t.call_expr(mut expr) }
 		ast.CharLiteral {}
 		ast.ComptimeVar {}
 		ast.EnumVal {}
@@ -72,6 +70,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.StringLiteral {}
 		ast.StringInterLiteral {}
 		ast.StructInit {}
+		ast.TmpVar {}
 		ast.TypeOf {}
 		ast.Void {}
 		ast.InvalidExpr {}
@@ -90,6 +89,9 @@ fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
 			right = node.right
 		}
 	}
+
+	t.expr(node.left)
+	t.expr(node.right)
 }
 
 fun (t Transformer) const_decl(node ast.ConstDecl) ast.Stmt {
@@ -115,12 +117,55 @@ fun (t Transformer) for_in_loop(mut node ast.ForInLoop) {
 	t.stmts(node.stmts)
 }
 
-fun (t Transformer) fun_decl(mut node ast.FunDecl) {
+fun (t Transformer) fun_decl(mut node ast.FunDecl) ast.Stmt {
+	if node.lang != .bait {
+		return ast.Void{}
+	}
+
 	t.stmts(node.stmts)
+	return node
 }
 
 fun (t Transformer) if_match(mut node ast.IfMatch) {
 	for mut branch in node.branches {
 		t.stmts(branch.stmts)
+	}
+}
+
+fun (t Transformer) return_stmt(mut node ast.ReturnStmt) {
+	t.expr(node.expr)
+}
+
+fun (t Transformer) call_expr(mut node ast.CallExpr) {
+	if node.or_block.kind == .block {
+		// First line: Declare err variable
+		//   `err := _t12.msg`
+		err_decl := ast.AssignStmt{
+			op = .decl_assign
+			left = ast.Ident{ name = "err" }
+			right = ast.SelectorExpr{
+				expr = ast.TmpVar{}
+				field_name = "msg"
+			}
+		} as ast.Stmt
+
+		// TODO array.insert(el, idx)
+		node.or_block.stmts = [err_decl].concat(node.or_block.stmts)
+
+		// Last line: Set Result data
+		//   `_t12.data = <expr>`
+		if node.or_block.stmts.last() is ast.ExprStmt {
+			idx := node.or_block.stmts.length - 1
+			node.or_block.stmts[idx] = ast.AssignStmt{
+				op = .assign
+				left = ast.SelectorExpr{
+					expr = ast.TmpVar{}
+					field_name = "data"
+				}
+				right = (node.or_block.stmts[idx] as ast.ExprStmt).expr
+			}
+		}
+
+		t.stmts(node.or_block.stmts)
 	}
 }

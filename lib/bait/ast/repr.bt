@@ -26,6 +26,7 @@ pub fun (e Expr) repr() string {
 		StringLiteral { e.val }
 		StringInterLiteral { 'string interpolation' } // TODO vals, exprs
 		StructInit { e.name + '{..}'} // TODO fields
+		TmpVar { "TmpVar" }
 		TypeOf { 'typeof ' + e.expr.repr() }
 		Void { 'void' }
 		InvalidExpr { 'InvalidExpr' }
