@@ -70,6 +70,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.StringLiteral {}
 		ast.StringInterLiteral {}
 		ast.StructInit {}
+		ast.TmpVar {}
 		ast.TypeOf {}
 		ast.Void {}
 		ast.InvalidExpr {}
