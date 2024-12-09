@@ -30,6 +30,7 @@ All notable changes are documented in this file.
 ### Other Changes
 - Refactor many internal systems
 - Add `bait.transformer` to handle AST optimizations
+- Fix nested `or` blocks
 - Comptime if: Add `LINUX` and `WINDOWS` conditions
 - `gen`: Generate `assert` as panic outside of tests
 - License: Change from MPL-2.0 to MIT
