@@ -1,1 +1,1 @@
-error: package bait.test_pkgs.empty contains no Bait files
+error: package `bait.test_pkgs.empty` contains no .bt files

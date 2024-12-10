@@ -22,7 +22,7 @@ struct Builder {
 }
 
 // Returns the absolute paths to all bait files in a directory that should be compiled
-fun (b Builder) bait_files_in_dir(dir string) []string {
+fun (b Builder) bait_files_in_dir(dir string) ![]string {
 	all_files := os.ls(dir)
 
 	mut files := []string
@@ -32,21 +32,25 @@ fun (b Builder) bait_files_in_dir(dir string) []string {
 		}
 	}
 
+	if files.length == 0 {
+		return error("`${dir}` contains no .bt files")
+	}
+
 	return files
 }
 
-fun (b Builder) collect_user_files(path string) []string {
-	if os.exists(path) {
-		if path.ends_with('.bt') {
-			return [path]
-		}
+fun (b Builder) get_builtin_files() []string {
+	// TODO REDEF implement
+	return []
+}
 
-		if os.is_dir(path) {
-			return b.bait_files_in_dir(path)
-		}
+fun (b Builder) collect_user_files(path string) ![]string {
+	if path.ends_with('.bt') {
+		return [path]
 	}
 
-	return []string
+	// Note: existance of `path` is checked in bait.bt
+	return b.bait_files_in_dir(path)!
 }
 
 fun (b Builder) parse_file(path string, pkg string) ast.File {
@@ -64,11 +68,11 @@ pub fun compile(prefs preference.Prefs) i32 {
 	}
 
 	// Collect files for compilation
-	mut paths := b.collect_user_files(prefs.command)
-	if paths.length == 0 {
-		errors.generic_error('directory ${prefs.command} contains no Bait files')
+	mut paths := b.get_builtin_files()
+	paths.push_many(b.collect_user_files(prefs.command) or {
+		errors.generic_error(err)
 		return 1
-	}
+	})
 
 	// Tokenize and parse files
 	timers.start('PARSE')
@@ -100,10 +104,10 @@ pub fun compile(prefs preference.Prefs) i32 {
 			}
 
 			// Collect files
-			mut imp_paths := b.bait_files_in_dir(import_dir)
-			if imp_paths.length == 0 {
-				errors.generic_error('package ${imp.name} contains no Bait files')
+			imp_paths := b.bait_files_in_dir(import_dir) or {
+				errors.generic_error('package `${imp.name}` contains no .bt files')
 				continue
+				[]string // TODO accept continue and break as noreturn
 			}
 
 			// Parse files

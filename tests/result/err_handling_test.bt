@@ -1,12 +1,24 @@
 // SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
+// === Helper functions ===
+
 fun result_fun(give_error bool) !i32 {
 	if give_error {
 		return error('message')
 	}
 	return 1
 }
+
+fun take_int(i i32) i32 {
+	return i
+}
+
+fun get_false() bool {
+	return false
+}
+
+// === Tests ===
 
 fun test_result() {
 	a := result_fun(false) or { 0 }
@@ -19,10 +31,11 @@ fun test_result() {
 	assert b == 2
 }
 
-fun get_false() bool {
-	return false
+fun test_or_in_call_arg() {
+	assert take_int(result_fun(true) or { 15 }) == 15
 }
 
+// Test that or blocks are not confused with boolean or
 fun test_or_infix() {
 	assert get_false() or true
 }
