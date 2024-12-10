@@ -3,8 +3,6 @@
 package ast
 
 pub struct Table {
-	// TODO SCOPES consider moving scopes into new struct that is only shared between parser and checker
-	pub mut scopes map[string]&Scope // Package and FFI scopes
 	pub mut fun_decls map[string]FunDecl
 	pub mut type_idxs map[string]Type
 	pub mut type_symbols []TypeSymbol

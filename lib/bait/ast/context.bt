@@ -1,0 +1,8 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package ast
+
+// Information shared between parser and checker
+pub struct SemanticContext {
+	pub mut scopes map[string]&Scope // Package and FFI scopes
+}

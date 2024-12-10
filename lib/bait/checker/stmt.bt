@@ -51,7 +51,7 @@ fun (mut c Checker) const_decl(mut node ast.ConstDecl) {
 	}
 
 	node.typ = c.expr(node.expr)
-	c.table.scopes[c.pkg].update_type(node.name, node.typ)
+	c.sema_ctx.scopes[c.pkg].update_type(node.name, node.typ)
 }
 
 fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
@@ -181,7 +181,7 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 
 fun (mut c Checker) static_decl(mut node ast.StaticDecl){
 	node.typ = c.expr(node.expr)
-	c.table.scopes[c.pkg].update_type(node.name, node.typ)
+	c.sema_ctx.scopes[c.pkg].update_type(node.name, node.typ)
 }
 
 fun (c Checker) interface_decl(node ast.InterfaceDecl){

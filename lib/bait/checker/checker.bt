@@ -10,6 +10,7 @@ import bait.token
 pub struct Checker{
 	prefs preference.Prefs
 	table ast.Table
+	sema_ctx &ast.SemanticContext
 	mut file ast.File
 	mut scope ast.Scope
 	mut path string
@@ -86,7 +87,7 @@ fun (mut c Checker) change_file(file ast.File) {
 	c.pkg = file.pkg_name
 
 	c.scope = ast.Scope{
-		parent = c.table.scopes[c.pkg]
+		parent = c.sema_ctx.scopes[c.pkg]
 	}
 }
 

@@ -56,9 +56,11 @@ fun (b Builder) parse_file(path string, pkg string) ast.File {
 }
 
 pub fun compile(prefs preference.Prefs) i32 {
+	mut sema_ctx := &ast.SemanticContext{}
+
 	mut b := Builder{
 		prefs = prefs
-		parser = parser.new(ast.new_table(), prefs)
+		parser = parser.new(ast.new_table(), sema_ctx, prefs)
 	}
 
 	// Collect files for compilation
@@ -168,6 +170,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	b.checker = checker.Checker{
 		prefs = b.prefs
 		table = b.parser.table
+		sema_ctx = sema_ctx
 	}
 	b.checker.check_files(sorted_files)
 	timers.show('CHECK')
