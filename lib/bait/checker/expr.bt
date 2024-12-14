@@ -154,7 +154,7 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 fun (c Checker) find_ident(node ast.Ident) ast.ScopeObject {
 	// From imported package or FFI
 	if node.pkg.length > 0 {
-		return c.table.scopes[node.pkg].get(node.name)
+		return c.sema_ctx.scopes[node.pkg].get(node.name)
 	}
 
 	// From current file or package

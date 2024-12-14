@@ -22,7 +22,7 @@ struct Builder {
 }
 
 // Returns the absolute paths to all bait files in a directory that should be compiled
-fun (b Builder) bait_files_in_dir(dir string) []string {
+fun (b Builder) bait_files_in_dir(dir string) ![]string {
 	all_files := os.ls(dir)
 
 	mut files := []string
@@ -32,21 +32,26 @@ fun (b Builder) bait_files_in_dir(dir string) []string {
 		}
 	}
 
+	if files.length == 0 {
+		return error("`${dir}` contains no .bt files")
+	}
+
 	return files
 }
 
-fun (b Builder) collect_user_files(path string) []string {
-	if os.exists(path) {
-		if path.ends_with('.bt') {
-			return [path]
-		}
+fun (b Builder) get_builtin_files() []string {
+	return b.bait_files_in_dir(b.resolve_import("", "builtin")) or {
+		panic(err)
+	}
+}
 
-		if os.is_dir(path) {
-			return b.bait_files_in_dir(path)
-		}
+fun (b Builder) collect_user_files(path string) ![]string {
+	if path.ends_with('.bt') {
+		return [path]
 	}
 
-	return []string
+	// Note: existance of `path` is checked in bait.bt
+	return b.bait_files_in_dir(path)!
 }
 
 fun (b Builder) parse_file(path string, pkg string) ast.File {
@@ -56,17 +61,19 @@ fun (b Builder) parse_file(path string, pkg string) ast.File {
 }
 
 pub fun compile(prefs preference.Prefs) i32 {
+	mut sema_ctx := &ast.SemanticContext{}
+
 	mut b := Builder{
 		prefs = prefs
-		parser = parser.new(ast.new_table(), prefs)
+		parser = parser.new(ast.new_table(), sema_ctx, prefs)
 	}
 
 	// Collect files for compilation
-	mut paths := b.collect_user_files(prefs.command)
-	if paths.length == 0 {
-		errors.generic_error('directory ${prefs.command} contains no Bait files')
+	mut paths := b.get_builtin_files()
+	paths.push_many(b.collect_user_files(prefs.command) or {
+		errors.generic_error(err)
 		return 1
-	}
+	})
 
 	// Tokenize and parse files
 	timers.start('PARSE')
@@ -74,6 +81,8 @@ pub fun compile(prefs preference.Prefs) i32 {
 	for p in paths {
 		ast_files.push(b.parse_file(p, ''))
 	}
+	b.parsed_pkgs.push("builtin")
+	root_pkg := ast_files.last().pkg_name
 
 	// Resolve and parse imports. New elements are dynamically added to `ast_files`
 	for i := 0; i < ast_files.length; i += 1 {
@@ -98,10 +107,10 @@ pub fun compile(prefs preference.Prefs) i32 {
 			}
 
 			// Collect files
-			mut imp_paths := b.bait_files_in_dir(import_dir)
-			if imp_paths.length == 0 {
-				errors.generic_error('package ${imp.name} contains no Bait files')
+			imp_paths := b.bait_files_in_dir(import_dir) or {
+				errors.generic_error('package `${imp.name}` contains no .bt files')
 				continue
+				[]string // TODO accept continue and break as noreturn
 			}
 
 			// Parse files
@@ -151,7 +160,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	// Sort the packages, so type checking works properly
 	mut looked := []string
 	mut pkg_order := []string
-	order_pkgs(mut pkg_order, ast_files[0].pkg_name, deps, mut looked)
+	order_pkgs(mut pkg_order, root_pkg, deps, mut looked)
 	mut sorted_files := []ast.File
 	for pkg in pkg_order {
 		for f in ast_files {
@@ -168,6 +177,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	b.checker = checker.Checker{
 		prefs = b.prefs
 		table = b.parser.table
+		sema_ctx = sema_ctx
 	}
 	b.checker.check_files(sorted_files)
 	timers.show('CHECK')

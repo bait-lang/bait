@@ -26,21 +26,23 @@ pub struct Parser {
 	mut is_for_init bool
 	mut is_struct_possible bool
 	pub mut table ast.Table
+	pub mut sema_ctx &ast.SemanticContext
 	pub mut lexer lexer.Lexer
 	pub mut infos []errors.Message
 	pub mut warnings []errors.Message
 	pub mut error errors.Message
 }
 
-pub fun new(table ast.Table, pref preference.Prefs) Parser {
+pub fun new(table ast.Table, sema_ctx &ast.SemanticContext, pref preference.Prefs) Parser {
 	return Parser{
 		table = table
+		sema_ctx = sema_ctx
 		pref = pref
 	}
 }
 
 pub fun new_default() Parser {
-	return new(ast.new_table(), preference.Prefs{})
+	return new(ast.new_table(), ast.SemanticContext{}, preference.Prefs{})
 }
 
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
@@ -83,7 +85,7 @@ pub fun (mut p Parser) parse_result() !ast.File {
 		}
 	}
 
-	p.pkg_scope = p.table.obtain_pkg_scope(p.pkg_name)
+	p.pkg_scope = p.sema_ctx.obtain_pkg_scope(p.pkg_name)
 
 	imports := p.import_stmts()!
 

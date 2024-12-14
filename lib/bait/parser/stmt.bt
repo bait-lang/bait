@@ -143,7 +143,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	if lang != .bait {
 		typ := p.parse_type()!
 
-		ffi_scope := p.table.obtain_root_scope(ffi_pkg)
+		ffi_scope := p.sema_ctx.obtain_root_scope(ffi_pkg)
 		ffi_scope.register(name, ast.ScopeObject{
 			kind = .constant
 			pkg = ffi_pkg
@@ -161,18 +161,16 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 
 	expr := p.expr(.lowest)!
 
-	// FIXME: gen of nested or blocks; use register_unique afterwards (also static)
-	// TODO show all places of definition
-	if p.pkg_scope.is_known(name) {
-		p.error('redefinition of ${name}')!
-	}
-	p.pkg_scope.register(name, ast.ScopeObject{
+	p.pkg_scope.register_unique(name, ast.ScopeObject{
 		kind = .constant
 		pkg = p.pkg_name
 		is_pub = is_pub
 		expr = expr
 		typ = ast.VOID_TYPE
-	})
+	}) or {
+		// TODO show all places of definition
+		p.error(err)!
+	}
 
 	return ast.ConstDecl{
 		name = name
@@ -263,18 +261,16 @@ fun (mut p Parser) static_decl() !ast.StaticDecl{
 	p.check(.decl_assign)!
 	expr := p.expr(.lowest)!
 
-	// FIXME: gen of nested or blocks; use register_unique afterwards (also const)
-	// TODO show all places of definition
-	if p.pkg_scope.is_known(name) {
-		p.error('redefinition of ${name}')!
-	}
-	p.pkg_scope.register(name, ast.ScopeObject{
+	p.pkg_scope.register_unique(name, ast.ScopeObject{
 		kind = .static_
 		pkg = p.pkg_name
 		is_mut = true
 		expr = expr
 		typ = ast.VOID_TYPE
-	})
+	}) or {
+		// TODO show all places of definition
+		p.error(err)!
+	}
 
 	return ast.StaticDecl{
 		name = name

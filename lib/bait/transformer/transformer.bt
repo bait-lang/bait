@@ -24,7 +24,7 @@ pub fun (t Transformer) stmts(mut stmts []ast.Stmt) {
 
 fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 	match stmt {
-		ast.AssertStmt {}
+		ast.AssertStmt { t.assert_stmt(mut stmt) }
 		ast.AssignStmt { t.assign_stmt(mut stmt) }
 		ast.ConstDecl { return t.const_decl(stmt) }
 		ast.ExprStmt { t.expr(mut stmt.expr) }
@@ -61,7 +61,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.Ident {}
 		ast.IfMatch {}
 		ast.IndexExpr {}
-		ast.InfixExpr {}
+		ast.InfixExpr { t.infix_expr(mut expr) }
 		ast.IntegerLiteral {}
 		ast.MapInit {}
 		ast.ParExpr {}
@@ -76,6 +76,10 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.InvalidExpr {}
 	}
 	return expr
+}
+
+fun (t Transformer) assert_stmt(mut node ast.AssertStmt) {
+	t.expr(node.expr)
 }
 
 fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
@@ -137,6 +141,11 @@ fun (t Transformer) return_stmt(mut node ast.ReturnStmt) {
 }
 
 fun (t Transformer) call_expr(mut node ast.CallExpr) {
+	t.expr(node.left)
+	for arg in node.args {
+		t.expr(arg.expr)
+	}
+
 	if node.or_block.kind == .block {
 		// First line: Declare err variable
 		//   `err := _t12.msg`
@@ -168,4 +177,9 @@ fun (t Transformer) call_expr(mut node ast.CallExpr) {
 
 		t.stmts(node.or_block.stmts)
 	}
+}
+
+fun (t Transformer) infix_expr(mut node ast.InfixExpr) {
+	t.expr(node.left)
+	t.expr(node.right)
 }

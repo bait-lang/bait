@@ -1,0 +1,35 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package ast
+
+// Information shared between parser and checker
+pub struct SemanticContext {
+	pub mut scopes map[string]&Scope // Package and FFI scopes
+}
+
+// Get or add scope without parent
+pub fun (mut ctx SemanticContext) obtain_root_scope(pkg string) &Scope {
+	return ctx.obtain_scope(pkg, 0 as any)
+}
+
+// Get or add scope below "builtin"
+pub fun (mut ctx SemanticContext) obtain_pkg_scope(pkg_name string) &Scope {
+	builtin_scope := ctx.obtain_root_scope("builtin")
+	pkg_scope := ctx.obtain_scope(pkg_name, builtin_scope)
+	return pkg_scope
+}
+
+// Get or add scope below the given parent
+pub fun (mut ctx SemanticContext) obtain_scope(pkg string, parent &Scope) &Scope {
+	// Existing scope
+	if ctx.scopes.contains(pkg) {
+		return ctx.scopes[pkg]
+	}
+
+	// Create new scope for pkg
+	s := &Scope{
+		parent = parent
+	}
+	ctx.scopes[pkg] = s
+	return s
+}
