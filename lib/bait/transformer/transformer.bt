@@ -31,7 +31,7 @@ fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 		ast.EnumDecl {}
 		ast.ForLoop { t.for_loop(mut stmt) }
 		ast.ForClassicLoop { t.for_classic_loop(mut stmt) }
-		ast.ForInLoop { t.for_in_loop(mut stmt) }
+		ast.ForInLoop { return t.for_in_loop(mut stmt) }
 		ast.FunDecl { return t.fun_decl(mut stmt) }
 		ast.StaticDecl {}
 		ast.IfMatch { t.if_match(mut stmt)}
@@ -117,8 +117,23 @@ fun (t Transformer) for_classic_loop(mut node ast.ForClassicLoop) {
 	t.stmts(node.stmts)
 }
 
-fun (t Transformer) for_in_loop(mut node ast.ForInLoop) {
+fun (t Transformer) for_in_loop(mut node ast.ForInLoop) ast.ForInLoop {
+	// `val := container[i]`
+	val_decl := ast.AssignStmt{
+		op = .decl_assign
+		left = node.valvar
+		right = ast.IndexExpr{
+			left_type = node.expr_type
+			left = node.expr
+			index = node.idxvar
+		}
+	} as ast.Stmt
+	// TODO array.insert(el, idx)
+	node.stmts = [val_decl].concat(node.stmts)
+
 	t.stmts(node.stmts)
+
+	return node
 }
 
 fun (t Transformer) fun_decl(mut node ast.FunDecl) ast.Stmt {

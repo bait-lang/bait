@@ -71,7 +71,7 @@ pub struct ForInLoop {
 	pub idxvar Expr // TmpVar | Ident
 	pub valvar Ident
 	pub expr Expr
-	pub stmts []Stmt
+	global stmts []Stmt
 	pub pos token.Pos
 }
 
