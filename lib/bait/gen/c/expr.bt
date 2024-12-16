@@ -30,7 +30,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.StringLiteral { g.string_literal(expr) }
 		ast.StringInterLiteral { g.string_inter_literal(expr) }
 		ast.StructInit { g.struct_init(expr) }
-		ast.TmpVar {} // TODO
+		ast.TmpVar { g.tmp_var() }
 		ast.TypeOf{ g.type_of(expr)}
 		ast.Void {} // nothing to do
 		ast.InvalidExpr { panic('unexpected InvalidExpr') }

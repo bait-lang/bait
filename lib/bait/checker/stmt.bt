@@ -151,17 +151,16 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 	node.expr_type = c.expr(node.expr)
 	sym := c.table.get_sym(node.expr_type)
 	mut idx_type := ast.PLACEHOLDER_TYPE
-	mut val_type := ast.PLACEHOLDER_TYPE
 	if sym.kind == .array {
 		idx_type = ast.I32_TYPE
-		val_type = (sym.info as ast.ArrayInfo).elem_type
+		node.val_type = (sym.info as ast.ArrayInfo).elem_type
 	} else if sym.kind == .map {
 		info := sym.info as ast.MapInfo
 		idx_type = info.key_type
-		val_type = info.val_type
+		node.val_type = info.val_type
 	} else if sym.kind == .string {
 		idx_type = ast.I32_TYPE
-		val_type = ast.U8_TYPE
+		node.val_type = ast.U8_TYPE
 	} else {
 		c.error('cannot iterate over ${sym.name}', node.pos)
 	}
@@ -170,7 +169,7 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 		c.scope.register(idxvar.name, ast.ScopeObject{typ = idx_type})
 	}
 	c.scope.register(node.valvar.name, ast.ScopeObject{
-		typ = val_type
+		typ = node.val_type
 		is_mut = node.valvar.is_mut
 	})
 	loop_safe := c.is_loop

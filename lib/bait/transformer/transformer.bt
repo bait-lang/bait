@@ -121,6 +121,7 @@ fun (t Transformer) for_in_loop(mut node ast.ForInLoop) ast.ForInLoop {
 	// `val := container[i]`
 	val_decl := ast.AssignStmt{
 		op = .decl_assign
+		right_type = node.val_type
 		left = node.valvar
 		right = ast.IndexExpr{
 			left_type = node.expr_type

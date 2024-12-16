@@ -67,6 +67,7 @@ pub struct ForClassicLoop {
 
 pub struct ForInLoop {
 	global expr_type Type
+	global val_type Type
 	pub label string
 	pub idxvar Expr // TmpVar | Ident
 	pub valvar Ident
