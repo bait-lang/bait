@@ -1,0 +1,46 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+fun test_array() {
+	arr := [1, 2, 3]
+
+	mut counter := 1
+	for a in arr {
+		assert a == counter
+		counter += 1
+	}
+
+	for i, a in arr {
+		assert a == i + 1
+	}
+}
+
+fun test_string() {
+	s := "foo"
+	chars := [`f`, `o`, `o`]
+
+	for i, c in s {
+		assert c == chars[i]
+	}
+}
+
+fun test_map() {
+	m := map{
+		"key 1": "val 1"
+		"key 2": "val 2"
+	}
+
+	for k, v in m {
+		assert k.length == v.length
+	}
+}
+
+fun test_mutable_value() {
+	arr := [1, 2, 3]
+	for mut a in arr {
+		a += 1
+	}
+	assert arr == [1, 2, 3]
+	// TODO REFVAL handle `mut a` as reference
+	// assert arr == [2, 4, 6]
+}
