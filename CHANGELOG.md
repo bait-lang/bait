@@ -15,6 +15,7 @@ All notable changes are documented in this file.
   - function pointer
   - reference
 - Prevent calling struct fields that are not callable
+- for-in: Require key and value when iterating over a map
 
 ### C Backend
 - Support callable struct fields
