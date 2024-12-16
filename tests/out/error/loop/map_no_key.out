@@ -1,0 +1,1 @@
+tests/out/error/loop/map_no_key.in.bt:4:1 error: iterate a map using `for key, val in mymap {}`

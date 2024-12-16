@@ -148,22 +148,27 @@ fun (mut c Checker) for_classic_loop(node ast.ForClassicLoop) {
 fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 	c.open_scope()
 	c.register_label(node.label, node.pos)
+
 	node.expr_type = c.expr(node.expr)
+
 	sym := c.table.get_sym(node.expr_type)
-	mut idx_type := ast.PLACEHOLDER_TYPE
+	mut idx_type := ast.I32_TYPE
 	if sym.kind == .array {
-		idx_type = ast.I32_TYPE
 		node.val_type = (sym.info as ast.ArrayInfo).elem_type
 	} else if sym.kind == .map {
+		if node.idxvar is ast.TmpVar {
+			c.error('iterate a map using `for key, val in mymap {}`', node.pos)
+		}
+
 		info := sym.info as ast.MapInfo
 		idx_type = info.key_type
 		node.val_type = info.val_type
 	} else if sym.kind == .string {
-		idx_type = ast.I32_TYPE
 		node.val_type = ast.U8_TYPE
 	} else {
 		c.error('cannot iterate over ${sym.name}', node.pos)
 	}
+
 	if node.idxvar is ast.Ident {
 		idxvar := node.idxvar as ast.Ident
 		c.scope.register(idxvar.name, ast.ScopeObject{typ = idx_type})
@@ -172,10 +177,12 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 		typ = node.val_type
 		is_mut = node.valvar.is_mut
 	})
+
 	loop_safe := c.is_loop
 	c.is_loop = true
 	c.stmts(node.stmts)
 	c.is_loop = loop_safe
+
 	c.close_scope()
 }
 
