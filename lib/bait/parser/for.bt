@@ -53,9 +53,11 @@ fun (mut p Parser) for_classic_loop(label string, pos token.Pos) !ast.ForClassic
 }
 
 fun (mut p Parser) for_in_loop(label string, pos token.Pos) !ast.ForInLoop {
-	mut idxvar := ''
+	mut idxvar := ast.TmpVar{} as ast.Expr
 	if p.peek() == .comma {
-		idxvar = p.check_name()!
+		idxvar = ast.Ident{
+			name = p.check_name()!
+		}
 		p.next()
 	}
 
@@ -64,8 +66,7 @@ fun (mut p Parser) for_in_loop(label string, pos token.Pos) !ast.ForInLoop {
 		is_mut = true
 		p.next()
 	}
-	mut valvar := ast.Param{
-		pos = p.pos
+	mut valvar := ast.Ident{
 		name = p.check_name()!
 		is_mut = is_mut
 	}

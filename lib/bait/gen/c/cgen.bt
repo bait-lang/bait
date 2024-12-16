@@ -145,6 +145,10 @@ fun (g Gen) get_concrete_name(name string, concrete_types []ast.Type) string {
 	return c_esc(full_name)
 }
 
+fun (mut g Gen) tmp_var() {
+	g.write("_t${g.tmp_counter}")
+}
+
 fun (mut g Gen) new_temp_var() string {
 	g.tmp_counter += 1
 	return '_t${g.tmp_counter}'

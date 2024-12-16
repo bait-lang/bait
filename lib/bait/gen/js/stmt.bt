@@ -255,25 +255,16 @@ fun (mut g Gen) for_classic_loop(node ast.ForClassicLoop){
 fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 	g.write_label(node.label)
 
-	mut i := js_esc(node.idxvar)
-	if i == '' {
-		i = g.new_temp_var()
-	}
 	sym := g.table.get_sym(node.expr_type)
 	if sym.kind == .map {
 		g.for_in_map(node)
 		return
 	}
+
+	i := g.expr_string(node.idxvar)
 	container := g.expr_string(node.expr)
 	g.writeln('for (let ${i} = 0; ${i} < ${container}.length; ${i}++) {')
 	val_name := js_esc(node.valvar.name)
-	if sym.kind == .array {
-		g.writeln('\tconst ${val_name} = Array_get(${container}, ${i})')
-	} else if sym.kind == .string {
-		g.writeln('\tconst ${val_name} = string_get(${container}, ${i})')
-	} else {
-		g.writeln('\tconst ${val_name} = ${container}[${i}]')
-	}
 	g.stmts(node.stmts)
 	g.writeln('}')
 }
@@ -281,11 +272,13 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 fun (mut g Gen) for_in_map(node ast.ForInLoop){
 	container := g.expr_string(node.expr)
 	keys_var := g.new_temp_var()
+	// TODO FORIN create this in transformer (possibly makes this function obsolete)
 	g.writeln('const ${keys_var} = Map_keys(${container})')
 	i := g.new_temp_var()
+	idxvar := g.expr_string(node.idxvar)
 	g.writeln('for (let ${i} = 0; ${i} < ${keys_var}.length; ${i}++) {')
-	g.writeln('\tconst ${js_esc(node.idxvar)} = Array_get(${keys_var}, ${i})')
-	g.writeln('\tconst ${js_esc(node.valvar.name)} = Map_get(${container}, ${node.idxvar})')
+	// TODO FORIN create this in transformer
+	g.writeln('\tconst ${idxvar} = Array_get(${keys_var}, ${i})')
 	g.stmts(node.stmts)
 	g.writeln('}')
 }
