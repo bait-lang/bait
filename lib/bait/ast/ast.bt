@@ -68,8 +68,8 @@ pub struct ForClassicLoop {
 pub struct ForInLoop {
 	global expr_type Type
 	pub label string
-	pub idxvar string
-	pub valvar Param
+	pub idxvar Expr // TmpVar | Ident
+	pub valvar Ident
 	pub expr Expr
 	pub stmts []Stmt
 	pub pos token.Pos

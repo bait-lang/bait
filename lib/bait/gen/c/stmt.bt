@@ -136,12 +136,8 @@ fun (mut g Gen) for_classic_loop(node ast.ForClassicLoop) {
 }
 
 fun (mut g Gen) for_in_loop(node ast.ForInLoop){
-	mut i := node.idxvar
-	if i == '' {
-		i = g.new_temp_var()
-	}
-
 	sym := g.table.get_sym(node.expr_type)
+	i := g.expr_string(node.idxvar)
 	container := g.expr_string(node.expr)
 	g.writeln('for (i32 ${i} = 0; ${i} < ${container}.length; ${i}++) {')
 	if sym.kind == .array {
