@@ -1,0 +1,4 @@
+m := map{
+	"a": 1
+}
+for x in m {}
