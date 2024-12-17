@@ -11,11 +11,13 @@ All notable changes are documented in this file.
 - `bait.util`: Move escape related functions into `bait.util.escape`
 
 ### Error Checks
-- Require initialization of struct fields containing a ...
-  - function pointer
-  - reference
+- Require initialization of struct fields containing a reference or function pointer
 - Prevent calling struct fields that are not callable
 - for-in: Require key and value when iterating over a map
+
+### Result type and error handling
+- Fix nested `or` blocks
+- Fix handling of `break` and `continue` inside or blocks of non-void calls
 
 ### C Backend
 - Support callable struct fields
@@ -32,7 +34,6 @@ All notable changes are documented in this file.
 ### Other Changes
 - Refactor many internal systems
 - Add `bait.transformer` to handle AST optimizations
-- Fix nested `or` blocks
 - Comptime if: Add `LINUX` and `WINDOWS` conditions
 - `gen`: Generate `assert` as panic outside of tests
 - License: Change from MPL-2.0 to MIT
