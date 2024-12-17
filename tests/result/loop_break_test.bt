@@ -1,0 +1,16 @@
+// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+fun res() !i32 {
+	return error("")
+}
+
+fun test_break_inside_or_block() {
+	for true {
+		x := res() or {
+			break
+		}
+		assert false
+	}
+	assert true // Code compiles
+}
