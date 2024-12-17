@@ -57,18 +57,30 @@ fun (c Checker) stmt_returns (stmt ast.Stmt) bool {
 
 fun has_toplevel_return(stmts []ast.Stmt) bool {
 	for stmt in stmts {
-		if stmt is ast.ReturnStmt or is_noreturn_call(stmt) {
+		if stmt is ast.ReturnStmt {
+			return true
+		}
+
+		if is_noreturn(stmt) {
 			return true
 		}
 	}
+
 	return false
 }
 
-fun is_noreturn_call(stmt ast.Stmt) bool {
+fun is_noreturn(stmt ast.Stmt) bool {
 	if stmt is ast.ExprStmt {
-		if stmt.expr is ast.CallExpr {
-			return (stmt.expr as ast.CallExpr).noreturn
+		expr := stmt.expr
+		return match expr {
+			ast.CallExpr { expr.noreturn }
+			else { false }
 		}
 	}
+
+	if stmt is ast.LoopControlStmt {
+		return true
+	}
+
 	return false
 }

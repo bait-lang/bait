@@ -140,7 +140,7 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 	i := g.expr_string(node.idxvar)
 	container := g.expr_string(node.expr)
 	g.writeln('for (i32 ${i} = 0; ${i} < ${container}.length; ${i}++) {')
-	// TODO FORIN for in map
+	// TODO for in map
 	g.stmts(node.stmts)
 	g.writeln('}')
 }

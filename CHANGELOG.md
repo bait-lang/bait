@@ -8,14 +8,16 @@ All notable changes are documented in this file.
 ### Breaking
 - Syntax: Replace field modifier groups of structs and interfaces with per-field modifiers ([GH-233](https://github.com/bait-lang/bait/pull/233))
 - Syntax: Replace toplevel `global` with `static` ([GH-249](https://github.com/bait-lang/bait/issues/249))
-- `bait.util`: Move escape related functions into `bait.util.escape`
+- bait.util: Move escape related functions into `bait.util.escape`
 
 ### Error Checks
-- Require initialization of struct fields containing a ...
-  - function pointer
-  - reference
+- Require initialization of struct fields containing a reference or function pointer
 - Prevent calling struct fields that are not callable
 - for-in: Require key and value when iterating over a map
+
+### Result type and error handling
+- Fix nested `or` blocks
+- Fix handling of `break` and `continue` inside or blocks of non-void calls
 
 ### C Backend
 - Support callable struct fields
@@ -29,13 +31,15 @@ All notable changes are documented in this file.
 ### CLI and Tooling
 - _[C]_: Change `-o foo.c` to output the generated C code without compiling it
 
+### Compiler internals
+- Refactor scope system for clear separation of packages and FFI
+- Add `transformer` to handle AST optimizations
+- ast: Correctly use `name` and `pkg` fields of `Ident`
+
 ### Other Changes
-- Refactor many internal systems
-- Add `bait.transformer` to handle AST optimizations
-- Fix nested `or` blocks
-- Comptime if: Add `LINUX` and `WINDOWS` conditions
-- `gen`: Generate `assert` as panic outside of tests
-- License: Change from MPL-2.0 to MIT
+- Add `LINUX` and `WINDOWS` comptime if conditions
+- gen: Generate `assert` as panic outside of tests
+- Change license from MPL-2.0 to MIT
 
 
 ## 0.0.7 - 2024-10-27
