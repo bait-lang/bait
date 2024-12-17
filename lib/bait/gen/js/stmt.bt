@@ -272,12 +272,10 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 fun (mut g Gen) for_in_map(node ast.ForInLoop){
 	container := g.expr_string(node.expr)
 	keys_var := g.new_temp_var()
-	// TODO FORIN create this in transformer (possibly makes this function obsolete)
 	g.writeln('const ${keys_var} = Map_keys(${container})')
 	i := g.new_temp_var()
 	idxvar := g.expr_string(node.idxvar)
 	g.writeln('for (let ${i} = 0; ${i} < ${keys_var}.length; ${i}++) {')
-	// TODO FORIN create this in transformer
 	g.writeln('\tconst ${idxvar} = Array_get(${keys_var}, ${i})')
 	g.stmts(node.stmts)
 	g.writeln('}')
