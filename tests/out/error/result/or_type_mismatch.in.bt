@@ -1,0 +1,7 @@
+fun res() !i32 {
+	return error("")
+}
+
+x := res() or {
+	"hi"
+}
