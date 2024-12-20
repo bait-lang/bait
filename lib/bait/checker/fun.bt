@@ -459,10 +459,14 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 	c.close_scope()
 	c.is_or_block = false
 
-	if ret_sym.parent != ast.VOID_TYPE {
-		if not c.stmt_returns(node.or_block.stmts.last()) and not has_toplevel_return(node.or_block.stmts) {
-			c.error('or block does not return a value', node.pos)
+	// Check or-block return type
+	last_stmt_type := c.stmt_return_type(node.or_block.stmts.last())
+	if not c.check_types(last_stmt_type, ret_sym.parent) {
+		if has_toplevel_return(node.or_block.stmts) {
+			return
 		}
+
+		c.warn("or-block returns ${c.table.type_name(last_stmt_type)}, expected ${c.table.type_name(ret_sym.parent)}", node.pos)
 	}
 }
 
