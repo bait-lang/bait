@@ -43,6 +43,14 @@ fun (mut c Checker) return_stmt(mut node ast.ReturnStmt) {
 	}
 }
 
+fun (c Checker) stmt_return_type(stmt ast.Stmt) ast.Type {
+	if stmt is ast.ExprStmt {
+		return stmt.typ
+	}
+
+	return ast.VOID_TYPE
+}
+
 fun (c Checker) stmt_returns (stmt ast.Stmt) bool {
 	if stmt is ast.ExprStmt {
 		return stmt.typ != ast.VOID_TYPE

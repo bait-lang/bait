@@ -419,6 +419,8 @@ fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i3
 
 fun (mut c Checker) or_block(mut node ast.CallExpr) {
 	ret_sym := c.table.get_sym(node.return_type)
+
+	// Function does not return a result
 	if ret_sym.kind != .result {
 		if node.or_block.kind != .none {
 			c.error('${node.name} does not return a result, it cannot have an `or {}` block or `!` at the end', node.pos)
@@ -426,21 +428,27 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 		return
 	}
 
+	// Unhandled result
 	if node.or_block.kind == .none {
 		c.error('${node.name} returns a result, it must have an `or {}` block or propagation `!` at the end', node.pos)
 		return
 	}
 
+	// Set return type to result value
 	node.return_type = ret_sym.parent
 
+	// Propagation
 	if node.or_block.kind == .prop {
+		// Only possible in `main` or other result function
 		cur_fun_ret_sym := c.table.get_sym(c.cur_fun.return_type)
 		if cur_fun_ret_sym.kind != .result and not c.cur_fun.is_main() {
 			c.error('`${c.cur_fun.name}` must return a result to use propagation', node.pos)
 		}
+
 		return
 	}
 
+	// Block
 	c.is_or_block = true
 	c.open_scope()
 	c.scope.register('err', ast.ScopeObject{
@@ -451,10 +459,14 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 	c.close_scope()
 	c.is_or_block = false
 
-	if ret_sym.parent != ast.VOID_TYPE {
-		if not c.stmt_returns(node.or_block.stmts.last()) and not has_toplevel_return(node.or_block.stmts) {
-			c.error('or block does not return a value', node.pos)
+	// Check or-block return type
+	last_stmt_type := c.stmt_return_type(node.or_block.stmts.last())
+	if not c.check_types(last_stmt_type, ret_sym.parent) {
+		if has_toplevel_return(node.or_block.stmts) {
+			return
 		}
+
+		c.warn("or-block returns ${c.table.type_name(last_stmt_type)}, expected ${c.table.type_name(ret_sym.parent)}", node.pos)
 	}
 }
 

@@ -229,19 +229,19 @@ fun (mut p Parser) or_block() !ast.OrBlock {
 		}
 	}
 
-	// No block or a fun call inside a infix (e.g. `call() or other()`)
-	if p.tok != .key_or or p.peek() != .lcur {
-		return ast.OrBlock{
-			kind = .none
+	// Block `or {`
+	if p.tok == .key_or and p.peek() == .lcur {
+		p.next()
+		stmts := p.parse_block()!
+
+		return ast.OrBlock {
+			kind = .block
+			stmts = stmts
 		}
 	}
 
-	// or {}
-	p.next()
-	stmts := p.parse_block()!
-
-	return ast.OrBlock {
-		kind = .block
-		stmts = stmts
+	// No block
+	return ast.OrBlock{
+		kind = .none
 	}
 }

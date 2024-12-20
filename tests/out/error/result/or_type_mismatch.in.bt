@@ -1,0 +1,18 @@
+fun result_fun() !i32 {
+	return 1
+}
+
+fun res() !i32 {
+	return error("")
+}
+
+a := res() or {
+	"hi"
+}
+
+b := res() or {}
+
+// No error
+c := res() or {
+	panic(err)
+}

@@ -18,6 +18,7 @@ All notable changes are documented in this file.
 ### Result type and error handling
 - Fix nested `or` blocks
 - Fix handling of `break` and `continue` inside or blocks of non-void calls
+- Add error if or-block return type does not match
 
 ### C Backend
 - Support callable struct fields
