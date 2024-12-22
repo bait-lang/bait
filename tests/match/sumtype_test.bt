@@ -1,19 +1,30 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
-struct Foo{}
+struct Foo{
+	f i32
+}
 struct Bar{}
 type Sum := Foo | Bar
 
 fun test_sumtype_match() {
 	x := Foo{} as Sum
-	mut n := 0
+	mut res := 0
 	match x {
-		Foo {
-			n += 1
-			assert true
-		}
+		Foo { res += 1 }
 		Bar { assert false }
 	}
-	assert n == 1
+	assert res == 1
+}
+
+fun test_sumtype_match_expr() {
+	x := Foo{
+		f = 3
+	} as Sum
+
+	res := match x {
+		Foo { x.f == 3 }
+		else { false }
+	}
+	assert res
 }
