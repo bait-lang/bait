@@ -1,3 +1,6 @@
-error: redefinition of `the_redef`
-tests/out/error/redef/redef.in.bt:1:1 conflict: const the_redef i32
-tests/out/error/redef/redef.in.bt:3:1 conflict: static the_redef bool
+error: redefinition of `foo`
+tests/out/error/redef/redef.in.bt:1:1 conflict: const foo i32
+tests/out/error/redef/redef.in.bt:3:1 conflict: static foo bool
+tests/out/error/redef/redef.in.bt:5:1 conflict: fun foo(a string)
+tests/out/error/redef/redef.in.bt:11:1 conflict: fun foo(c i32, d i32) i32
+tests/out/error/redef/redef.in.bt:15:1 conflict: fun foo(x X)

@@ -1,5 +1,0 @@
-error: redfinition of "foo"
-tests/out/error/redef/fun.in.bt:1:1 conflict: fun foo(a string)
-tests/out/error/redef/fun.in.bt:3:1 conflict: fun foo(b bool)
-tests/out/error/redef/fun.in.bt:5:1 conflict: fun foo(c i32, d i32) i32
-tests/out/error/redef/fun.in.bt:9:1 conflict: fun foo(x X)

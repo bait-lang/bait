@@ -1,0 +1,12 @@
+fun my_fun() {
+	same := true
+	same := 123
+
+	if same {
+		same := "hello"
+	}
+}
+
+fun other() {
+	my_fun := "oops"
+}

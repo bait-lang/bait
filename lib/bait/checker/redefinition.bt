@@ -6,12 +6,7 @@ import bait.ast
 import bait.errors
 import bait.token
 
-// TODO replace this by redefinitions2
-
-enum RedefKind {
-	fun_
-	type_
-}
+// TODO REDEF replace this by redefinitions2
 
 struct Redefinition {
 	path string
@@ -20,18 +15,11 @@ struct Redefinition {
 	signature string
 }
 
-fun stmt_is_redef(stmt ast.Stmt, name string, kind RedefKind) bool {
-	return match kind {
-		.fun_ {
-			stmt is ast.FunDecl and stmt.name == name
-		}
-		.type_ {
-			(stmt is ast.EnumDecl or stmt is ast.InterfaceDecl or stmt is ast.StructDecl or stmt is ast.TypeDecl) and stmt.name == name
-		}
-	}
+fun stmt_is_redef(stmt ast.Stmt, name string) bool {
+	return (stmt is ast.EnumDecl or stmt is ast.InterfaceDecl or stmt is ast.StructDecl or stmt is ast.TypeDecl) and stmt.name == name
 }
 
-fun (mut c Checker) check_redefinitions(redefs_list []string, kind RedefKind, files []ast.File) {
+fun (mut c Checker) check_redefinitions(redefs_list []string, files []ast.File) {
 	if redefs_list.length == 0 {
 		return
 	}
@@ -49,7 +37,7 @@ fun (mut c Checker) check_redefinitions(redefs_list []string, kind RedefKind, fi
 		mut redefinitions := []Redefinition
 		for file in files {
 			for stmt in file.stmts {
-				if stmt_is_redef(stmt, name, kind) {
+				if stmt_is_redef(stmt, name) {
 					redefinitions.push(Redefinition{
 						path = file.path
 						pos = (stmt as ast.InvalidStmt).pos
@@ -79,38 +67,16 @@ fun (mut c Checker) check_redefinitions(redefs_list []string, kind RedefKind, fi
 	}
 }
 
-fun (mut c Checker) check_fun_redefinitions(files []ast.File) {
-	c.check_redefinitions(c.redefined_funs, .fun_, files)
-}
-
-
 fun (mut c Checker) check_type_redefinitions(files []ast.File) {
-	c.check_redefinitions(c.table.redefined_types, .type_,files)
+	c.check_redefinitions(c.table.redefined_types, files)
 }
 
 fun (c Checker) stmt_signature(stmt ast.Stmt) string {
 	return match stmt {
 		ast.EnumDecl { 'enum' }
-		ast.FunDecl { c.fun_signature(stmt) }
 		ast.InterfaceDecl { 'interface' }
 		ast.StructDecl { 'struct' }
 		ast.TypeDecl { 'type' }
 		else { '' }
 	}
-}
-
-fun (c Checker) fun_signature(node ast.FunDecl) string {
-	mut sig := 'fun ${node.name}('
-	for i, p in node.params {
-		type_name := c.table.get_sym(p.typ).name
-		sig += '${p.name} ${type_name}'
-		if i < node.params.length - 1 {
-			sig += ', '
-		}
-	}
-	sig += ')'
-	if node.return_type != ast.VOID_TYPE {
-		sig += ' ${c.table.type_name(node.return_type)}'
-	}
-	return sig
 }

@@ -31,5 +31,5 @@ pub fun panic(msg string) {
 
 fun c_backtrace() string {
 	// TODO backtrace
-	return 'TODO backtrace'
+	return 'backtrace'
 }

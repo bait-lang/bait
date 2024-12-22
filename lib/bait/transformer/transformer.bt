@@ -16,7 +16,11 @@ pub fun (t Transformer) transform_files(files []&ast.File) {
 }
 
 pub fun (t Transformer) stmts(mut stmts []ast.Stmt) {
-	// TODO js: fix for mut stmt in stmts {
+	// TODO js: fix crash with InvalidExpr
+	// for mut stmt in stmts {
+	// 	stmt = t.stmt(stmt)
+	// }
+
 	for i := 0; i < stmts.length; i += 1 {
 		stmts[i] = t.stmt(mut stmts[i])
 	}

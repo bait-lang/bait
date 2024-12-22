@@ -110,7 +110,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 			imp_paths := b.bait_files_in_dir(import_dir) or {
 				errors.generic_error('package `${imp.name}` contains no .bt files')
 				continue
-				[]string // TODO accept continue and break as noreturn
 			}
 
 			// Parse files

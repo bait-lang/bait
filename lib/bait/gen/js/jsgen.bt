@@ -283,7 +283,6 @@ fun js_name(n string) string {
 
 fun js_esc(n string) string {
 	name := js_name(n)
-	// TODO this might have bad performance impact due to array size and frequent use
 	if JS_RESERVED.contains(name) {
 		return 'bait_${name}'
 	}

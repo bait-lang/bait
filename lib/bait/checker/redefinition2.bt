@@ -9,6 +9,7 @@ import bait.token
 fun is_redef(name string, stmt ast.Stmt) bool {
 	return match stmt {
 		ast.ConstDecl { stmt.name == name }
+		ast.FunDecl { stmt.name == name }
 		ast.StaticDecl { stmt.name == name }
 		else { false }
 	}
@@ -22,6 +23,9 @@ fun (mut c Checker) get_signature(_stmt ast.Stmt) string {
 			typ := c.table.type_name(stmt.typ)
 			return "const ${stmt.name} ${typ}"
 		}
+		ast.FunDecl {
+			return c.fun_signature(stmt)
+		}
 		ast.StaticDecl {
 			c.static_decl(mut stmt)
 			typ := c.table.type_name(stmt.typ)
@@ -31,6 +35,23 @@ fun (mut c Checker) get_signature(_stmt ast.Stmt) string {
 	}
 
 	return ""
+}
+
+// TODO REDEF generic funs
+fun (c Checker) fun_signature(node ast.FunDecl) string {
+	mut sig := 'fun ${node.name}('
+	for i, p in node.params {
+		type_name := c.table.get_sym(p.typ).name
+		sig += '${p.name} ${type_name}'
+		if i < node.params.length - 1 {
+			sig += ', '
+		}
+	}
+	sig += ')'
+	if node.return_type != ast.VOID_TYPE {
+		sig += ' ${c.table.type_name(node.return_type)}'
+	}
+	return sig
 }
 
 pub fun (mut c Checker) check_redefinitions2(files []ast.File) {
