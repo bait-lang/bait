@@ -3,3 +3,4 @@ tests/out/error/ident/undefined.in.bt:3:1 error: undefined identifier where
 tests/out/error/ident/undefined.in.bt:5:1 error: undefined identifier os
 tests/out/error/ident/undefined.in.bt:7:6 error: undefined identifier xyz
 tests/out/error/ident/undefined.in.bt:8:12 error: undefined identifier qwe
+tests/out/error/ident/undefined.in.bt:10:6 error: undefined identifier foo
