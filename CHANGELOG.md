@@ -40,6 +40,7 @@ All notable changes are documented in this file.
 ### Other Changes
 - Add `LINUX` and `WINDOWS` comptime if conditions
 - gen: Generate `assert` as panic outside of tests
+- checker: Fix infixes in sumtpye match expr
 - Change license from MPL-2.0 to MIT
 
 
