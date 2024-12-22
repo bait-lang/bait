@@ -50,7 +50,9 @@ fun (mut c Checker) const_decl(mut node ast.ConstDecl) {
 		return
 	}
 
-	node.typ = c.expr(node.expr)
+	node.typ = c.non_void_expr(node.expr) or {
+		return
+	}
 	c.sema_ctx.scopes[c.pkg].update_type(node.name, node.typ)
 }
 
@@ -187,7 +189,9 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 }
 
 fun (mut c Checker) static_decl(mut node ast.StaticDecl){
-	node.typ = c.expr(node.expr)
+	node.typ = c.non_void_expr(node.expr) or {
+		return
+	}
 	c.sema_ctx.scopes[c.pkg].update_type(node.name, node.typ)
 }
 

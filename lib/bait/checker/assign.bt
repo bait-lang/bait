@@ -6,14 +6,7 @@ import bait.ast
 import bait.token
 
 fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
-	typ := c.expr(node.right)
-
-	if typ == ast.ERROR_TYPE {
-		return
-	}
-
-	if typ == ast.VOID_TYPE {
-		c.error('cannot assign void to variable', node.pos)
+	typ := c.non_void_expr(node.right) or {
 		return
 	}
 

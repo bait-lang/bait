@@ -39,6 +39,21 @@ fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
 	return t
 }
 
+fun (mut c Checker) non_void_expr(mut expr ast.Expr) !ast.Type {
+	typ := c.expr(mut expr)
+
+	if typ == ast.ERROR_TYPE {
+		return error("")
+	}
+
+	if typ == ast.VOID_TYPE {
+		c.error("expected non-void expression", (expr as ast.InvalidExpr).pos)
+		return error("")
+	}
+
+	return typ
+}
+
 fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 	// Type init
 	if node.exprs.length == 0 {

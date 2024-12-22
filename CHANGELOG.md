@@ -14,6 +14,7 @@ All notable changes are documented in this file.
 - Require initialization of struct fields containing a reference or function pointer
 - Prevent calling struct fields that are not callable
 - for-in: Require key and value when iterating over a map
+- Prevent assigning `void` to constants and static variables
 - Remove some noisy errors after other errors were raised
 
 ### Result type and error handling
