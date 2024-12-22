@@ -1,5 +1,15 @@
-const the_redef := 123
+const foo := 123
 
-static the_redef := true
+static foo := true
 
-fun the_redef() {}
+fun foo(a string) {
+	// Note: The checker exits after toplevel redefinition errors.
+	//   Thus the next line is not checked.
+	_ := nonexistent
+}
+
+fun foo(c i32, d i32) i32 {
+	return 0
+}
+
+fun foo[X](x X) {}

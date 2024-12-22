@@ -37,6 +37,7 @@ fun (mut c Checker) get_signature(_stmt ast.Stmt) string {
 	return ""
 }
 
+// TODO REDEF generic funs
 fun (c Checker) fun_signature(node ast.FunDecl) string {
 	mut sig := 'fun ${node.name}('
 	for i, p in node.params {

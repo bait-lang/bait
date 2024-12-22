@@ -1,0 +1,8 @@
+fun my_fun() {
+	same := true
+	same := 123
+
+	if same {
+		same := "hello"
+	}
+}
