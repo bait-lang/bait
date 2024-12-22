@@ -82,9 +82,11 @@ fun (c Checker) fun_params(params []ast.Param){
 	for p in params {
 		if c.scope.is_known(p.name) {
 			obj := c.scope.get_parent(p.name)
+			println(obj)
 			msg := if obj.kind == .package_ {
 				'cannot shadow import "${p.name}"'
 			} else {
+				// TODO REDEF print place of original declaration
 				'redefinition of ${p.name}'
 			}
 			c.error(msg, p.pos)

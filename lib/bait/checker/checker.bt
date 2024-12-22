@@ -30,7 +30,6 @@ pub struct Checker{
 	mut is_loop bool
 	mut returns bool
 	mut export_names []string
-	mut redefined_funs []string
 	pub mut infos []errors.Message
 	pub mut warnings []errors.Message
 	pub mut errors []errors.Message
