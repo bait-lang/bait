@@ -167,10 +167,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 		is_pub = is_pub
 		expr = expr
 		typ = ast.VOID_TYPE
-	}) or {
-		// TODO show all places of definition
-		p.error(err)!
-	}
+	})
 
 	return ast.ConstDecl{
 		name = name
@@ -267,10 +264,7 @@ fun (mut p Parser) static_decl() !ast.StaticDecl{
 		is_mut = true
 		expr = expr
 		typ = ast.VOID_TYPE
-	}) or {
-		// TODO show all places of definition
-		p.error(err)!
-	}
+	})
 
 	return ast.StaticDecl{
 		name = name

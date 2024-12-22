@@ -5,6 +5,7 @@ package ast
 pub struct Scope {
 	pub parent &Scope
 	pub objects map[string]ScopeObject
+	pub redefined_syms []string
 }
 
 pub struct ScopeObject{
@@ -32,9 +33,10 @@ pub fun (s Scope) register(name string, obj ScopeObject) {
 }
 
 // Register an object but error for duplicates
-pub fun (s Scope) register_unique(name string, obj ScopeObject) ! {
-	if s.objects.contains(name) {
-		return error('redefinition of `${name}`')
+pub fun (s Scope) register_unique(name string, obj ScopeObject) {
+	if s.is_known(name) {
+		s.redefined_syms.push(name)
+		return
 	}
 
 	s.objects[name] = obj

@@ -81,6 +81,7 @@ pub fun (mut p Parser) parse_result() !ast.File {
 	// Do not parse assert.bt outside of tests
 	if not p.pref.is_test and p.pkg_name == 'builtin' and p.path.ends_with('assert.bt') {
 		return ast.File{
+			pkg_name = p.pkg_name
 			path = p.path
 		}
 	}
@@ -250,6 +251,7 @@ fun (mut p Parser) peek() token.Token {
 fun (p Parser) file_error() ast.File {
 	return ast.File{
 		path = p.path
+		pkg_name = p.pkg_name
 		infos = p.infos
 		warnings = p.warnings
 		errors = [p.error]
