@@ -1,0 +1,7 @@
+const SOME := 123
+const SOME := 'foo'
+
+static my_static := true
+static my_static := 3.14
+
+static SOME := 1

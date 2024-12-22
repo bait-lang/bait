@@ -1,0 +1,7 @@
+error: redefinition of `SOME`
+tests/out/error/redef/redef.in.bt:1:1 conflict: const SOME i32
+tests/out/error/redef/redef.in.bt:2:1 conflict: const SOME string
+tests/out/error/redef/redef.in.bt:7:1 conflict: static SOME i32
+error: redefinition of `my_static`
+tests/out/error/redef/redef.in.bt:4:1 conflict: static my_static bool
+tests/out/error/redef/redef.in.bt:5:1 conflict: static my_static f64
