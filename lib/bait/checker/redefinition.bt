@@ -6,7 +6,7 @@ import bait.ast
 import bait.errors
 import bait.token
 
-// TODO replace this by redefinitions2
+// TODO REDEF replace this by redefinitions2
 
 enum RedefKind {
 	fun_

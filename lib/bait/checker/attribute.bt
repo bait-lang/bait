@@ -93,7 +93,7 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 }
 
 fun (c Checker) attr_export(attr ast.Attribute) {
-	// TODO handle this error like fun redefinition and show all places where the name is used
+	// TODO REDEF handle this error like fun redefinition and show all places where the name is used
 	if c.export_names.contains(attr.value) {
 		c.error('@export name "${attr.value}" is already used', attr.pos)
 		return

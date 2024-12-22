@@ -110,7 +110,7 @@ fun (c Checker) check_imports(imports []ast.Import) {
 			kind = .package_
 		})
 
-		// TODO for c
+		// TODO C imports
 		if not c.is_js_file and imp.lang == .js {
 			c.warn('JS imports have to be in .js.bt files', imp.pos)
 		}
