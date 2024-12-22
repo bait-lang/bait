@@ -6,3 +6,5 @@ os.import_missing()
 
 _ := xyz == 23
 _ := 45 != qwe
+
+_ := foo.bar

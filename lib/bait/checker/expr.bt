@@ -292,7 +292,12 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 		mut expr := node.expr as ast.IndexExpr
 		expr.is_selector = true
 	}
+
 	node.expr_type = c.expr(node.expr)
+
+	if node.expr_type == ast.ERROR_TYPE {
+		return ast.ERROR_TYPE
+	}
 
 	gen_sym := c.table.get_sym(node.expr_type)
 	sym := c.table.get_final_sym(c.table.unwrap_generic(gen_sym))
