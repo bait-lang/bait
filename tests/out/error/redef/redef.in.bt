@@ -1,7 +1,5 @@
-const SOME := 123
-const SOME := 'foo'
+const the_redef := 123
 
-static my_static := true
-static my_static := 3.14
+static the_redef := true
 
-static SOME := 1
+fun the_redef() {}
