@@ -83,3 +83,13 @@ pub fun (s Scope) is_known(name string) bool {
 	obj := s.get_parent(name)
 	return obj.kind != .unknown
 }
+
+pub fun (s Scope) get_unique_redefinitions() []string {
+	mut unique_redefs := []string
+	for name in s.redefined_syms {
+		if not unique_redefs.contains(name) {
+			unique_redefs.push(name)
+		}
+	}
+	return unique_redefs
+}
