@@ -65,7 +65,6 @@ pub fun (mut c Checker) check_files(files []ast.File) {
 		resolve_runs += 1
 	}
 
-	c.check_fun_redefinitions(files)
 	c.check_type_redefinitions(files)
 
 	// no main function needed for libraries, tests and script mode

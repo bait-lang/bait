@@ -31,22 +31,6 @@ fun (mut c Checker) fun_decl(mut node ast.FunDecl) {
 				}
 			}
 		}
-	} else {
-		def := c.scope.get_parent(node.name)
-		if def.kind == .function {
-			c.redefined_funs.push(node.name)
-		} else if def.kind != .unknown {
-			c.error('redefinition of ${node.name}', node.pos)
-		}
-
-		mut param_types := []ast.Type
-		for param in node.params {
-			param_types.push(param.typ)
-		}
-		c.scope.register(node.name, ast.ScopeObject{
-			typ = c.table.find_or_register_fun(param_types, node.return_type, false)
-			kind = .function
-		})
 	}
 
 	if node.generic_names.length > 0 and c.cur_concrete_types.length == 0 {

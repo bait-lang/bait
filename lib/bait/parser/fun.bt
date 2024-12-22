@@ -89,6 +89,7 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 	}
 	p.attributes = []ast.Attribute
 
+	// Register method or function
 	if is_method {
 		sym := p.table.get_sym(params[0].typ)
 		// TODO move this error into checker
@@ -103,6 +104,11 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 			param_types.push(param.typ)
 		}
 		typ := p.table.find_or_register_fun(param_types, return_type, false)
+
+		p.pkg_scope.register_unique(name, ast.ScopeObject{
+			kind = .function
+			typ = typ
+		})
 	}
 
 	if lang == .bait {
