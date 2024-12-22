@@ -19,7 +19,7 @@ pub fun (mut ctx SemanticContext) obtain_pkg_scope(pkg_name string) &Scope {
 	return pkg_scope
 }
 
-// Get or add scope below the given parent
+// Get or add package scope below the given parent
 pub fun (mut ctx SemanticContext) obtain_scope(pkg string, parent &Scope) &Scope {
 	// Existing scope
 	if ctx.scopes.contains(pkg) {

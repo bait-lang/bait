@@ -1,0 +1,5 @@
+const the_redef := 123
+
+static the_redef := true
+
+fun the_redef() {}

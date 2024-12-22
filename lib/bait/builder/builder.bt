@@ -143,6 +143,20 @@ pub fun compile(prefs preference.Prefs) i32 {
 		return 1
 	}
 
+	// Check symbol redefinitions
+	b.checker = checker.Checker{
+		prefs = b.prefs
+		table = b.parser.table
+		sema_ctx = sema_ctx
+	}
+	b.checker.check_redefinitions2(b.parsed_files)
+	if b.checker.errors.length > 0 {
+		for err in b.checker.errors {
+			err.print()
+		}
+		return 1
+	}
+
 	// TODO move whole depgraph build and resolve into pkg
 
 	// Build a dependency map for each file
@@ -174,11 +188,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 	// Run the type resolver and checker
 	timers.start('CHECK')
 	b.parsed_files = sorted_files
-	b.checker = checker.Checker{
-		prefs = b.prefs
-		table = b.parser.table
-		sema_ctx = sema_ctx
-	}
 	b.checker.check_files(sorted_files)
 	timers.show('CHECK')
 
