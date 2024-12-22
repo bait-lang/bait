@@ -1,3 +1,7 @@
 fun nothing() {}
 
+const FOO := nothing()
+
+static sta := nothing()
+
 v := nothing()
