@@ -6,3 +6,7 @@ fun my_fun() {
 		same := "hello"
 	}
 }
+
+fun other() {
+	my_fun := "oops"
+}
