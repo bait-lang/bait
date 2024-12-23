@@ -28,6 +28,13 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		return
 	}
 
+	// Check name conventions
+	if left.name.length > 1 and left.name[0] == `_` {
+		c.error("variable `${left.name}` cannot start with `_`", node.pos)
+		return
+	}
+
+	// Register identifier
 	c.scope.register(left.name, context.ScopeObject{
 		kind = .variable
 		typ = typ

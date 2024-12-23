@@ -15,8 +15,8 @@ fun is_redef(name string, stmt ast.Stmt) bool {
 	}
 }
 
-fun (mut c Checker) get_signature(_stmt ast.Stmt) string {
-	mut stmt := _stmt
+fun (mut c Checker) get_signature(s ast.Stmt) string {
+	mut stmt := s
 	match stmt {
 		ast.ConstDecl {
 			c.const_decl(mut stmt)
