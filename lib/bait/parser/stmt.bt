@@ -3,6 +3,7 @@
 package parser
 
 import bait.ast
+import bait.context
 import bait.token
 
 fun (mut p Parser) toplevel_stmt() !ast.Stmt {
@@ -144,7 +145,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 		typ := p.parse_type()!
 
 		ffi_scope := p.sema_ctx.obtain_root_scope(ffi_pkg)
-		ffi_scope.register(name, ast.ScopeObject{
+		ffi_scope.register(name, context.ScopeObject{
 			kind = .constant
 			pkg = ffi_pkg
 			typ = typ
@@ -161,7 +162,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 
 	expr := p.expr(.lowest)!
 
-	p.pkg_scope.register_unique(name, ast.ScopeObject{
+	p.pkg_scope.register_unique(name, context.ScopeObject{
 		kind = .constant
 		pkg = p.pkg_name
 		is_pub = is_pub
@@ -258,7 +259,7 @@ fun (mut p Parser) static_decl() !ast.StaticDecl{
 	p.check(.decl_assign)!
 	expr := p.expr(.lowest)!
 
-	p.pkg_scope.register_unique(name, ast.ScopeObject{
+	p.pkg_scope.register_unique(name, context.ScopeObject{
 		kind = .static_
 		pkg = p.pkg_name
 		is_mut = true

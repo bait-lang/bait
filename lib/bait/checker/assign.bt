@@ -3,6 +3,7 @@
 package checker
 
 import bait.ast
+import bait.context
 import bait.token
 
 fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
@@ -27,7 +28,7 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		return
 	}
 
-	c.scope.register(left.name, ast.ScopeObject{
+	c.scope.register(left.name, context.ScopeObject{
 		kind = .variable
 		typ = typ
 		is_mut = left.is_mut

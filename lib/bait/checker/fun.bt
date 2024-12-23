@@ -3,6 +3,7 @@
 package checker
 
 import bait.ast
+import bait.context
 import bait.token
 
 fun (mut c Checker) anon_fun(node ast.AnonFun) ast.Type {
@@ -105,12 +106,12 @@ fun (c Checker) fun_params(params []ast.Param){
 				return_type = info.return_type
 				params = info.to_params()
 			}
-			c.scope.register(p.name, ast.ScopeObject{
+			c.scope.register(p.name, context.ScopeObject{
 				typ = p.typ
 				kind = .function
 			})
 		} else {
-			c.scope.register(p.name, ast.ScopeObject{
+			c.scope.register(p.name, context.ScopeObject{
 				typ = p.typ
 				is_mut = p.is_mut
 				kind = .variable
@@ -437,7 +438,7 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 	// Block
 	c.is_or_block = true
 	c.open_scope()
-	c.scope.register('err', ast.ScopeObject{
+	c.scope.register('err', context.ScopeObject{
 		kind = .variable
 		typ = ast.STRING_TYPE
 	})

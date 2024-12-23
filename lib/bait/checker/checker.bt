@@ -3,6 +3,7 @@
 package checker
 
 import bait.ast
+import bait.context
 import bait.errors
 import bait.preference
 import bait.token
@@ -10,9 +11,9 @@ import bait.token
 pub struct Checker{
 	prefs preference.Prefs
 	table ast.Table
-	sema_ctx &ast.SemanticContext
+	sema_ctx &context.SemanticContext
 	mut file ast.File
-	mut scope ast.Scope
+	mut scope context.Scope
 	mut path string
 	mut pkg string
 	mut has_main_pkg_files bool
@@ -84,7 +85,7 @@ fun (mut c Checker) change_file(file ast.File) {
 	c.is_js_file = c.path.contains('.js.')
 	c.pkg = file.pkg_name
 
-	c.scope = ast.Scope{
+	c.scope = context.Scope{
 		parent = c.sema_ctx.scopes[c.pkg]
 	}
 }
@@ -104,7 +105,7 @@ fun (mut c Checker) check(file ast.File) {
 fun (c Checker) check_imports(imports []ast.Import) {
 	for imp in imports {
 		// Register import to prevent shadowing them
-		c.scope.register(imp.alias, ast.ScopeObject{
+		c.scope.register(imp.alias, context.ScopeObject{
 			kind = .package_
 		})
 
@@ -117,7 +118,7 @@ fun (c Checker) check_imports(imports []ast.Import) {
 }
 
 fun (mut c Checker) open_scope(){
-	c.scope = ast.Scope{
+	c.scope = context.Scope{
 		parent = c.scope
 	}
 }

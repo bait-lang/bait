@@ -5,6 +5,7 @@ package parser
 import bait.preference
 import bait.errors
 import bait.ast
+import bait.context
 import bait.lexer
 import bait.token
 import hash.crc32
@@ -19,21 +20,21 @@ pub struct Parser {
 	mut val string
 	mut pos token.Pos
 	mut pkg_name string
-	mut pkg_scope &ast.Scope := 0 as any // Reference to scope of current package
+	mut pkg_scope &context.Scope := 0 as any // Reference to scope of current package
 	mut import_aliases map[string]string
 	mut attributes []ast.Attribute
 	mut expr_pkg string
 	mut is_for_init bool
 	mut is_struct_possible bool
 	pub mut table ast.Table
-	pub mut sema_ctx &ast.SemanticContext
+	pub mut sema_ctx &context.SemanticContext
 	pub mut lexer lexer.Lexer
 	pub mut infos []errors.Message
 	pub mut warnings []errors.Message
 	pub mut error errors.Message
 }
 
-pub fun new(table ast.Table, sema_ctx &ast.SemanticContext, pref preference.Prefs) Parser {
+pub fun new(table ast.Table, sema_ctx &context.SemanticContext, pref preference.Prefs) Parser {
 	return Parser{
 		table = table
 		sema_ctx = sema_ctx
@@ -42,7 +43,7 @@ pub fun new(table ast.Table, sema_ctx &ast.SemanticContext, pref preference.Pref
 }
 
 pub fun new_default() Parser {
-	return new(ast.new_table(), ast.SemanticContext{}, preference.Prefs{})
+	return new(ast.new_table(), context.SemanticContext{}, preference.Prefs{})
 }
 
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
