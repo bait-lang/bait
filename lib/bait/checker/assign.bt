@@ -16,6 +16,9 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		return
 	}
 
+	node.left_type = typ
+	node.right_type = typ
+
 	left := node.left as ast.Ident
 	if left.is_blank {
 		return
@@ -45,8 +48,6 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		is_mut = left.is_mut
 	})
 	c.expr(node.left)
-	node.left_type = typ
-	node.right_type = typ
 }
 
 fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
@@ -68,6 +69,10 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 
 	if node.left is ast.Ident {
 		left := node.left as ast.Ident
+		if left.is_blank {
+			return
+		}
+
 		if not left.is_mut {
 			c.error('cannot assign to immutable variable "${left.name}"', left.pos)
 			return

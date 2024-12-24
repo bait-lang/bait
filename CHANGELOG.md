@@ -18,6 +18,7 @@ All notable changes are documented in this file.
 - Remove some noisy errors after other errors were raised
 - Disallow variables starting with `_`
 - Prevent usage of `_` outside of assignments
+- Fix repeated assign or declaration of `_`
 
 ### Result type and error handling
 - Fix nested `or` blocks
