@@ -1,3 +1,4 @@
 x := not true
 _ := not 123
 y := not x
+_ := not mybad

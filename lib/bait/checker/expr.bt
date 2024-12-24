@@ -287,6 +287,10 @@ fun (mut c Checker) par_expr(node ast.ParExpr) ast.Type {
 
 fun (mut c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
 	typ := c.expr(node.right)
+	if typ == ast.ERROR_TYPE {
+		return typ
+	}
+
 	sym := c.table.get_sym(typ)
 
 	// TODO disallow on unsigned numbers too
