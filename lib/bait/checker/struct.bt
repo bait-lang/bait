@@ -69,12 +69,16 @@ fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 		def := sym.find_field(field.name, c.table)
 		if def.name.length == 0 {
 			c.error('struct ${sym.name} has no field ${field.name}', node.pos)
+			// Stay in the loop to also check the field expression
 		}
+
 		c.expected_type = def.typ
 		expr_type := c.expr(field.expr)
-		if def.typ == ast.ERROR_TYPE {
+
+		if def.typ == ast.ERROR_TYPE or expr_type == ast.ERROR_TYPE {
 			continue
 		}
+
 		if not c.check_types(expr_type, def.typ) {
 			c.error('cannot assign to field ${field.name}: expected ${c.table.type_name(def.typ)}, got ${c.table.type_name(expr_type)} ', node.pos)
 		}
