@@ -341,6 +341,16 @@ fun (mut p Parser) map_init() !ast.MapInit{
 }
 
 fun (mut p Parser) name_expr(lang ast.Language) !ast.Expr{
+	if p.val == "_" {
+		pos := p.pos
+		p.next()
+		return ast.Ident{
+			name = "_"
+			is_blank = true
+			pos = pos
+		}
+	}
+
 	if p.peek() == .dot {
 		if lang == .js {
 			p.expr_pkg += '.' + p.check_name()!
@@ -351,6 +361,7 @@ fun (mut p Parser) name_expr(lang ast.Language) !ast.Expr{
 			p.next()
 		}
 	}
+
 	if p.val == 'map' {
 		return p.map_init()!
 	}

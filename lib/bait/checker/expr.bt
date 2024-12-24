@@ -179,6 +179,14 @@ fun (c Checker) find_ident(node ast.Ident) context.ScopeObject {
 }
 
 fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
+	// Blank ident `_`
+	if node.is_blank {
+		if not c.is_lhs_assign {
+			c.error("`_` can only be assigned to", node.pos)
+		}
+		return ast.VOID_TYPE
+	}
+
 	mut obj := c.find_ident(node)
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {

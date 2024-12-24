@@ -17,6 +17,10 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 	}
 
 	left := node.left as ast.Ident
+	if left.is_blank {
+		return
+	}
+
 	if c.scope.is_known(left.name) {
 		obj := c.scope.get_parent(left.name)
 		msg := if obj.kind == .package_ {

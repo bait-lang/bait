@@ -251,6 +251,7 @@ pub struct Ident {
 	pub name string
 	global pkg string
 	global is_mut bool
+	pub is_blank bool
 	pub pos token.Pos
 	pub lang Language
 }
