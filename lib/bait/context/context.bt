@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
-package ast
+package context
 
 // Information shared between parser and checker
 pub struct SemanticContext {

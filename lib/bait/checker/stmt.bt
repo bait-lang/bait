@@ -3,6 +3,7 @@
 package checker
 
 import bait.ast
+import bait.context
 import bait.token
 
 fun (mut c Checker) stmts(stmts []ast.Stmt){
@@ -118,7 +119,7 @@ fun (c Checker) register_label(label string, pos token.Pos) {
 		return
 	}
 
-	c.scope.register(label, ast.ScopeObject{
+	c.scope.register(label, context.ScopeObject{
 		kind = .label
 	})
 }
@@ -173,9 +174,9 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 
 	if node.idxvar is ast.Ident {
 		idxvar := node.idxvar as ast.Ident
-		c.scope.register(idxvar.name, ast.ScopeObject{typ = idx_type})
+		c.scope.register(idxvar.name, context.ScopeObject{typ = idx_type})
 	}
-	c.scope.register(node.valvar.name, ast.ScopeObject{
+	c.scope.register(node.valvar.name, context.ScopeObject{
 		typ = node.val_type
 		is_mut = node.valvar.is_mut
 	})

@@ -3,6 +3,7 @@
 package checker
 
 import bait.ast
+import bait.context
 import bait.token
 
 fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
@@ -167,7 +168,7 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 	return ast.VOID_TYPE
 }
 
-fun (c Checker) find_ident(node ast.Ident) ast.ScopeObject {
+fun (c Checker) find_ident(node ast.Ident) context.ScopeObject {
 	// From imported package or FFI
 	if node.pkg.length > 0 {
 		return c.sema_ctx.scopes[node.pkg].get(node.name)
@@ -178,6 +179,14 @@ fun (c Checker) find_ident(node ast.Ident) ast.ScopeObject {
 }
 
 fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
+	// Blank ident `_`
+	if node.is_blank {
+		if not c.is_lhs_assign {
+			c.error("`_` can only be assigned to", node.pos)
+		}
+		return ast.VOID_TYPE
+	}
+
 	mut obj := c.find_ident(node)
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {

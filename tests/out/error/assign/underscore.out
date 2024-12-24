@@ -1,0 +1,1 @@
+tests/out/error/assign/underscore.in.bt:2:1 error: variable `_var` cannot start with `_`

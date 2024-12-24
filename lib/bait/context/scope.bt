@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
-package ast
+package context
+
+import bait.ast
 
 pub struct Scope {
 	pub parent &Scope
@@ -10,11 +12,11 @@ pub struct Scope {
 
 pub struct ScopeObject{
 	pub mut kind ObjectKind
-	global typ Type
+	global typ ast.Type
 	pub mut is_pub bool
 	pub mut is_mut bool
 	pub mut pkg string // TODO SCOPES move this into Scope (requires multi return)
-	pub mut expr Expr := Void{} // const / static: resolve type on use
+	pub mut expr ast.Expr := ast.Void{} // const / static: resolve type on use
 }
 
 pub enum ObjectKind {
@@ -63,7 +65,7 @@ pub fun (s Scope) get_parent(name string) ScopeObject {
 	}
 }
 
-pub fun (mut s Scope) update_type(name string, typ Type) {
+pub fun (mut s Scope) update_type(name string, typ ast.Type) {
 	// FIXME `obj` should be a copy on js backend and below code not modify the original
 	// obj.typ = typ
 	// s.objects[name] = obj

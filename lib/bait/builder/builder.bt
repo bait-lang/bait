@@ -4,6 +4,7 @@ package builder
 
 import os
 import bait.ast
+import bait.context
 import bait.errors
 import bait.parser
 import bait.checker
@@ -61,7 +62,7 @@ fun (b Builder) parse_file(path string, pkg string) ast.File {
 }
 
 pub fun compile(prefs preference.Prefs) i32 {
-	mut sema_ctx := &ast.SemanticContext{}
+	mut sema_ctx := &context.SemanticContext{}
 
 	mut b := Builder{
 		prefs = prefs

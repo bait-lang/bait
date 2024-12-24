@@ -16,6 +16,9 @@ All notable changes are documented in this file.
 - for-in: Require key and value when iterating over a map
 - Prevent assigning `void` to constants and static variables
 - Remove some noisy errors after other errors were raised
+- Disallow variables starting with `_`
+- Prevent usage of `_` outside of assignments
+- Fix repeated assign or declaration of `_`
 
 ### Result type and error handling
 - Fix nested `or` blocks

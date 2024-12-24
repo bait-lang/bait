@@ -3,6 +3,7 @@
 package checker
 
 import bait.ast
+import bait.context
 import bait.token
 
 fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
@@ -15,7 +16,14 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		return
 	}
 
+	node.left_type = typ
+	node.right_type = typ
+
 	left := node.left as ast.Ident
+	if left.is_blank {
+		return
+	}
+
 	if c.scope.is_known(left.name) {
 		obj := c.scope.get_parent(left.name)
 		msg := if obj.kind == .package_ {
@@ -27,14 +35,19 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		return
 	}
 
-	c.scope.register(left.name, ast.ScopeObject{
+	// Check name conventions
+	if left.name.length > 1 and left.name[0] == `_` {
+		c.error("variable `${left.name}` cannot start with `_`", node.pos)
+		return
+	}
+
+	// Register identifier
+	c.scope.register(left.name, context.ScopeObject{
 		kind = .variable
 		typ = typ
 		is_mut = left.is_mut
 	})
 	c.expr(node.left)
-	node.left_type = typ
-	node.right_type = typ
 }
 
 fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
@@ -56,6 +69,10 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 
 	if node.left is ast.Ident {
 		left := node.left as ast.Ident
+		if left.is_blank {
+			return
+		}
+
 		if not left.is_mut {
 			c.error('cannot assign to immutable variable "${left.name}"', left.pos)
 			return

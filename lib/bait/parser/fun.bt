@@ -3,6 +3,7 @@
 package parser
 
 import bait.ast
+import bait.context
 
 fun (mut p Parser) fun_decl() !ast.FunDecl{
 	pos := p.pos
@@ -105,7 +106,7 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		}
 		typ := p.table.find_or_register_fun(param_types, return_type, false)
 
-		p.pkg_scope.register_unique(name, ast.ScopeObject{
+		p.pkg_scope.register_unique(name, context.ScopeObject{
 			kind = .function
 			typ = typ
 		})

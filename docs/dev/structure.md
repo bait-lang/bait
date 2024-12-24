@@ -20,11 +20,12 @@ See also the [design of core compiler systems](../design/compiler.md).
 ## Compiler Structure
 The compiler consists of the following core packages that are all in the `bait` namespace:
 
-- `ast`: Defines AST nodes, the scope system and the type system
+- `ast`: Defines AST nodes and the type system
 - `builder`: Collect files, resolve imports and run all compilation stages
 - `checker`:
   - Resolve all type information
   - Perfrom error and type checks
+- `context`: Defines the scope system
 - Code Generation
   - `gen.c`: C backend (🚧)
   - `gen.js`: JavaScript backend
