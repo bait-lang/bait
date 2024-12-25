@@ -39,6 +39,7 @@ All notable changes are documented in this file.
 
 ### Compiler internals
 - Refactor scope system for clear separation of packages and FFI
+- Refactor redefinition checking for toplevel symbols
 - Add `transformer` to handle AST optimizations
 - ast: Correctly use `name` and `pkg` fields of `Ident`
 
