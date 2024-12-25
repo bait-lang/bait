@@ -4,7 +4,7 @@ All notable changes are documented in this file.
 > Bait is currently in an Alpha State (`0.0.x`). Breaking changes may occur at any time.
 
 
-## 0.0.8 - unreleased
+## 0.0.8 - 2024-12-25
 ### Breaking
 - Syntax: Replace field modifier groups of structs and interfaces with per-field modifiers ([GH-233](https://github.com/bait-lang/bait/pull/233))
 - Syntax: Replace toplevel `global` with `static` ([GH-249](https://github.com/bait-lang/bait/issues/249))
