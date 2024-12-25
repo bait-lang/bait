@@ -28,7 +28,6 @@ pub fun (mut cmd Command) parse(args []string) {
 	for i := 0; i < args.length; i += 1 {
 		arg := args[i]
 		if arg.starts_with('--') {
-			// FIXME this should require cmd.options to be mutable as well
 			for mut opt in cmd.options {
 				if arg.ends_with(opt.name) {
 					opt.found = true

@@ -6,7 +6,6 @@ pub struct Table {
 	pub mut fun_decls map[string]FunDecl
 	pub mut type_idxs map[string]Type
 	pub mut type_symbols []TypeSymbol
-	pub mut redefined_types []string
 	pub mut needed_equality_funs []Type
 	pub mut needed_str_funs []Type
 	pub mut generic_fun_types map[string][][]Type // Array of concrete types used for each generic fun
