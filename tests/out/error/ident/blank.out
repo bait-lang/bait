@@ -1,3 +1,2 @@
-tests/out/error/ident/blank.in.bt:1:6 error: `_` can only be assigned to
+tests/out/error/ident/blank.in.bt:1:6 error: `_` is only usable for assignment
 tests/out/error/ident/blank.in.bt:1:6 error: expected non-void expression
-tests/out/error/ident/blank.in.bt:2:9 error: `_` can only be assigned to

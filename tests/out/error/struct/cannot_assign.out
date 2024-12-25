@@ -1,0 +1,2 @@
+tests/out/error/struct/cannot_assign.in.bt:7:6 error: unknown function nofun
+tests/out/error/struct/cannot_assign.in.bt:6:6 error: cannot assign to field y: expected i32, got string 

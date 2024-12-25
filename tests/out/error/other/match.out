@@ -1,2 +1,0 @@
-tests/out/error/other/match.in.bt:3:3 error: cannot match string to i32
-tests/out/error/other/match.in.bt:5:2 error: cannot match bool to i32

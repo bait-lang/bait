@@ -1,0 +1,9 @@
+struct Foo{
+	x i32
+	y i32
+}
+
+_ := Foo{
+	x = nofun()
+	y = "hi"
+}
