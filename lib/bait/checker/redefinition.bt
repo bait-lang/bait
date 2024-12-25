@@ -16,7 +16,7 @@ struct Redefinition {
 }
 
 fun stmt_is_redef(stmt ast.Stmt, name string) bool {
-	return (stmt is ast.EnumDecl or stmt is ast.InterfaceDecl or stmt is ast.StructDecl or stmt is ast.TypeDecl) and stmt.name == name
+	return (stmt is ast.EnumDecl or stmt is ast.InterfaceDecl or stmt is ast.TypeDecl) and stmt.name == name
 }
 
 fun (mut c Checker) check_redefinitions(redefs_list []string, files []ast.File) {

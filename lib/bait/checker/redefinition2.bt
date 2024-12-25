@@ -11,6 +11,7 @@ fun is_redef(name string, stmt ast.Stmt) bool {
 		ast.ConstDecl { stmt.name == name }
 		ast.FunDecl { stmt.name == name }
 		ast.StaticDecl { stmt.name == name }
+		ast.StructDecl { stmt.name == name }
 		else { false }
 	}
 }
@@ -30,6 +31,9 @@ fun (mut c Checker) get_signature(s ast.Stmt) string {
 			c.static_decl(mut stmt)
 			typ := c.table.type_name(stmt.typ)
 			return "static ${stmt.name} ${typ}"
+		}
+		ast.StructDecl {
+			return "struct"
 		}
 		else { }
 	}

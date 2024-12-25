@@ -1,4 +1,4 @@
-const foo := 123
+const foo := 1
 
 static foo := true
 
@@ -13,3 +13,7 @@ fun foo(c i32, d i32) i32 {
 }
 
 fun foo[X](x X) {}
+
+
+static MyCapName := 1
+struct MyCapName{}

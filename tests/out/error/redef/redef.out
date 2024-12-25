@@ -4,3 +4,6 @@ tests/out/error/redef/redef.in.bt:3:1 conflict: static foo bool
 tests/out/error/redef/redef.in.bt:5:1 conflict: fun foo(a string)
 tests/out/error/redef/redef.in.bt:11:1 conflict: fun foo(c i32, d i32) i32
 tests/out/error/redef/redef.in.bt:15:1 conflict: fun foo(x X)
+error: redefinition of `MyCapName`
+tests/out/error/redef/redef.in.bt:18:1 conflict: static MyCapName i32
+tests/out/error/redef/redef.in.bt:19:1 conflict: struct MyCapName {}

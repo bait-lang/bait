@@ -45,7 +45,7 @@ graph TD
 #### Package Scopes
 - **Purpose:** Store toplevel declarations and their visibility
 - **Storage:** `ast.SemanticContext.scopes["full.pkg"]`
-- **Contents:** globals, consts
+- **Contents:** static vars, consts, function names, type names
 
 #### Block Scopes
 - **Purpose:** Store local symbols

@@ -27,6 +27,7 @@ pub enum ObjectKind {
 	package_
 	label
 	static_
+	type_
 }
 
 // Register an object in the selected scope
