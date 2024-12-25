@@ -10,3 +10,4 @@ tests/out/error/redef/redef.in.bt:19:1 conflict: struct
 tests/out/error/redef/redef.in.bt:20:1 conflict: fun (string, f64) bool
 tests/out/error/redef/redef.in.bt:21:1 conflict: type []u8
 tests/out/error/redef/redef.in.bt:22:1 conflict: type i8 | i16
+tests/out/error/redef/redef.in.bt:23:1 conflict: enum

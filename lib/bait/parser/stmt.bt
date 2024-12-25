@@ -230,11 +230,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 	}
 	p.check(.rcur)!
 
-	if p.table.type_exists(name) {
-		p.table.redefined_types.push(name)
-	}
-
-	p.table.register_sym(ast.TypeSymbol{
+	typ := p.table.register_sym(ast.TypeSymbol{
 		name = name
 		is_pub = is_pub
 		pkg = p.pkg_name
@@ -242,6 +238,10 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 		info = ast.EnumInfo{
 			vals = variants
 		}
+	})
+	p.pkg_scope.register_unique(name, context.ScopeObject{
+		kind = .type_
+		typ = typ
 	})
 
 	return ast.EnumDecl{
@@ -284,10 +284,6 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 		name += '.'
 		p.next()
 		name += p.check_name()!
-	}
-
-	if p.table.type_exists(name) {
-		p.table.redefined_types.push(name)
 	}
 
 	// TODO investigate why registration of the sym after loop with methods as struct field does not work
@@ -397,11 +393,10 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 
 	lang := p.parse_lang()!
 	mut name := p.check_name()!
-	name = lang.prepend_to(name)
-	mut name_with_pkg := if lang == .bait {
-		p.prepend_pkg(name)
+	if lang == .bait {
+		name = p.prepend_pkg(name)
 	} else {
-		name
+		name = lang.prepend_to(name)
 	}
 
 	p.check(.decl_assign)!
@@ -414,7 +409,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 		sym := p.table.get_sym(variants[0])
 		typ := p.table.register_sym(ast.TypeSymbol{
 			kind = .fun_
-			name = name_with_pkg
+			name = name
 			is_pub = is_pub
 			pkg = p.pkg_name
 			info = sym.info
@@ -426,7 +421,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 
 		return ast.TypeDecl{
 			lang = lang
-			name = name_with_pkg
+			name = name
 			typ = typ
 			pos = pos
 		}
@@ -436,7 +431,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 	if p.tok != .pipe {
 		typ := p.table.register_sym(ast.TypeSymbol{
 			kind = .alias_type
-			name = name_with_pkg
+			name = name
 			parent = variants[0]
 			is_pub = is_pub
 			pkg = p.pkg_name
@@ -448,7 +443,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 
 		return ast.TypeDecl{
 			lang = lang
-			name = name_with_pkg
+			name = name
 			typ = typ
 			pos = pos
 		}
@@ -462,7 +457,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 
 	typ := p.table.register_sym(ast.TypeSymbol{
 		kind = .sum_type
-		name = name_with_pkg
+		name = name
 		is_pub = is_pub
 		pkg = p.pkg_name
 		info = ast.SumTypeInfo{
@@ -476,7 +471,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 
 	return ast.TypeDecl{
 		lang = lang
-		name = name_with_pkg
+		name = name
 		typ = typ
 		pos = pos
 	}

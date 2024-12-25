@@ -20,3 +20,4 @@ struct MyCapName{}
 type MyCapName := fun (string, f64) bool
 type MyCapName := []u8
 type MyCapName := i8 | i16
+enum MyCapName {}

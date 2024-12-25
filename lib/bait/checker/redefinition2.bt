@@ -9,6 +9,7 @@ import bait.token
 fun is_redef(name string, stmt ast.Stmt) bool {
 	return match stmt {
 		ast.ConstDecl { stmt.name == name }
+		ast.EnumDecl { stmt.name == name }
 		ast.FunDecl { stmt.name == name }
 		ast.StaticDecl { stmt.name == name }
 		ast.StructDecl { stmt.name == name }
@@ -24,6 +25,9 @@ fun (mut c Checker) get_signature(s ast.Stmt) string {
 			c.const_decl(mut stmt)
 			typ := c.table.type_name(stmt.typ)
 			return "const ${typ}"
+		}
+		ast.EnumDecl {
+			return "enum"
 		}
 		ast.FunDecl {
 			return c.fun_signature(stmt)

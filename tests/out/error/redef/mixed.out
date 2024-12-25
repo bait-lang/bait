@@ -1,6 +1,0 @@
-error: redfinition of "Mixed"
-tests/out/error/redef/mixed.in.bt:1:1 conflict: struct
-tests/out/error/redef/mixed.in.bt:3:1 conflict: enum
-tests/out/error/redef/mixed.in.bt:7:1 conflict: struct
-tests/out/error/redef/mixed.in.bt:9:1 conflict: type
-tests/out/error/redef/mixed.in.bt:11:1 conflict: interface
