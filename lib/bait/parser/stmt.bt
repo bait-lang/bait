@@ -230,11 +230,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 	}
 	p.check(.rcur)!
 
-	if p.table.type_exists(name) {
-		p.table.redefined_types.push(name)
-	}
-
-	p.table.register_sym(ast.TypeSymbol{
+	typ := p.table.register_sym(ast.TypeSymbol{
 		name = name
 		is_pub = is_pub
 		pkg = p.pkg_name
@@ -242,6 +238,10 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 		info = ast.EnumInfo{
 			vals = variants
 		}
+	})
+	p.pkg_scope.register_unique(name, context.ScopeObject{
+		kind = .type_
+		typ = typ
 	})
 
 	return ast.EnumDecl{
@@ -284,10 +284,6 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 		name += '.'
 		p.next()
 		name += p.check_name()!
-	}
-
-	if p.table.type_exists(name) {
-		p.table.redefined_types.push(name)
 	}
 
 	// TODO investigate why registration of the sym after loop with methods as struct field does not work
@@ -403,11 +399,6 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 		name = lang.prepend_to(name)
 	}
 
-	// Note: exception for builtin due to C backend type declarations
-	if p.table.type_exists(name) and p.pkg_name != 'builtin' {
-		p.table.redefined_types.push(name)
-	}
-
 	p.check(.decl_assign)!
 	is_fun_type := p.tok == .key_fun
 	mut variants := []ast.Type
@@ -423,6 +414,11 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 			pkg = p.pkg_name
 			info = sym.info
 		})
+		p.pkg_scope.register_unique(name, context.ScopeObject{
+			kind = .type_
+			typ = typ
+		})
+
 		return ast.TypeDecl{
 			lang = lang
 			name = name
@@ -440,6 +436,11 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 			is_pub = is_pub
 			pkg = p.pkg_name
 		})
+		p.pkg_scope.register_unique(name, context.ScopeObject{
+			kind = .type_
+			typ = typ
+		})
+
 		return ast.TypeDecl{
 			lang = lang
 			name = name
@@ -453,6 +454,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 		p.next()
 		variants.push(p.parse_type()!)
 	}
+
 	typ := p.table.register_sym(ast.TypeSymbol{
 		kind = .sum_type
 		name = name
@@ -462,6 +464,11 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 			variants = variants
 		}
 	})
+	p.pkg_scope.register_unique(name, context.ScopeObject{
+		kind = .type_
+		typ = typ
+	})
+
 	return ast.TypeDecl{
 		lang = lang
 		name = name
