@@ -149,7 +149,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 		table = b.parser.table
 		sema_ctx = sema_ctx
 	}
-	b.checker.check_redefinitions2(b.parsed_files)
+	b.checker.check_redefinitions(b.parsed_files)
 	if b.checker.errors.length > 0 {
 		for err in b.checker.errors {
 			err.print()
