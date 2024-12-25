@@ -397,15 +397,11 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 
 	lang := p.parse_lang()!
 	mut name := p.check_name()!
-	if lang == .bait {
-		name = p.prepend_pkg(name)
+	name = lang.prepend_to(name)
+	mut name_with_pkg := if lang == .bait {
+		p.prepend_pkg(name)
 	} else {
-		name = lang.prepend_to(name)
-	}
-
-	// Note: exception for builtin due to C backend type declarations
-	if p.table.type_exists(name) and p.pkg_name != 'builtin' {
-		p.table.redefined_types.push(name)
+		name
 	}
 
 	p.check(.decl_assign)!
@@ -418,14 +414,19 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 		sym := p.table.get_sym(variants[0])
 		typ := p.table.register_sym(ast.TypeSymbol{
 			kind = .fun_
-			name = name
+			name = name_with_pkg
 			is_pub = is_pub
 			pkg = p.pkg_name
 			info = sym.info
 		})
+		p.pkg_scope.register_unique(name, context.ScopeObject{
+			kind = .type_
+			typ = typ
+		})
+
 		return ast.TypeDecl{
 			lang = lang
-			name = name
+			name = name_with_pkg
 			typ = typ
 			pos = pos
 		}
@@ -435,14 +436,19 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 	if p.tok != .pipe {
 		typ := p.table.register_sym(ast.TypeSymbol{
 			kind = .alias_type
-			name = name
+			name = name_with_pkg
 			parent = variants[0]
 			is_pub = is_pub
 			pkg = p.pkg_name
 		})
+		p.pkg_scope.register_unique(name, context.ScopeObject{
+			kind = .type_
+			typ = typ
+		})
+
 		return ast.TypeDecl{
 			lang = lang
-			name = name
+			name = name_with_pkg
 			typ = typ
 			pos = pos
 		}
@@ -453,18 +459,24 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 		p.next()
 		variants.push(p.parse_type()!)
 	}
+
 	typ := p.table.register_sym(ast.TypeSymbol{
 		kind = .sum_type
-		name = name
+		name = name_with_pkg
 		is_pub = is_pub
 		pkg = p.pkg_name
 		info = ast.SumTypeInfo{
 			variants = variants
 		}
 	})
+	p.pkg_scope.register_unique(name, context.ScopeObject{
+		kind = .type_
+		typ = typ
+	})
+
 	return ast.TypeDecl{
 		lang = lang
-		name = name
+		name = name_with_pkg
 		typ = typ
 		pos = pos
 	}

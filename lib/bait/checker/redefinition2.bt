@@ -12,6 +12,7 @@ fun is_redef(name string, stmt ast.Stmt) bool {
 		ast.FunDecl { stmt.name == name }
 		ast.StaticDecl { stmt.name == name }
 		ast.StructDecl { stmt.name == name }
+		ast.TypeDecl { stmt.name == name }
 		else { false }
 	}
 }
@@ -22,7 +23,7 @@ fun (mut c Checker) get_signature(s ast.Stmt) string {
 		ast.ConstDecl {
 			c.const_decl(mut stmt)
 			typ := c.table.type_name(stmt.typ)
-			return "const ${stmt.name} ${typ}"
+			return "const ${typ}"
 		}
 		ast.FunDecl {
 			return c.fun_signature(stmt)
@@ -30,10 +31,13 @@ fun (mut c Checker) get_signature(s ast.Stmt) string {
 		ast.StaticDecl {
 			c.static_decl(mut stmt)
 			typ := c.table.type_name(stmt.typ)
-			return "static ${stmt.name} ${typ}"
+			return "static ${typ}"
 		}
 		ast.StructDecl {
 			return "struct"
+		}
+		ast.TypeDecl {
+			return c.type_decl_signature(stmt)
 		}
 		else { }
 	}
@@ -43,7 +47,7 @@ fun (mut c Checker) get_signature(s ast.Stmt) string {
 
 // TODO REDEF generic funs
 fun (c Checker) fun_signature(node ast.FunDecl) string {
-	mut sig := 'fun ${node.name}('
+	mut sig := 'fun ('
 	for i, p in node.params {
 		type_name := c.table.get_sym(p.typ).name
 		sig += '${p.name} ${type_name}'
@@ -56,6 +60,34 @@ fun (c Checker) fun_signature(node ast.FunDecl) string {
 		sig += ' ${c.table.type_name(node.return_type)}'
 	}
 	return sig
+}
+
+fun (c Checker) type_decl_signature(node ast.TypeDecl) string {
+	sym := c.table.get_sym(node.typ)
+	if sym.kind == .alias_type {
+		return "type ${c.table.type_name(sym.parent)}"
+	}
+
+	if sym.kind == .sum_type {
+		info := sym.info as ast.SumTypeInfo
+		mut var_strs := []string{ length = info.variants.length }
+		for i, var in info.variants {
+			var_strs[i] = c.table.type_name(var)
+		}
+		return "type " + var_strs.join(" | ")
+	}
+
+	if sym.kind == .fun_ {
+		info := sym.info as ast.FunInfo
+		mut param_strs := []string{ length = info.param_types.length }
+		for i, p in info.param_types {
+			param_strs[i] = c.table.type_name(p)
+		}
+		ret := c.table.type_name(info.return_type)
+		return "fun (" + param_strs.join(", ") + ") " + ret
+	}
+
+	return "type"
 }
 
 pub fun (mut c Checker) check_redefinitions2(files []ast.File) {

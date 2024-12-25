@@ -1,2 +1,0 @@
-type All := i32
-type All := fun() bool
