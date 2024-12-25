@@ -174,7 +174,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 
 	// Handle special builtin functions
 	if node.name == 'println' or node.name == 'eprintln' or node.name == 'print' or node.name == 'eprint' {
-		node.args[0].typ = c.expr(node.args[0].expr)
+		node.args[0].typ = c.non_void_expr(node.args[0].expr) or { ast.ERROR_TYPE }
 		return ast.VOID_TYPE
 	}
 
@@ -453,7 +453,7 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 			return
 		}
 
-		c.warn("or-block returns ${c.table.type_name(last_stmt_type)}, expected ${c.table.type_name(ret_sym.parent)}", node.pos)
+		c.error("or-block returns ${c.table.type_name(last_stmt_type)}, expected ${c.table.type_name(ret_sym.parent)}", node.pos)
 	}
 }
 
