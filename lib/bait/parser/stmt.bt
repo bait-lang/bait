@@ -149,7 +149,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 			kind = .constant
 			pkg = ffi_pkg
 			typ = typ
-			is_pub = true // TODO rethink ffi pub behaviour (pub by default + warn on pub keyword OR require pub keyword)
+			is_pub = true // TODO FFI rethink ffi pub behaviour (pub by default + warn on pub keyword OR require pub keyword)
 		})
 
 		return ast.ConstDecl{

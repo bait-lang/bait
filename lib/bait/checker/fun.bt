@@ -46,7 +46,7 @@ fun (mut c Checker) fun_decl(mut node ast.FunDecl) {
 fun (mut c Checker) fun_instance(mut node ast.FunDecl) {
 	c.returns = false
 	c.cur_fun = node
-	c.check_fun_attrs(mut node) // FIXME this should error because node is not mut
+	c.check_fun_attrs(mut node)
 
 	// save current generic names in outer scope and override them with
 	// the funs' generic names (so does_type_exist can detect nonexistent generic names)
