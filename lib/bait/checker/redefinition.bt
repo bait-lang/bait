@@ -13,23 +13,18 @@ pub fun (mut c Checker) check_redefinitions(files []ast.File) {
 		redefined_syms := scope.get_unique_redefinitions()
 
 		for redef in redefined_syms {
-			err := errors.Message{
-				kind = .error
-				msg = "redefinition of `${redef}`"
-				infos = c.get_conflicts(redef, files)
-			}
-			c.errors.push(err)
+			c.generic_error("redefinition of `${redef}`")
+			c.add_conflicts(redef, files)
 		}
 	}
 }
 
-fun (mut c Checker) get_conflicts(name string, files []ast.File) []errors.Message {
-	mut conflicts := []errors.Message
+fun (mut c Checker) add_conflicts(name string, files []ast.File) {
 	for file in files {
 		if file.pkg_name == c.pkg or file.pkg_name == "builtin" {
 			for stmt in file.stmts {
 				if is_redef(name, stmt) {
-					conflicts.push(errors.Message{
+					c.errors.push(errors.Message{
 						kind = .info
 						path = file.path
 						pos = (stmt as ast.InvalidStmt).pos
@@ -40,8 +35,6 @@ fun (mut c Checker) get_conflicts(name string, files []ast.File) []errors.Messag
 			}
 		}
 	}
-
-	return conflicts
 }
 
 fun (mut c Checker) get_signature(s ast.Stmt) string {
