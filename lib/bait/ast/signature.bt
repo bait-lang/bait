@@ -1,0 +1,48 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package ast
+
+pub fun (t Table) fun_decl_signature(node FunDecl) string {
+	sym := t.get_sym(node.typ)
+	info := sym.info as FunInfo
+	return t.fun_signature(info.param_types, info.return_type, true)
+}
+
+// TODO generic funs
+fun (t Table) fun_signature(params []Type, return_type Type, pretty bool) string {
+	mut param_strs := []string{ length = params.length }
+	for i, p in params {
+		param_strs[i] = t.type_name(p)
+	}
+	ret := t.type_name(return_type)
+
+	return if pretty {
+		"fun (" + param_strs.join(", ") + ") " + ret
+	} else {
+		"fun_" + param_strs.join("_") + "_" + ret
+	}
+}
+
+pub fun (t Table) type_decl_signature(node TypeDecl) string {
+	sym := t.get_sym(node.typ)
+
+	if sym.kind == .alias_type {
+		return "type ${t.type_name(sym.parent)}"
+	}
+
+	if sym.kind == .sum_type {
+		info := sym.info as SumTypeInfo
+		mut var_strs := []string{ length = info.variants.length }
+		for i, var in info.variants {
+			var_strs[i] = t.type_name(var)
+		}
+		return "type " + var_strs.join(" | ")
+	}
+
+	if sym.kind == .fun_ {
+		info := sym.info as FunInfo
+		return "type " + t.fun_signature(info.param_types, info.return_type, true)
+	}
+
+	return "type"
+}

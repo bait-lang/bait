@@ -140,7 +140,7 @@ pub fun (t Table) find_or_register_map(key_type Type, val_type Type) Type {
 
 // FIXME register fun aliases as alias with fun info
 pub fun (t Table) find_or_register_fun(param_types []Type, return_type Type, alias bool) Type {
-	name := 'fun_' + t.fun_type_signature(param_types, return_type)
+	name := 'fun_' + t.fun_signature(param_types, return_type, false)
 	idx := t.get_idx(name)
 	if idx > 0 as Type {
 		return idx
@@ -155,15 +155,6 @@ pub fun (t Table) find_or_register_fun(param_types []Type, return_type Type, ali
 			return_type = return_type
 		}
 	})
-}
-
-pub fun (t Table) fun_type_signature(param_types []Type, return_type Type) string {
-	mut sig := ''
-	for param in param_types {
-		sig += t.get_sym(param).name + '_'
-	}
-	sig += '_' + t.get_sym(return_type).name
-	return sig
 }
 
 pub fun (t Table) find_type_or_add_placeholder(name string, pkg string) Type {

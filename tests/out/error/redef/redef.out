@@ -1,13 +1,13 @@
 error: redefinition of `foo`
 tests/out/error/redef/redef.in.bt:1:1 conflict: const i32
 tests/out/error/redef/redef.in.bt:3:1 conflict: static bool
-tests/out/error/redef/redef.in.bt:5:1 conflict: fun (a string)
-tests/out/error/redef/redef.in.bt:11:1 conflict: fun (c i32, d i32) i32
-tests/out/error/redef/redef.in.bt:15:1 conflict: fun (x X)
+tests/out/error/redef/redef.in.bt:5:1 conflict: fun (string) void
+tests/out/error/redef/redef.in.bt:11:1 conflict: fun (i32, i32) i32
+tests/out/error/redef/redef.in.bt:15:1 conflict: fun (X) void
 error: redefinition of `MyCapName`
 tests/out/error/redef/redef.in.bt:18:1 conflict: static i32
 tests/out/error/redef/redef.in.bt:19:1 conflict: struct
-tests/out/error/redef/redef.in.bt:20:1 conflict: fun (string, f64) bool
+tests/out/error/redef/redef.in.bt:20:1 conflict: type fun (string, f64) bool
 tests/out/error/redef/redef.in.bt:21:1 conflict: type []u8
 tests/out/error/redef/redef.in.bt:22:1 conflict: type i8 | i16
 tests/out/error/redef/redef.in.bt:23:1 conflict: enum

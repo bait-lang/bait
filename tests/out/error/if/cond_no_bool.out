@@ -1,2 +1,2 @@
-tests/out/error/if/cond_no_bool.in.bt:4:2 error: expected bool, got fun__void
+tests/out/error/if/cond_no_bool.in.bt:4:2 error: expected bool, got fun_fun__void
 tests/out/error/if/cond_no_bool.in.bt:5:2 error: expected bool, got i32
