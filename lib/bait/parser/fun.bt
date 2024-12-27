@@ -104,11 +104,11 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		for param in params {
 			param_types.push(param.typ)
 		}
-		typ := p.table.find_or_register_fun(param_types, return_type, false)
+		node.typ = p.table.find_or_register_fun(param_types, return_type, false)
 
 		p.pkg_scope.register_unique(name, context.ScopeObject{
 			kind = .function
-			typ = typ
+			typ = node.typ
 		})
 	}
 

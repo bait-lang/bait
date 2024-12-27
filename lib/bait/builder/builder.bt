@@ -41,7 +41,8 @@ fun (b Builder) bait_files_in_dir(dir string) ![]string {
 }
 
 fun (b Builder) get_builtin_files() []string {
-	return b.bait_files_in_dir(b.resolve_import("", "builtin")) or {
+	builtin_path := b.resolve_import("", "builtin")
+	return b.bait_files_in_dir(builtin_path) or {
 		panic(err)
 	}
 }

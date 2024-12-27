@@ -18,21 +18,15 @@ pub struct Message{
 	pub pos token.Pos
 	pub title string
 	pub msg string
-	global infos []Message
 }
 
 pub fun (msg Message) print() {
 	if msg.path.length == 0 {
 		generic_error(msg.msg)
-		for info in msg.infos {
-			info.print()
-		}
 		return
 	}
+
 	message(msg.kind, msg.title, msg.path, msg.pos, msg.msg)
-	for info in msg.infos {
-		info.print()
-	}
 }
 
 pub fun (msgs []Message) print() {

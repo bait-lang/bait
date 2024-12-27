@@ -92,6 +92,7 @@ pub struct FunDecl {
 	pub is_test bool
 	pub attrs []Attribute
 	pub pos token.Pos
+	global typ Type
 	global is_method bool
 	global noreturn bool
 	global stmts []Stmt
