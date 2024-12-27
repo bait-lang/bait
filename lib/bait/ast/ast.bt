@@ -7,7 +7,7 @@ import bait.errors
 
 type Stmt := AssertStmt | AssignStmt | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | StaticDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | IfMatch | Void | InvalidStmt
 
-type Expr := AnonFun | ArrayInit | AsCast | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TmpVar | TypeOf | Void | InvalidExpr
+type Expr := AnonFun | ArrayInit | AsCast | BlankIdent | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TmpVar | TypeOf | Void | InvalidExpr
 
 pub struct AssertStmt {
 	pub expr Expr
@@ -179,6 +179,11 @@ pub struct AsCast {
 	global expr_type Type
 	pub expr Expr
 	pub target Type
+	pub pos token.Pos
+}
+
+// `_` identifier for discarded values
+pub struct BlankIdent {
 	pub pos token.Pos
 }
 
