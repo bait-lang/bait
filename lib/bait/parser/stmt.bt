@@ -86,11 +86,13 @@ fun (mut p Parser) stmt_with_name() !ast.Stmt{
 		return p.for_loop(label)!
 	}
 
+	// Assign
 	left := p.expr(.lowest)!
 	if p.tok.is_assign() {
 		return p.partial_assign_stmt(left)!
 	}
 
+	// Expression
 	return ast.ExprStmt{expr = left}
 }
 

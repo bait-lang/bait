@@ -10,7 +10,7 @@ pub enum Precedence {
 	sum
 	product
 	prefix
-	call
+	select
 	index
 }
 
@@ -20,7 +20,7 @@ pub fun (t Token) precedence() Precedence {
 			Precedence.index
 		}
 		.dot {
-			.call
+			.select
 		}
 		.key_not {
 			.prefix

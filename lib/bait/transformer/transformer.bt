@@ -55,6 +55,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.AnonFun {}
 		ast.ArrayInit {}
 		ast.AsCast {}
+		ast.BlankIdent {}
 		ast.BoolLiteral {}
 		ast.CallExpr { t.call_expr(mut expr) }
 		ast.CharLiteral {}

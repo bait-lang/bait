@@ -11,19 +11,22 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		return
 	}
 
+	// Type info must be set for BlankIdent as well due to backend limitations
+	node.left_type = typ
+	node.right_type = typ
+
+	if node.left is ast.BlankIdent {
+		return
+	}
+
 	if not (node.left is ast.Ident) {
 		c.error('cannot declare a variable with a non-identifier', node.pos)
 		return
 	}
 
-	node.left_type = typ
-	node.right_type = typ
-
 	left := node.left as ast.Ident
-	if left.is_blank {
-		return
-	}
 
+	// Name shadowing
 	if c.scope.is_known(left.name) {
 		obj := c.scope.get_parent(left.name)
 		msg := if obj.kind == .package_ {
@@ -35,7 +38,7 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		return
 	}
 
-	// Check name conventions
+	// Name conventions
 	if left.name.length > 1 and left.name[0] == `_` {
 		c.error("variable `${left.name}` cannot start with `_`", node.pos)
 		return
@@ -67,12 +70,13 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 		return
 	}
 
+	if node.left is ast.BlankIdent {
+		return
+	}
+
+	// Mutability check
 	if node.left is ast.Ident {
 		left := node.left as ast.Ident
-		if left.is_blank {
-			return
-		}
-
 		if not left.is_mut {
 			c.error('cannot assign to immutable variable "${left.name}"', left.pos)
 			return
@@ -99,6 +103,7 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 		}
 	}
 
+	// Type check
 	if not c.check_types(node.right_type, node.left_type) {
 		c.error('cannot assign type ${c.table.type_name(node.right_type)} to ${c.table.type_name(node.left_type)}', node.pos)
 	}

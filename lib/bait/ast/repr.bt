@@ -9,6 +9,7 @@ pub fun (e Expr) repr() string {
 		AnonFun { 'anon_fun'}
 		ArrayInit { '[]XX' }
 		AsCast { e.expr.repr() + ' as XX' }
+		BlankIdent { '_' }
 		BoolLiteral { e.str() }
 		CallExpr{ e.name + '()'}
 		CharLiteral { e.val }

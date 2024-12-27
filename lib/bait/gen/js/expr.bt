@@ -13,6 +13,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.AnonFun { g.anon_fun(expr) }
 		ast.ArrayInit { g.array_init(expr) }
 		ast.AsCast { g.as_cast(expr) }
+		ast.BlankIdent { g.write(g.new_temp_var()) }
 		ast.BoolLiteral { g.bool_literal(expr) }
 		ast.CallExpr { g.call_expr(expr) }
 		ast.CharLiteral { g.char_literal(expr) }
@@ -132,11 +133,6 @@ fun (mut g Gen) hash_expr(node ast.HashExpr) {
 fun (mut g Gen) ident(node ast.Ident) {
 	if node.lang != .bait {
 		g.write(node.full_name())
-		return
-	}
-
-	if node.is_blank {
-		g.write(g.new_temp_var())
 		return
 	}
 
