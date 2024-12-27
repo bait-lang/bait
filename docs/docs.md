@@ -204,19 +204,53 @@ fun main() {
 ```
 
 
-## Package Imports
+## Importing packages
+Packages are imported using the `import` keyword.
+All public symbols can be accessed using the package name as prefix:
+
 ```bait
 import os
 
 fun main(){
-    text := os.read_file('myfile.txt')
+    // Call `read_file` using the `os.` prefix
+    t := os.read_file('myfile.txt')
 }
 ```
+
+Please note that imports are on a per-file basis.
+
+Selective imports of specific symbols are _not_ supported.
+
+
+### Subpackages
+For subpackages only the last part of the name is used as prefix:
+```bait
+import term.color
+
+fun main(){
+    r := color.bold("hello")
+}
+```
+
+This is regardless of the nesting depth,
+so a function from `foo.bar.baz` would be called like `baz.func()`.
+
+
+### Import aliasing
+Any imported package can be aliased using the `as` keyword.
+This is commonly used to avoid name conflicts.
+
+```xbait
+import hash.crc32
+import custom.crc32 as mycrc32
+```
+
 
 ## Package Declaration
 ```bait
 package my_pkg
 ```
+
 
 ## Symbol Visibility
 By default all symbols are private to the package they are declared in.
