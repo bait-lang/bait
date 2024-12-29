@@ -196,7 +196,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 			return ast.ERROR_TYPE
 		}
 
-		c.error('undefined identifier ${node.full_name()}', node.pos)
+		c.error("undefined ident `${node.full_name()}`", node.pos)
 		return ast.ERROR_TYPE
 	}
 

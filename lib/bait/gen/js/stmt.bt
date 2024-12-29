@@ -21,6 +21,8 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		g.assert_stmt(stmt)
 	} else if stmt is ast.AssignStmt {
 		g.assign_stmt(stmt)
+	} else if stmt is ast.Block {
+		g.block(stmt)
 	} else if stmt is ast.ConstDecl {
 		g.const_decl(stmt)
 	} else if stmt is ast.ExprStmt {
@@ -183,6 +185,13 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 	if not g.is_for_loop_head {
 		g.writeln('')
 	}
+}
+
+fun (mut g Gen) block(node ast.Block) {
+	g.save_stmt_offset()
+	g.writeln('{')
+	g.stmts(node.stmts)
+	g.writeln('}')
 }
 
 fun (mut g Gen) const_decl(node ast.ConstDecl){

@@ -30,6 +30,7 @@ fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 	match stmt {
 		ast.AssertStmt { t.assert_stmt(mut stmt) }
 		ast.AssignStmt { t.assign_stmt(mut stmt) }
+		ast.Block { t.stmts(mut stmt.stmts) }
 		ast.ConstDecl { return t.const_decl(stmt) }
 		ast.ExprStmt { t.expr(mut stmt.expr) }
 		ast.EnumDecl {}

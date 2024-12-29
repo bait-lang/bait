@@ -65,6 +65,7 @@ fun (mut p Parser) script_mode_main() !ast.FunDecl {
 
 fun (mut p Parser) stmt() !ast.Stmt {
 	return match p.tok {
+		.lcur { p.block_stmt()! }
 		.name { p.stmt_with_name()! }
 		.key_assert { p.assert_stmt()! }
 		.key_break, .key_continue { p.loop_control_stmt()! }
@@ -121,6 +122,15 @@ fun (mut p Parser) partial_assign_stmt(left ast.Expr) !ast.AssignStmt {
 		left = left
 		right = right
 		pos = (left as ast.InvalidExpr).pos
+	}
+}
+
+fun (mut p Parser) block_stmt() !ast.Block {
+	pos := p.pos
+	stmts := p.parse_block()!
+	return ast.Block{
+		stmts = stmts
+		pos = pos
 	}
 }
 

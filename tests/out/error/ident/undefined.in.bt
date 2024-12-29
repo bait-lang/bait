@@ -8,3 +8,5 @@ _ := xyz == 23
 _ := 45 != qwe
 
 _ := foo.bar
+
+_ := ast.StructInit{}

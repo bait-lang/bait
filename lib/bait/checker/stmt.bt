@@ -16,6 +16,7 @@ fun (mut c Checker) stmt(mut stmt ast.Stmt){
 	match stmt {
 		ast.AssertStmt { c.assert_stmt(stmt) }
 		ast.AssignStmt { c.assign_stmt(mut stmt) }
+		ast.Block { c.stmts(mut stmt.stmts) }
 		ast.ConstDecl { c.const_decl(mut stmt) }
 		ast.ExprStmt { c.expr_stmt(mut stmt) }
 		ast.EnumDecl { c.enum_decl(stmt) }
