@@ -1,5 +1,5 @@
 tests/out/error/generics/nonexistent_generic_sym.in.bt:5:9 error: unknown type T
 tests/out/error/generics/nonexistent_generic_sym.in.bt:5:14 error: unknown type T
-tests/out/error/generics/nonexistent_generic_sym.in.bt:6:15 error: undefined identifier x
-tests/out/error/generics/nonexistent_generic_sym.in.bt:6:23 error: undefined identifier x
-tests/out/error/generics/nonexistent_generic_sym.in.bt:6:34 error: undefined identifier y
+tests/out/error/generics/nonexistent_generic_sym.in.bt:6:15 error: undefined ident `x`
+tests/out/error/generics/nonexistent_generic_sym.in.bt:6:23 error: undefined ident `x`
+tests/out/error/generics/nonexistent_generic_sym.in.bt:6:34 error: undefined ident `y`

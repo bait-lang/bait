@@ -18,6 +18,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
 		ast.AssertStmt { g.assert_stmt(stmt) }
 		ast.AssignStmt { g.assign_stmt(stmt) }
+		ast.Block { g.block(stmt) }
 		ast.ConstDecl { g.const_decl(stmt) }
 		ast.EnumDecl {} // see write_types()
 		ast.ExprStmt { g.expr_stmt(stmt) }
@@ -78,6 +79,13 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	if not g.is_for_loop_head {
 		g.writeln(';')
 	}
+}
+
+fun (mut g Gen) block(node ast.Block) {
+	g.save_stmt_offset()
+	g.writeln('{')
+	g.stmts(node.stmts)
+	g.writeln('}')
 }
 
 fun (mut g Gen) const_decl(node ast.ConstDecl){

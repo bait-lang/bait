@@ -191,7 +191,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	mut obj := c.find_ident(node)
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
-		c.error('undefined identifier ${node.full_name()}', node.pos)
+		c.error("undefined ident `${node.full_name()}`", node.pos)
 		return ast.ERROR_TYPE
 	}
 
