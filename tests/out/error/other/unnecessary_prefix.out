@@ -1,0 +1,1 @@
+tests/out/error/other/unnecessary_prefix.in.bt:6:7 error: unnecessary package prefix `mypkg`

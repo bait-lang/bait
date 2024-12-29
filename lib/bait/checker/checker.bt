@@ -16,6 +16,7 @@ pub struct Checker{
 	mut scope context.Scope
 	mut path string
 	mut pkg string
+	mut pkg_alias string
 	mut has_main_pkg_files bool
 	mut has_main_fun bool
 	mut is_js_file bool
@@ -82,6 +83,7 @@ fun (mut c Checker) change_file(file ast.File) {
 	c.path = file.path
 	c.is_js_file = c.path.contains('.js.')
 	c.pkg = file.pkg_name
+	c.pkg_alias = file.pkg_name.all_after_last('.')
 
 	c.scope = context.Scope{
 		parent = c.sema_ctx.scopes[c.pkg]
