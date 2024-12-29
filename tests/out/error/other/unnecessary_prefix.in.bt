@@ -1,0 +1,7 @@
+package mypkg
+
+const FOO := 1
+
+fun x() {
+	_ := mypkg.FOO
+}
