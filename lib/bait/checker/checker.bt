@@ -25,6 +25,7 @@ pub struct Checker{
 	mut need_generic_resolve bool
 	mut cur_generic_names []string
 	mut expected_type ast.Type
+	mut expecting_expr bool
 	mut is_lhs_assign bool
 	mut is_if_match_expr bool
 	mut is_sumtype_match bool

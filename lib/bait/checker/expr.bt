@@ -223,7 +223,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 
 fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 	node.left_type = c.expr(node.left)
-	c.expr(node.index)
+	_ = c.expr(node.index)
 	sym := c.table.get_sym(node.left_type)
 	if sym.kind == .array {
 		info := sym.info as ast.ArrayInfo

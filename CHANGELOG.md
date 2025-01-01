@@ -6,6 +6,7 @@ All notable changes are documented in this file.
 
 ## 0.0.9 - unreleased
 ### Error Checks
+- Warn if return value of function is unused
 - Improve various error messages and reduce noise
 
 

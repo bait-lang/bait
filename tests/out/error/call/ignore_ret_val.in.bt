@@ -1,0 +1,10 @@
+fun foo(x i32) i32 {
+	return 1
+}
+
+foo(1)
+_ := foo(2)
+_ = foo(3)
+
+// No warning when used as returning expression
+x := if false { 1 } else { foo(4) }

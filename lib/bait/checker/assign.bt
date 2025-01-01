@@ -50,7 +50,7 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		typ = typ
 		is_mut = left.is_mut
 	})
-	c.expr(node.left)
+	_ = c.expr(node.left)
 }
 
 fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {

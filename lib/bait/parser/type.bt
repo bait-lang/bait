@@ -162,7 +162,7 @@ fun (mut p Parser) generic_type_names() ![]string {
 
 		idx := p.table.get_idx(name)
 		if idx == 0 {
-			p.table.register_sym(ast.TypeSymbol{
+			_ = p.table.register_sym(ast.TypeSymbol{
 				name = name
 				kind = .generic
 				is_pub = true

@@ -25,7 +25,7 @@ fun (mut c Checker) stmt(mut stmt ast.Stmt){
 		ast.ForInLoop { c.for_in_loop(mut stmt) }
 		ast.FunDecl { c.fun_decl(mut stmt) }
 		ast.StaticDecl { c.static_decl(mut stmt) }
-		ast.IfMatch { c.if_match(mut stmt) }
+		ast.IfMatch { _ = c.if_match(mut stmt) }
 		ast.InterfaceDecl { c.interface_decl(stmt) }
 		ast.LoopControlStmt { c.loop_control_stmt(stmt) }
 		ast.ReturnStmt { c.return_stmt(mut stmt) }
@@ -62,12 +62,25 @@ fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
 	mut expr := node.expr
 	node.typ = c.expr(mut expr)
 
-	// Used are all exprs inside if/match expr and or blocks, functions calls, if/match stmt and HashExprs
-	if c.is_if_match_expr or c.is_or_block or expr is ast.CallExpr or expr is ast.IfMatch or expr is ast.HashExpr {
+	if c.expecting_expr {
+		return
+	}
+
+	// Warn if function call with return value is not used
+	if expr is ast.CallExpr {
+		if expr.return_type > ast.VOID_TYPE {
+			c.warn("please use `_ = ${expr.name}()` to explicitly ignore the return value", expr.pos)
+		}
+
+		return
+	}
+
+	// Used are all exprs inside if/match expr and or blocks, if/match stmt and HashExprs
+	if c.is_if_match_expr or c.is_or_block or expr is ast.IfMatch or expr is ast.HashExpr {
 		return
 	}
 	e := expr as ast.InvalidExpr
-	c.error('expression evaluated but not used', e.pos)
+	c.warn('expression evaluated but not used', e.pos)
 }
 
 fun (c Checker) enum_decl(node ast.EnumDecl) {
@@ -128,7 +141,7 @@ fun (c Checker) register_label(label string, pos token.Pos) {
 fun (mut c Checker) for_loop(node ast.ForLoop) {
 	c.open_scope()
 	c.register_label(node.label, node.pos)
-	c.expr(node.cond)
+	_ = c.expr(node.cond)
 	loop_safe := c.is_loop
 	c.is_loop = true
 	c.stmts(node.stmts)
@@ -140,7 +153,7 @@ fun (mut c Checker) for_classic_loop(node ast.ForClassicLoop) {
 	c.open_scope()
 	c.register_label(node.label, node.pos)
 	c.stmt(node.init)
-	c.expr(node.cond)
+	_ = c.expr(node.cond)
 	c.stmt(node.inc)
 	loop_safe := c.is_loop
 	c.is_loop = true

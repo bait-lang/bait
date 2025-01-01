@@ -38,7 +38,7 @@ fun (mut g Gen) if_match(node ast.IfMatch) {
 
 		if node.is_expr {
 			if g.empty_line {
-				g.cut_before(`\n`)
+				_ = g.cut_before(`\n`)
 			}
 			last_line_cut := g.cut_before_any('\n\t')
 

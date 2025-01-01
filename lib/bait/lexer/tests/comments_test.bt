@@ -25,8 +25,8 @@ fun test_store_mode() {
 	assert l.next() == .comment
 	assert l.val() == ' my comment'
 
-	l.next()
-	l.next()
+	_ = l.next()
+	_ = l.next()
 
 	assert l.next() == .comment
 	assert l.val() == '   spaces'

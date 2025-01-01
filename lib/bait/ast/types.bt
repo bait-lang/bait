@@ -113,37 +113,37 @@ pub fun (sym TypeSymbol) has_method(name string) bool {
 
 pub fun (t Table) register_builtins(){
 	// IMPORTANT: Order of registration must match the order of the constants above
-	t.register_sym(TypeSymbol{ name = '_' }) // PLACEHOLDER_TYPE
-	t.register_sym(TypeSymbol{ name = '_err' }) // ERROR_TYPE
-	t.register_sym(TypeSymbol{ name = 'void' })
-	t.register_num('i8')
-	t.register_num('i16')
-	t.register_num('i32')
-	t.register_num('i64')
-	t.register_num('u8')
-	t.register_num('u16')
-	t.register_num('u32')
-	t.register_num('u64')
-	t.register_sym(TypeSymbol{ name = 'f32' })
-	t.register_sym(TypeSymbol{ name = 'f64' })
-	t.register_sym(TypeSymbol{ name = 'bool' })
-	t.register_sym(TypeSymbol{
+	_ = t.register_sym(TypeSymbol{ name = '_' }) // PLACEHOLDER_TYPE
+	_ = t.register_sym(TypeSymbol{ name = '_err' }) // ERROR_TYPE
+	_ = t.register_sym(TypeSymbol{ name = 'void' })
+	_ = t.register_num('i8')
+	_ = t.register_num('i16')
+	_ = t.register_num('i32')
+	_ = t.register_num('i64')
+	_ = t.register_num('u8')
+	_ = t.register_num('u16')
+	_ = t.register_num('u32')
+	_ = t.register_num('u64')
+	_ = t.register_sym(TypeSymbol{ name = 'f32' })
+	_ = t.register_sym(TypeSymbol{ name = 'f64' })
+	_ = t.register_sym(TypeSymbol{ name = 'bool' })
+	_ = t.register_sym(TypeSymbol{
 		name = 'string'
 		kind = .string
 	})
-	t.register_sym(TypeSymbol{
+	_ = t.register_sym(TypeSymbol{
 		name = 'Array'
 		kind = .array
 	})
-	t.register_sym(TypeSymbol{
+	_ = t.register_sym(TypeSymbol{
 		name = 'Map'
 		kind = .map
 	})
-	t.register_sym(TypeSymbol{ name = 'any'})
+	_ = t.register_sym(TypeSymbol{ name = 'any'})
 }
 
 pub fun (t Table) register_num(name string) {
-	t.register_sym(TypeSymbol{
+	_ = t.register_sym(TypeSymbol{
 		name = name
 		kind = .number
 		is_pub = true
