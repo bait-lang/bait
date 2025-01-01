@@ -39,8 +39,7 @@ fun (mut p Parser) foreign_import(pos token.Pos) !ast.Import {
 	if lang == .js {
 		alias = lang.prepend_to(p.check_name()!)
 	} else if lang == .c {
-		// TODO require _ := foo() too explicitly discard the return value
-		p.check_name()! // just discard the name
+		_ = p.check_name()!
 	}
 
 	return ast.Import{

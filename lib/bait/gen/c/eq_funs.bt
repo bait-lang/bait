@@ -7,7 +7,7 @@ import bait.errors
 
 fun (g Gen) gen_equality_funs() {
 	for typ in g.table.needed_equality_funs {
-		g.equality_fun(typ)
+		_ = g.equality_fun(typ)
 	}
 }
 

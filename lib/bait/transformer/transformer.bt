@@ -32,7 +32,7 @@ fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 		ast.AssignStmt { t.assign_stmt(mut stmt) }
 		ast.Block { t.stmts(mut stmt.stmts) }
 		ast.ConstDecl { return t.const_decl(stmt) }
-		ast.ExprStmt { t.expr(mut stmt.expr) }
+		ast.ExprStmt { _ = t.expr(mut stmt.expr) }
 		ast.EnumDecl {}
 		ast.ForLoop { t.for_loop(mut stmt) }
 		ast.ForClassicLoop { t.for_classic_loop(mut stmt) }
@@ -85,7 +85,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 }
 
 fun (t Transformer) assert_stmt(mut node ast.AssertStmt) {
-	t.expr(node.expr)
+	_ = t.expr(node.expr)
 }
 
 fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
@@ -100,8 +100,8 @@ fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
 		}
 	}
 
-	t.expr(node.left)
-	t.expr(node.right)
+	_ = t.expr(node.left)
+	_ = t.expr(node.right)
 }
 
 fun (t Transformer) const_decl(node ast.ConstDecl) ast.Stmt {
@@ -118,8 +118,8 @@ fun (t Transformer) for_loop(mut node ast.ForLoop) {
 
 // FIXME for all this file: args must be marked mut (missing error)
 fun (t Transformer) for_classic_loop(mut node ast.ForClassicLoop) {
-	t.stmt(node.init)
-	t.stmt(node.inc)
+	_ = t.stmt(node.init)
+	_ = t.stmt(node.inc)
 	t.stmts(node.stmts)
 }
 
@@ -159,13 +159,13 @@ fun (t Transformer) if_match(mut node ast.IfMatch) {
 }
 
 fun (t Transformer) return_stmt(mut node ast.ReturnStmt) {
-	t.expr(node.expr)
+	_ = t.expr(node.expr)
 }
 
 fun (t Transformer) call_expr(mut node ast.CallExpr) {
-	t.expr(node.left)
+	_ = t.expr(node.left)
 	for arg in node.args {
-		t.expr(arg.expr)
+		_ = t.expr(arg.expr)
 	}
 
 	if node.or_block.kind == .block {
@@ -202,6 +202,6 @@ fun (t Transformer) call_expr(mut node ast.CallExpr) {
 }
 
 fun (t Transformer) infix_expr(mut node ast.InfixExpr) {
-	t.expr(node.left)
-	t.expr(node.right)
+	_ = t.expr(node.left)
+	_ = t.expr(node.right)
 }
