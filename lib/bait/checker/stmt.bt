@@ -62,6 +62,10 @@ fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
 	mut expr := node.expr
 	node.typ = c.expr(mut expr)
 
+	if c.expecting_expr {
+		return
+	}
+
 	// Warn if function call with return value is not used
 	if expr is ast.CallExpr {
 		if expr.return_type > ast.VOID_TYPE {

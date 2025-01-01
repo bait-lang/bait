@@ -442,12 +442,11 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 		kind = .variable
 		typ = ast.STRING_TYPE
 	})
-	c.stmts(node.or_block.stmts)
+	last_stmt_type := c.stmts_with_return(node.or_block.stmts)
 	c.close_scope()
 	c.is_or_block = false
 
 	// Check or-block return type
-	last_stmt_type := c.stmt_return_type(node.or_block.stmts.last())
 	if not c.check_types(last_stmt_type, ret_sym.parent) {
 		if has_toplevel_return(node.or_block.stmts) {
 			return

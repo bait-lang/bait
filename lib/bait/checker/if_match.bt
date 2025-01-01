@@ -73,9 +73,14 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 			c.expected_type = node.typ
 		}
 
-		c.stmts(branch.stmts)
+		if node.is_expr {
+			_ = c.stmts_with_return(branch.stmts)
+		} else {
+			c.stmts(branch.stmts)
+		}
 		c.close_scope()
 
+		// TODO simplify
 		if node.is_expr {
 			last := branch.stmts.last()
 			if is_noreturn(last) {
