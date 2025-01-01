@@ -5,6 +5,8 @@ All notable changes are documented in this file.
 
 
 ## 0.0.9 - unreleased
+### Error Checks
+- Improve various error messages and reduce noise
 
 
 ## 0.0.8 - 2024-12-25
@@ -18,7 +20,7 @@ All notable changes are documented in this file.
 - Prevent calling struct fields that are not callable
 - for-in: Require key and value when iterating over a map
 - Prevent assigning `void` to constants and static variables
-- Remove some noisy errors after other errors were raised
+- Improve various error messages and reduce noise
 - Disallow variables starting with `_`
 - Prevent usage of `_` outside of assignments
 - Fix repeated assign or declaration of `_`

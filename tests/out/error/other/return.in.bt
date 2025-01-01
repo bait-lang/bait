@@ -1,3 +1,5 @@
+struct Foo{}
+
 fun value_missing() i32 {
 	return
 }
@@ -6,6 +8,12 @@ fun void_function() {
 	return 'some value'
 }
 
+fun another_void() {
+	return x
+}
+
 fun type_mismatch() i32 {
+	return x
+
 	return 'not i32'
 }
