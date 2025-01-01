@@ -1,2 +1,2 @@
 tests/out/error/generics/concrete_types_not_match.in.bt:10:3 error: type i32 not matches []i32 in argument 2
-tests/out/error/generics/concrete_types_not_match.in.bt:14:1 error: type bool not matches string in argument 2
+tests/out/error/generics/concrete_types_not_match.in.bt:14:5 error: type bool not matches string in argument 2

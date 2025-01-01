@@ -10,5 +10,5 @@ f := Foo{}
 f.stuff([1, 2], 7) // error
 f.stuff('f', 'o')
 
-add(1, 2)
-add('a', false) // error
+_ = add(1, 2)
+_ = add('a', false) // error

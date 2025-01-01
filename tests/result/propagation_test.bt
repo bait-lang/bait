@@ -6,7 +6,7 @@ fun err_fun(give_error bool) !i32 {
 }
 
 fun propagates_err() !i32 {
-	err_fun(true)!
+	_ = err_fun(true)!
 	return 0
 }
 
