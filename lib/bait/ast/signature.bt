@@ -5,22 +5,18 @@ package ast
 pub fun (t Table) fun_decl_signature(node FunDecl) string {
 	sym := t.get_sym(node.typ)
 	info := sym.info as FunInfo
-	return t.fun_signature(info.param_types, info.return_type, true)
+	return t.fun_signature(info.param_types, info.return_type)
 }
 
 // TODO generic funs
-fun (t Table) fun_signature(params []Type, return_type Type, pretty bool) string {
+fun (t Table) fun_signature(params []Type, return_type Type) string {
 	mut param_strs := []string{ length = params.length }
 	for i, p in params {
 		param_strs[i] = t.type_name(p)
 	}
 	ret := t.type_name(return_type)
 
-	return if pretty {
-		"fun (" + param_strs.join(", ") + ") " + ret
-	} else {
-		"fun_" + param_strs.join("_") + "_" + ret
-	}
+	return "fun (" + param_strs.join(", ") + ") " + ret
 }
 
 pub fun (t Table) type_decl_signature(node TypeDecl) string {
@@ -41,7 +37,7 @@ pub fun (t Table) type_decl_signature(node TypeDecl) string {
 
 	if sym.kind == .fun_ {
 		info := sym.info as FunInfo
-		return "type " + t.fun_signature(info.param_types, info.return_type, true)
+		return "type " + t.fun_signature(info.param_types, info.return_type)
 	}
 
 	return "type"

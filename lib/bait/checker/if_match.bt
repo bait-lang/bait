@@ -61,7 +61,7 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 				}
 
 				if not c.is_sumtype_match and cond_type != ast.BOOL_TYPE and cond_type != ast.ERROR_TYPE {
-					c.error('expected bool, got ${c.table.type_name(cond_type)}', node.pos)
+					c.error("expected `bool`, got `${c.table.type_name(cond_type)}`", node.pos)
 				}
 			}
 		} else if node.is_comptime {

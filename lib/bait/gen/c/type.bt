@@ -47,7 +47,8 @@ fun (mut g Gen) write_types() {
 				continue
 			}
 
-			g.type_defs_out += 'typedef ${g.typ(info.return_type)} (*${cname})('
+			ccname := cname.replace(" ", "_").replace("(", "_").replace(")", "_").replace(",", "")
+			g.type_defs_out += 'typedef ${g.typ(info.return_type)} (*${ccname})('
 			for i, param in info.param_types {
 				g.type_defs_out += g.typ(param)
 				if i < info.param_types.length - 1 {
