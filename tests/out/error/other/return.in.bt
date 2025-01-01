@@ -9,11 +9,11 @@ fun void_function() {
 }
 
 fun another_void() {
-	if f is Foo {
-		return f.x
-	}
+	return x
 }
 
 fun type_mismatch() i32 {
+	return x
+
 	return 'not i32'
 }
