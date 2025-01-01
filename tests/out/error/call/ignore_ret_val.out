@@ -1,0 +1,1 @@
+tests/out/error/call/ignore_ret_val.in.bt:5:1 warning: please use `_ = foo()` to explicitly ignore the return value

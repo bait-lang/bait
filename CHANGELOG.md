@@ -5,7 +5,8 @@ All notable changes are documented in this file.
 
 
 ## 0.0.9 - unreleased
-
+### Error Checks
+- Warn if return value of function is unused
 
 ## 0.0.8 - 2024-12-25
 ### Breaking

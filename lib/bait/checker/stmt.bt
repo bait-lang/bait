@@ -62,12 +62,21 @@ fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
 	mut expr := node.expr
 	node.typ = c.expr(mut expr)
 
-	// Used are all exprs inside if/match expr and or blocks, functions calls, if/match stmt and HashExprs
-	if c.is_if_match_expr or c.is_or_block or expr is ast.CallExpr or expr is ast.IfMatch or expr is ast.HashExpr {
+	// Warn if function call with return value is not used
+	if expr is ast.CallExpr {
+		if expr.return_type != ast.VOID_TYPE {
+			c.warn("please use `_ = ${expr.name}()` to explicitly ignore the return value", expr.pos)
+		}
+
+		return
+	}
+
+	// Used are all exprs inside if/match expr and or blocks, if/match stmt and HashExprs
+	if c.is_if_match_expr or c.is_or_block or expr is ast.IfMatch or expr is ast.HashExpr {
 		return
 	}
 	e := expr as ast.InvalidExpr
-	c.error('expression evaluated but not used', e.pos)
+	c.warn('expression evaluated but not used', e.pos)
 }
 
 fun (c Checker) enum_decl(node ast.EnumDecl) {
