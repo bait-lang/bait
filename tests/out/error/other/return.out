@@ -1,3 +1,6 @@
-tests/out/error/other/return.in.bt:2:2 error: expected return value of type i32
-tests/out/error/other/return.in.bt:6:2 error: function void_function does not return a value, got string
-tests/out/error/other/return.in.bt:10:2 error: expected return value of type i32, got string
+tests/out/error/other/return.in.bt:4:2 error: expected return value of type i32
+tests/out/error/other/return.in.bt:8:2 error: function `void_function` should return nothing, got string
+tests/out/error/other/return.in.bt:12:5 error: undefined ident `f`
+tests/out/error/other/return.in.bt:13:10 error: undefined ident `f`
+tests/out/error/other/return.in.bt:13:3 error: function `another_void` should return nothing
+tests/out/error/other/return.in.bt:18:2 error: expected return value of type i32, got string

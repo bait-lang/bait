@@ -1,9 +1,17 @@
+struct Foo{}
+
 fun value_missing() i32 {
 	return
 }
 
 fun void_function() {
 	return 'some value'
+}
+
+fun another_void() {
+	if f is Foo {
+		return f.x
+	}
 }
 
 fun type_mismatch() i32 {
