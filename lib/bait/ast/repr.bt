@@ -25,6 +25,7 @@ pub fun (e Expr) repr() string {
 		MapInit { 'map[xx]yy'}
 		ParExpr { '(' + e.expr.repr() + ')' }
 		PrefixExpr { e.op.js_repr() + e.right.repr() }
+		RangeExpr { "range" }
 		SelectorExpr { e.expr.repr() + '.' + e.field_name }
 		StringLiteral { e.val }
 		StringInterLiteral { 'string interpolation' }

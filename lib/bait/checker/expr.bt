@@ -28,6 +28,7 @@ fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
 		ast.MapInit { c.map_init(mut expr) }
 		ast.ParExpr { c.par_expr(expr) }
 		ast.PrefixExpr { c.prefix_expr(expr) }
+		ast.RangeExpr { c.range_expr(expr) }
 		ast.SelectorExpr { c.selector_expr(mut expr) }
 		ast.StringLiteral { c.string_literal(expr) }
 		ast.StringInterLiteral { c.string_inter_literal(expr) }
@@ -320,6 +321,10 @@ fun (mut c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
 	}
 
 	return typ
+}
+
+fun (mut c Checker) range_expr(node ast.RangeExpr) ast.Type {
+	return ast.VOID_TYPE
 }
 
 fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {

@@ -72,6 +72,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.MapInit {}
 		ast.ParExpr {}
 		ast.PrefixExpr {}
+		ast.RangeExpr {}
 		ast.SelectorExpr {}
 		ast.StringLiteral {}
 		ast.StringInterLiteral {}

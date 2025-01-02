@@ -122,6 +122,10 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			return .semicolon
 		}
 		`.` {
+			if l.text[l.pos] == `.` {
+				l.pos += 1
+				return .dotdot
+			}
 			return .dot
 		}
 		`,` {

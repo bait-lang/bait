@@ -7,7 +7,7 @@ import bait.errors
 
 type Stmt := AssertStmt | AssignStmt | Block | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | StaticDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | IfMatch | Void | InvalidStmt
 
-type Expr := AnonFun | ArrayInit | AsCast | BlankIdent | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TmpVar | TypeOf | Void | InvalidExpr
+type Expr := AnonFun | ArrayInit | AsCast | BlankIdent | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | RangeExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TmpVar | TypeOf | Void | InvalidExpr
 
 pub struct AssertStmt {
 	pub expr Expr
@@ -333,6 +333,11 @@ pub struct PrefixExpr {
 	pub op token.Token
 	pub right Expr
 	pub pos token.Pos
+}
+
+pub struct RangeExpr {
+	pub low Expr
+	pub high Expr
 }
 
 pub struct SelectorExpr {

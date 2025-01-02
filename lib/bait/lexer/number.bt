@@ -39,6 +39,12 @@ fun (mut l Lexer) number() token.Token {
 
 	// Fraction part of a float
 	if c == `.` {
+		// Range instead of float
+		if l.text[l.pos + 1] == `.` {
+			return .integer
+		}
+
+		// Floats must be decimal numbers
 		if not is_dec {
 			l.val = 'floats must be decimal numbers (base 10) [L0022]'
 			return .error

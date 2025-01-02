@@ -28,7 +28,8 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.IntegerLiteral { g.integer_literal(expr) }
 		ast.MapInit { g.map_init(expr) }
 		ast.ParExpr { g.par_expr(expr) }
-		ast.PrefixExpr { g.prefix_expr(expr)}
+		ast.PrefixExpr { g.prefix_expr(expr) }
+		ast.RangeExpr { g.range_expr(expr) }
 		ast.SelectorExpr { g.selector_expr(expr) }
 		ast.StringLiteral { g.string_literal(expr) }
 		ast.StringInterLiteral { g.string_inter_literal(expr) }
@@ -275,6 +276,10 @@ fun (mut g Gen) prefix_expr(node ast.PrefixExpr){
 		return
 	}
 	g.expr(node.right)
+}
+
+fun (mut g Gen) range_expr(node ast.RangeExpr) {
+	// TODO RANGE
 }
 
 fun (mut g Gen) selector_expr(node ast.SelectorExpr) {
