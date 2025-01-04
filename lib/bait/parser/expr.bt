@@ -442,6 +442,7 @@ fun (mut p Parser) range_expr(low ast.Expr) !ast.RangeExpr {
 	return ast.RangeExpr{
 		low = low
 		high = high
+		pos = pos
 	}
 }
 

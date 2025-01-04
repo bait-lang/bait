@@ -222,28 +222,6 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	return obj.typ
 }
 
-fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
-	node.left_type = c.expr(node.left)
-	_ = c.expr(node.index)
-	sym := c.table.get_sym(node.left_type)
-	if sym.kind == .array {
-		info := sym.info as ast.ArrayInfo
-		return info.elem_type
-	}
-	if sym.kind == .map {
-		info := sym.info as ast.MapInfo
-		return info.val_type
-	}
-	if sym.kind == .string {
-		if c.is_lhs_assign{
-			c.error('cannot assign to string index', node.pos)
-			return ast.VOID_TYPE
-		}
-		return ast.U8_TYPE
-	}
-	return node.left_type
-}
-
 fun (mut c Checker) integer_literal(node ast.IntegerLiteral) ast.Type {
 	if c.expected_type.is_int() {
 		return c.expected_type
@@ -321,10 +299,6 @@ fun (mut c Checker) prefix_expr(node ast.PrefixExpr) ast.Type {
 	}
 
 	return typ
-}
-
-fun (mut c Checker) range_expr(node ast.RangeExpr) ast.Type {
-	return ast.VOID_TYPE
 }
 
 fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {

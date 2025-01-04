@@ -338,6 +338,7 @@ pub struct PrefixExpr {
 pub struct RangeExpr {
 	pub low Expr
 	pub high Expr
+	pub pos token.Pos
 }
 
 pub struct SelectorExpr {

@@ -1,0 +1,64 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package checker
+
+import bait.ast
+import bait.token
+
+fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
+	node.left_type = c.expr(node.left)
+	_ = c.expr(node.index)
+
+	sym := c.table.get_sym(node.left_type)
+
+	if sym.kind == .array {
+		// Array slicing
+		if node.index is ast.RangeExpr {
+			return node.left_type
+		}
+
+		// Array indexing
+		info := sym.info as ast.ArrayInfo
+		return info.elem_type
+	}
+
+	// Range is not supported as index
+	if node.index is ast.RangeExpr {
+		c.error("cannot use range for indexing", node.pos)
+		return ast.ERROR_TYPE
+	}
+
+	if sym.kind == .map {
+		info := sym.info as ast.MapInfo
+		return info.val_type
+	}
+
+	if sym.kind == .string {
+		// TODO string slicing
+
+		if c.is_lhs_assign{
+			c.error('cannot assign to string index', node.pos)
+			return ast.ERROR_TYPE
+		}
+
+		return ast.U8_TYPE
+	}
+
+	return node.left_type
+}
+
+fun (mut c Checker) range_expr(node ast.RangeExpr) ast.Type {
+	lt := c.expr(node.low)
+	c.check_index(lt, node.pos)
+
+	ht := c.expr(node.high)
+	c.check_index(ht, node.pos)
+
+	return ast.VOID_TYPE
+}
+
+fun (mut c Checker) check_index(typ ast.Type, pos token.Pos) {
+	if typ != ast.I32_TYPE {
+		c.error("non-integer index ${c.table.type_name(typ)}", pos)
+	}
+}
