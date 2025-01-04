@@ -14,6 +14,11 @@ fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 	if sym.kind == .array {
  		// Array slicing
 		if node.index is ast.RangeExpr {
+			if c.is_lhs_assign{
+				c.error('cannot assign to array slice', node.pos)
+				return ast.ERROR_TYPE
+			}
+
 			return node.left_type
 		}
 
