@@ -7,29 +7,35 @@ import bait.token
 
 fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 	node.left_type = c.expr(node.left)
-	_ = c.expr(node.index)
+	idx_type := c.expr(node.index)
 
 	sym := c.table.get_sym(node.left_type)
 
 	if sym.kind == .array {
-		// Array slicing
+ 		// Array slicing
 		if node.index is ast.RangeExpr {
 			return node.left_type
 		}
 
 		// Array indexing
+		c.check_int_index(idx_type, node.pos)
 		info := sym.info as ast.ArrayInfo
 		return info.elem_type
 	}
 
-	// Range is not supported as index
+	// Slicing is not supported
 	if node.index is ast.RangeExpr {
-		c.error("cannot use range for indexing", node.pos)
+		c.error("slicing is only supported for arrays", node.pos)
 		return ast.ERROR_TYPE
 	}
 
 	if sym.kind == .map {
 		info := sym.info as ast.MapInfo
+		if idx_type != info.key_type {
+			c.error("invalid map index `${c.table.type_name(idx_type)}`, expected `${c.table.type_name(info.key_type)}`", node.pos)
+			return ast.ERROR_TYPE
+		}
+
 		return info.val_type
 	}
 
@@ -41,6 +47,7 @@ fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 			return ast.ERROR_TYPE
 		}
 
+		c.check_int_index(idx_type, node.pos)
 		return ast.U8_TYPE
 	}
 
@@ -49,16 +56,16 @@ fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 
 fun (mut c Checker) range_expr(node ast.RangeExpr) ast.Type {
 	lt := c.expr(node.low)
-	c.check_index(lt, node.pos)
+	c.check_int_index(lt, node.pos)
 
 	ht := c.expr(node.high)
-	c.check_index(ht, node.pos)
+	c.check_int_index(ht, node.pos)
 
 	return ast.VOID_TYPE
 }
 
-fun (mut c Checker) check_index(typ ast.Type, pos token.Pos) {
+fun (mut c Checker) check_int_index(typ ast.Type, pos token.Pos) {
 	if typ != ast.I32_TYPE {
-		c.error("non-integer index ${c.table.type_name(typ)}", pos)
+		c.error("non-integer index `${c.table.type_name(typ)}`", pos)
 	}
 }

@@ -1,0 +1,2 @@
+tests/out/error/index/range.in.bt:5:6 error: slicing is only supported for arrays
+tests/out/error/index/range.in.bt:10:10 error: slicing is only supported for arrays
