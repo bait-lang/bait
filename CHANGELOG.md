@@ -5,6 +5,9 @@ All notable changes are documented in this file.
 
 
 ## 0.0.9 - unreleased
+### New Language Features
+- Array slicing using range indexing: `arr[low..high]`
+
 ### Error Checks
 - Warn if return value of function is unused
 - IndexExpr: Check index type

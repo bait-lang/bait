@@ -143,6 +143,17 @@ It's also possible to preallocate an array with a fixed length:
 a := []i32{ length = 3 }
 ```
 
+#### Array Slicing (Range Indexing)
+```bait
+nums := [0, 10, 20, 30]
+
+println(nums[1..3]) // [10, 20]
+println(nums[..3]) // [0, 10, 20]
+println(nums[2..]) // [20, 30]
+println(nums[..]) // [0, 10, 20, 30]
+```
+
+
 ### Maps
 You can initialize a map with the short literal syntax:
 ```bait
