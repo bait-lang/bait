@@ -41,6 +41,7 @@ fun (mut l Lexer) number() token.Token {
 	if c == `.` {
 		// Range instead of float
 		if l.text[l.pos + 1] == `.` {
+			l.val = l.text.substr(l.start, l.pos)
 			return .integer
 		}
 
@@ -56,6 +57,13 @@ fun (mut l Lexer) number() token.Token {
 
 		// Set float value
 		l.val = l.text.substr(l.start, l.pos)
+
+		// Prevent trailing dot
+		if l.val.ends_with(".") {
+			l.val = "float should have a digit after decimal point, e.g. ${l.val}0 [L0024]"
+			return .error
+		}
+
 		return .float
 	}
 
