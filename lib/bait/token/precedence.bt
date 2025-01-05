@@ -4,6 +4,7 @@ package token
 
 pub enum Precedence {
 	lowest
+	range
 	cond
 	compare
 	as_is
@@ -39,6 +40,9 @@ pub fun (t Token) precedence() Precedence {
 		}
 		.key_and, .key_or {
 			.cond
+		}
+		.dotdot {
+			.range
 		}
 		else {
 			.lowest

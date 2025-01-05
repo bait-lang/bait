@@ -1,0 +1,89 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package checker
+
+import bait.ast
+import bait.token
+
+fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
+	node.left_type = c.expr(node.left)
+
+	was_index := c.is_index
+	c.is_index = true
+	idx_type := c.expr(node.index)
+	c.is_index = was_index
+
+	sym := c.table.get_sym(node.left_type)
+
+	if sym.kind == .array {
+ 		// Array slicing
+		if node.index is ast.RangeExpr {
+			if c.is_lhs_assign{
+				c.error('cannot assign to array slice', node.pos)
+				return ast.ERROR_TYPE
+			}
+
+			return node.left_type
+		}
+
+		// Array indexing
+		c.check_int_index(idx_type, node.pos)
+		info := sym.info as ast.ArrayInfo
+		return info.elem_type
+	}
+
+	// Slicing is not supported
+	if node.index is ast.RangeExpr {
+		c.error("slicing is only supported for arrays", node.pos)
+		return ast.ERROR_TYPE
+	}
+
+	if sym.kind == .map {
+		info := sym.info as ast.MapInfo
+		if idx_type != info.key_type {
+			c.error("invalid map index `${c.table.type_name(idx_type)}`, expected `${c.table.type_name(info.key_type)}`", node.pos)
+			return ast.ERROR_TYPE
+		}
+
+		return info.val_type
+	}
+
+	if sym.kind == .string {
+		// TODO string slicing
+
+		if c.is_lhs_assign{
+			c.error('cannot assign to string index', node.pos)
+			return ast.ERROR_TYPE
+		}
+
+		c.check_int_index(idx_type, node.pos)
+		return ast.U8_TYPE
+	}
+
+	return node.left_type
+}
+
+fun (mut c Checker) range_expr(node ast.RangeExpr) ast.Type {
+	if not c.is_index {
+		c.error("range expression is only allowed for indexing", node.pos)
+		return ast.ERROR_TYPE
+	}
+
+	if not (node.low is ast.Void) {
+		lt := c.expr(node.low)
+		c.check_int_index(lt, node.pos)
+	}
+
+	if not (node.high is ast.Void) {
+		ht := c.expr(node.high)
+		c.check_int_index(ht, node.pos)
+	}
+
+	return ast.VOID_TYPE
+}
+
+fun (mut c Checker) check_int_index(typ ast.Type, pos token.Pos) {
+	if not c.check_types(typ, ast.I32_TYPE) {
+		c.error("non-integer index `${c.table.type_name(typ)}`", pos)
+	}
+}

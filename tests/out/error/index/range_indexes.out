@@ -1,0 +1,2 @@
+tests/out/error/index/range_indexes.in.bt:2:12 error: non-integer index `string`
+tests/out/error/index/range_indexes.in.bt:3:10 error: non-integer index `u8`

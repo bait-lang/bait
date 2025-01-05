@@ -1,0 +1,1 @@
+tests/out/error/index/invalid_range.in.bt:1:6 error: range expression is only allowed for indexing

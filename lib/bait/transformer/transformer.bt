@@ -66,12 +66,13 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.HashExpr {}
 		ast.Ident {}
 		ast.IfMatch {}
-		ast.IndexExpr {}
+		ast.IndexExpr { return t.index_expr(expr) }
 		ast.InfixExpr { t.infix_expr(mut expr) }
 		ast.IntegerLiteral {}
 		ast.MapInit {}
 		ast.ParExpr {}
 		ast.PrefixExpr {}
+		ast.RangeExpr {}
 		ast.SelectorExpr {}
 		ast.StringLiteral {}
 		ast.StringInterLiteral {}
@@ -85,7 +86,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 }
 
 fun (t Transformer) assert_stmt(mut node ast.AssertStmt) {
-	_ = t.expr(node.expr)
+	node.expr = t.expr(mut node.expr)
 }
 
 fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
@@ -100,8 +101,8 @@ fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
 		}
 	}
 
-	_ = t.expr(node.left)
-	_ = t.expr(node.right)
+	node.left = t.expr(node.left)
+	node.right = t.expr(node.right)
 }
 
 fun (t Transformer) const_decl(node ast.ConstDecl) ast.Stmt {
@@ -164,8 +165,8 @@ fun (t Transformer) return_stmt(mut node ast.ReturnStmt) {
 
 fun (t Transformer) call_expr(mut node ast.CallExpr) {
 	_ = t.expr(node.left)
-	for arg in node.args {
-		_ = t.expr(arg.expr)
+	for mut arg in node.args {
+		arg.expr = t.expr(arg.expr)
 	}
 
 	if node.or_block.kind == .block {
@@ -201,7 +202,51 @@ fun (t Transformer) call_expr(mut node ast.CallExpr) {
 	}
 }
 
+fun (t Transformer) index_expr(node ast.IndexExpr) ast.Expr {
+	if node.index is ast.RangeExpr {
+		idx := t.range_expr_on_left(mut node.index as ast.RangeExpr, node.left)
+
+		// `arr[from..to]` -> `arr.slice(from, to)`
+		return ast.CallExpr{
+			is_method = true
+			left = node.left
+			left_type = ast.ARRAY_TYPE
+			return_type = ast.ARRAY_TYPE
+			name = "slice"
+			args = [
+				ast.CallArg{
+					expr = idx.low
+					typ = ast.I32_TYPE
+				},
+				ast.CallArg{
+					expr = idx.high
+					typ = ast.I32_TYPE
+				},
+			]
+		}
+	}
+
+	return node
+}
+
 fun (t Transformer) infix_expr(mut node ast.InfixExpr) {
-	_ = t.expr(node.left)
-	_ = t.expr(node.right)
+	node.left = t.expr(mut node.left)
+	node.right = t.expr(mut node.right)
+}
+
+fun (t Transformer) range_expr_on_left(mut node ast.RangeExpr, left ast.Expr) ast.RangeExpr {
+	// `[..x]` -> `[0..x]`
+	if node.low is ast.Void {
+		node.low = ast.IntegerLiteral{ val = "0" }
+	}
+
+	// `[x..]` -> `[x..arr.length]`
+	if node.high is ast.Void {
+		node.high = ast.SelectorExpr{
+			expr = left
+			field_name = "length"
+		}
+	}
+
+	return node
 }

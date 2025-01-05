@@ -7,10 +7,10 @@ import bait.errors
 
 type Stmt := AssertStmt | AssignStmt | Block | ConstDecl | EnumDecl | ExprStmt | ForLoop | ForClassicLoop | ForInLoop | FunDecl | StaticDecl | InterfaceDecl | ReturnStmt | StructDecl | TypeDecl | LoopControlStmt | IfMatch | Void | InvalidStmt
 
-type Expr := AnonFun | ArrayInit | AsCast | BlankIdent | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TmpVar | TypeOf | Void | InvalidExpr
+type Expr := AnonFun | ArrayInit | AsCast | BlankIdent | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | RangeExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TmpVar | TypeOf | Void | InvalidExpr
 
 pub struct AssertStmt {
-	pub expr Expr
+	global expr Expr
 	pub pos token.Pos
 }
 
@@ -18,7 +18,7 @@ pub struct AssignStmt {
 	global left_type Type
 	global right_type Type
 	global op token.Token
-	pub left Expr
+	global left Expr
 	global right Expr
 	pub pos token.Pos
 }
@@ -206,7 +206,7 @@ pub struct CallExpr {
 	global concrete_types []Type
 	global is_field bool
 	global noreturn bool
-	pub args []CallArg
+	global args []CallArg
 	global or_block OrBlock
 	pub is_method bool
 	pub pkg string
@@ -215,8 +215,8 @@ pub struct CallExpr {
 
 pub struct CallArg {
 	global typ Type
+	global expr Expr
 	pub is_mut bool
-	pub expr Expr
 }
 
 pub enum OrKind {
@@ -304,8 +304,8 @@ pub struct InfixExpr {
 	global right_type Type
 	global op token.Token
 	global right Expr
+	global left Expr
 	pub is_match bool
-	pub left Expr
 	pub pos token.Pos
 }
 
@@ -332,6 +332,12 @@ pub struct ParExpr {
 pub struct PrefixExpr {
 	pub op token.Token
 	pub right Expr
+	pub pos token.Pos
+}
+
+pub struct RangeExpr {
+	global low Expr
+	global high Expr
 	pub pos token.Pos
 }
 

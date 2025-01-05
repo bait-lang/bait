@@ -28,7 +28,8 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.IntegerLiteral { g.integer_literal(expr) }
 		ast.MapInit { g.map_init(expr) }
 		ast.ParExpr { g.par_expr(expr) }
-		ast.PrefixExpr { g.prefix_expr(expr)}
+		ast.PrefixExpr { g.prefix_expr(expr) }
+		ast.RangeExpr { panic('cannot gen RangeExpr') }
 		ast.SelectorExpr { g.selector_expr(expr) }
 		ast.StringLiteral { g.string_literal(expr) }
 		ast.StringInterLiteral { g.string_inter_literal(expr) }

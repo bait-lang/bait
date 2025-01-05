@@ -1,0 +1,6 @@
+tests/out/error/index/invalid_index.in.bt:3:8 error: non-integer index `bool`
+tests/out/error/index/invalid_index.in.bt:4:8 error: non-integer index `f64`
+tests/out/error/index/invalid_index.in.bt:5:8 error: non-integer index `string`
+tests/out/error/index/invalid_index.in.bt:9:6 error: non-integer index `[]i32`
+tests/out/error/index/invalid_index.in.bt:10:6 error: non-integer index `u8`
+tests/out/error/index/invalid_index.in.bt:16:10 error: invalid map index `i32`, expected `string`

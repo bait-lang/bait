@@ -76,7 +76,7 @@ pub fun (t Table) register_sym(sym TypeSymbol) Type {
 		if cur_sym.kind == .placeholder {
 			mut new_sym := sym
 			new_sym.methods = cur_sym.methods
-			t.type_symbols[idx] = new_sym
+			t.type_symbols[idx as i32] = new_sym
 			return idx
 		}
 
@@ -89,7 +89,7 @@ pub fun (t Table) register_sym(sym TypeSymbol) Type {
 			new_sym.is_pub = true
 			new_sym.kind = cur_sym.kind
 			new_sym.methods = cur_sym.methods
-			t.type_symbols[idx] = new_sym
+			t.type_symbols[idx as i32] = new_sym
 			return idx
 		}
 	}

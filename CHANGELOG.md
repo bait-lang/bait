@@ -5,9 +5,16 @@ All notable changes are documented in this file.
 
 
 ## 0.0.9 - unreleased
+### New Language Features
+- Array slicing using range indexing: `arr[low..high]`
+
 ### Error Checks
 - Warn if return value of function is unused
+- IndexExpr: Check index type
 - Improve various error messages and reduce noise
+
+### Other Changes
+- lexer: Disallow floats with trailing deciaml point
 
 
 ## 0.0.8 - 2024-12-25

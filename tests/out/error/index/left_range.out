@@ -1,0 +1,2 @@
+tests/out/error/index/left_range.in.bt:2:4 error: cannot assign to array slice
+tests/out/error/index/left_range.in.bt:3:4 error: cannot assign to array slice

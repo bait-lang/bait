@@ -39,7 +39,7 @@ pub fun (c CrcTable) sum(data []u8) u32 {
 	mut crc := MAX_U32
 
 	for byte in data {
-		crc = c.table[crc as u8 ^ byte] ^ (crc >> 8)
+		crc = c.table[(crc as u8 ^ byte) as i32] ^ (crc >> 8)
 	}
 
 	// FIXME js: ~ also inverts the sign bit and not stays in the u32 bounds.
