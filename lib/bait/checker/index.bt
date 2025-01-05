@@ -7,7 +7,11 @@ import bait.token
 
 fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 	node.left_type = c.expr(node.left)
+
+	was_index := c.is_index
+	c.is_index = true
 	idx_type := c.expr(node.index)
+	c.is_index = was_index
 
 	sym := c.table.get_sym(node.left_type)
 
@@ -60,6 +64,11 @@ fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 }
 
 fun (mut c Checker) range_expr(node ast.RangeExpr) ast.Type {
+	if not c.is_index {
+		c.error("range expression is only allowed for indexing", node.pos)
+		return ast.ERROR_TYPE
+	}
+
 	if not (node.low is ast.Void) {
 		lt := c.expr(node.low)
 		c.check_int_index(lt, node.pos)
