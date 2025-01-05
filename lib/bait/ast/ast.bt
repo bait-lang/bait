@@ -206,7 +206,7 @@ pub struct CallExpr {
 	global concrete_types []Type
 	global is_field bool
 	global noreturn bool
-	pub args []CallArg
+	global args []CallArg
 	global or_block OrBlock
 	pub is_method bool
 	pub pkg string
@@ -215,8 +215,8 @@ pub struct CallExpr {
 
 pub struct CallArg {
 	global typ Type
+	global expr Expr
 	pub is_mut bool
-	pub expr Expr
 }
 
 pub enum OrKind {

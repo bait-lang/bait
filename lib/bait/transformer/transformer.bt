@@ -165,8 +165,8 @@ fun (t Transformer) return_stmt(mut node ast.ReturnStmt) {
 
 fun (t Transformer) call_expr(mut node ast.CallExpr) {
 	_ = t.expr(node.left)
-	for arg in node.args {
-		_ = t.expr(arg.expr)
+	for mut arg in node.args {
+		arg.expr = t.expr(arg.expr)
 	}
 
 	if node.or_block.kind == .block {
