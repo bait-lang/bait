@@ -4,17 +4,17 @@
 fun test_array_slice_syntax() {
 	a := [1, 2, 3, 4, 5]
 
-	// mut b := a[..]
-	// assert b.length == 5
+	mut b := a[..]
+	assert b.length == 5
 
-	// b.push(0)
+	b.push(0)
 	assert a.length == 5
-	// b[0] = 0
+	b[0] = 0
 	assert a[0] == 1
 
-	// assert a[2..] == [3, 4, 5]
+	assert a[2..] == [3, 4, 5]
 
-	// assert a[..2] == [1, 2]
+	assert a[..2] == [1, 2]
 
 	assert a[2..4] == [3, 4]
 }

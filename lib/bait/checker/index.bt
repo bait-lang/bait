@@ -60,11 +60,15 @@ fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 }
 
 fun (mut c Checker) range_expr(node ast.RangeExpr) ast.Type {
-	lt := c.expr(node.low)
-	c.check_int_index(lt, node.pos)
+	if not (node.low is ast.Void) {
+		lt := c.expr(node.low)
+		c.check_int_index(lt, node.pos)
+	}
 
-	ht := c.expr(node.high)
-	c.check_int_index(ht, node.pos)
+	if not (node.high is ast.Void) {
+		ht := c.expr(node.high)
+		c.check_int_index(ht, node.pos)
+	}
 
 	return ast.VOID_TYPE
 }

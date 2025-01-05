@@ -39,6 +39,9 @@ fun (mut p Parser) single_expr() !ast.Expr {
 		.dot {
 			return p.enum_val(false)!
 		}
+		.dotdot {
+			return p.range_expr(ast.Void{} as ast.Expr)!
+		}
 		.float {
 			return p.float_literal()
 		}
@@ -438,7 +441,8 @@ fun (mut p Parser) prefix_expr() !ast.PrefixExpr{
 fun (mut p Parser) range_expr(low ast.Expr) !ast.RangeExpr {
 	pos := p.pos
 	p.check(.dotdot)!
-	high := p.expr(.lowest)!
+	high := if p.tok == .rsqr { ast.Void{} as ast.Expr } else { p.expr(.lowest)! }
+
 	return ast.RangeExpr{
 		low = low
 		high = high

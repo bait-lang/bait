@@ -101,8 +101,8 @@ fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
 		}
 	}
 
-	_ = t.expr(node.left)
-	_ = t.expr(node.right)
+	node.left = t.expr(node.left)
+	node.right = t.expr(node.right)
 }
 
 fun (t Transformer) const_decl(node ast.ConstDecl) ast.Stmt {
@@ -204,8 +204,9 @@ fun (t Transformer) call_expr(mut node ast.CallExpr) {
 
 fun (t Transformer) index_expr(node ast.IndexExpr) ast.Expr {
 	if node.index is ast.RangeExpr {
-		idx := node.index as ast.RangeExpr
+		idx := t.range_expr_on_left(mut node.index as ast.RangeExpr, node.left)
 
+		// `arr[from..to]` -> `arr.slice(from, to)`
 		return ast.CallExpr{
 			is_method = true
 			left = node.left
@@ -231,4 +232,21 @@ fun (t Transformer) index_expr(node ast.IndexExpr) ast.Expr {
 fun (t Transformer) infix_expr(mut node ast.InfixExpr) {
 	node.left = t.expr(mut node.left)
 	node.right = t.expr(mut node.right)
+}
+
+fun (t Transformer) range_expr_on_left(mut node ast.RangeExpr, left ast.Expr) ast.RangeExpr {
+	// `[..x]` -> `[0..x]`
+	if node.low is ast.Void {
+		node.low = ast.IntegerLiteral{ val = "0" }
+	}
+
+	// `[x..]` -> `[x..arr.length]`
+	if node.high is ast.Void {
+		node.high = ast.SelectorExpr{
+			expr = left
+			field_name = "length"
+		}
+	}
+
+	return node
 }
