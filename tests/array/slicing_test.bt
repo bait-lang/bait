@@ -16,6 +16,5 @@ fun test_array_slice_syntax() {
 
 	// assert a[..2] == [1, 2]
 
-	x := a[2..4]
 	assert a[2..4] == [3, 4]
 }

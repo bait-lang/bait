@@ -66,7 +66,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.HashExpr {}
 		ast.Ident {}
 		ast.IfMatch {}
-		ast.IndexExpr {}
+		ast.IndexExpr { return t.index_expr(expr) }
 		ast.InfixExpr { t.infix_expr(mut expr) }
 		ast.IntegerLiteral {}
 		ast.MapInit {}
@@ -86,7 +86,7 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 }
 
 fun (t Transformer) assert_stmt(mut node ast.AssertStmt) {
-	_ = t.expr(node.expr)
+	node.expr = t.expr(mut node.expr)
 }
 
 fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
@@ -202,7 +202,33 @@ fun (t Transformer) call_expr(mut node ast.CallExpr) {
 	}
 }
 
+fun (t Transformer) index_expr(node ast.IndexExpr) ast.Expr {
+	if node.index is ast.RangeExpr {
+		idx := node.index as ast.RangeExpr
+
+		return ast.CallExpr{
+			is_method = true
+			left = node.left
+			left_type = ast.ARRAY_TYPE
+			return_type = ast.ARRAY_TYPE
+			name = "slice"
+			args = [
+				ast.CallArg{
+					expr = idx.low
+					typ = ast.I32_TYPE
+				},
+				ast.CallArg{
+					expr = idx.high
+					typ = ast.I32_TYPE
+				},
+			]
+		}
+	}
+
+	return node
+}
+
 fun (t Transformer) infix_expr(mut node ast.InfixExpr) {
-	_ = t.expr(node.left)
-	_ = t.expr(node.right)
+	node.left = t.expr(mut node.left)
+	node.right = t.expr(mut node.right)
 }

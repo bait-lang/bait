@@ -10,7 +10,7 @@ type Stmt := AssertStmt | AssignStmt | Block | ConstDecl | EnumDecl | ExprStmt |
 type Expr := AnonFun | ArrayInit | AsCast | BlankIdent | BoolLiteral | CallExpr | CharLiteral | ComptimeVar | EnumVal | FloatLiteral | HashExpr | Ident | IfMatch | IndexExpr | InfixExpr | IntegerLiteral | MapInit | ParExpr | PrefixExpr | RangeExpr | SelectorExpr | StringLiteral | StringInterLiteral | StructInit | TmpVar | TypeOf | Void | InvalidExpr
 
 pub struct AssertStmt {
-	pub expr Expr
+	global expr Expr
 	pub pos token.Pos
 }
 
@@ -304,8 +304,8 @@ pub struct InfixExpr {
 	global right_type Type
 	global op token.Token
 	global right Expr
+	global left Expr
 	pub is_match bool
-	pub left Expr
 	pub pos token.Pos
 }
 
