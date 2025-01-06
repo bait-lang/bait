@@ -7,9 +7,6 @@ import bait.token
 
 
 fun (mut c Checker) struct_decl(node ast.StructDecl) {
-	// TODO error
-	// TODO test
-
 	// save current generic names and override them with the structs' generic names
 	// so does_type_exist can detect nonexistent generic names
 	prev_generic_names := c.cur_generic_names
@@ -17,6 +14,8 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 
 	// TODO remove lowercase string struct
 	if not node.name[0].is_upper() and node.name != 'string' {
+		// TODO error
+		// TODO test
 		c.warn('struct name `${node.name}` must start with a capital letter', node.pos)
 	}
 
