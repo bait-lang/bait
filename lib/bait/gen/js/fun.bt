@@ -5,9 +5,9 @@ package js
 import bait.ast
 
 fun (mut g Gen) fun_decl(node ast.FunDecl) {
-	if node.name == 'testsuite_begin' {
+	if node.mix_name == 'testsuite_begin' {
 		g.has_test_begin = true
-	} else if node.name == 'testsuite_end' {
+	} else if node.mix_name == 'testsuite_end' {
 		g.has_test_end = true
 	}
 
@@ -30,9 +30,9 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	mut name := ''
 	if node.is_method {
 		sym := g.table.get_sym(node.params[0].typ)
-		name = js_esc(sym.name + '_' + node.name)
+		name = js_esc(sym.name + '_' + node.mix_name)
 	} else {
-		name = js_esc(node.name)
+		name = js_esc(node.mix_name)
 	}
 	if g.cur_concrete_types.length > 0 {
 		name = g.get_concrete_name(name, g.cur_concrete_types.values())
@@ -46,7 +46,7 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 
 	export_attr := node.attrs.find_attr('export')
 	if export_attr.name != '' {
-		g.writeln('module.exports.${export_attr.value} = ${js_esc(node.name)}')
+		g.writeln('module.exports.${export_attr.value} = ${js_esc(node.mix_name)}')
 	}
 
 	g.writeln('')

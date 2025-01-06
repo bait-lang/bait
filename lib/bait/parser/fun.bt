@@ -42,24 +42,24 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		p.check(.rpar)!
 	}
 
-	mut name := ''
+	mut mix_name := ''
 	if p.tok == .hash {
 		// language
 		lang = p.parse_lang()!
-		name = lang.prepend_to(name)
+		mix_name = lang.prepend_to(mix_name)
 
 		// foreign package
 		if lang == .js and p.peek() == .dot {
-			name += p.check_name()! + '.'
+			mix_name += p.check_name()! + '.'
 			p.check(.dot)!
 		}
 	}
 
 	// normal function name
-	name += p.check_name()!
-	is_test := name.starts_with('test_')
+	mix_name += p.check_name()!
+	is_test := mix_name.starts_with('test_')
 	if not is_method and lang == .bait {
-		name = p.prepend_pkg(name)
+		mix_name = p.prepend_pkg(mix_name)
 	}
 
 	// Generics
@@ -78,8 +78,8 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 	mut node := ast.FunDecl{
 		is_test = is_test
 		is_pub = is_pub
-		name = name
-		pkg = p.pkg_name
+		mix_name = mix_name
+		mix_pkg = p.pkg_name
 		generic_names = generic_names
 		params = params
 		return_type = return_type
@@ -94,19 +94,19 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 	if is_method {
 		sym := p.table.get_sym(params[0].typ)
 		// TODO move this error into checker
-		if lang == .bait and sym.has_method(name) {
-			p.error('Method "${name}" already exists on type "${sym.name}"')!
+		if lang == .bait and sym.has_method(mix_name) {
+			p.error('Method "${mix_name}" already exists on type "${sym.name}"')!
 		}
 		sym.methods.push(node)
 	} else {
-		p.table.fun_decls[name] = node
+		p.table.fun_decls[mix_name] = node
 		mut param_types := []ast.Type
 		for param in params {
 			param_types.push(param.typ)
 		}
 		node.typ = p.table.find_or_register_fun(param_types, return_type, false)
 
-		p.pkg_scope.register_unique(name, context.ScopeObject{
+		p.pkg_scope.register_unique(mix_name, context.ScopeObject{
 			kind = .function
 			typ = node.typ
 		})
@@ -138,7 +138,7 @@ fun (mut p Parser) anon_fun() !ast.AnonFun{
 	stmts := p.parse_block()!
 	return ast.AnonFun{
 		decl = ast.FunDecl{
-			name = '_anon_${p.file_hash}_${p.lexer.offset()}'
+			mix_name = '_anon_${p.file_hash}_${p.lexer.offset()}'
 			params = params
 			return_type = return_type
 			stmts = stmts

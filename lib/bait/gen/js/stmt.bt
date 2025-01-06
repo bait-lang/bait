@@ -162,7 +162,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 	if lsym.overloads.contains(node.op.js_repr()) {
 		g.write(' = ')
 		overload := lsym.overloads[node.op.js_repr()]
-		g.write(js_esc(lsym.name + '_' + overload.name))
+		g.write(js_esc(lsym.name + '_' + overload.mix_name))
 		g.write('(')
 		g.expr(node.left)
 		g.write(', ')
