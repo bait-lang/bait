@@ -199,7 +199,7 @@ pub struct BoolLiteral {
 
 pub struct CallExpr {
 	global lang Language
-	global name string
+	global mix_name string // TMP
 	global return_type Type
 	global left_type Type
 	global left Expr := InvalidExpr{}
@@ -209,7 +209,7 @@ pub struct CallExpr {
 	global args []CallArg
 	global or_block OrBlock
 	pub is_method bool
-	pub pkg string
+	pub mix_pkg string // TMP
 	pub pos token.Pos
 }
 

@@ -173,7 +173,7 @@ fun (mut p Parser) fun_params() ![]ast.Param{
 
 fun (mut p Parser) fun_call(lang ast.Language) !ast.CallExpr{
 	pos := p.pos
-	name := p.prepend_expr_pkg(p.check_name()!)
+	mix_name := p.prepend_expr_pkg(p.check_name()!)
 	p.check(.lpar)!
 	args := p.call_args()!
 	p.check(.rpar)!
@@ -181,10 +181,10 @@ fun (mut p Parser) fun_call(lang ast.Language) !ast.CallExpr{
 	or_block := p.or_block()!
 
 	return ast.CallExpr{
-		name = name
+		mix_name = mix_name
 		args = args
 		or_block = or_block
-		pkg = p.pkg_name
+		mix_pkg = p.pkg_name
 		pos = pos
 		lang = lang
 	}
@@ -202,7 +202,7 @@ fun (mut p Parser) method_call(left ast.Expr) !ast.CallExpr {
 	return ast.CallExpr{
 		is_method = true
 		left = left
-		name = name
+		mix_name = name
 		args = args
 		or_block = or_block
 		pos = pos
