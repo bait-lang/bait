@@ -56,7 +56,8 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 	}
 
 	// normal function name
-	mix_name += p.check_name()!
+	name := p.check_name()!
+	mix_name += name
 	is_test := mix_name.starts_with('test_')
 	if not is_method and lang == .bait {
 		mix_name = p.prepend_pkg(mix_name)
@@ -78,6 +79,7 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 	mut node := ast.FunDecl{
 		is_test = is_test
 		is_pub = is_pub
+		name = name
 		mix_name = mix_name
 		mix_pkg = p.pkg_name
 		generic_names = generic_names
