@@ -7,6 +7,9 @@ import bait.ast
 fun (mut c Checker) return_stmt(mut node ast.ReturnStmt) {
 	c.expected_type = c.table.unwrap_result(c.cur_fun.return_type)
 	expr_type := c.expr(node.expr)
+	if expr_type == ast.ERROR_TYPE {
+		return
+	}
 
 	if not c.check_types(expr_type, c.cur_fun.return_type) {
 		mut msg := ''
