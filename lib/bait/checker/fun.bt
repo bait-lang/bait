@@ -138,8 +138,8 @@ fun (mut c Checker) call_expr(mut node ast.CallExpr) ast.Type {
 
 fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 	mut found := c.table.fun_decls.contains(node.mix_name)
-	if not found and not node.mix_name.contains('.') and node.mix_pkg != 'builtin' {
-		full_name := node.mix_pkg + '.' + node.mix_name
+	if not found and not node.mix_name.contains('.') and c.pkg != 'builtin' {
+		full_name := c.pkg + '.' + node.mix_name
 		if c.table.fun_decls.contains(full_name) {
 			node.mix_name = full_name
 			found = true

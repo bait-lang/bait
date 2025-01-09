@@ -212,7 +212,6 @@ pub struct CallExpr {
 	global args []CallArg
 	global or_block OrBlock
 	pub is_method bool
-	pub mix_pkg string // TMP
 	pub pos token.Pos
 }
 

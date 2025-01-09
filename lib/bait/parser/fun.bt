@@ -190,7 +190,6 @@ fun (mut p Parser) fun_call(lang ast.Language) !ast.CallExpr{
 		mix_name = mix_name
 		args = args
 		or_block = or_block
-		mix_pkg = p.pkg_name
 		pos = pos
 		lang = lang
 	}
