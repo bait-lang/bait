@@ -1,0 +1,1 @@
+tests/out/error/assign/twice_ident.in.bt:2:1 error: redefinition of `a`

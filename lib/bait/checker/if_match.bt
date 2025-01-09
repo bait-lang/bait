@@ -74,6 +74,10 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 			last_type := c.stmts_with_return(branch.stmts)
 			c.close_scope()
 
+			if last_type == ast.ERROR_TYPE {
+				continue
+			}
+
 			last := branch.stmts.last()
 			if is_noreturn(last) {
 				continue
