@@ -39,6 +39,10 @@ fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 	}
 
 	if sym.kind == .map {
+		if idx_type == ast.ERROR_TYPE {
+			return ast.ERROR_TYPE
+		}
+
 		info := sym.info as ast.MapInfo
 		if idx_type != info.key_type {
 			c.error("invalid map index `${c.table.type_name(idx_type)}`, expected `${c.table.type_name(info.key_type)}`", node.pos)
@@ -83,6 +87,10 @@ fun (mut c Checker) range_expr(node ast.RangeExpr) ast.Type {
 }
 
 fun (mut c Checker) check_int_index(typ ast.Type, pos token.Pos) {
+	if typ == ast.ERROR_TYPE {
+		return
+	}
+
 	if not c.check_types(typ, ast.I32_TYPE) {
 		c.error("non-integer index `${c.table.type_name(typ)}`", pos)
 	}

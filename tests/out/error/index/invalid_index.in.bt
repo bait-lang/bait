@@ -3,11 +3,13 @@ _ = arr[0]
 _ = arr[true]
 _ = arr[1.0]
 _ = arr["hi"]
+_ = arr[badvar]
 
 s := "hello"
 _ = s[0]
 _ = s[arr]
 _ = s[`x`]
+_ = s[badvar]
 
 mymap := map{
 	"a": 1
@@ -15,3 +17,4 @@ mymap := map{
 _ = mymap["b"]
 _ = mymap[0]
 _ = mymap[s]
+_ = mymap[badvar]
