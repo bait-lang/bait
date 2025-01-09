@@ -7,15 +7,9 @@ import bait.context
 import bait.token
 
 fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
-	typ := c.non_void_expr(node.right) or {
-		return
-	}
-
-	// Type info must be set for BlankIdent as well due to backend limitations
-	node.left_type = typ
-	node.right_type = typ
-
 	if node.left is ast.BlankIdent {
+		// Note: Side types must be set for BlankIdent due to backend limitations
+		_ = c.decl_right_side(mut node)
 		return
 	}
 
@@ -32,7 +26,7 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		msg := if obj.kind == .package_ {
 			'cannot shadow import "${left.name}"'
 		} else {
-			'redefinition of ${left.name}'
+			"redefinition of `${left.name}`"
 		}
 		c.error(msg, node.pos)
 		return
@@ -44,6 +38,8 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		return
 	}
 
+	typ := c.decl_right_side(mut node)
+
 	// Register identifier
 	c.scope.register(left.name, context.ScopeObject{
 		kind = .variable
@@ -51,6 +47,17 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 		is_mut = left.is_mut
 	})
 	_ = c.expr(node.left)
+}
+
+fun (mut c Checker) decl_right_side(mut node ast.AssignStmt) ast.Type {
+	typ := c.non_void_expr(node.right) or {
+		return ast.ERROR_TYPE
+	}
+
+	node.left_type = typ
+	node.right_type = typ
+
+	return typ
 }
 
 fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
