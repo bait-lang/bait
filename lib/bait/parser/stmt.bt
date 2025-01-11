@@ -27,6 +27,7 @@ fun (mut p Parser) pub_stmt() !ast.Stmt {
 		.key_enum{ p.enum_decl()! }
 		.key_fun{ p.fun_decl()! }
 		.key_interface{ p.interface_decl()! }
+		.key_static { p.static_decl()! }
 		.key_struct{ p.struct_decl()! }
 		else{
 			p.error('cannot use pub keyword before ${p.peek()}')!
@@ -266,6 +267,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 
 fun (mut p Parser) static_decl() !ast.StaticDecl{
 	pos := p.pos
+	is_pub := p.check_pub()
 	p.check(.key_static)!
 	name := p.check_name()!
 	p.check(.decl_assign)!
@@ -274,6 +276,7 @@ fun (mut p Parser) static_decl() !ast.StaticDecl{
 	p.pkg_scope.register_unique(name, context.ScopeObject{
 		kind = .static_
 		pkg = p.pkg_name
+		is_pub = is_pub
 		is_mut = true
 		expr = expr
 		typ = ast.VOID_TYPE

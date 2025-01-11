@@ -18,6 +18,8 @@ pub enum PubEnum{
 
 pub const PUB_CONST := 3
 
+pub static pub_static := 33
+
 pub fun pub_fun() bool {
 	return true
 }
@@ -33,5 +35,7 @@ enum PrivEnum {
 }
 
 const PRIV_CONST := 2
+
+static priv_static := 22
 
 fun priv_fun() {}

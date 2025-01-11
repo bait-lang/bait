@@ -609,12 +609,16 @@ The following conditions are currently supported:
 ## Static Variables
 While Bait has no support for global variables, you can use static package variables for a similar purpose.
 
+If marked as public, they are mutable from everywhere:
 ```bait
-static my_static_var := 123
+// demo.bt
+package demo
+
+pub static shared_var := 123
 ```
 
-They are public and mutable from everywhere:
 ```bait
+// main.bt
 import bait.test_pkgs.demo
 
 demo.shared_var += 7

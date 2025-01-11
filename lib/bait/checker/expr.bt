@@ -201,19 +201,22 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		return ast.ERROR_TYPE
 	}
 
-	// Check const visibility
-	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
-		c.error('const ${node.full_name()} is private', node.pos)
-	}
+	if obj.kind ==.constant or obj.kind == .static_ {
+		// Check visibility
+		if not obj.is_pub and obj.pkg != c.pkg {
+			key := if obj.kind == .constant { "const" } else { "static" }
+			c.error("${key} `${node.full_name()}` is private", node.pos)
+		}
 
-	// const/static: Resolve type
-	if obj.typ == ast.VOID_TYPE {
-		obj.typ = c.expr(obj.expr)
-	}
+		// Resolve type (hoisting)
+		if obj.typ == ast.VOID_TYPE {
+			obj.typ = c.expr(obj.expr)
+		}
 
-	// const/static: Always prefix with package
-	if (obj.kind == .constant or obj.kind == .static_) and node.pkg == "" {
-		node.pkg = obj.pkg
+		// Always prefix with package
+		if node.pkg == "" {
+			node.pkg = obj.pkg
+		}
 	}
 
 	// Set mutability for other checks
