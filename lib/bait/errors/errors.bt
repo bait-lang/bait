@@ -50,7 +50,7 @@ pub fun warn(path string, pos token.Pos, msg string) {
 	message(.warning, 'warning', path, pos, msg)
 }
 
-pub fun error(path string, pos token.Pos, msg string) {
+pub fun err(path string, pos token.Pos, msg string) {
 	message(.error, 'error', path, pos, msg)
 }
 
