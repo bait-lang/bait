@@ -129,6 +129,16 @@ fun (mut c Checker) close_scope(){
 	c.scope = c.scope.parent
 }
 
+fun (c Checker) find_in_scope(name string, pkg string) context.ScopeObject {
+	// From imported package or FFI
+	if pkg.length > 0 {
+		return c.sema_ctx.scopes[pkg].get(name)
+	}
+
+	// From current file or package
+	return c.scope.get_parent(name)
+}
+
 fun (c Checker) info(msg string, pos token.Pos){
 	c.infos.push(errors.Message{
 		kind = .info

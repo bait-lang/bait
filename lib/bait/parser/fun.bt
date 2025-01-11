@@ -42,17 +42,11 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		p.check(.rpar)!
 	}
 
-	mut mix_name := ''
-	if p.tok == .hash {
-		// language
-		lang = p.parse_lang()!
-		mix_name = lang.prepend_to(mix_name)
-
-		// foreign package
-		if lang == .js and p.peek() == .dot {
-			mix_name += p.check_name()! + '.'
-			p.check(.dot)!
-		}
+	ffi := p.parse_ffi_pkg()!
+	lang = ffi.lang
+	mut mix_name := ""
+	if lang != .bait {
+		mix_name = ffi.pkg + "." // TMP
 	}
 
 	// normal function name
@@ -108,9 +102,14 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		}
 		node.typ = p.table.find_or_register_fun(param_types, return_type, false)
 
+		// TODO why does this fail for error() and exit()
+		// println("${name} ${mix_name}")
+		// println("  ${p.pkg_scope.is_known(mix_name)}")
 		p.pkg_scope.register_unique(mix_name, context.ScopeObject{
 			kind = .function
 			typ = node.typ
+			// pkg = p.pkg_name
+			// is_pub = is_pub
 		})
 	}
 

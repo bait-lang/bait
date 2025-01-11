@@ -140,27 +140,20 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	is_pub := p.check_pub()
 	p.next()
 
-	lang := p.parse_lang()!
-
-	// Foreign package, e.g. `process` from `#JS.process.argv`
-	mut ffi_pkg := lang.str()
-	if lang == .js and p.peek() == .dot {
-		ffi_pkg += "." + p.check_name()!
-		p.next()
-	}
+	ffi := p.parse_ffi_pkg()!
 
 	// Actual const name
 	name := p.check_name()!
 
 	p.check(.decl_assign)!
 
-	if lang != .bait {
+	if ffi.lang != .bait {
 		typ := p.parse_type()!
 
-		ffi_scope := p.sema_ctx.obtain_root_scope(ffi_pkg)
+		ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
 		ffi_scope.register(name, context.ScopeObject{
 			kind = .constant
-			pkg = ffi_pkg
+			pkg = ffi.pkg
 			typ = typ
 			is_pub = true // TODO FFI rethink ffi pub behaviour (pub by default + warn on pub keyword OR require pub keyword)
 		})
@@ -169,7 +162,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 			name = name
 			typ = typ
 			pos = pos
-			lang = lang
+			lang = ffi.lang
 		}
 	}
 
@@ -187,7 +180,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 		name = name
 		expr = expr
 		pos = pos
-		lang = lang
+		lang = ffi.lang
 	}
 }
 

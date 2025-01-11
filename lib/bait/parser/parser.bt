@@ -207,6 +207,33 @@ fun (mut p Parser) parse_lang() !ast.Language {
 	return lang
 }
 
+struct FFIRes {
+	mut lang ast.Language
+	mut pkg string
+}
+
+// TODO use multi return
+fun (mut p Parser) parse_ffi_pkg() !FFIRes {
+	if p.tok != .hash {
+		return FFIRes{
+			lang = .bait
+		}
+	}
+
+	mut r := FFIRes{}
+
+	r.lang = p.parse_lang()!
+	r.pkg = r.lang.str()
+
+	// Foreign package, e.g. `process` from `#JS.process.argv`
+	if r.lang == .js and p.peek() == .dot {
+		r.pkg += "." + p.check_name()!
+		p.next()
+	}
+
+	return r
+}
+
 fun (p Parser) prepend_pkg(val string) string {
 	if p.pkg_name == 'builtin' or p.pkg_name == 'main' {
 		return val

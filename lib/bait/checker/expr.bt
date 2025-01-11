@@ -178,18 +178,8 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 	return ast.VOID_TYPE
 }
 
-fun (c Checker) find_ident(node ast.Ident) context.ScopeObject {
-	// From imported package or FFI
-	if node.pkg.length > 0 {
-		return c.sema_ctx.scopes[node.pkg].get(node.name)
-	}
-
-	// From current file or package
-	return c.scope.get_parent(node.name)
-}
-
 fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
-	mut obj := c.find_ident(node)
+	mut obj := c.find_in_scope(node.name, node.pkg)
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
 		if node.name == c.pkg_alias {
