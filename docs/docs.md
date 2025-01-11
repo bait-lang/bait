@@ -61,6 +61,7 @@ Constants can only be in the top level scope and are declared with the `const` k
 const ANSWER := 42
 ```
 
+
 ## Comments
 Use `//` to start a comment.
 ```bait
@@ -68,7 +69,9 @@ Use `//` to start a comment.
 x := true // Inline comment
 ```
 
-Unlike many other languages, Bait does not support block comments.
+> Unlike many other languages, Bait does not support block comments
+> (see [syntax design](./design/syntax.md#no-block-comments)).
+
 
 ## Types
 ### Primitive Types

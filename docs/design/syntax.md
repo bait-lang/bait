@@ -2,6 +2,17 @@
 Why is the syntax the way it is?
 
 
+## No Block Comments
+Bait does not support block comments:
+- Complicates lexing and parsing, especially nested block comments
+- Hard to format, especially inline comments _(a built-in formatter is planned)_
+
+Using a decent editor with line wrapping and shortcuts,
+you can achieve almost the same level of convenience!
+
+For details, I recommend reading https://futhark-lang.org/blog/2017-10-10-block-comments-are-a-bad-idea.html.
+
+
 ## Casting: `val as Type`
 ### Benefits
 - **Natural logic flow**
