@@ -81,16 +81,9 @@ fun (mut c Checker) fun_instance(mut node ast.FunDecl) {
 
 fun (c Checker) fun_params(params []ast.Param){
 	for p in params {
-		if c.scope.is_known(p.name) {
-			obj := c.scope.get_parent(p.name)
-			println(obj)
-			msg := if obj.kind == .package_ {
-				'cannot shadow import "${p.name}"'
-			} else {
-				// TODO REDEF print place of original declaration
-				'redefinition of ${p.name}'
-			}
-			c.error(msg, p.pos)
+		// Name shadowing
+		c.scope.expect_unknown(p.name) or {
+			c.error(err, p.pos)
 			continue
 		}
 
@@ -142,12 +135,6 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 		full_name := c.pkg + '.' + node.mix_name
 		if c.table.fun_decls.contains(full_name) {
 			node.mix_name = full_name
-			found = true
-		}
-	}
-	if not found {
-		obj := c.scope.get_parent(node.mix_name)
-		if obj.kind == .function {
 			found = true
 		}
 	}

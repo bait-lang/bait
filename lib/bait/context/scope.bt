@@ -87,6 +87,21 @@ pub fun (s Scope) is_known(name string) bool {
 	return obj.kind != .unknown
 }
 
+// TODO REDEF integrate into redefinition check
+pub fun (s Scope) expect_unknown(name string) ! {
+	obj := s.get_parent(name)
+
+	if obj.kind == .unknown {
+		return
+	}
+
+	if obj.kind == .package_ {
+		return error("cannot shadow import `${name}`")
+	}
+
+	return error("redefinition of `${name}`")
+}
+
 pub fun (s Scope) get_unique_redefinitions() []string {
 	mut unique_redefs := []string
 	for name in s.redefined_syms {

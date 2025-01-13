@@ -27,9 +27,8 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 
 		// Pass mutable receiver as pointer
 		rec_name := p.check_name()!
-		lang = p.parse_lang()!
 
-		mut rec_type := if lang == .bait { p.parse_type()! } else { p.parse_name_type(lang)! }
+		mut rec_type := p.parse_type()!
 		if is_mut {
 			rec_type = rec_type.set_nr_amp(1)
 		}
