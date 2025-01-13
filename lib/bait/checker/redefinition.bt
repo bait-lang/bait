@@ -31,7 +31,7 @@ fun (mut c Checker) add_conflicts(name string) {
 		}
 
 		for imp in file.imports {
-			if imp.lang != .c and imp.alias == name {
+			if imp.alias == name {
 				c.conflict_err(file.path, imp.pos, "import ${imp.name}")
 			}
 		}
