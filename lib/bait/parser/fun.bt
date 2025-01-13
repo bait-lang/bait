@@ -101,14 +101,11 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		}
 		node.typ = p.table.find_or_register_fun(param_types, return_type, false)
 
-		// TODO why does this fail for error() and exit()
-		// println("${name} ${mix_name}")
-		// println("  ${p.pkg_scope.is_known(mix_name)}")
 		p.pkg_scope.register_unique(mix_name, context.ScopeObject{
 			kind = .function
 			typ = node.typ
-			// pkg = p.pkg_name
-			// is_pub = is_pub
+			pkg = p.pkg_name
+			is_pub = is_pub
 		})
 	}
 

@@ -7,6 +7,11 @@ See also the [compiler structure](../development/structure.md#compiler-structure
 ## Scope System
 Identifiers are bound to and only accessible in a specific context called _scope_.
 
+This system performs the following tasks:
+- Store symbol names and their visibility
+- Find and track redefinitions
+
+
 ### Hierarchy
 ```mermaid
 graph TD
@@ -40,16 +45,19 @@ graph TD
     pkg = "foreign_pkg"
     is_pub = true
     ```
-- **Contents:** consts
+- **Content:** consts
 
 #### Package Scopes
 - **Purpose:** Store toplevel declarations and their visibility
 - **Storage:** `ast.SemanticContext.scopes["full.pkg"]`
-- **Contents:** static vars, consts, function names, type names
+- **Content:** static vars, consts, function names, type names
+
+#### File Scope
+- **Content:** import aliases
 
 #### Block Scopes
 - **Purpose:** Store local symbols
-- **Contents:** _TODO_
+- **Content:** _TODO_
 
 
 ### References
