@@ -27,6 +27,7 @@ fun (mut p Parser) pub_stmt() !ast.Stmt {
 		.key_enum{ p.enum_decl()! }
 		.key_fun{ p.fun_decl()! }
 		.key_interface{ p.interface_decl()! }
+		.key_static { p.static_decl()! }
 		.key_struct{ p.struct_decl()! }
 		else{
 			p.error('cannot use pub keyword before ${p.peek()}')!
@@ -55,7 +56,7 @@ fun (mut p Parser) script_mode_main() !ast.FunDecl {
 	}
 
 	mut node := ast.FunDecl{
-		name = 'main'
+		mix_name = 'main'
 		return_type = ast.VOID_TYPE
 	}
 	p.table.fun_decls['main'] = node
@@ -139,27 +140,20 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	is_pub := p.check_pub()
 	p.next()
 
-	lang := p.parse_lang()!
-
-	// Foreign package, e.g. `process` from `#JS.process.argv`
-	mut ffi_pkg := lang.str()
-	if lang == .js and p.peek() == .dot {
-		ffi_pkg += "." + p.check_name()!
-		p.next()
-	}
+	ffi := p.parse_ffi_pkg()!
 
 	// Actual const name
 	name := p.check_name()!
 
 	p.check(.decl_assign)!
 
-	if lang != .bait {
+	if ffi.lang != .bait {
 		typ := p.parse_type()!
 
-		ffi_scope := p.sema_ctx.obtain_root_scope(ffi_pkg)
+		ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
 		ffi_scope.register(name, context.ScopeObject{
 			kind = .constant
-			pkg = ffi_pkg
+			pkg = ffi.pkg
 			typ = typ
 			is_pub = true // TODO FFI rethink ffi pub behaviour (pub by default + warn on pub keyword OR require pub keyword)
 		})
@@ -168,7 +162,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 			name = name
 			typ = typ
 			pos = pos
-			lang = lang
+			lang = ffi.lang
 		}
 	}
 
@@ -186,7 +180,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 		name = name
 		expr = expr
 		pos = pos
-		lang = lang
+		lang = ffi.lang
 	}
 }
 
@@ -266,6 +260,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 
 fun (mut p Parser) static_decl() !ast.StaticDecl{
 	pos := p.pos
+	is_pub := p.check_pub()
 	p.check(.key_static)!
 	name := p.check_name()!
 	p.check(.decl_assign)!
@@ -274,6 +269,7 @@ fun (mut p Parser) static_decl() !ast.StaticDecl{
 	p.pkg_scope.register_unique(name, context.ScopeObject{
 		kind = .static_
 		pkg = p.pkg_name
+		is_pub = is_pub
 		is_mut = true
 		expr = expr
 		typ = ast.VOID_TYPE
@@ -376,7 +372,7 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) !ast.FunDecl
 	}
 	return ast.FunDecl{
 		lang = .js
-		name = name
+		mix_name = name
 		params = params
 		return_type = return_type
 		is_pub = true

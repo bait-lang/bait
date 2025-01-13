@@ -72,7 +72,7 @@ fun is_redef(name string, stmt ast.Stmt) bool {
 	return match stmt {
 		ast.ConstDecl { stmt.name == name }
 		ast.EnumDecl { stmt.name == name }
-		ast.FunDecl { stmt.name == name }
+		ast.FunDecl { stmt.lang == .bait and stmt.name == name }
 		ast.StaticDecl { stmt.name == name }
 		ast.StructDecl { stmt.name == name }
 		ast.TypeDecl { stmt.name == name }

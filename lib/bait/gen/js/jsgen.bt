@@ -191,7 +191,7 @@ fun (mut g Gen) gen_test_main() {
 	for key, func in g.table.fun_decls {
 		if func.is_test {
 			nr_test_funs += 1
-			name := js_esc(func.name)
+			name := js_esc(func.mix_name)
 			esc_path := g.path.replace('\\', '\\\\')
 			g.writeln('TestRunner_set_test_info(builtin__test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))')
 			g.writeln('${name}()')

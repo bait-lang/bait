@@ -12,6 +12,8 @@ e2 := 0 as pubpriv.PrivEnum
 
 c := pubpriv.PRIV_CONST
 
+_ = pubpriv.priv_static
+
 pubpriv.priv_fun()
 
 s2 := pubpriv.PubStruct{}

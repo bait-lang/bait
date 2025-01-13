@@ -21,14 +21,8 @@ fun (mut c Checker) decl_assign(mut node ast.AssignStmt) {
 	left := node.left as ast.Ident
 
 	// Name shadowing
-	if c.scope.is_known(left.name) {
-		obj := c.scope.get_parent(left.name)
-		msg := if obj.kind == .package_ {
-			'cannot shadow import "${left.name}"'
-		} else {
-			"redefinition of `${left.name}`"
-		}
-		c.error(msg, node.pos)
+	c.scope.expect_unknown(left.name) or {
+		c.error(err, node.pos)
 		return
 	}
 

@@ -178,18 +178,8 @@ fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
 	return ast.VOID_TYPE
 }
 
-fun (c Checker) find_ident(node ast.Ident) context.ScopeObject {
-	// From imported package or FFI
-	if node.pkg.length > 0 {
-		return c.sema_ctx.scopes[node.pkg].get(node.name)
-	}
-
-	// From current file or package
-	return c.scope.get_parent(node.name)
-}
-
 fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
-	mut obj := c.find_ident(node)
+	mut obj := c.find_in_scope(node.name, node.pkg)
 
 	if obj.typ == ast.PLACEHOLDER_TYPE {
 		if node.name == c.pkg_alias {
@@ -201,19 +191,22 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		return ast.ERROR_TYPE
 	}
 
-	// Check const visibility
-	if obj.kind == .constant and not obj.is_pub and obj.pkg != c.pkg {
-		c.error('const ${node.full_name()} is private', node.pos)
-	}
+	if obj.kind ==.constant or obj.kind == .static_ {
+		// Check visibility
+		if not obj.is_pub and obj.pkg != c.pkg {
+			key := if obj.kind == .constant { "const" } else { "static" }
+			c.error("${key} `${node.full_name()}` is private", node.pos)
+		}
 
-	// const/static: Resolve type
-	if obj.typ == ast.VOID_TYPE {
-		obj.typ = c.expr(obj.expr)
-	}
+		// Resolve type (hoisting)
+		if obj.typ == ast.VOID_TYPE {
+			obj.typ = c.expr(obj.expr)
+		}
 
-	// const/static: Always prefix with package
-	if (obj.kind == .constant or obj.kind == .static_) and node.pkg == "" {
-		node.pkg = obj.pkg
+		// Always prefix with package
+		if node.pkg == "" {
+			node.pkg = obj.pkg
+		}
 	}
 
 	// Set mutability for other checks

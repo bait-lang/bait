@@ -91,7 +91,8 @@ pub struct FunDecl {
 	pub is_pub bool
 	pub lang Language
 	pub name string
-	pub pkg string
+	pub mix_name string // TMP
+	pub mix_pkg string // TMP and TODO make this completely obsolete
 	pub params []Param
 	pub return_type Type
 	pub is_test bool
@@ -112,7 +113,7 @@ pub struct Param {
 }
 
 pub fun (fn FunDecl) is_main() bool {
-	return not fn.is_method and fn.name == 'main'
+	return not fn.is_method and fn.mix_name == 'main'
 }
 
 pub struct LoopControlStmt {
@@ -199,7 +200,9 @@ pub struct BoolLiteral {
 
 pub struct CallExpr {
 	global lang Language
+	pub pkg string
 	global name string
+	global mix_name string // TMP
 	global return_type Type
 	global left_type Type
 	global left Expr := InvalidExpr{}
@@ -209,7 +212,6 @@ pub struct CallExpr {
 	global args []CallArg
 	global or_block OrBlock
 	pub is_method bool
-	pub pkg string
 	pub pos token.Pos
 }
 

@@ -212,7 +212,7 @@ fun (t Transformer) index_expr(node ast.IndexExpr) ast.Expr {
 			left = node.left
 			left_type = ast.ARRAY_TYPE
 			return_type = ast.ARRAY_TYPE
-			name = "slice"
+			mix_name = "slice"
 			args = [
 				ast.CallArg{
 					expr = idx.low

@@ -1,2 +1,2 @@
-tests/out/error/import/shadowing.in.bt:3:9 error: cannot shadow import "os"
-tests/out/error/import/shadowing.in.bt:5:1 error: cannot shadow import "os"
+tests/out/error/import/shadowing.in.bt:3:9 error: cannot shadow import `os`
+tests/out/error/import/shadowing.in.bt:5:1 error: cannot shadow import `os`

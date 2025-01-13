@@ -20,6 +20,8 @@ fun test_pub_works(){
 	c := pubpriv.PUB_CONST
 	assert c == 3
 
+	assert pubpriv.pub_static == 33
+
 	assert pubpriv.pub_fun()
 
 	s2 := UsesPub{}

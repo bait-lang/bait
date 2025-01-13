@@ -11,7 +11,7 @@ pub fun (e Expr) repr() string {
 		AsCast { e.expr.repr() + ' as XX' }
 		BlankIdent { '_' }
 		BoolLiteral { e.str() }
-		CallExpr{ e.name + '()'}
+		CallExpr{ e.mix_name + '()'}
 		CharLiteral { e.val }
 		ComptimeVar { e.kind.str() }
 		EnumVal{ e.val }
@@ -39,7 +39,7 @@ pub fun (e Expr) repr() string {
 
 pub fun (fn FunDecl) key() string {
 	if fn.is_method {
-		return '${fn.params[0].typ}.${fn.name}'
+		return '${fn.params[0].typ}.${fn.mix_name}'
 	}
-	return fn.name
+	return fn.mix_name
 }

@@ -302,7 +302,7 @@ fun (b Builder) print_errors_and_warnings(parser_errs bool) bool {
 
 		if b.prefs.warn_is_error {
 			for warn in f.warnings {
-				errors.error(warn.path, warn.pos, warn.msg)
+				errors.err(warn.path, warn.pos, warn.msg)
 			}
 		} else if not b.prefs.hide_warnings {
 			for warn in f.warnings {

@@ -27,9 +27,8 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 
 		// Pass mutable receiver as pointer
 		rec_name := p.check_name()!
-		lang = p.parse_lang()!
 
-		mut rec_type := if lang == .bait { p.parse_type()! } else { p.parse_name_type(lang)! }
+		mut rec_type := p.parse_type()!
 		if is_mut {
 			rec_type = rec_type.set_nr_amp(1)
 		}
@@ -42,24 +41,19 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		p.check(.rpar)!
 	}
 
-	mut name := ''
-	if p.tok == .hash {
-		// language
-		lang = p.parse_lang()!
-		name = lang.prepend_to(name)
-
-		// foreign package
-		if lang == .js and p.peek() == .dot {
-			name += p.check_name()! + '.'
-			p.check(.dot)!
-		}
+	ffi := p.parse_ffi_pkg()!
+	lang = ffi.lang
+	mut mix_name := ""
+	if lang != .bait {
+		mix_name = ffi.pkg + "." // TMP
 	}
 
 	// normal function name
-	name += p.check_name()!
-	is_test := name.starts_with('test_')
+	name := p.check_name()!
+	mix_name += name
+	is_test := mix_name.starts_with('test_')
 	if not is_method and lang == .bait {
-		name = p.prepend_pkg(name)
+		mix_name = p.prepend_pkg(mix_name)
 	}
 
 	// Generics
@@ -79,7 +73,8 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		is_test = is_test
 		is_pub = is_pub
 		name = name
-		pkg = p.pkg_name
+		mix_name = mix_name
+		mix_pkg = p.pkg_name
 		generic_names = generic_names
 		params = params
 		return_type = return_type
@@ -94,21 +89,26 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 	if is_method {
 		sym := p.table.get_sym(params[0].typ)
 		// TODO move this error into checker
-		if lang == .bait and sym.has_method(name) {
-			p.error('Method "${name}" already exists on type "${sym.name}"')!
+		if lang == .bait and sym.has_method(mix_name) {
+			p.error('Method "${mix_name}" already exists on type "${sym.name}"')!
 		}
 		sym.methods.push(node)
 	} else {
-		p.table.fun_decls[name] = node
+		p.table.fun_decls[mix_name] = node
 		mut param_types := []ast.Type
 		for param in params {
 			param_types.push(param.typ)
 		}
 		node.typ = p.table.find_or_register_fun(param_types, return_type, false)
 
-		p.pkg_scope.register_unique(name, context.ScopeObject{
+		// TODO why does this fail for error() and exit()
+		// println("${name} ${mix_name}")
+		// println("  ${p.pkg_scope.is_known(mix_name)}")
+		p.pkg_scope.register_unique(mix_name, context.ScopeObject{
 			kind = .function
 			typ = node.typ
+			// pkg = p.pkg_name
+			// is_pub = is_pub
 		})
 	}
 
@@ -138,7 +138,7 @@ fun (mut p Parser) anon_fun() !ast.AnonFun{
 	stmts := p.parse_block()!
 	return ast.AnonFun{
 		decl = ast.FunDecl{
-			name = '_anon_${p.file_hash}_${p.lexer.offset()}'
+			mix_name = '_anon_${p.file_hash}_${p.lexer.offset()}'
 			params = params
 			return_type = return_type
 			stmts = stmts
@@ -173,7 +173,9 @@ fun (mut p Parser) fun_params() ![]ast.Param{
 
 fun (mut p Parser) fun_call(lang ast.Language) !ast.CallExpr{
 	pos := p.pos
-	name := p.prepend_expr_pkg(p.check_name()!)
+	name := p.check_name()!
+	pkg := p.expr_pkg
+	mix_name := p.prepend_expr_pkg(name)
 	p.check(.lpar)!
 	args := p.call_args()!
 	p.check(.rpar)!
@@ -181,10 +183,11 @@ fun (mut p Parser) fun_call(lang ast.Language) !ast.CallExpr{
 	or_block := p.or_block()!
 
 	return ast.CallExpr{
+		pkg = pkg
 		name = name
+		mix_name = mix_name
 		args = args
 		or_block = or_block
-		pkg = p.pkg_name
 		pos = pos
 		lang = lang
 	}
@@ -203,6 +206,7 @@ fun (mut p Parser) method_call(left ast.Expr) !ast.CallExpr {
 		is_method = true
 		left = left
 		name = name
+		mix_name = name
 		args = args
 		or_block = or_block
 		pos = pos

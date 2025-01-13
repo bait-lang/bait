@@ -69,7 +69,7 @@ fun (mut c Checker) expr_stmt(mut node ast.ExprStmt) {
 	// Warn if function call with return value is not used
 	if expr is ast.CallExpr {
 		if expr.return_type > ast.VOID_TYPE {
-			c.warn("please use `_ = ${expr.name}()` to explicitly ignore the return value", expr.pos)
+			c.warn("use `_ = ${expr.mix_name}()` to explicitly ignore the return value", expr.pos)
 		}
 
 		return

@@ -17,13 +17,13 @@ fun (mut g Gen) anon_fun(node ast.AnonFun) {
 	g.indent = last_indent
 	g.empty_line = was_line_empty
 
-	g.write(node.decl.name)
+	g.write(node.decl.mix_name)
 }
 
 fun (mut g Gen) fun_decl(node ast.FunDecl) {
-	if node.name == 'testsuite_begin' {
+	if node.mix_name == 'testsuite_begin' {
 		g.has_test_begin = true
-	} else if node.name == 'testsuite_end' {
+	} else if node.mix_name == 'testsuite_end' {
 		g.has_test_end = true
 	}
 
@@ -43,10 +43,10 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	g.cur_fun = node
 
 	type_str := g.typ(node.return_type)
-	mut name := c_esc(node.name)
+	mut name := c_esc(node.mix_name)
 	if node.is_method {
 		sym := g.table.get_sym(node.params[0].typ)
-		name = c_esc(sym.name + '_' + node.name)
+		name = c_esc(sym.name + '_' + node.mix_name)
 	}
 	if g.cur_concrete_types.length > 0 {
 		name = g.get_concrete_name(name, g.cur_concrete_types.values())
@@ -83,14 +83,14 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 		} else {
 			g.write('.')
 		}
-		g.write(node.name)
+		g.write(node.mix_name)
 		g.write('(')
 		g.call_args(node.args)
 		g.write(')')
 		return
 	}
 
-	mut name := c_esc(node.name)
+	mut name := c_esc(node.mix_name)
 	if node.is_method {
 		sym := g.table.get_sym(node.left_type)
 		final_sym := g.table.get_final_sym(sym)
@@ -109,9 +109,9 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 			}
 		}
 
-		name = c_esc(sym.name + '_' + node.name)
+		name = c_esc(sym.name + '_' + node.mix_name)
 	} else if node.lang != .bait{
-		name = node.name.replace('C.', '')
+		name = node.mix_name.replace('C.', '')
 	}
 
 	if node.concrete_types.length > 0 {
@@ -120,7 +120,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 
 	g.write(name)
 
-	if not node.is_method and ['println', 'eprintln', 'print', 'eprint'].contains(node.name) {
+	if not node.is_method and ['println', 'eprintln', 'print', 'eprint'].contains(node.mix_name) {
 		g.write('(')
 		g.expr_to_string(node.args[0].expr, node.args[0].typ)
 		g.write(')')
