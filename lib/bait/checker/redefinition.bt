@@ -7,24 +7,24 @@ import bait.context
 import bait.errors
 import bait.token
 
-pub fun (mut c Checker) toplevel_redefinitions(files []ast.File) {
+pub fun (mut c Checker) toplevel_redefinitions() {
 	for pkg, scope in c.sema_ctx.scopes {
 		c.pkg = pkg
-		c.check_scope_redefs(scope, files)
+		c.check_scope_redefs(scope)
 	}
 }
 
-fun (mut c Checker) check_scope_redefs(scope context.Scope, files []ast.File) {
+fun (mut c Checker) check_scope_redefs(scope context.Scope) {
 	redefined_syms := scope.get_unique_redefinitions()
 
 	for redef in redefined_syms {
 		c.generic_error("redefinition of `${redef}`")
-		c.add_conflicts(redef, files)
+		c.add_conflicts(redef)
 	}
 }
 
-fun (mut c Checker) add_conflicts(name string, files []ast.File) {
-	for file in files {
+fun (mut c Checker) add_conflicts(name string) {
+	for file in c.files {
 		// Only the same package and builtin symbols can conflict
 		if file.pkg_name != c.pkg and file.pkg_name != "builtin" {
 			continue
