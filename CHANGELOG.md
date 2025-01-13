@@ -11,6 +11,7 @@ All notable changes are documented in this file.
 ### Error Checks
 - Warn if return value of function is unused
 - IndexExpr: Check index type
+- Check for import alias name conflicts
 - Improve various error messages and reduce noise
 
 ### Other Changes

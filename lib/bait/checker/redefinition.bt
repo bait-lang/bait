@@ -30,6 +30,12 @@ fun (mut c Checker) add_conflicts(name string) {
 			continue
 		}
 
+		for imp in file.imports {
+			if imp.alias == name {
+				c.conflict_err(file.path, imp.pos, "import ${imp.name}")
+			}
+		}
+
 		for stmt in file.stmts {
 			if is_redef(name, stmt) {
 				c.conflict_err(file.path, (stmt as ast.InvalidStmt).pos, c.get_signature(stmt))
