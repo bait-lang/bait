@@ -16,7 +16,7 @@ All notable changes are documented in this file.
 
 ### Other Changes
 - fix: `static` visibility now controlled by `pub` keyword
-- lexer: Disallow floats with trailing deciaml point
+- lexer: Disallow floats with trailing decimal point
 
 
 ## 0.0.8 - 2024-12-25
