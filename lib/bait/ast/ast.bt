@@ -409,6 +409,7 @@ pub struct File {
 	global errors []errors.Message
 	global generic_funs []FunDecl
 	pub path string
+	pub lang Language
 	pub pkg_name string // Full package name
 	pub imports []Import
 	pub stmts []Stmt

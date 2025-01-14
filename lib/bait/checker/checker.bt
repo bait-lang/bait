@@ -109,9 +109,8 @@ fun (mut c Checker) check(file ast.File) {
 
 fun (mut c Checker) check_imports(imports []ast.Import) {
 	for imp in imports {
-		// TODO C imports
-		if not c.is_js_file and imp.lang == .js {
-			c.warn('JS imports have to be in .js.bt files', imp.pos)
+		if imp.lang != .bait and c.file.lang != imp.lang {
+			c.warn("${imp.lang.str()} imports should be in `.<lang>.bt` files", imp.pos)
 		}
 
 		// C imports are aliased as `_`

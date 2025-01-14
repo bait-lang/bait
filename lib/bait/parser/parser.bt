@@ -99,6 +99,7 @@ pub fun (mut p Parser) parse_result() !ast.File {
 
 	return ast.File{
 		path = p.path
+		lang = ast.path_to_lang(p.path)
 		pkg_name = p.pkg_name
 		imports = imports
 		stmts = stmts

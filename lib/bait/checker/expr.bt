@@ -171,10 +171,10 @@ fun (mut c Checker) enum_val(mut node ast.EnumVal) ast.Type {
 }
 
 fun (mut c Checker) hash_expr(node ast.HashExpr) ast.Type {
-	// TODO adjust for C backend
-	if node.lang == .js and not c.is_js_file {
-		c.warn('JS code can only be used in .js.bt files', node.pos)
+	if node.lang != c.file.lang {
+		c.warn("${node.lang.str()} code should be in `.<lang>.bt` files", node.pos)
 	}
+
 	return ast.VOID_TYPE
 }
 
