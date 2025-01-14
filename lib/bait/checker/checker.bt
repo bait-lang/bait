@@ -20,7 +20,6 @@ pub struct Checker{
 	mut pkg_alias string
 	mut has_main_pkg_files bool
 	mut has_main_fun bool
-	mut is_js_file bool
 	mut cur_fun ast.FunDecl
 	mut cur_concrete_types []ast.Type
 	mut need_generic_resolve bool
@@ -86,7 +85,6 @@ pub fun (mut c Checker) check_files(files []&ast.File) {
 fun (mut c Checker) change_file(file ast.File) {
 	c.file = file
 	c.path = file.path
-	c.is_js_file = c.path.contains('.js.')
 	c.pkg = file.pkg_name
 	c.pkg_alias = file.pkg_name.all_after_last('.')
 
@@ -109,9 +107,8 @@ fun (mut c Checker) check(file ast.File) {
 
 fun (mut c Checker) check_imports(imports []ast.Import) {
 	for imp in imports {
-		// TODO C imports
-		if not c.is_js_file and imp.lang == .js {
-			c.warn('JS imports have to be in .js.bt files', imp.pos)
+		if imp.lang != .bait and c.file.lang != imp.lang {
+			c.warn("${imp.lang} imports should be in .${imp.lang.ext()}.bt files", imp.pos)
 		}
 
 		// C imports are aliased as `_`
