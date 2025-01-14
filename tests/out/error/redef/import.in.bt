@@ -1,0 +1,3 @@
+import bait.test_pkgs.demo
+
+static demo := 1

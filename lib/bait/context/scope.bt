@@ -94,10 +94,6 @@ pub fun (s Scope) expect_unknown(name string) ! {
 		return
 	}
 
-	// This cannot be integrated into redefinition.bt due to current design limitations.
-	// The parser only has the pkg_scope but imports belong to a file.
-	// Also technically this means that the import shadows the pkg_scope elements
-	// TODO REDEF rework the design to prevent name conflicts between e.g. static and import
 	if obj.kind == .package_ {
 		return error("cannot shadow import `${name}`")
 	}

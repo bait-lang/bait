@@ -11,11 +11,12 @@ All notable changes are documented in this file.
 ### Error Checks
 - Warn if return value of function is unused
 - IndexExpr: Check index type
+- Check for import alias name conflicts
 - Improve various error messages and reduce noise
 
 ### Other Changes
 - fix: `static` visibility now controlled by `pub` keyword
-- lexer: Disallow floats with trailing deciaml point
+- lexer: Disallow floats with trailing decimal point
 - fix(c): Prevent c error if blank identifier is used
 
 

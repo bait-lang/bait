@@ -27,6 +27,6 @@ pub fun (n i32) str() string {
 pub fun (n i64) str() string {
 	length := #C.snprintf(#C.'NULL' as &u8, 0, "%d".str, n)
 	buf := #C.malloc(length + 1)
-	#C.snprintf(buf, length + 1, "%d".str, n)
+	_ = #C.snprintf(buf, length + 1, "%d".str, n)
 	return from_c_string(buf)
 }

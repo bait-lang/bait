@@ -1,0 +1,3 @@
+error: redefinition of `demo`
+tests/out/error/redef/import.in.bt:1:1 conflict: import bait.test_pkgs.demo
+tests/out/error/redef/import.in.bt:3:1 conflict: static i32

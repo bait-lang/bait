@@ -149,8 +149,9 @@ pub fun compile(prefs preference.Prefs) i32 {
 		prefs = b.prefs
 		table = b.parser.table
 		sema_ctx = sema_ctx
+		files = b.parsed_files
 	}
-	b.checker.check_redefinitions(b.parsed_files)
+	b.checker.toplevel_redefinitions()
 	if b.checker.errors.length > 0 {
 		for err in b.checker.errors {
 			err.print()
@@ -176,7 +177,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	mut looked := []string
 	mut pkg_order := []string
 	order_pkgs(mut pkg_order, root_pkg, deps, mut looked)
-	mut sorted_files := []ast.File
+	mut sorted_files := []&ast.File
 	for pkg in pkg_order {
 		for f in ast_files {
 			if f.pkg_name == pkg {
