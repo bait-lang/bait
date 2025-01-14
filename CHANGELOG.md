@@ -12,6 +12,7 @@ All notable changes are documented in this file.
 - Warn if return value of function is unused
 - IndexExpr: Check index type
 - Check for import alias name conflicts
+- Properly warn if FFI is used in a file intended for a different backend
 - Improve various error messages and reduce noise
 
 ### Other Changes

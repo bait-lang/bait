@@ -43,3 +43,11 @@ pub fun (l Language) str() string {
 		.js { "JS" }
 	}
 }
+
+pub fun (l Language) ext() string {
+	return match l {
+		.bait { "bt" }
+		.c { "c" }
+		.js { "js" }
+	}
+}

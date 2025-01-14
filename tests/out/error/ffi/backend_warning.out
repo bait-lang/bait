@@ -1,0 +1,2 @@
+tests/out/error/ffi/backend_warning.in.bt:1:6 warning: JS code should be in .js.bt files
+tests/out/error/ffi/backend_warning.in.bt:3:5 warning: C code should be in .c.bt files
