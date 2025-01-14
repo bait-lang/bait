@@ -29,7 +29,7 @@ pub fun (t Transformer) stmts(mut stmts []ast.Stmt) {
 fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 	match stmt {
 		ast.AssertStmt { t.assert_stmt(mut stmt) }
-		ast.AssignStmt { t.assign_stmt(mut stmt) }
+		ast.AssignStmt { return t.assign_stmt(mut stmt) }
 		ast.Block { t.stmts(mut stmt.stmts) }
 		ast.ConstDecl { return t.const_decl(stmt) }
 		ast.ExprStmt { _ = t.expr(mut stmt.expr) }
@@ -89,7 +89,7 @@ fun (t Transformer) assert_stmt(mut node ast.AssertStmt) {
 	node.expr = t.expr(mut node.expr)
 }
 
-fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
+fun (t Transformer) assign_stmt(mut node ast.AssignStmt) ast.Stmt {
 	// JS: allow for correct integer rounding
 	if t.prefs.backend == .js and node.op == .div_assign {
 		node.op = .assign
@@ -103,6 +103,15 @@ fun (t Transformer) assign_stmt(mut node ast.AssignStmt) {
 
 	node.left = t.expr(node.left)
 	node.right = t.expr(node.right)
+
+	if t.prefs.backend == .c and node.left is ast.BlankIdent {
+		node.op = .decl_assign
+		return ast.Block{
+			stmts = [node as ast.Stmt]
+		}
+	}
+
+	return node
 }
 
 fun (t Transformer) const_decl(node ast.ConstDecl) ast.Stmt {
