@@ -5,5 +5,5 @@ tests/out/error/other/is_private.in.bt:10:14 error: enum bait.test_pkgs.pubpriv.
 tests/out/error/other/is_private.in.bt:11:9 error: type bait.test_pkgs.pubpriv.PrivEnum is private
 tests/out/error/other/is_private.in.bt:13:14 error: const `bait.test_pkgs.pubpriv.PRIV_CONST` is private
 tests/out/error/other/is_private.in.bt:15:13 error: static `bait.test_pkgs.pubpriv.priv_static` is private
-tests/out/error/other/is_private.in.bt:17:9 error: function bait.test_pkgs.pubpriv.priv_fun is private
+tests/out/error/other/is_private.in.bt:17:9 error: function `bait.test_pkgs.pubpriv.priv_fun` is private
 tests/out/error/other/is_private.in.bt:20:4 error: method priv_method is private

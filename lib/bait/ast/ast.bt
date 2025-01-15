@@ -215,6 +215,14 @@ pub struct CallExpr {
 	pub pos token.Pos
 }
 
+pub fun (node CallExpr) full_name() string {
+	if node.pkg.length == 0 {
+		return node.name
+	}
+
+	return node.pkg + "." + node.name
+}
+
 pub struct CallArg {
 	global typ Type
 	global expr Expr

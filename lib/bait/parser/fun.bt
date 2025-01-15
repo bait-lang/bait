@@ -101,12 +101,20 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		}
 		node.typ = p.table.find_or_register_fun(param_types, return_type, false)
 
-		p.pkg_scope.register_unique(mix_name, context.ScopeObject{
-			kind = .function
-			typ = node.typ
-			pkg = p.pkg_name
-			is_pub = is_pub
-		})
+		if lang == .bait {
+			p.pkg_scope.register_unique(name, context.ScopeObject{
+				kind = .function
+				typ = node.typ
+				pkg = p.pkg_name
+				is_pub = is_pub
+			})
+		} else {
+			ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
+			ffi_scope.register(name, context.ScopeObject{
+				kind = .function
+				is_pub = true
+			})
+		}
 	}
 
 	if lang == .bait {
