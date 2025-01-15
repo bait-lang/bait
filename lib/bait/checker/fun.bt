@@ -95,7 +95,6 @@ fun (c Checker) fun_params(params []ast.Param){
 		if sym.kind == .fun_ {
 			info := sym.info as ast.FunInfo
 			c.table.fun_decls[p.name] = ast.FunDecl{
-				mix_pkg = c.pkg
 				return_type = info.return_type
 				params = info.to_params()
 			}

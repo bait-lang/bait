@@ -92,7 +92,6 @@ pub struct FunDecl {
 	pub lang Language
 	pub name string
 	pub mix_name string // TMP
-	pub mix_pkg string // TMP and TODO make this completely obsolete
 	pub params []Param
 	pub return_type Type
 	pub is_test bool

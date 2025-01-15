@@ -74,7 +74,6 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		is_pub = is_pub
 		name = name
 		mix_name = mix_name
-		mix_pkg = p.pkg_name
 		generic_names = generic_names
 		params = params
 		return_type = return_type
