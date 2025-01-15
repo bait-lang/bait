@@ -16,7 +16,7 @@ All notable changes are documented in this file.
 - Improve various error messages and reduce noise
 
 ### Other Changes
-- fix: `static` visibility now controlled by `pub` keyword
+- `static` visibility is now controlled by `pub` keyword
 - lexer: Disallow floats with trailing decimal point
 - fix(c): Prevent c error if blank identifier is used
 
