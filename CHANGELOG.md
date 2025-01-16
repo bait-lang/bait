@@ -14,6 +14,7 @@ All notable changes are documented in this file.
 - Check for import alias name conflicts
 - Properly warn if FFI is used in a file intended for a different backend
 - Improve various error messages and reduce noise
+- Functions can no longer be shadowed by variables
 
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword
