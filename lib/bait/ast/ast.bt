@@ -397,8 +397,8 @@ pub struct InvalidStmt {
 }
 
 pub struct Import {
-	pub name string // Full import name
-	pub alias string // Custom alias or the part after the last dot
+	pub name string // Full name, e.g. `crypto.sha1`
+	pub alias string // Last name part or custom alias, e.g. `sha1`
 	pub lang Language
 	pub pos token.Pos
 }

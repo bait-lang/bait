@@ -70,6 +70,7 @@ pub enum TypeKind {
 
 pub struct TypeSymbol{
 	pub mut name string
+	pub mut mix_name string // TMP
 	pub mut kind TypeKind
 	pub mut methods []FunDecl
 	pub mut parent Type
@@ -113,9 +114,9 @@ pub fun (sym TypeSymbol) has_method(name string) bool {
 
 pub fun (t Table) register_builtins(){
 	// IMPORTANT: Order of registration must match the order of the constants above
-	_ = t.register_sym(TypeSymbol{ name = '_' }) // PLACEHOLDER_TYPE
-	_ = t.register_sym(TypeSymbol{ name = '_err' }) // ERROR_TYPE
-	_ = t.register_sym(TypeSymbol{ name = 'void' })
+	_ = t.register_sym(TypeSymbol{ mix_name = '_' }) // PLACEHOLDER_TYPE
+	_ = t.register_sym(TypeSymbol{ mix_name = '_err' }) // ERROR_TYPE
+	_ = t.register_sym(TypeSymbol{ mix_name = 'void' })
 	_ = t.register_num('i8')
 	_ = t.register_num('i16')
 	_ = t.register_num('i32')
@@ -124,27 +125,27 @@ pub fun (t Table) register_builtins(){
 	_ = t.register_num('u16')
 	_ = t.register_num('u32')
 	_ = t.register_num('u64')
-	_ = t.register_sym(TypeSymbol{ name = 'f32' })
-	_ = t.register_sym(TypeSymbol{ name = 'f64' })
-	_ = t.register_sym(TypeSymbol{ name = 'bool' })
+	_ = t.register_sym(TypeSymbol{ mix_name = 'f32' })
+	_ = t.register_sym(TypeSymbol{ mix_name = 'f64' })
+	_ = t.register_sym(TypeSymbol{ mix_name = 'bool' })
 	_ = t.register_sym(TypeSymbol{
-		name = 'string'
+		mix_name = 'string'
 		kind = .string
 	})
 	_ = t.register_sym(TypeSymbol{
-		name = 'Array'
+		mix_name = 'Array'
 		kind = .array
 	})
 	_ = t.register_sym(TypeSymbol{
-		name = 'Map'
+		mix_name = 'Map'
 		kind = .map
 	})
-	_ = t.register_sym(TypeSymbol{ name = 'any'})
+	_ = t.register_sym(TypeSymbol{ mix_name = 'any'})
 }
 
 pub fun (t Table) register_num(name string) {
 	_ = t.register_sym(TypeSymbol{
-		name = name
+		mix_name = name
 		kind = .number
 		is_pub = true
 	})

@@ -55,7 +55,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	if lsym.overloads.contains(node.op.c_repr()) {
 		g.write(' = ')
 		overload := lsym.overloads[node.op.c_repr()]
-		g.write(c_esc(lsym.name + '_' + overload.mix_name))
+		g.write(c_esc(lsym.mix_name + '_' + overload.mix_name))
 		g.write('(')
 		g.expr(node.left)
 		g.write(', ')

@@ -183,7 +183,7 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 	} else if sym.kind == .string {
 		node.val_type = ast.U8_TYPE
 	} else {
-		c.error('cannot iterate over ${sym.name}', node.pos)
+		c.error('cannot iterate over ${sym.mix_name}', node.pos)
 	}
 
 	if node.idxvar is ast.Ident {

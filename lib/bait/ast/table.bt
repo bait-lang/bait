@@ -66,11 +66,11 @@ pub fun (mut t Table) register_concrete(key string, concrete []Type) bool {
 
 pub fun (t Table) type_name(typ Type) string {
 	amps := '&'.repeat(typ.get_nr_amp())
-	return amps + t.get_sym(typ).name
+	return amps + t.get_sym(typ).mix_name
 }
 
 pub fun (t Table) register_sym(sym TypeSymbol) Type {
-	idx := t.get_idx(sym.name)
+	idx := t.get_idx(sym.mix_name)
 	if idx > 0 as Type {
 		cur_sym := t.get_sym(idx)
 		if cur_sym.kind == .placeholder {
@@ -96,13 +96,13 @@ pub fun (t Table) register_sym(sym TypeSymbol) Type {
 
 	new_idx := t.type_symbols.length as Type
 	t.type_symbols.push(sym)
-	t.type_idxs[sym.name] = new_idx
+	t.type_idxs[sym.mix_name] = new_idx
 	return new_idx
 }
 
 pub fun (t Table) find_or_register_array(elem_type Type) Type {
 	elem_sym := t.get_sym(elem_type)
-	name := '[]' + elem_sym.name
+	name := '[]' + elem_sym.mix_name
 	idx := t.get_idx(name)
 	if idx > 0 as Type {
 		return idx
@@ -110,7 +110,7 @@ pub fun (t Table) find_or_register_array(elem_type Type) Type {
 
 	return t.register_sym(TypeSymbol{
 		kind = .array
-		name = name
+		mix_name = name
 		pkg = elem_sym.pkg
 		parent = ARRAY_TYPE
 		info = ArrayInfo{
@@ -122,14 +122,14 @@ pub fun (t Table) find_or_register_array(elem_type Type) Type {
 pub fun (t Table) find_or_register_map(key_type Type, val_type Type) Type {
 	key_sym := t.get_sym(key_type)
 	val_sym := t.get_sym(val_type)
-	name := 'map[${key_sym.name}]${val_sym.name}'
+	name := 'map[${key_sym.mix_name}]${val_sym.mix_name}'
 	idx := t.get_idx(name)
 	if idx > 0 as Type {
 		return idx
 	}
 	return t.register_sym(TypeSymbol{
 		kind = .map
-		name = name
+		mix_name = name
 		parent = MAP_TYPE
 		info = MapInfo{
 			key_type = key_type
@@ -148,7 +148,7 @@ pub fun (t Table) find_or_register_fun(param_types []Type, return_type Type, ali
 
 	return t.register_sym(TypeSymbol{
 		kind = .fun_
-		name = name
+		mix_name = name
 		info = FunInfo{
 			is_alias = alias
 			param_types = param_types
@@ -166,7 +166,7 @@ pub fun (t Table) find_type_or_add_placeholder(name string, pkg string) Type {
 
 	return t.register_sym(TypeSymbol{
 		kind = .placeholder
-		name = name
+		mix_name = name
 		pkg = pkg
 	})
 }

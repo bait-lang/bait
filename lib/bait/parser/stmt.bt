@@ -237,7 +237,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 	p.check(.rcur)!
 
 	typ := p.table.register_sym(ast.TypeSymbol{
-		name = name
+		mix_name = name
 		is_pub = is_pub
 		pkg = p.pkg_name
 		kind = .enum_
@@ -297,7 +297,7 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 	// TODO investigate why registration of the sym after loop with methods as struct field does not work
 	mut tsym := ast.TypeSymbol{
 		kind = .interface_
-		name = name
+		mix_name = name
 		is_pub = is_pub
 		pkg = p.pkg_name
 	}
@@ -417,7 +417,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 		sym := p.table.get_sym(variants[0])
 		typ := p.table.register_sym(ast.TypeSymbol{
 			kind = .fun_
-			name = name
+			mix_name = name
 			is_pub = is_pub
 			pkg = p.pkg_name
 			info = sym.info
@@ -439,7 +439,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 	if p.tok != .pipe {
 		typ := p.table.register_sym(ast.TypeSymbol{
 			kind = .alias_type
-			name = name
+			mix_name = name
 			parent = variants[0]
 			is_pub = is_pub
 			pkg = p.pkg_name
@@ -465,7 +465,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 
 	typ := p.table.register_sym(ast.TypeSymbol{
 		kind = .sum_type
-		name = name
+		mix_name = name
 		is_pub = is_pub
 		pkg = p.pkg_name
 		info = ast.SumTypeInfo{

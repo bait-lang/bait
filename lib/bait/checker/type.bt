@@ -44,7 +44,7 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 	}
 
 	if exp_sym.kind == .array and got_sym.kind == .array {
-		if exp_sym.name == 'Array' or got_sym.name == 'Array' {
+		if exp_sym.mix_name == 'Array' or got_sym.mix_name == 'Array' {
 			return true
 		}
 		got_info := got_sym.info as ast.ArrayInfo
@@ -81,8 +81,8 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 }
 
 fun (c Checker) does_type_exist(sym ast.TypeSymbol, pos token.Pos) bool {
-	if (sym.kind == .placeholder and sym.name != '_') or (sym.kind == .generic and not (c.cur_generic_names.contains(sym.name))) {
-		c.error('unknown type ${sym.name}', pos)
+	if (sym.kind == .placeholder and sym.mix_name != '_') or (sym.kind == .generic and not (c.cur_generic_names.contains(sym.mix_name))) {
+		c.error('unknown type ${sym.mix_name}', pos)
 		return false
 	}
 
@@ -134,6 +134,6 @@ fun (c Checker) does_type_exist(sym ast.TypeSymbol, pos token.Pos) bool {
 		return true
 	}
 
-	c.error('type ${sym.name} is private', pos)
+	c.error('type ${sym.mix_name} is private', pos)
 	return false
 }

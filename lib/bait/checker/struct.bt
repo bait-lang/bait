@@ -55,19 +55,19 @@ fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 		c.error('undefined struct ${node.name}', node.pos)
 		return ast.ERROR_TYPE
 	}
-	if not sym.is_pub and sym.name.contains('.') and sym.pkg != c.pkg {
-		c.error('struct ${sym.name} is private', node.pos)
+	if not sym.is_pub and sym.mix_name.contains('.') and sym.pkg != c.pkg {
+		c.error('struct ${sym.mix_name} is private', node.pos)
 		return ast.ERROR_TYPE
 	}
 
 	c.check_init_field_values(node, sym.info as ast.StructInfo)
 
 
-	node.name = sym.name
+	node.name = sym.mix_name
 	for field in node.fields {
 		def := sym.find_field(field.name, c.table)
 		if def.name.length == 0 {
-			c.error('struct ${sym.name} has no field ${field.name}', node.pos)
+			c.error('struct ${sym.mix_name} has no field ${field.name}', node.pos)
 			// Stay in the loop to also check the field expression
 		}
 

@@ -154,19 +154,19 @@ fun (mut c Checker) enum_val(mut node ast.EnumVal) ast.Type {
 		return ast.ERROR_TYPE
 	}
 	if sym.kind != .enum_ {
-		c.error('expected type is not an enum, got ${sym.name}', node.pos)
+		c.error('expected type is not an enum, got ${sym.mix_name}', node.pos)
 		return ast.ERROR_TYPE
 	}
-	if not sym.is_pub and sym.name.contains('.') and sym.pkg != c.pkg {
-		c.error('enum ${sym.name} is private', node.pos)
+	if not sym.is_pub and sym.mix_name.contains('.') and sym.pkg != c.pkg {
+		c.error('enum ${sym.mix_name} is private', node.pos)
 		return ast.ERROR_TYPE
 	}
 	info := sym.info as ast.EnumInfo
 	if not info.vals.contains(node.val) {
-		c.error('enum ${sym.name} has no value ${node.val}', node.pos)
+		c.error('enum ${sym.mix_name} has no value ${node.val}', node.pos)
 		return ast.ERROR_TYPE
 	}
-	node.name = sym.name
+	node.name = sym.mix_name
 	return node.typ
 }
 
@@ -312,19 +312,19 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 	if [ast.TypeKind.struct_, .interface_, .array, .string, .map].contains(sym.kind) {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
-			c.error('${sym.name} has no field ${node.field_name}', node.pos)
+			c.error('${sym.mix_name} has no field ${node.field_name}', node.pos)
 			return ast.ERROR_TYPE
 		}
 
 		if not field.is_pub and sym.pkg != c.pkg {
-			c.error('field ${sym.name}.${node.field_name} is private', node.pos)
+			c.error('field ${sym.mix_name}.${node.field_name} is private', node.pos)
 		}
 
 		fsym := c.table.get_sym(field.typ)
 		if fsym.kind == .generic {
 			gen_info := gen_sym.info as ast.GenericInst
 			info := sym.info as ast.StructInfo
-			return gen_info.concrete_types[info.generic_names.index(fsym.name)]
+			return gen_info.concrete_types[info.generic_names.index(fsym.mix_name)]
 		}
 
 		return field.typ
@@ -332,7 +332,7 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 
 	if sym.kind == .sum_type {
 		// TODO check if field is present on all variants (with same type)
-		c.error('cast to the variant before accessing field of sumtype ${sym.name}', node.pos)
+		c.error('cast to the variant before accessing field of sumtype ${sym.mix_name}', node.pos)
 		return ast.VOID_TYPE
 	}
 

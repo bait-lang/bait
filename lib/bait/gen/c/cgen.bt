@@ -140,7 +140,7 @@ fun (mut g Gen) c_main() {
 fun (g Gen) get_concrete_name(name string, concrete_types []ast.Type) string {
 	mut full_name := name
 	for t in concrete_types {
-		full_name += '_' + g.table.get_sym(t).name
+		full_name += '_' + g.table.get_sym(t).mix_name
 	}
 	return c_esc(full_name)
 }

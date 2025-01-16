@@ -46,7 +46,7 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 
 	tsym := ast.TypeSymbol{
 		kind = .struct_
-		name = p.prepend_pkg(name)
+		mix_name = p.prepend_pkg(name)
 		is_pub = is_pub
 		pkg = p.pkg_name
 		info = ast.StructInfo{

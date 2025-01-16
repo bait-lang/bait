@@ -79,7 +79,7 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 	rec_sym := c.table.get_sym(node.params[0].typ)
 	if rec_sym.overloads.contains(attr.value) {
 		// TODO print positions of all overloads
-		c.error('"${attr.value}" was overloaded twice for type "${rec_sym.name}"', attr.pos)
+		c.error('"${attr.value}" was overloaded twice for type "${rec_sym.mix_name}"', attr.pos)
 		return
 	}
 
