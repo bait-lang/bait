@@ -21,6 +21,9 @@ All notable changes are documented in this file.
 - lexer: Disallow floats with trailing decimal point
 - fix(c): Prevent c error if blank identifier is used
 
+### Compiler internals
+- refac(gen): move generation of test main function into transformer
+
 
 ## 0.0.8 - 2024-12-25
 ### Breaking

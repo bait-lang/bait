@@ -88,9 +88,6 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.out += "\n"
 	}
 
-	// if pref.is_test {
-	// 	g.gen_test_main()
-	// }
 	if not pref.is_library {
 		g.main_call()
 	}
@@ -179,35 +176,6 @@ fun (mut g Gen) cut_before_any(chars string) string {
 
 fun (mut g Gen) save_stmt_offset() {
 	g.stmt_offsets.push(g.out.length)
-}
-
-fun (mut g Gen) gen_test_main() {
-	mut nr_test_funs := 0
-	g.writeln('function main() {')
-	g.indent += 1
-	if g.has_test_begin {
-		g.writeln('testsuite_begin()')
-	}
-	for key, func in g.table.fun_decls {
-		if func.is_test {
-			nr_test_funs += 1
-			name := js_esc(func.mix_name)
-			esc_path := g.path.replace('\\', '\\\\')
-			g.writeln('TestRunner_set_test_info(builtin__test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))')
-			g.writeln('${name}()')
-		}
-	}
-	if g.has_test_end {
-		g.writeln('testsuite_end()')
-	}
-	g.writeln('exit(TestRunner_exit_code(builtin__test_runner))')
-	g.indent -= 1
-	g.writeln('}')
-
-	if nr_test_funs == 0 {
-		errors.generic_error('${g.path} contains no tests')
-		exit(1)
-	}
 }
 
 fun (mut g Gen) main_call() {
