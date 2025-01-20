@@ -3,16 +3,13 @@
 package transformer
 
 import bait.ast
+import bait.context
 import bait.preference
 
 pub struct Transformer {
 	prefs preference.Prefs
+	gen_ctx &context.GenContext
 	mut path string
-
-	// Fields related to testing
-	mut has_test_begin bool
-	mut has_test_end bool
-	mut test_funs []TestFunInfo
 }
 
 pub fun (mut t Transformer) transform_files(mut files []ast.File) {
@@ -168,20 +165,6 @@ fun (mut t Transformer) for_in_loop(mut node ast.ForInLoop) ast.ForInLoop {
 fun (mut t Transformer) fun_decl(mut node ast.FunDecl) ast.Stmt {
 	if node.lang != .bait {
 		return ast.Void{}
-	}
-
-	// Special testing functions
-	if not node.is_method and node.is_test {
-		t.test_funs.push(TestFunInfo{
-			name = node.mix_name
-			path = t.path.replace('\\', '\\\\')
-		})
-	} else if t.prefs.is_test {
-		if node.name == "testsuite_begin" {
-			t.has_test_begin = true
-		} else if node.name == "testsuite_end" {
-			t.has_test_end = true
-		}
 	}
 
 	t.stmts(node.stmts)

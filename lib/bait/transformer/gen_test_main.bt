@@ -4,18 +4,13 @@ package transformer
 
 import bait.ast
 
-struct TestFunInfo {
-	name string
-	path string
-}
-
 fun (t Transformer) gen_test_main() &ast.File {
 	mut test_main := ast.FunDecl{
 		mix_name = "main"
 		name = "main"
 	}
 
-	if t.has_test_begin {
+	if t.gen_ctx.has_test_begin {
 		test_main.stmts.push(ast.ExprStmt{
 			expr = ast.CallExpr{
 				mix_name = "testsuite_begin"
@@ -24,10 +19,11 @@ fun (t Transformer) gen_test_main() &ast.File {
 		})
 	}
 
-	for f in t.test_funs {
-		mut val := 'TestRunner_set_test_info(builtin__test_runner, from_js_string("${f.path}"), from_js_string("${f.name}"))'
+	esc_path := t.path.replace("\\", "\\\\")
+	for name in t.gen_ctx.test_fun_names {
+		mut val := 'TestRunner_set_test_info(builtin__test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))'
 		if t.prefs.backend == .c {
-			val = 'TestRunner_set_test_info(&builtin__test_runner, from_js_string("${f.path}"), from_js_string("${f.name}"))'
+			val = 'TestRunner_set_test_info(&builtin__test_runner, from_c_string("${esc_path}"), from_c_string("${name}"))'
 		}
 		test_main.stmts.push(ast.ExprStmt{
 			// TODO properly transform this (requires changes to method calls)
@@ -37,13 +33,13 @@ fun (t Transformer) gen_test_main() &ast.File {
 		})
 		test_main.stmts.push(ast.ExprStmt{
 			expr = ast.CallExpr{
-				mix_name = f.name
-				name = f.name
+				mix_name = name
+				name = name
 			}
 		})
 	}
 
-	if t.has_test_end {
+	if t.gen_ctx.has_test_end {
 		test_main.stmts.push(ast.ExprStmt{
 			expr = ast.CallExpr{
 				mix_name = "testsuite_end"

@@ -32,6 +32,16 @@ fun (mut c Checker) fun_decl(mut node ast.FunDecl) {
 				}
 			}
 		}
+	} else {
+		if node.is_test {
+			c.gen_ctx.test_fun_names.push(node.mix_name)
+		} else if c.prefs.is_test {
+			if node.name == "testsuite_begin" {
+				c.gen_ctx.has_test_begin = true
+			} else if node.name == "testsuite_end" {
+				c.gen_ctx.has_test_end = true
+			}
+		}
 	}
 
 	if node.generic_names.length > 0 and c.cur_concrete_types.length == 0 {

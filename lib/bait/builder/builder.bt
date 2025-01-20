@@ -149,6 +149,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 		prefs = b.prefs
 		table = b.parser.table
 		sema_ctx = sema_ctx
+		gen_ctx = &context.GenContext{}
 		files = b.parsed_files
 	}
 	b.checker.toplevel_redefinitions()
@@ -203,6 +204,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	timers.start('TRANSFORM')
 	mut trans := transformer.Transformer{
 		prefs = b.prefs
+		gen_ctx = b.checker.gen_ctx
 	}
 	trans.transform_files(b.parsed_files)
 	timers.show('TRANSFORM')

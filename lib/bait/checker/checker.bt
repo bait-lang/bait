@@ -12,6 +12,7 @@ pub struct Checker{
 	prefs preference.Prefs
 	table ast.Table
 	sema_ctx &context.SemanticContext
+	pub mut gen_ctx &context.GenContext
 	mut files []&ast.File
 	mut file ast.File
 	mut scope context.Scope

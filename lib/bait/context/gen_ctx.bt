@@ -1,0 +1,11 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package context
+
+// Information shared between checker, transformer and gen
+pub struct GenContext {
+	// Testing
+	global has_test_begin bool
+	global has_test_end bool
+	global test_fun_names []string
+}
