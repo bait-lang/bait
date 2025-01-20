@@ -191,7 +191,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	// Run the type resolver and checker
 	timers.start('CHECK')
 	b.parsed_files = sorted_files
-	b.checker.check_files(sorted_files)
+	b.checker.check_files(b.parsed_files)
 	timers.show('CHECK')
 
 	if b.print_errors_and_warnings(false) {
