@@ -1,0 +1,69 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package transformer
+
+import bait.ast
+
+fun (t Transformer) gen_test_main() &ast.File {
+	mut test_main := ast.FunDecl{
+		mix_name = "main"
+		name = "main"
+	}
+
+	if t.gen_ctx.has_test_begin {
+		test_main.stmts.push(ast.ExprStmt{
+			expr = ast.CallExpr{
+				mix_name = "testsuite_begin"
+				name = "testsuite_begin"
+			}
+		})
+	}
+
+	esc_path := t.path.replace("\\", "\\\\")
+	for name in t.gen_ctx.test_fun_names {
+		mut val := 'TestRunner_set_test_info(builtin__test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))'
+		if t.prefs.backend == .c {
+			val = 'TestRunner_set_test_info(&builtin__test_runner, from_c_string("${esc_path}"), from_c_string("${name}"))'
+		}
+		test_main.stmts.push(ast.ExprStmt{
+			// TODO properly transform this (requires changes to method calls)
+			expr = ast.HashExpr{
+				val = val
+			}
+		})
+		test_main.stmts.push(ast.ExprStmt{
+			expr = ast.CallExpr{
+				mix_name = name
+				name = name
+			}
+		})
+	}
+
+	if t.gen_ctx.has_test_end {
+		test_main.stmts.push(ast.ExprStmt{
+			expr = ast.CallExpr{
+				mix_name = "testsuite_end"
+				name = "testsuite_end"
+			}
+		})
+	}
+
+	// exit(test_runner.exit_code())
+	test_main.stmts.push(ast.ExprStmt{
+		expr = ast.CallExpr{
+			mix_name = "exit"
+			name = "exit"
+			args = [
+				ast.CallArg{
+					// TODO properly transform this (requires changes to method calls)
+					expr = ast.HashExpr{
+						val = "TestRunner_exit_code(builtin__test_runner)"
+					}
+				}
+			]
+		}
+	})
+	return ast.File{
+		stmts = [test_main as ast.Stmt]
+	}
+}

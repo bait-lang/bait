@@ -12,6 +12,7 @@ pub struct Checker{
 	prefs preference.Prefs
 	table ast.Table
 	sema_ctx &context.SemanticContext
+	pub mut gen_ctx &context.GenContext
 	mut files []&ast.File
 	mut file ast.File
 	mut scope context.Scope
@@ -70,11 +71,24 @@ pub fun (mut c Checker) check_files(files []&ast.File) {
 		resolve_runs += 1
 	}
 
-	// no main function needed for libraries, tests and script mode
-	if c.prefs.is_library or c.prefs.is_test or c.prefs.is_script {
+	// Test mode special checks
+	if c.prefs.is_test {
+		c.change_file(files.last())
+
+		if c.gen_ctx.test_fun_names.length == 0 {
+			c.generic_error("${c.path} contains no tests")
+			return
+		}
+
 		return
 	}
 
+	// no main function needed for libraries, tests and script mode
+	if c.prefs.is_library or c.prefs.is_script {
+		return
+	}
+
+	// Main function checks
 	if not c.has_main_pkg_files {
 		c.generic_error('project must have a main package or be compiled as a library')
 	} else if not c.has_main_fun {

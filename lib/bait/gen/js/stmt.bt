@@ -55,7 +55,11 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		g.struct_decl(stmt)
 	} else if stmt is ast.TypeDecl {
 		g.type_decl(stmt)
-	} else {}
+	} else if stmt is ast.Void {
+		// nothing to do
+	} else {
+		panic("cannot gen ${stmt}")
+	}
 }
 
 fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
