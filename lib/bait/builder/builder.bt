@@ -201,7 +201,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 
 	// Transformer
 	timers.start('TRANSFORM')
-	trans := transformer.Transformer{
+	mut trans := transformer.Transformer{
 		prefs = b.prefs
 	}
 	trans.transform_files(b.parsed_files)

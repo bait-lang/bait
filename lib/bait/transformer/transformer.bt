@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 package transformer
 
@@ -7,15 +7,27 @@ import bait.preference
 
 pub struct Transformer {
 	prefs preference.Prefs
+	mut path string
+
+	// Fields related to testing
+	mut has_test_begin bool
+	mut has_test_end bool
+	mut test_funs []TestFunInfo
 }
 
-pub fun (t Transformer) transform_files(files []&ast.File) {
+pub fun (mut t Transformer) transform_files(mut files []ast.File) {
 	for mut file in files {
+		t.path = file.path
+
 		t.stmts(mut file.stmts)
+	}
+
+	if t.prefs.is_test {
+		files.push(t.gen_test_main())
 	}
 }
 
-pub fun (t Transformer) stmts(mut stmts []ast.Stmt) {
+pub fun (mut t Transformer) stmts(mut stmts []ast.Stmt) {
 	// TODO js: fix crash with InvalidExpr
 	// for mut stmt in stmts {
 	// 	stmt = t.stmt(stmt)
@@ -26,7 +38,7 @@ pub fun (t Transformer) stmts(mut stmts []ast.Stmt) {
 	}
 }
 
-fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
+fun (mut t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 	match stmt {
 		ast.AssertStmt { t.assert_stmt(mut stmt) }
 		ast.AssignStmt { return t.assign_stmt(mut stmt) }
@@ -51,7 +63,7 @@ fun (t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 	return stmt
 }
 
-fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
+fun (mut t Transformer) expr(mut expr ast.Expr) ast.Expr {
 	match expr {
 		ast.AnonFun {}
 		ast.ArrayInit {}
@@ -85,11 +97,11 @@ fun (t Transformer) expr(mut expr ast.Expr) ast.Expr {
 	return expr
 }
 
-fun (t Transformer) assert_stmt(mut node ast.AssertStmt) {
+fun (mut t Transformer) assert_stmt(mut node ast.AssertStmt) {
 	node.expr = t.expr(mut node.expr)
 }
 
-fun (t Transformer) assign_stmt(mut node ast.AssignStmt) ast.Stmt {
+fun (mut t Transformer) assign_stmt(mut node ast.AssignStmt) ast.Stmt {
 	// JS: allow for correct integer rounding
 	if t.prefs.backend == .js and node.op == .div_assign {
 		node.op = .assign
@@ -122,18 +134,18 @@ fun (t Transformer) const_decl(node ast.ConstDecl) ast.Stmt {
 	return node
 }
 
-fun (t Transformer) for_loop(mut node ast.ForLoop) {
+fun (mut t Transformer) for_loop(mut node ast.ForLoop) {
 	t.stmts(node.stmts)
 }
 
 // FIXME for all this file: args must be marked mut (missing error)
-fun (t Transformer) for_classic_loop(mut node ast.ForClassicLoop) {
+fun (mut t Transformer) for_classic_loop(mut node ast.ForClassicLoop) {
 	_ = t.stmt(node.init)
 	_ = t.stmt(node.inc)
 	t.stmts(node.stmts)
 }
 
-fun (t Transformer) for_in_loop(mut node ast.ForInLoop) ast.ForInLoop {
+fun (mut t Transformer) for_in_loop(mut node ast.ForInLoop) ast.ForInLoop {
 	// `val := container[i]`
 	val_decl := ast.AssignStmt{
 		op = .decl_assign
@@ -153,26 +165,40 @@ fun (t Transformer) for_in_loop(mut node ast.ForInLoop) ast.ForInLoop {
 	return node
 }
 
-fun (t Transformer) fun_decl(mut node ast.FunDecl) ast.Stmt {
+fun (mut t Transformer) fun_decl(mut node ast.FunDecl) ast.Stmt {
 	if node.lang != .bait {
 		return ast.Void{}
+	}
+
+	// Special testing functions
+	if not node.is_method and node.is_test {
+		t.test_funs.push(TestFunInfo{
+			name = node.mix_name
+			path = t.path.replace('\\', '\\\\')
+		})
+	} else if t.prefs.is_test {
+		if node.name == "testsuite_begin" {
+			t.has_test_begin = true
+		} else if node.name == "testsuite_end" {
+			t.has_test_end = true
+		}
 	}
 
 	t.stmts(node.stmts)
 	return node
 }
 
-fun (t Transformer) if_match(mut node ast.IfMatch) {
+fun (mut t Transformer) if_match(mut node ast.IfMatch) {
 	for mut branch in node.branches {
 		t.stmts(branch.stmts)
 	}
 }
 
-fun (t Transformer) return_stmt(mut node ast.ReturnStmt) {
+fun (mut t Transformer) return_stmt(mut node ast.ReturnStmt) {
 	_ = t.expr(node.expr)
 }
 
-fun (t Transformer) call_expr(mut node ast.CallExpr) {
+fun (mut t Transformer) call_expr(mut node ast.CallExpr) {
 	_ = t.expr(node.left)
 	for mut arg in node.args {
 		arg.expr = t.expr(arg.expr)
@@ -238,7 +264,7 @@ fun (t Transformer) index_expr(node ast.IndexExpr) ast.Expr {
 	return node
 }
 
-fun (t Transformer) infix_expr(mut node ast.InfixExpr) {
+fun (mut t Transformer) infix_expr(mut node ast.InfixExpr) {
 	node.left = t.expr(mut node.left)
 	node.right = t.expr(mut node.right)
 }
