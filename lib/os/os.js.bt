@@ -10,8 +10,8 @@ pub fun user_args() []string {
 	return ARGS.slice(2, ARGS.length)
 }
 
-pub fun ls(dir string) []string {
-	return from_js_string_arr(#JS.fs.readdirSync(dir.str))
+pub fun ls(d string) []string {
+	return from_js_string_arr(#JS.fs.readdirSync(d.str))
 }
 
 pub fun cp(src string, dest string) {
@@ -42,8 +42,8 @@ pub fun is_root(path string) bool {
 	return path == '/'
 }
 
-pub fun chdir(dir string) {
-	#JS.process.chdir(dir.str)
+pub fun chdir(d string) {
+	#JS.process.chdir(d.str)
 }
 
 pub fun home_dir() string {
@@ -60,30 +60,30 @@ pub fun is_dir(path string) bool {
 	return #JS.'JS.fs.lstatSync(path.str).isDirectory()' as bool
 }
 
-pub fun mkdir(dir string) {
-	if exists(dir) {
+pub fun mkdir(d string) {
+	if exists(d) {
 		return
 	}
-	#JS.fs.mkdirSync(dir.str)
+	#JS.fs.mkdirSync(d.str)
 }
 
-pub fun mkdir_all(dir string) {
-	if exists(dir) {
+pub fun mkdir_all(d string) {
+	if exists(d) {
 		return
 	}
-	#JS.'JS.fs.mkdirSync(dir.str, { recursive: true })'
+	#JS.'JS.fs.mkdirSync(d.str, { recursive: true })'
 }
 
 pub fun rm(path string) {
 	#JS.fs.rmSync(path.str)
 }
 
-pub fun rmdir(dir string) {
-	#JS.fs.rmdirSync(dir.str)
+pub fun rmdir(d string) {
+	#JS.fs.rmdirSync(d.str)
 }
 
-pub fun rmdir_all(dir string) {
-	#JS.'JS.fs.rmdirSync(dir.str, { recursive: true })'
+pub fun rmdir_all(d string) {
+	#JS.'JS.fs.rmdirSync(d.str, { recursive: true })'
 }
 
 pub fun read_bytes(path string) []u8 {

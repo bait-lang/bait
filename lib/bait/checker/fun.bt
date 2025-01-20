@@ -95,13 +95,13 @@ fun (c Checker) fun_params(params []ast.Param){
 		if sym.kind == .fun_ {
 			info := sym.info as ast.FunInfo
 			c.table.fun_decls[p.name] = ast.FunDecl{
-				mix_pkg = c.pkg
 				return_type = info.return_type
 				params = info.to_params()
 			}
 			c.scope.register(p.name, context.ScopeObject{
 				typ = p.typ
 				kind = .function
+				pkg = c.pkg
 			})
 		} else {
 			c.scope.register(p.name, context.ScopeObject{
@@ -130,6 +130,12 @@ fun (mut c Checker) call_expr(mut node ast.CallExpr) ast.Type {
 }
 
 fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
+	obj := c.find_in_scope(node.name, node.pkg)
+	if obj.kind != .function {
+		c.error('unknown function ${node.mix_name}', node.pos)
+		return ast.ERROR_TYPE
+	}
+
 	mut found := c.table.fun_decls.contains(node.mix_name)
 	if not found and not node.mix_name.contains('.') and c.pkg != 'builtin' {
 		full_name := c.pkg + '.' + node.mix_name
@@ -138,16 +144,13 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 			found = true
 		}
 	}
-	if not found {
-		c.error('unknown function ${node.mix_name}', node.pos)
-		return ast.ERROR_TYPE
+
+	// Check visibility
+	if not obj.is_pub and obj.pkg != c.pkg {
+		c.error("function `${node.full_name()}` is private", node.pos)
 	}
 
 	mut def := c.table.fun_decls[node.mix_name]
-	if not def.is_pub and def.mix_pkg != c.pkg {
-		c.error('function ${def.mix_name} is private', node.pos)
-	}
-
 	node.noreturn = def.noreturn
 	node.return_type = def.return_type
 

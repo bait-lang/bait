@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 package os
 
-pub fun walk_ext(dir string, ext string) []string {
+pub fun walk_ext(basedir string, ext string) []string {
 	mut ext_files := []string
-	all_files := ls(dir)
+	all_files := ls(basedir)
 	for file in all_files {
-		fpath := join_path(dir, [file])
+		fpath := join_path(basedir, [file])
 		if is_dir(fpath) {
 			tmp := walk_ext(fpath, ext)
 			ext_files.push_many(tmp)

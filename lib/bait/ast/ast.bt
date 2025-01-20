@@ -92,7 +92,6 @@ pub struct FunDecl {
 	pub lang Language
 	pub name string
 	pub mix_name string // TMP
-	pub mix_pkg string // TMP and TODO make this completely obsolete
 	pub params []Param
 	pub return_type Type
 	pub is_test bool
@@ -213,6 +212,14 @@ pub struct CallExpr {
 	global or_block OrBlock
 	pub is_method bool
 	pub pos token.Pos
+}
+
+pub fun (node CallExpr) full_name() string {
+	if node.pkg.length == 0 {
+		return node.name
+	}
+
+	return node.pkg + "." + node.name
 }
 
 pub struct CallArg {

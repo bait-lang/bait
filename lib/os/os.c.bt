@@ -20,12 +20,12 @@ pub fun user_args() []string {
 	return ARGS.slice(1, ARGS.length)
 }
 
-pub fun ls(dir string) []string {
+pub fun ls(d string) []string {
 	mut res := []string
 	#C.'struct dirent *pDirent;
 	DIR *pDir;
 
-	pDir = opendir(dir.str);
+	pDir = opendir(d.str);
 	while((pDirent = readdir(pDir)) != NULL) {
 		if (strcmp(pDirent->d_name, ".") != 0 && strcmp(pDirent->d_name, "..") != 0) {
 			Array_push(&res, (string[]){from_c_string(pDirent->d_name)});
