@@ -112,7 +112,7 @@ pub struct Param {
 }
 
 pub fun (fn FunDecl) is_main() bool {
-	return not fn.is_method and fn.mix_name == 'main'
+	return not fn.is_method and fn.name == 'main'
 }
 
 pub struct LoopControlStmt {

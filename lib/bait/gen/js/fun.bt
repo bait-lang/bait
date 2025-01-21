@@ -123,12 +123,12 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 
 		sym := g.table.get_sym(node.left_type)
 		final_sym := g.table.get_final_sym(sym)
-		if final_sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.mix_name) {
-			g.gen_array_method(node.mix_name, node, final_sym)
+		if final_sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.name) {
+			g.gen_array_method(node.name, node, final_sym)
 			return
 		}
 
-		name = js_esc(sym.name + '_' + node.mix_name)
+		name = js_esc(sym.name + '_' + node.name)
 	} else if node.lang == .bait{
 		name = js_esc(node.mix_name)
 	}
