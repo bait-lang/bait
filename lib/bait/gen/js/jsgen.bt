@@ -63,8 +63,6 @@ struct Gen {
 	mut is_for_loop_head bool
 	mut is_lhs_assign bool
 	mut is_array_map_set bool
-	mut has_test_begin bool
-	mut has_test_end bool
 	// Cached comptime variables
 	mut baitexe string
 	mut baitdir string
