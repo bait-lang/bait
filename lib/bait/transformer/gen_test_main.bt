@@ -6,7 +6,6 @@ import bait.ast
 
 fun (t Transformer) gen_test_main() &ast.File {
 	mut test_main := ast.FunDecl{
-		mix_name = "main"
 		name = "main"
 	}
 
@@ -64,6 +63,7 @@ fun (t Transformer) gen_test_main() &ast.File {
 		}
 	})
 	return ast.File{
+		pkg_name = "main"
 		stmts = [test_main as ast.Stmt]
 	}
 }

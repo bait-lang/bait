@@ -143,6 +143,7 @@ fun (mut p Parser) anon_fun() !ast.AnonFun{
 	return ast.AnonFun{
 		decl = ast.FunDecl{
 			mix_name = '_anon_${p.file_hash}_${p.lexer.offset()}'
+			name = '_anon_${p.file_hash}_${p.lexer.offset()}'
 			params = params
 			return_type = return_type
 			stmts = stmts

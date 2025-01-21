@@ -57,7 +57,6 @@ fun (mut p Parser) script_mode_main() !ast.FunDecl {
 
 	mut node := ast.FunDecl{
 		name = "main"
-		mix_name = 'main'
 		return_type = ast.VOID_TYPE
 	}
 	p.table.fun_decls['main'] = node

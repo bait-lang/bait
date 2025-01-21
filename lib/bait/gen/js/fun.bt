@@ -26,7 +26,12 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 		sym := g.table.get_sym(node.params[0].typ)
 		name = js_esc(sym.name + '_' + node.name)
 	} else {
-		name = js_esc(node.mix_name)
+		// TODO remove exception for main and builtin
+		if g.pkg == "main" or g.pkg == "builtin" {
+			name = js_esc(node.name)
+		} else {
+			name = js_name(g.pkg + "." + node.name)
+		}
 	}
 	if g.cur_concrete_types.length > 0 {
 		name = g.get_concrete_name(name, g.cur_concrete_types.values())

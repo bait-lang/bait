@@ -39,7 +39,7 @@ pub fun (e Expr) repr() string {
 
 pub fun (fn FunDecl) key() string {
 	if fn.is_method {
-		return '${fn.params[0].typ}.${fn.mix_name}'
+		return '${fn.params[0].typ}.${fn.name}'
 	}
 	return fn.mix_name
 }
