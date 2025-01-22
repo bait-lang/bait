@@ -37,14 +37,24 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	g.cur_fun = node
 
 	type_str := g.typ(node.return_type)
-	mut name := c_esc(node.name)
+
+	mut name := ""
 	if node.is_method {
 		sym := g.table.get_sym(node.params[0].typ)
 		name = c_name(sym.name + '_' + node.name)
+	} else {
+		// TODO remove exception for main and builtin
+		if g.pkg == "main" or g.pkg == "builtin" {
+			name = c_esc(node.name)
+		} else {
+			name = c_name(g.pkg + "." + node.name)
+		}
 	}
+
 	if g.cur_concrete_types.length > 0 {
 		name = g.get_concrete_name(name, g.cur_concrete_types.values())
 	}
+
 	s := '${type_str} ${name}('
 
 	g.fun_decls_out += s
