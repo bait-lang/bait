@@ -112,6 +112,8 @@ fun (c Checker) fun_params(params []ast.Param){
 				typ = p.typ
 				kind = .function
 				pkg = c.pkg
+				return_type = info.return_type
+				params = info.to_params()
 			})
 		} else {
 			c.scope.register(p.name, context.ScopeObject{

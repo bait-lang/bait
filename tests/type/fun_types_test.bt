@@ -1,11 +1,20 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
+// This struct has to compile
 struct Foo {
 	fun_field fun (string) i32
 }
 
-fun test_placeholder() {
-	// Above code just has to compile
-	assert true
+fun takes_callback(s string, cb fun (string) i32) i32 {
+	return cb(s)
+}
+
+fun my_cb(s string) i32 {
+	return s.length
+}
+
+fun test_callback() {
+	assert takes_callback("hi", my_cb) == 2
+	assert takes_callback("you", my_cb) == 3
 }
