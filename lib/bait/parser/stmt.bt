@@ -372,7 +372,7 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) !ast.FunDecl
 	}
 	return ast.FunDecl{
 		lang = .js
-		mix_name = name
+		name = name
 		params = params
 		return_type = return_type
 		is_pub = true

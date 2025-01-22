@@ -51,7 +51,7 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 	// normal function name
 	name := p.check_name()!
 	mix_name += name
-	is_test := mix_name.starts_with('test_')
+	is_test := name.starts_with('test_')
 	if not is_method and lang == .bait {
 		mix_name = p.prepend_pkg(mix_name)
 	}
@@ -88,8 +88,8 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 	if is_method {
 		sym := p.table.get_sym(params[0].typ)
 		// TODO move this error into checker
-		if lang == .bait and sym.has_method(mix_name) {
-			p.error('Method "${mix_name}" already exists on type "${sym.name}"')!
+		if lang == .bait and sym.has_method(name) {
+			p.error('Method "${name}" already exists on type "${sym.name}"')!
 		}
 		sym.methods.push(node)
 	} else {
@@ -142,7 +142,6 @@ fun (mut p Parser) anon_fun() !ast.AnonFun{
 	stmts := p.parse_block()!
 	return ast.AnonFun{
 		decl = ast.FunDecl{
-			mix_name = '_anon_${p.file_hash}_${p.lexer.offset()}'
 			name = '_anon_${p.file_hash}_${p.lexer.offset()}'
 			params = params
 			return_type = return_type
@@ -179,8 +178,7 @@ fun (mut p Parser) fun_params() ![]ast.Param{
 fun (mut p Parser) fun_call(lang ast.Language) !ast.CallExpr{
 	pos := p.pos
 	name := p.check_name()!
-	pkg := p.expr_pkg
-	mix_name := p.prepend_expr_pkg(name)
+	pkg := p.get_expr_pkg()
 	p.check(.lpar)!
 	args := p.call_args()!
 	p.check(.rpar)!
@@ -190,7 +188,6 @@ fun (mut p Parser) fun_call(lang ast.Language) !ast.CallExpr{
 	return ast.CallExpr{
 		pkg = pkg
 		name = name
-		mix_name = mix_name
 		args = args
 		or_block = or_block
 		pos = pos
@@ -211,7 +208,6 @@ fun (mut p Parser) method_call(left ast.Expr) !ast.CallExpr {
 		is_method = true
 		left = left
 		name = name
-		mix_name = name
 		args = args
 		or_block = or_block
 		pos = pos

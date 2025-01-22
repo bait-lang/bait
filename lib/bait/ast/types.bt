@@ -104,7 +104,7 @@ pub fun (sym TypeSymbol) find_field(name string, t Table) StructField {
 
 pub fun (sym TypeSymbol) has_method(name string) bool {
 	for m in sym.methods {
-		if m.mix_name == name {
+		if m.name == name {
 			return true
 		}
 	}

@@ -176,7 +176,7 @@ pub fun (t Table) get_method(sym TypeSymbol, name string) FunDecl {
 	mut s := sym
 	for true {
 		for m in s.methods {
-			if m.mix_name == name {
+			if m.name == name {
 				return m
 			}
 		}
