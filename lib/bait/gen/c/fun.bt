@@ -44,7 +44,7 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 		name = c_name(sym.name + '_' + node.name)
 	} else {
 		// TODO remove exception for main and builtin
-		if g.pkg == "main" or g.pkg == "builtin" {
+		if g.pkg == "main" or g.pkg == "builtin" or node.is_test {
 			name = c_esc(node.name)
 		} else {
 			name = c_name(g.pkg + "." + node.name)
