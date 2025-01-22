@@ -11,5 +11,5 @@ fun immutable(f Foo) {}
 fun call_change() {
 	mut f := Foo{}
 	change_me(f) // err
-	immutable(mut f) // err
+	immutable(mut f) // warn
 }
