@@ -157,14 +157,14 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	mut def := c.table.fun_decls[node.full_name()]
-	node.noreturn = def.noreturn
-	node.return_type = def.return_type
+	node.noreturn = obj.noreturn
+	node.return_type = obj.return_type
 
-	c.check_fun_attrs_on_call(node, def)
+	c.check_fun_attrs_on_call(node, obj.attrs)
 
 	// Check argument count
-	if node.args.length != def.params.length {
-		c.error('expected ${def.params.length} arguments but got ${node.args.length}', node.pos)
+	if node.args.length != obj.params.length {
+		c.error('expected ${obj.params.length} arguments but got ${node.args.length}', node.pos)
 		return node.return_type
 	}
 
@@ -175,11 +175,11 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	// Check argument types
-	c.call_args(def, mut node, 0)
+	c.call_args(mut node, 0, obj.generic_names, obj.params)
 
 	c.or_block(mut node)
 
-	c.set_conc_types(mut node, def)
+	c.set_conc_types(mut node, obj.generic_names, def.key())
 
 	if node.name == 'error' {
 		node.return_type = c.cur_fun.return_type
@@ -284,7 +284,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		}
 	}
 
-	c.check_fun_attrs_on_call(node, def)
+	c.check_fun_attrs_on_call(node, def.attrs)
 
 	// Check argument count
 	if node.args.length + arg_offset != def.params.length {
@@ -315,7 +315,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	// Check argument types
-	c.call_args(def, mut node, arg_offset)
+	c.call_args(mut node, arg_offset, def.generic_names, def.params)
 
 	// Array methods with return type `array`
 	if left_sym.kind == .array and ['filter', 'reverse', 'slice', 'copy', 'from_js_arr'].contains(node.name) {
@@ -329,36 +329,38 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 
 	c.or_block(mut node)
 
-	c.set_conc_types(mut node, def)
+	c.set_conc_types(mut node, def.generic_names, def.key())
 
 	return node.return_type
 }
 
-fun (mut c Checker) set_conc_types(mut node ast.CallExpr, def ast.FunDecl) {
+// TODO clean this up
+fun (mut c Checker) set_conc_types(mut node ast.CallExpr, generic_names []string, key string) {
 	if node.concrete_types.length == 0 {
 		return
 	}
 
-	c.need_generic_resolve = c.table.register_concrete(def.key(), node.concrete_types) or c.need_generic_resolve
+	c.need_generic_resolve = c.table.register_concrete(key, node.concrete_types) or c.need_generic_resolve
 
 	ret_sym := c.table.get_sym(node.return_type)
 	if ret_sym.kind == .generic {
-		idx := def.generic_names.index(ret_sym.name)
+		idx := generic_names.index(ret_sym.name)
 		node.return_type = node.concrete_types[idx]
 	}
 }
 
-fun (mut c Checker) call_args(def ast.FunDecl, mut node ast.CallExpr, poffset i32) {
-	should_resolve_generics := def.generic_names.length != node.concrete_types.length
+// TODO clean this up
+fun (mut c Checker) call_args(mut node ast.CallExpr, poffset i32, generic_names []string, params []ast.Param) {
+	should_resolve_generics := generic_names.length != node.concrete_types.length
 	mut save_as_concrete := false
 
 	for i, mut arg in node.args {
-		param := def.params[i + poffset]
+		param := params[i + poffset]
 		mut param_type := param.typ
 		psym := c.table.get_sym(param_type)
 
 		if should_resolve_generics and psym.kind == .generic {
-			gi := def.generic_names.index(psym.name)
+			gi := generic_names.index(psym.name)
 			if gi < node.concrete_types.length {
 				param_type = node.concrete_types[gi]
 			} else if gi < c.cur_concrete_types.length {

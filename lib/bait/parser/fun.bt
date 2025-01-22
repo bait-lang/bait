@@ -82,7 +82,6 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		lang = lang
 		pos = pos
 	}
-	p.attributes = []ast.Attribute
 
 	// Register method or function
 	if is_method {
@@ -106,15 +105,24 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 				typ = node.typ
 				pkg = p.pkg_name
 				is_pub = is_pub
+				noreturn = p.attributes.has('noreturn')
+				return_type = return_type
+				params = params
+				attrs = p.attributes
+				generic_names = generic_names
 			})
 		} else {
 			ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
 			ffi_scope.register(name, context.ScopeObject{
 				kind = .function
 				is_pub = true
+				return_type = return_type
+				params = params
 			})
 		}
 	}
+
+	p.attributes = []ast.Attribute
 
 	if lang == .bait {
 		node.stmts = p.parse_block()!
