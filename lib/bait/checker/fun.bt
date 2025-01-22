@@ -155,6 +155,11 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 		}
 	}
 
+	// Set package
+	if node.pkg.length == 0 and obj.pkg != "main" and obj.pkg != "builtin" {
+		node.pkg = obj.pkg
+	}
+
 	// Check visibility
 	if not obj.is_pub and obj.pkg != c.pkg {
 		c.error("function `${node.full_name()}` is private", node.pos)
