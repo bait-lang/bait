@@ -25,7 +25,7 @@ fun (mut g Gen) get_comptime_val(kind token.ComptimeVar, pos token.Pos) string {
 			line := g.get_comptime_val(.line, pos)
 			'${file}:${line}'
 		}
-		.fun_ { g.cur_fun.mix_name }
+		.fun_ { g.cur_fun.name }
 
 		// Cached
 		.baitexe { g.comptime_baitexe() }

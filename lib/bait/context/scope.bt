@@ -17,6 +17,14 @@ pub struct ScopeObject{
 	pub mut is_mut bool
 	pub mut pkg string // TODO SCOPES move this into Scope (requires multi return)
 	pub mut expr ast.Expr := ast.Void{} // const / static: resolve type on use
+
+	// Only for functions (Note: will be cleaned up in the refactor to use sumtypes)
+	pub noreturn bool
+	pub return_type ast.Type
+	pub params []ast.Param
+	pub attrs []ast.Attribute
+	pub generic_names []string
+	pub key string
 }
 
 pub enum ObjectKind {

@@ -184,7 +184,7 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 		if node.op == .ne {
 			g.write('!')
 		}
-		g.write(c_esc(lsym.name + '_' + overload.mix_name))
+		g.write(c_esc(lsym.name + '_' + overload.name))
 		g.write('(')
 		g.expr(node.left)
 		g.write(', ')
@@ -293,7 +293,7 @@ fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 	}
 
 	str_def := g.table.get_method(sym, 'str')
-	if str_def.mix_name.length > 0 {
+	if str_def.name.length > 0 {
 		final_sym := g.table.get_sym(str_def.params[0].typ)
 		mut name := c_esc(final_sym.name)
 		g.write('${name}_str(')

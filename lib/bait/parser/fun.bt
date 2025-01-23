@@ -43,17 +43,19 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 
 	ffi := p.parse_ffi_pkg()!
 	lang = ffi.lang
-	mut mix_name := ""
+	mut key := ""
 	if lang != .bait {
-		mix_name = ffi.pkg + "." // TMP
+		key = ffi.pkg + "." // TMP
 	}
 
 	// normal function name
 	name := p.check_name()!
-	mix_name += name
-	is_test := mix_name.starts_with('test_')
-	if not is_method and lang == .bait {
-		mix_name = p.prepend_pkg(mix_name)
+	key += name
+	is_test := name.starts_with('test_')
+	if is_method {
+		key = '${params[0].typ}.${name}'
+	} else if lang == .bait {
+		key = p.prepend_pkg(key)
 	}
 
 	// Generics
@@ -73,7 +75,7 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		is_test = is_test
 		is_pub = is_pub
 		name = name
-		mix_name = mix_name
+		key = key
 		generic_names = generic_names
 		params = params
 		return_type = return_type
@@ -82,18 +84,16 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		lang = lang
 		pos = pos
 	}
-	p.attributes = []ast.Attribute
 
 	// Register method or function
 	if is_method {
 		sym := p.table.get_sym(params[0].typ)
 		// TODO move this error into checker
-		if lang == .bait and sym.has_method(mix_name) {
-			p.error('Method "${mix_name}" already exists on type "${sym.name}"')!
+		if lang == .bait and sym.has_method(name) {
+			p.error('Method "${name}" already exists on type "${sym.name}"')!
 		}
 		sym.methods.push(node)
 	} else {
-		p.table.fun_decls[mix_name] = node
 		mut param_types := []ast.Type
 		for param in params {
 			param_types.push(param.typ)
@@ -106,15 +106,26 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 				typ = node.typ
 				pkg = p.pkg_name
 				is_pub = is_pub
+				noreturn = p.attributes.has('noreturn')
+				return_type = return_type
+				params = params
+				attrs = p.attributes
+				generic_names = generic_names
+				key = key
 			})
 		} else {
 			ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
 			ffi_scope.register(name, context.ScopeObject{
 				kind = .function
 				is_pub = true
+				return_type = return_type
+				params = params
+				key = key
 			})
 		}
 	}
+
+	p.attributes = []ast.Attribute
 
 	if lang == .bait {
 		node.stmts = p.parse_block()!
@@ -142,7 +153,7 @@ fun (mut p Parser) anon_fun() !ast.AnonFun{
 	stmts := p.parse_block()!
 	return ast.AnonFun{
 		decl = ast.FunDecl{
-			mix_name = '_anon_${p.file_hash}_${p.lexer.offset()}'
+			name = '_anon_${p.file_hash}_${p.lexer.offset()}'
 			params = params
 			return_type = return_type
 			stmts = stmts
@@ -178,8 +189,7 @@ fun (mut p Parser) fun_params() ![]ast.Param{
 fun (mut p Parser) fun_call(lang ast.Language) !ast.CallExpr{
 	pos := p.pos
 	name := p.check_name()!
-	pkg := p.expr_pkg
-	mix_name := p.prepend_expr_pkg(name)
+	pkg := p.get_expr_pkg()
 	p.check(.lpar)!
 	args := p.call_args()!
 	p.check(.rpar)!
@@ -189,7 +199,6 @@ fun (mut p Parser) fun_call(lang ast.Language) !ast.CallExpr{
 	return ast.CallExpr{
 		pkg = pkg
 		name = name
-		mix_name = mix_name
 		args = args
 		or_block = or_block
 		pos = pos
@@ -210,7 +219,6 @@ fun (mut p Parser) method_call(left ast.Expr) !ast.CallExpr {
 		is_method = true
 		left = left
 		name = name
-		mix_name = name
 		args = args
 		or_block = or_block
 		pos = pos

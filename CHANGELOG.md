@@ -15,6 +15,7 @@ All notable changes are documented in this file.
 - Properly warn if FFI is used in a file intended for a different backend
 - Improve various error messages and reduce noise
 - Functions can no longer be shadowed by variables
+- fix: change `unnecessary mut` to be a warning
 
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword
@@ -22,6 +23,7 @@ All notable changes are documented in this file.
 - fix(c): Prevent c error if blank identifier is used
 
 ### Compiler internals
+- refac: improve handling of FunDecl and CallExpr
 - refac(gen): move generation of test main function into transformer
 
 

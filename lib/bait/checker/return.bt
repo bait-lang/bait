@@ -11,7 +11,7 @@ fun (mut c Checker) return_stmt(mut node ast.ReturnStmt) {
 	if not c.check_types(expr_type, c.cur_fun.return_type) {
 		mut msg := ''
 		if c.cur_fun.return_type == ast.VOID_TYPE {
-			msg = 'function `${c.cur_fun.mix_name}` should return nothing'
+			msg = 'function `${c.cur_fun.name}` should return nothing'
 		} else {
 			msg = 'expected return value of type ${c.table.type_name(c.cur_fun.return_type)}'
 		}

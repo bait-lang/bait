@@ -6,14 +6,12 @@ import bait.ast
 
 fun (t Transformer) gen_test_main() &ast.File {
 	mut test_main := ast.FunDecl{
-		mix_name = "main"
 		name = "main"
 	}
 
 	if t.gen_ctx.has_test_begin {
 		test_main.stmts.push(ast.ExprStmt{
 			expr = ast.CallExpr{
-				mix_name = "testsuite_begin"
 				name = "testsuite_begin"
 			}
 		})
@@ -33,7 +31,6 @@ fun (t Transformer) gen_test_main() &ast.File {
 		})
 		test_main.stmts.push(ast.ExprStmt{
 			expr = ast.CallExpr{
-				mix_name = name
 				name = name
 			}
 		})
@@ -42,7 +39,6 @@ fun (t Transformer) gen_test_main() &ast.File {
 	if t.gen_ctx.has_test_end {
 		test_main.stmts.push(ast.ExprStmt{
 			expr = ast.CallExpr{
-				mix_name = "testsuite_end"
 				name = "testsuite_end"
 			}
 		})
@@ -51,7 +47,6 @@ fun (t Transformer) gen_test_main() &ast.File {
 	// exit(test_runner.exit_code())
 	test_main.stmts.push(ast.ExprStmt{
 		expr = ast.CallExpr{
-			mix_name = "exit"
 			name = "exit"
 			args = [
 				ast.CallArg{
@@ -64,6 +59,7 @@ fun (t Transformer) gen_test_main() &ast.File {
 		}
 	})
 	return ast.File{
+		pkg_name = "main"
 		stmts = [test_main as ast.Stmt]
 	}
 }

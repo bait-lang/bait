@@ -3,7 +3,6 @@
 package ast
 
 pub struct Table {
-	pub mut fun_decls map[string]FunDecl
 	pub mut type_idxs map[string]Type
 	pub mut type_symbols []TypeSymbol
 	pub mut needed_equality_funs []Type
@@ -176,7 +175,7 @@ pub fun (t Table) get_method(sym TypeSymbol, name string) FunDecl {
 	mut s := sym
 	for true {
 		for m in s.methods {
-			if m.mix_name == name {
+			if m.name == name {
 				return m
 			}
 		}

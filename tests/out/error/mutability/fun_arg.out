@@ -1,2 +1,2 @@
+tests/out/error/mutability/fun_arg.in.bt:14:12 warning: unnecessary `mut` for argument `f`
 tests/out/error/mutability/fun_arg.in.bt:13:12 error: add `mut` to argument for parameter `f`
-tests/out/error/mutability/fun_arg.in.bt:14:12 error: unnecessary `mut` for argument `f`

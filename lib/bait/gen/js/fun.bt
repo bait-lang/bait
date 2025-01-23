@@ -5,14 +5,8 @@ package js
 import bait.ast
 
 fun (mut g Gen) fun_decl(node ast.FunDecl) {
-	if node.name == 'testsuite_begin' {
-		g.has_test_begin = true
-	} else if node.name == 'testsuite_end' {
-		g.has_test_end = true
-	}
-
 	if node.generic_names.length > 0 and g.cur_concrete_types.length == 0 {
-		gtypes := g.table.generic_fun_types[node.key()]
+		gtypes := g.table.generic_fun_types[node.key]
 		for conc_types in gtypes {
 			for i, gn in node.generic_names {
 				g.cur_concrete_types[gn] = conc_types[i]
@@ -32,7 +26,12 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 		sym := g.table.get_sym(node.params[0].typ)
 		name = js_esc(sym.name + '_' + node.name)
 	} else {
-		name = js_esc(node.mix_name)
+		// TODO remove exception for main and builtin
+		if g.pkg == "main" or g.pkg == "builtin" or node.is_test {
+			name = js_esc(node.name)
+		} else {
+			name = js_name(g.pkg + "." + node.name)
+		}
 	}
 	if g.cur_concrete_types.length > 0 {
 		name = g.get_concrete_name(name, g.cur_concrete_types.values())
@@ -46,7 +45,7 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 
 	export_attr := node.attrs.find_attr('export')
 	if export_attr.name != '' {
-		g.writeln('module.exports.${export_attr.value} = ${js_esc(node.mix_name)}')
+		g.writeln('module.exports.${export_attr.value} = ${name}')
 	}
 
 	g.writeln('')
@@ -114,7 +113,7 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 		return
 	}
 
-	mut name := node.mix_name
+	mut name := node.full_name()
 	if node.is_method {
 		if name == 'str' {
 			g.expr_to_string(node.left, node.left_type)
@@ -123,14 +122,14 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 
 		sym := g.table.get_sym(node.left_type)
 		final_sym := g.table.get_final_sym(sym)
-		if final_sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.mix_name) {
-			g.gen_array_method(node.mix_name, node, final_sym)
+		if final_sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.name) {
+			g.gen_array_method(node.name, node, final_sym)
 			return
 		}
 
-		name = js_esc(sym.name + '_' + node.mix_name)
+		name = js_name(sym.name + '_' + node.name)
 	} else if node.lang == .bait{
-		name = js_esc(node.mix_name)
+		name = js_esc(name)
 	}
 
 	if node.concrete_types.length > 0 {
