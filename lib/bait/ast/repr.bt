@@ -36,10 +36,3 @@ pub fun (e Expr) repr() string {
 		InvalidExpr { 'InvalidExpr' }
 	}
 }
-
-pub fun (fn FunDecl) key() string {
-	if fn.is_method {
-		return '${fn.params[0].typ}.${fn.name}'
-	}
-	return fn.mix_name
-}

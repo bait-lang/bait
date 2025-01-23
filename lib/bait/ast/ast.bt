@@ -91,7 +91,7 @@ pub struct FunDecl {
 	pub is_pub bool
 	pub lang Language
 	pub name string
-	pub mix_name string // TMP
+	pub key string // TODO rework generics and possibly remove this field
 	pub params []Param
 	pub return_type Type
 	pub is_test bool

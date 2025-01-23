@@ -3,7 +3,6 @@
 package ast
 
 pub struct Table {
-	pub mut fun_decls map[string]FunDecl
 	pub mut type_idxs map[string]Type
 	pub mut type_symbols []TypeSymbol
 	pub mut needed_equality_funs []Type

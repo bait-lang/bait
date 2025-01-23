@@ -24,6 +24,7 @@ pub struct ScopeObject{
 	pub params []ast.Param
 	pub attrs []ast.Attribute
 	pub generic_names []string
+	pub key string
 }
 
 pub enum ObjectKind {

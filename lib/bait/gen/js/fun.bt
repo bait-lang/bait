@@ -6,7 +6,7 @@ import bait.ast
 
 fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	if node.generic_names.length > 0 and g.cur_concrete_types.length == 0 {
-		gtypes := g.table.generic_fun_types[node.key()]
+		gtypes := g.table.generic_fun_types[node.key]
 		for conc_types in gtypes {
 			for i, gn in node.generic_names {
 				g.cur_concrete_types[gn] = conc_types[i]

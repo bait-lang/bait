@@ -104,10 +104,6 @@ fun (c Checker) fun_params(params []ast.Param){
 
 		if sym.kind == .fun_ {
 			info := sym.info as ast.FunInfo
-			c.table.fun_decls[p.name] = ast.FunDecl{
-				return_type = info.return_type
-				params = info.to_params()
-			}
 			c.scope.register(p.name, context.ScopeObject{
 				typ = p.typ
 				kind = .function
@@ -158,7 +154,6 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 		c.error("function `${node.full_name()}` is private", node.pos)
 	}
 
-	mut def := c.table.fun_decls[node.full_name()]
 	node.noreturn = obj.noreturn
 	node.return_type = obj.return_type
 
@@ -181,7 +176,7 @@ fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
 
 	c.or_block(mut node)
 
-	c.set_conc_types(mut node, obj.generic_names, def.key())
+	c.set_conc_types(mut node, obj.generic_names, obj.key)
 
 	if node.name == 'error' {
 		node.return_type = c.cur_fun.return_type
@@ -331,7 +326,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 
 	c.or_block(mut node)
 
-	c.set_conc_types(mut node, def.generic_names, def.key())
+	c.set_conc_types(mut node, def.generic_names, def.key)
 
 	return node.return_type
 }
@@ -458,7 +453,7 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 
 fun (mut c Checker) resolve_generics_funs() {
 	for mut fn in c.file.generic_funs {
-		gtypes := c.table.generic_fun_types[fn.key()]
+		gtypes := c.table.generic_fun_types[fn.key]
 		for concrete in gtypes {
 			c.cur_concrete_types = concrete
 			c.fun_instance(mut fn)
