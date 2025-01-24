@@ -13,7 +13,7 @@ fun (mut p Parser) expr(precedence token.Precedence) !ast.Expr {
 		} else if p.tok == .dotdot {
 			node = p.range_expr(node)!
 		} else if p.tok == .lsqr and p.pos.line == p.prev_pos.line {
-			// If `[` is on next line, it's a different expr (see #297)
+			// If `[` is on next line, it's likely an array init
 			node = p.index_expr(node)!
 		} else if p.tok == .key_as {
 			node = p.as_cast(node)!

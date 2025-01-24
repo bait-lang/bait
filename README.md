@@ -20,23 +20,21 @@ fun main() {
 
 
 ## Key Features
-> **Status:** Bait is in active development.
-> It is stable for personal use,
-> but please be prepared for possible breaking changes and evolving features (🚧).
+> **Status:** Active Development.<br>
+> Bait is usable for personal projects, but please be aware of bugs and incomplete features.
 
 - Consistent syntax balancing simplicity for newcomers with power for experienced developers
 - Type and memory safety with immutability by default
 - Explicit and predictable error handling using Result types
-- JavaScript backend (NodeJS, 🚧 Web)
+- JavaScript backend (NodeJS)
 - 🚧 C backend
 - Cross-platform support (Linux, 🚧 Windows)
 
 
 ## Documentation
-> A dedicated website, comprehensive language documentation and a documentation generator are work in progress.<br>
-> The language specification will be formalized and released during the beta phase.
-
 The [Language Overview](docs/docs.md) provides a brief introduction to the syntax and features.
+
+> More ressources, docs and examples will be released in the future.
 
 
 ## Examples

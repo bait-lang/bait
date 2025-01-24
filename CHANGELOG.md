@@ -20,7 +20,8 @@ All notable changes are documented in this file.
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword
 - lexer: Disallow floats with trailing decimal point
-- fix(c): Prevent c error if blank identifier is used
+- gen.c: Prevent c error if blank identifier is used
+- parser: Fix IndexExpr and ArrayInit precedence error
 
 ### Compiler internals
 - refac: improve handling of FunDecl and CallExpr
