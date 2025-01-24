@@ -18,6 +18,7 @@ pub struct Parser {
 	mut tok token.Token
 	mut next_tok token.Token
 	mut val string
+	mut prev_pos token.Pos
 	mut pos token.Pos
 	mut pkg_name string
 	mut pkg_scope &context.Scope := 0 as any // Reference to scope of current package
@@ -267,6 +268,7 @@ fun (mut p Parser) next() {
 	}
 
 	p.val = p.lexer.val()
+	p.prev_pos = p.pos
 	p.pos = p.lexer.pos()
 }
 

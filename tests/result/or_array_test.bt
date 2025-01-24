@@ -5,6 +5,7 @@ fun call() ![]i32 {
 	return error("")
 }
 
+// See #297
 fun test_default_empty_array() {
 	r := call() or {
 		println(err)
