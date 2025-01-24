@@ -8,14 +8,15 @@ All notable changes are documented in this file.
 ### New Language Features
 - Array slicing using range indexing: `arr[low..high]`
 
-### Error Checks
+### Checker Improvements
 - Warn if return value of function is unused
 - IndexExpr: Check index type
 - Check for import alias name conflicts
 - Properly warn if FFI is used in a file intended for a different backend
 - Improve various error messages and reduce noise
 - Functions can no longer be shadowed by variables
-- fix: change `unnecessary mut` to be a warning
+- Infer type of last expr in or-block
+- Change `unnecessary mut` from error to warning
 
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword
