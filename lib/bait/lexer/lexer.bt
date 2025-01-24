@@ -12,7 +12,7 @@ pub enum CommentMode {
 pub struct Lexer {
 	mut comment_mode CommentMode
 	mut text string
-	mut insert_semi bool // Insert a semicolon on \n
+	mut insert_semi bool // Insert a semicolon on next \n
 	mut val string // Value of the current token
 
 	// Position tracking
@@ -344,9 +344,11 @@ fun (mut l Lexer) skip_whitespace() {
 	for l.pos < l.text.length {
 		c := l.text[l.pos]
 		if c == `\n` {
+			// \n as semicolon is handled in simple_token()
 			if l.insert_semi {
 				return
 			}
+
 			l.pos += 1
 			l.inc_line()
 		} else if c == ` ` or c == `\t` or c == `\r` {

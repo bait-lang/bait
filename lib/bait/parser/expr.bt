@@ -12,14 +12,15 @@ fun (mut p Parser) expr(precedence token.Precedence) !ast.Expr {
 			node = p.dot_expr(node)!
 		} else if p.tok == .dotdot {
 			node = p.range_expr(node)!
-		} else if p.tok == .lsqr {
+		} else if p.tok == .lsqr and p.pos.line == p.prev_pos.line {
+			// If `[` is on next line, it's a different expr (see #297)
 			node = p.index_expr(node)!
 		} else if p.tok == .key_as {
 			node = p.as_cast(node)!
 		} else if p.tok.is_infix() {
 			node = p.infix_expr(node)!
 		} else {
-			panic('precedence not implemented: ${p.tok} at ${p.pos}')
+			return node
 		}
 	}
 	return node

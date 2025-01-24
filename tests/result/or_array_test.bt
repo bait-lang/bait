@@ -1,0 +1,15 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+fun call() ![]i32 {
+	return error("")
+}
+
+// See #297
+fun test_default_empty_array() {
+	r := call() or {
+		println(err)
+		[]i32
+	}
+	assert r.length == 0
+}
