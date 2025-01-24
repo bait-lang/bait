@@ -201,7 +201,6 @@ pub struct CallExpr {
 	global lang Language
 	global pkg string
 	global name string
-	global mix_name string // TMP
 	global return_type Type
 	global left_type Type
 	global left Expr := InvalidExpr{}
@@ -237,6 +236,7 @@ pub enum OrKind {
 pub struct OrBlock {
 	pub kind OrKind
 	global stmts []Stmt
+	pub uid string // UID for temporary variable
 }
 
 pub struct CharLiteral {

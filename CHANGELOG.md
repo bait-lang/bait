@@ -23,6 +23,7 @@ All notable changes are documented in this file.
 - lexer: Disallow floats with trailing decimal point
 - gen.c: Prevent c error if blank identifier is used
 - parser: Fix IndexExpr and ArrayInit precedence error
+- gen.js: Fix rare conflict between generated temporary variables
 
 ### Compiler internals
 - refac: improve handling of FunDecl and CallExpr
