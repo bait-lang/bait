@@ -249,6 +249,7 @@ fun (mut p Parser) or_block() !ast.OrBlock {
 		p.next()
 		return ast.OrBlock{
 			kind = .prop
+			uid = "_r${p.file_uid}_${p.lexer.offset()}"
 		}
 	}
 
@@ -260,6 +261,7 @@ fun (mut p Parser) or_block() !ast.OrBlock {
 		return ast.OrBlock {
 			kind = .block
 			stmts = stmts
+			uid = "_r${p.file_uid}_${p.lexer.offset()}"
 		}
 	}
 

@@ -194,7 +194,7 @@ fun (mut t Transformer) call_expr(mut node ast.CallExpr) {
 			op = .decl_assign
 			left = ast.Ident{ name = "err" }
 			right = ast.SelectorExpr{
-				expr = ast.TmpVar{}
+				expr = ast.Ident{ name = node.or_block.uid }
 				field_name = "msg"
 			}
 		} as ast.Stmt
@@ -209,7 +209,7 @@ fun (mut t Transformer) call_expr(mut node ast.CallExpr) {
 			node.or_block.stmts[idx] = ast.AssignStmt{
 				op = .assign
 				left = ast.SelectorExpr{
-					expr = ast.TmpVar{}
+					expr = ast.Ident{ name = node.or_block.uid }
 					field_name = "data"
 				}
 				right = (node.or_block.stmts[idx] as ast.ExprStmt).expr
