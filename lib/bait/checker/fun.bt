@@ -437,7 +437,7 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 		kind = .variable
 		typ = ast.STRING_TYPE
 	})
-	last_stmt_type := c.stmts_with_return(node.or_block.stmts)
+	last_stmt_type := c.stmts_with_return(node.or_block.stmts, node.return_type)
 	c.close_scope()
 	c.is_or_block = false
 

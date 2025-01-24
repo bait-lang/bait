@@ -5,11 +5,10 @@ fun call() ![]i32 {
 	return error("")
 }
 
-// See #297
-fun test_default_empty_array() {
+fun test_or_block_infer() {
 	r := call() or {
-		assert err == ""
-		[]i32
+		[]
 	}
+
 	assert r.length == 0
 }

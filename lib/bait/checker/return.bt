@@ -43,8 +43,8 @@ fun (mut c Checker) return_stmt(mut node ast.ReturnStmt) {
 	}
 }
 
-// Check all statements in a block where the last statement should return a value
-fun (mut c Checker) stmts_with_return(stmts []ast.Stmt) ast.Type {
+// Check all statements in a block where the last one should return a value
+fun (mut c Checker) stmts_with_return(stmts []ast.Stmt, expected ast.Type) ast.Type {
 	for i := 0; i < stmts.length - 1; i += 1 {
 		c.stmt(mut stmts[i])
 	}
@@ -55,8 +55,11 @@ fun (mut c Checker) stmts_with_return(stmts []ast.Stmt) ast.Type {
 
 	was_expecting_expr := c.expecting_expr
 	c.expecting_expr = true
+
+	c.expected_type = expected
 	mut last := stmts[stmts.length - 1]
 	c.stmt(mut last)
+
 	c.expecting_expr = was_expecting_expr
 
 	return match last {

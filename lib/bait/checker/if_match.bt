@@ -70,8 +70,7 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 		c.is_sumtype_match = false
 
 		if node.is_expr {
-			c.expected_type = node.typ
-			last_type := c.stmts_with_return(branch.stmts)
+			last_type := c.stmts_with_return(branch.stmts, node.typ)
 			c.close_scope()
 
 			if last_type == ast.ERROR_TYPE {
