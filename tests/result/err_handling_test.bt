@@ -32,7 +32,8 @@ fun test_result() {
 }
 
 fun test_or_in_call_arg() {
-	assert take_int(result_fun(true) or { 15 }) == 15
+	r := take_int(result_fun(true) or { 15 })
+	assert r == 15
 }
 
 // Test that or blocks are not confused with boolean or
