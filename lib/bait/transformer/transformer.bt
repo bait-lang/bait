@@ -37,7 +37,7 @@ pub fun (mut t Transformer) stmts(mut stmts []ast.Stmt) {
 
 fun (mut t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 	match stmt {
-		ast.AssertStmt { t.assert_stmt(mut stmt) }
+		ast.AssertStmt { return t.assert_stmt(mut stmt) }
 		ast.AssignStmt { return t.assign_stmt(mut stmt) }
 		ast.Block { t.stmts(mut stmt.stmts) }
 		ast.ConstDecl { return t.const_decl(stmt) }
@@ -94,8 +94,35 @@ fun (mut t Transformer) expr(mut expr ast.Expr) ast.Expr {
 	return expr
 }
 
-fun (mut t Transformer) assert_stmt(mut node ast.AssertStmt) {
+fun (mut t Transformer) assert_stmt(mut node ast.AssertStmt) ast.Stmt {
+	if not t.prefs.is_test {
+		// `if !expr { panic("assert failed") }`
+		return ast.IfMatch{
+			branches = [
+				ast.IfBranch{
+					cond = ast.PrefixExpr{
+						op = .key_not
+						right = node.expr
+					}
+					stmts = [
+						ast.ExprStmt{
+							expr = ast.CallExpr{
+								name = "panic"
+								args = [
+									ast.CallArg{
+										expr = ast.StringLiteral{ val = "assert failed" }
+									}
+								]
+							}
+						} as ast.Stmt
+					]
+				}
+			]
+		}
+	}
+
 	node.expr = t.expr(mut node.expr)
+	return node
 }
 
 fun (mut t Transformer) assign_stmt(mut node ast.AssignStmt) ast.Stmt {
