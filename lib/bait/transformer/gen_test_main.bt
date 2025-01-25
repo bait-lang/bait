@@ -17,18 +17,36 @@ fun (t Transformer) gen_test_main() &ast.File {
 		})
 	}
 
+	// `test_runner.file = "path/to/file"`
 	esc_path := t.path.replace("\\", "\\\\")
-	for name in t.gen_ctx.test_fun_names {
-		mut val := 'TestRunner_set_test_info(builtin__test_runner, from_js_string("${esc_path}"), from_js_string("${name}"))'
-		if t.prefs.backend == .c {
-			val = 'TestRunner_set_test_info(&builtin__test_runner, from_c_string("${esc_path}"), from_c_string("${name}"))'
+	test_main.stmts.push(ast.AssignStmt{
+		op = .assign
+		left = ast.SelectorExpr{
+			expr = ast.Ident{
+				name = "builtin__test_runner"
+			}
+			field_name = "file"
 		}
-		test_main.stmts.push(ast.ExprStmt{
-			// TODO properly transform this (requires changes to method calls)
-			expr = ast.HashExpr{
-				val = val
+		right = ast.StringLiteral{
+			val = esc_path
+		}
+	})
+
+	// `test_runner.fun_name = "main"`
+	for name in t.gen_ctx.test_fun_names {
+		test_main.stmts.push(ast.AssignStmt{
+			op = .assign
+			left = ast.SelectorExpr{
+				expr = ast.Ident{
+					name = "builtin__test_runner"
+				}
+				field_name = "fun_name"
+			}
+			right = ast.StringLiteral{
+				val = name
 			}
 		})
+
 		test_main.stmts.push(ast.ExprStmt{
 			expr = ast.CallExpr{
 				name = name
