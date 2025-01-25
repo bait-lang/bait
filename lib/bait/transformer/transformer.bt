@@ -95,6 +95,8 @@ fun (mut t Transformer) expr(mut expr ast.Expr) ast.Expr {
 }
 
 fun (mut t Transformer) assert_stmt(mut node ast.AssertStmt) ast.Stmt {
+	node.expr = t.expr(mut node.expr)
+
 	if not t.prefs.is_test {
 		// `if !expr { panic("assert failed") }`
 		return ast.IfMatch{
@@ -121,7 +123,6 @@ fun (mut t Transformer) assert_stmt(mut node ast.AssertStmt) ast.Stmt {
 		}
 	}
 
-	node.expr = t.expr(mut node.expr)
 	return node
 }
 

@@ -66,11 +66,11 @@ fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 	g.write('if (')
 	g.expr(node.expr)
 	g.writeln(') {')
-	g.writeln('\tTestRunner_assert_pass(builtin__test_runner)')
+	g.writeln('\tTestRunner_pass(builtin__test_runner)')
 	g.writeln('} else {')
 	if node.expr is ast.InfixExpr {
 		expr := node.expr as ast.InfixExpr
-		g.write('\tTestRunner_set_assert_info(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
+		g.write('\tTestRunner_fail_infix(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
 		g.assert_side_expr(expr.left)
 		g.write(' ${expr.op.js_repr()} ')
 		g.assert_side_expr(expr.right)
@@ -79,12 +79,10 @@ fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 		g.write(', ')
 		g.expr_to_string(expr.right, expr.right_type)
 		g.writeln(')')
-		g.writeln('\tTestRunner_assert_fail_infix(builtin__test_runner)')
 	} else {
-		g.write('\tTestRunner_set_assert_info(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
+		g.write('\tTestRunner_fail(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
 		g.assert_side_expr(node.expr)
-		g.writeln('"), from_js_string(""), from_js_string(""), from_js_string(""))')
-		g.writeln('\tTestRunner_assert_fail(builtin__test_runner)')
+		g.writeln('"))')
 	}
 	g.writeln('}')
 }
