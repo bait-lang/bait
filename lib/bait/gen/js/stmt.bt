@@ -63,6 +63,8 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 }
 
 fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
+	// Note: non-test assert is handled by transformer
+
 	if node.expr is ast.InfixExpr {
 		g.assert_infix(node)
 		return

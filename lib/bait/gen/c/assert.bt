@@ -6,6 +6,8 @@ import bait.ast
 import bait.util.escape
 
 fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
+	// Note: non-test assert is handled by transformer
+
 	g.write('if (')
 	g.expr(node.expr)
 	g.writeln(') {')
