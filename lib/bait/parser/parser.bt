@@ -8,12 +8,10 @@ import bait.ast
 import bait.context
 import bait.lexer
 import bait.token
-import hash.crc32
 
 pub struct Parser {
 	pref preference.Prefs
 	mut path string
-	mut file_hash string
 	mut file_uid i32
 	mut eofs i32
 	mut tok token.Token
@@ -51,7 +49,6 @@ pub fun new_default() Parser {
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
 	p.lexer.init(text, .discard)
 	p.path = path
-	p.file_hash = crc32.sum(path.bytes()).str()
 	p.file_uid += 1
 	p.pkg_name = expected_pkg
 	p.eofs = 0

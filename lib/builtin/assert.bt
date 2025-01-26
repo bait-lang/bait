@@ -15,34 +15,22 @@ struct TestRunner{
 	mut got_val string
 }
 
-fun (mut tr TestRunner) set_test_info(file string, name string) {
-	tr.file = file
-	tr.fun_name = name
-}
-
-fun (mut tr TestRunner) set_assert_info(line i32, expr_string string, exp string, got string) {
-	tr.line = line
-	tr.expr_string = expr_string
-	tr.exp_val = exp
-	tr.got_val = got
-}
-
-fun (mut tr TestRunner) assert_pass() {
+fun (mut tr TestRunner) pass() {
 	tr.passes += 1
 }
 
-fun (mut tr TestRunner) assert_fail() {
+fun (mut tr TestRunner) fail(line i32, expr_string string) {
 	tr.fails += 1
-	eprintln('${tr.file}:${tr.line} ${tr.fun_name}')
-	eprintln(tr.expr_string)
+	eprintln('${tr.file}:${line} ${tr.fun_name}')
+	eprintln(expr_string)
 }
 
-fun (mut tr TestRunner) assert_fail_infix() {
+fun (mut tr TestRunner) fail_infix(line i32, expr_string string, left string, right string) {
 	tr.fails += 1
-	eprintln('${tr.file}:${tr.line} ${tr.fun_name}')
-	eprintln(tr.expr_string)
-	eprintln('  left:  ${tr.exp_val}')
-	eprintln('  right: ${tr.got_val}')
+	eprintln('${tr.file}:${line} ${tr.fun_name}')
+	eprintln(expr_string)
+	eprintln('   left: ${left}')
+	eprintln('  right: ${right}')
 }
 
 fun (tr TestRunner) exit_code() i32 {
