@@ -1,2 +1,9 @@
-tests/out/error/result/or_type_mismatch.in.bt:9:6 error: or-block returns string, expected i32
-tests/out/error/result/or_type_mismatch.in.bt:13:6 error: or-block returns void, expected i32
+tests/out/error/result/or_type_mismatch.in.bt:5:6 error: `or` bock must:
+  - Provide a default value of type `i32`, OR
+  - Change the control-flow (return/continue/break), OR
+  - Call a @noreturn function
+tests/out/error/result/or_type_mismatch.in.bt:9:6 error: `or` bock must:
+  - Provide a default value of type `i32`, OR
+  - Change the control-flow (return/continue/break), OR
+  - Call a @noreturn function
+tests/out/error/result/or_type_mismatch.in.bt:12:2 error: undefined ident `somevar`

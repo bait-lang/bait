@@ -1,7 +1,3 @@
-fun result_fun() !i32 {
-	return 1
-}
-
 fun res() !i32 {
 	return error("")
 }
@@ -11,6 +7,10 @@ a := res() or {
 }
 
 b := res() or {}
+
+_ = res() or {
+	somevar // error: undefined identifier
+}
 
 // No error
 c := res() or {

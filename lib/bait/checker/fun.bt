@@ -405,14 +405,14 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 	// Function does not return a result
 	if ret_sym.kind != .result {
 		if node.or_block.kind != .none {
-			c.error('${node.name} does not return a result, it cannot have an `or {}` block or `!` at the end', node.pos)
+			c.error('`${node.name}()` does not return a result, it cannot have an `or {}` block OR `!`', node.pos)
 		}
 		return
 	}
 
 	// Unhandled result
 	if node.or_block.kind == .none {
-		c.error('${node.name} returns a result, it must have an `or {}` block or propagation `!` at the end', node.pos)
+		c.error('`${node.name}()` returns a result, it requires an `or {}` block OR propagation `!`', node.pos)
 		return
 	}
 
@@ -442,12 +442,19 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 	c.is_or_block = false
 
 	// Check or-block return type
+	if last_stmt_type == ast.ERROR_TYPE {
+		return
+	}
 	if not c.check_types(last_stmt_type, ret_sym.parent) {
 		if has_toplevel_return(node.or_block.stmts) {
 			return
 		}
 
-		c.error("or-block returns ${c.table.type_name(last_stmt_type)}, expected ${c.table.type_name(ret_sym.parent)}", node.pos)
+		msg := "`or` bock must:
+  - Provide a default value of type `${c.table.type_name(ret_sym.parent)}`, OR
+  - Change the control-flow (return/continue/break), OR
+  - Call a @noreturn function"
+		c.error(msg, node.pos)
 	}
 }
 
