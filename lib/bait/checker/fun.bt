@@ -442,6 +442,9 @@ fun (mut c Checker) or_block(mut node ast.CallExpr) {
 	c.is_or_block = false
 
 	// Check or-block return type
+	if last_stmt_type == ast.ERROR_TYPE {
+		return
+	}
 	if not c.check_types(last_stmt_type, ret_sym.parent) {
 		if has_toplevel_return(node.or_block.stmts) {
 			return
