@@ -63,31 +63,59 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 }
 
 fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
+	if node.expr is ast.InfixExpr {
+		g.assert_infix(node)
+		return
+	}
+
 	g.write('if (')
 	g.expr(node.expr)
 	g.writeln(') {')
 	g.writeln('\tTestRunner_pass(builtin__test_runner)')
 	g.writeln('} else {')
-	if node.expr is ast.InfixExpr {
-		expr := node.expr as ast.InfixExpr
-		g.write('\tTestRunner_fail_infix(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
-		g.assert_side_expr(expr.left)
-		g.write(' ${expr.op.js_repr()} ')
-		g.assert_side_expr(expr.right)
-		g.write('"), ')
-		g.expr_to_string(expr.left, expr.left_type)
-		g.write(', ')
-		g.expr_to_string(expr.right, expr.right_type)
-		g.writeln(')')
-	} else {
-		g.write('\tTestRunner_fail(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
-		g.assert_side_expr(node.expr)
-		g.writeln('"))')
-	}
+	g.write('\tTestRunner_fail(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
+	g.assert_side_src(node.expr)
+	g.writeln('"))')
 	g.writeln('}')
 }
 
-fun (mut g Gen) assert_side_expr(node ast.Expr) {
+fun (mut g Gen) assert_infix(node ast.AssertStmt) {
+	expr := node.expr as ast.InfixExpr
+	tmpl := g.new_temp_var()
+	tmpr := g.new_temp_var()
+
+	g.write("const ${tmpl} = ")
+	g.expr(expr.left)
+	g.writeln('')
+	g.write("const ${tmpr} = ")
+	g.expr(expr.right)
+	g.writeln('')
+
+	new_infix := ast.InfixExpr{
+		left = ast.Ident{ name = tmpl }
+		left_type = expr.left_type
+		op = expr.op
+		right = ast.Ident{ name = tmpr }
+		right_type = expr.right_type
+	}
+	g.write('if (')
+	g.expr(new_infix)
+	g.writeln(') {')
+	g.writeln('\tTestRunner_pass(builtin__test_runner)')
+	g.writeln('} else {')
+	g.write('\tTestRunner_fail_infix(builtin__test_runner, ${node.pos.line}, from_js_string("assert ')
+	g.assert_side_src(expr.left)
+	g.write(' ${expr.op.js_repr()} ')
+	g.assert_side_src(expr.right)
+	g.write('"), ')
+	g.expr_to_string(new_infix.left, expr.left_type)
+	g.write(', ')
+	g.expr_to_string(new_infix.right, expr.right_type)
+	g.writeln(')')
+	g.writeln('}')
+}
+
+fun (mut g Gen) assert_side_src(node ast.Expr) {
 	if node is ast.BoolLiteral {
 		g.bool_literal(node)
 	} else if node is ast.IntegerLiteral {
@@ -103,7 +131,7 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 	} else if node is ast.ArrayInit {
 		g.write('[')
 		for i, expr in node.exprs {
-			g.assert_side_expr(expr)
+			g.assert_side_src(expr)
 			if i < node.exprs.length - 1 {
 				g.write(', ')
 			}
@@ -114,19 +142,19 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 	} else if node is ast.ArrayInit {
 		g.write('[')
 		for i, expr in node.exprs {
-			g.assert_side_expr(expr)
+			g.assert_side_src(expr)
 			if i < node.exprs.length - 1 {
 				g.write(', ')
 			}
 		}
 		g.write(']')
 	} else if node is ast.IndexExpr {
-		g.assert_side_expr(node.left)
+		g.assert_side_src(node.left)
 		g.write('[')
-		g.assert_side_expr(node.index)
+		g.assert_side_src(node.index)
 		g.write(']')
 	} else if node is ast.SelectorExpr {
-		g.assert_side_expr(node.expr)
+		g.assert_side_src(node.expr)
 		g.write('.${node.field_name}')
 	} else if node is ast.ComptimeVar {
 		g.write('$')

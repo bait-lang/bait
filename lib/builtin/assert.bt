@@ -29,7 +29,7 @@ fun (mut tr TestRunner) fail_infix(line i32, expr_string string, left string, ri
 	tr.fails += 1
 	eprintln('${tr.file}:${line} ${tr.fun_name}')
 	eprintln(expr_string)
-	eprintln('  left:  ${left}')
+	eprintln('   left: ${left}')
 	eprintln('  right: ${right}')
 }
 
