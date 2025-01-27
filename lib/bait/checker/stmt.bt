@@ -16,7 +16,7 @@ fun (mut c Checker) stmt(mut stmt ast.Stmt){
 	match stmt {
 		ast.AssertStmt { c.assert_stmt(stmt) }
 		ast.AssignStmt { c.assign_stmt(mut stmt) }
-		ast.Block { c.stmts(mut stmt.stmts) }
+		ast.Block { c.block(mut stmt) }
 		ast.ConstDecl { c.const_decl(mut stmt) }
 		ast.ExprStmt { c.expr_stmt(mut stmt) }
 		ast.EnumDecl { c.enum_decl(stmt) }
@@ -45,6 +45,12 @@ fun (mut c Checker) assert_stmt(node ast.AssertStmt){
 	if not c.check_types(typ, ast.BOOL_TYPE) {
 		c.error('assert must be of type bool', node.pos)
 	}
+}
+
+fun (mut c Checker) block(mut node ast.Block){
+	c.open_scope()
+	c.stmts(mut node.stmts)
+	c.close_scope()
 }
 
 fun (mut c Checker) const_decl(mut node ast.ConstDecl) {
