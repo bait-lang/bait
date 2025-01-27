@@ -11,8 +11,7 @@ fun const_stmt(mut stmt Const) {}
 
 fun check_stmt(mut s Stmt) {
 	match s {
-		// In the branche scopes the type of `s` is updated.
-		// This test ensures that the mutability and other properties are preserved.
+		// Type of `s` is updated in the branches. Ensure that mutability etc. is preserved.
 		Assert { assert_stmt(mut s) }
 		Const { const_stmt(mut s) }
 	}

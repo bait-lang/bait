@@ -1,8 +1,28 @@
 // SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
+struct Cat{}
+
+struct Dog{
+	woofs i32
+}
+
+type Animal := Cat | Dog
+
+fun get_animal() Animal {
+	return Dog{}
+}
+
 fun test_no_smartcast(){
 	mut x := 5 as i16
 	if x as i32 == 7 {}
 	assert x == 5 as i16
+}
+
+fun test_cast_in_block() {
+	mut a := get_animal()
+	{
+		assert "${(a as Dog).woofs}" == "0"
+	}
+	a = Cat{} // `a` should still have type `Animal`
 }
