@@ -1,0 +1,4 @@
+tests/out/error/mutability/field.in.bt:17:6 error: field `Foo.x` is immutable
+tests/out/error/mutability/field.in.bt:18:3 error: field `Bar.fi` is immutable
+tests/out/error/mutability/field.in.bt:19:6 error: field `Foo.x` is immutable
+tests/out/error/mutability/field.in.bt:24:6 error: cannot assign to field of immutable variable `b`

@@ -31,7 +31,7 @@ fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
 		ast.RangeExpr { c.range_expr(expr) }
 		ast.SelectorExpr { c.selector_expr(mut expr) }
 		ast.StringLiteral { c.string_literal(expr) }
-		ast.StringInterLiteral { c.string_inter_literal(expr) }
+		ast.StringInterLiteral { c.string_inter_literal(mut expr) }
 		ast.StructInit { c.struct_init(mut expr) }
 		ast.TmpVar { ast.PLACEHOLDER_TYPE }
 		ast.TypeOf { c.type_of(mut expr) }
@@ -345,7 +345,7 @@ fun (c Checker) string_literal(node ast.StringLiteral) ast.Type {
 }
 
 // FIXME node should be mut
-fun (mut c Checker) string_inter_literal(node ast.StringInterLiteral) ast.Type {
+fun (mut c Checker) string_inter_literal(mut node ast.StringInterLiteral) ast.Type {
 	for mut e in node.exprs {
 		typ := c.expr(mut e)
 		node.expr_types.push(typ)

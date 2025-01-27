@@ -1,1 +1,2 @@
 tests/out/error/mutability/ident.in.bt:7:9 error: `s` is not declared as mutable
+tests/out/error/mutability/ident.in.bt:12:14 error: `arr` is immutable

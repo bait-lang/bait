@@ -40,7 +40,7 @@ pub struct Checker{
 	pub mut errors []errors.Message
 }
 
-pub fun (mut c Checker) check_files(files []&ast.File) {
+pub fun (mut c Checker) check_files(mut files []ast.File) {
 	c.files = files
 
 	for mut f in files {

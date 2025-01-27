@@ -84,13 +84,13 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 		}
 	} else if node.left is ast.SelectorExpr {
 		mut left := node.left as ast.SelectorExpr
-		if not c.is_field_mutable(left) {
+		if not c.expect_field_mutable(left) {
 			return
 		}
 
 		for left.expr is ast.SelectorExpr {
 			left = left.expr as ast.SelectorExpr
-			if not c.is_field_mutable(left) {
+			if not c.expect_field_mutable(left) {
 				return
 			}
 		}
@@ -108,14 +108,4 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 	if not c.check_types(node.right_type, node.left_type) {
 		c.error('cannot assign type ${c.table.type_name(node.right_type)} to ${c.table.type_name(node.left_type)}', node.pos)
 	}
-}
-
-fun (c Checker) is_field_mutable(left ast.SelectorExpr) bool {
-	sym := c.table.get_sym(left.expr_type)
-	field := sym.find_field(left.field_name, c.table)
-	if (not field.is_mut or sym.pkg != c.pkg) and not field.is_global {
-		c.error('field `${sym.name}.${left.field_name}` is immutable', left.pos)
-		return false
-	}
-	return true
 }

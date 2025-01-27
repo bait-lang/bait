@@ -1,0 +1,29 @@
+// SPDX-FileCopyrightText: 2023-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package checker
+
+import bait.ast
+
+pub fun (mut c Checker) expect_mutable(e ast.Expr) {
+	if e is ast.Ident {
+		if not e.is_mut {
+			c.error('`${e.full_name()}` is immutable', e.pos)
+		}
+		return
+	}
+
+	if e is ast.SelectorExpr {
+		c.expect_mutable(e.expr)
+		_ = c.expect_field_mutable(e)
+	}
+}
+
+fun (c Checker) expect_field_mutable(left ast.SelectorExpr) bool {
+	sym := c.table.get_sym(left.expr_type)
+	field := sym.find_field(left.field_name, c.table)
+	if (not field.is_mut or sym.pkg != c.pkg) and not field.is_global {
+		c.error('field `${sym.name}.${left.field_name}` is immutable', left.pos)
+		return false
+	}
+	return true
+}
