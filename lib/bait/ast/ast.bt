@@ -39,7 +39,7 @@ pub struct ConstDecl {
 pub struct EnumDecl {
 	pub lang Language
 	pub name string
-	pub fields []EnumField
+	global fields []EnumField
 	pub pos token.Pos
 }
 
@@ -174,7 +174,7 @@ pub struct TypeDecl {
 pub struct ArrayInit {
 	global typ Type
 	global elem_type Type
-	pub exprs []Expr
+	global exprs []Expr
 	pub length_expr Expr := InvalidExpr{}
 	pub cap_expr Expr := InvalidExpr{}
 	pub pos token.Pos
@@ -290,7 +290,7 @@ pub struct IfMatch {
 	pub is_comptime bool
 	pub is_match bool // Note: match cannot be comptime
 	pub has_else bool
-	pub branches []IfBranch
+	global branches []IfBranch
 	pub pos token.Pos
 }
 
@@ -327,7 +327,7 @@ pub struct MapInit {
 	global typ Type
 	global key_type Type
 	global val_type Type
-	pub keys []Expr
+	global keys []Expr
 	pub vals []Expr
 	pub pos token.Pos
 }
@@ -365,7 +365,7 @@ pub struct StringLiteral {
 
 pub struct StringInterLiteral {
 	pub vals []string
-	pub exprs []Expr
+	global exprs []Expr
 	pub expr_types []Type
 	pub pos token.Pos
 }
