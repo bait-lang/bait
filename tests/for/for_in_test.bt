@@ -36,7 +36,7 @@ fun test_map() {
 }
 
 fun test_mutable_value() {
-	arr := [1, 2, 3]
+	mut arr := [1, 2, 3]
 	for mut a in arr {
 		a += 1
 	}

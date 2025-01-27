@@ -195,6 +195,10 @@ fun (mut c Checker) for_in_loop(mut node ast.ForInLoop) {
 		is_mut = node.valvar.is_mut
 	})
 
+	if node.valvar.is_mut {
+		c.expect_mutable(node.expr)
+	}
+
 	loop_safe := c.is_loop
 	c.is_loop = true
 	c.stmts(node.stmts)

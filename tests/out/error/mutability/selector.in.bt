@@ -1,0 +1,9 @@
+struct ArrHolder {
+	ai []bool
+	mut am []bool
+}
+
+ah := ArrHolder{}
+
+for mut a in ah.ai {} // err
+for mut a in ah.am {} // err

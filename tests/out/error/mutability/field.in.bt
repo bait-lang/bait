@@ -1,0 +1,25 @@
+struct Foo {
+	x bool
+	mut y bool
+}
+
+struct Bar {
+	fi Foo
+	mut fm Foo
+}
+
+mut arr := [Bar{
+	fi = Foo{}
+	fm = Foo{}
+}]
+
+for mut a in arr {
+	a.fi.x = false
+	a.fi.y = false
+	a.fm.x = false
+	a.fm.y = true
+}
+
+for b in arr {
+	b.fm.y = false
+}

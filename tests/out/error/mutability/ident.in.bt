@@ -6,3 +6,7 @@ fun call() {
 	s := Static{}
 	change(mut s) // err
 }
+
+arr := [1, 2]
+
+for mut a in arr {}

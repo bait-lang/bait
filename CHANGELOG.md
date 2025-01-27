@@ -15,6 +15,7 @@ All notable changes are documented in this file.
 - Properly warn if FFI is used in a file intended for a different backend
 - Improve various error messages and reduce noise
 - Functions can no longer be shadowed by variables
+- Check mutability of for-in-expr
 - Infer type of last expr in or-block
 - Change `unnecessary mut` from error to warning
 
