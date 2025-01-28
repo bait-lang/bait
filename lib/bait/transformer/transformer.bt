@@ -27,7 +27,7 @@ pub fun (mut t Transformer) transform_files(mut files []ast.File) {
 pub fun (mut t Transformer) stmts(mut stmts []ast.Stmt) {
 	// TODO js: fix crash with InvalidExpr
 	// for mut stmt in stmts {
-	// 	stmt = t.stmt(stmt)
+	// 	stmt = t.stmt(mut stmt)
 	// }
 
 	for i := 0; i < stmts.length; i += 1 {
@@ -41,7 +41,7 @@ fun (mut t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 		ast.AssignStmt { return t.assign_stmt(mut stmt) }
 		ast.Block { t.stmts(mut stmt.stmts) }
 		ast.ConstDecl { return t.const_decl(stmt) }
-		ast.ExprStmt { _ = t.expr(mut stmt.expr) }
+		ast.ExprStmt { stmt.expr = t.expr(mut stmt.expr) }
 		ast.EnumDecl {}
 		ast.ForLoop { t.for_loop(mut stmt) }
 		ast.ForClassicLoop { t.for_classic_loop(mut stmt) }
@@ -74,7 +74,7 @@ fun (mut t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.FloatLiteral {}
 		ast.HashExpr {}
 		ast.Ident {}
-		ast.IfMatch {}
+		ast.IfMatch { t.if_match(mut expr) }
 		ast.IndexExpr { return t.index_expr(expr) }
 		ast.InfixExpr { t.infix_expr(mut expr) }
 		ast.IntegerLiteral {}
@@ -182,8 +182,7 @@ fun (mut t Transformer) for_in_loop(mut node ast.ForInLoop) ast.ForInLoop {
 			index = node.idxvar
 		}
 	} as ast.Stmt
-	// TODO array.insert(el, idx)
-	node.stmts = [val_decl].concat(node.stmts)
+	node.stmts.insert(0, val_decl)
 
 	t.stmts(node.stmts)
 
@@ -201,6 +200,7 @@ fun (mut t Transformer) fun_decl(mut node ast.FunDecl) ast.Stmt {
 
 fun (mut t Transformer) if_match(mut node ast.IfMatch) {
 	for mut branch in node.branches {
+		_ = t.expr(branch.cond)
 		t.stmts(branch.stmts)
 	}
 }
@@ -226,9 +226,7 @@ fun (mut t Transformer) call_expr(mut node ast.CallExpr) {
 				field_name = "msg"
 			}
 		} as ast.Stmt
-
-		// TODO array.insert(el, idx)
-		node.or_block.stmts = [err_decl].concat(node.or_block.stmts)
+		node.or_block.stmts.insert(0, err_decl)
 
 		// Last line: Set Result data
 		//   `_t12.data = <expr>`
