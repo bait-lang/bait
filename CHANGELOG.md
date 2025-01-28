@@ -21,7 +21,9 @@ All notable changes are documented in this file.
 
 ### Standard Library
 - builtin:
-  - array Runtime bounds checking for methods `get()`, `set()` and `last()`
+  - array: Add runtime bounds checking for methods `get()`, `set()` and `last()`
+  - New array methods: `trim(new_len)`
+  - array: Fix equality checking
 
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword

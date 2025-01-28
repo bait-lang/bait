@@ -186,3 +186,17 @@ pub fun (t Table) get_method(sym TypeSymbol, name string) FunDecl {
 	}
 	return FunDecl{}
 }
+
+pub fun (t Table) get_overload(sym TypeSymbol, op string) FunDecl {
+	mut s := sym
+	for true {
+		if s.overloads.contains(op) {
+			return s.overloads[op]
+		}
+		if s.parent == PLACEHOLDER_TYPE {
+			break
+		}
+		s = t.get_sym(s.parent)
+	}
+	return FunDecl{}
+}
