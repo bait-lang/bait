@@ -77,6 +77,11 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 				continue
 			}
 
+			if branch.stmts.length == 0 {
+				c.error('branch does not return a value', branch.pos)
+				continue
+			}
+
 			last := branch.stmts.last()
 			if is_noreturn(last) {
 				continue

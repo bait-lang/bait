@@ -20,7 +20,8 @@ All notable changes are documented in this file.
 - Change `unnecessary mut` from error to warning
 
 ### Standard Library
-- builtin: Runtime bounds checking for array indexing (get/set)
+- builtin:
+  - array Runtime bounds checking for methods `get()`, `set()` and `last()`
 
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword

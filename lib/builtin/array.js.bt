@@ -24,6 +24,9 @@ fun (a Array) set(i i32, val any) {
 }
 
 pub fun (a Array) last() any {
+	if a.length == 0 {
+		panic("array is empty")
+	}
 	return a.get(a.length - 1)
 }
 
