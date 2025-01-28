@@ -11,17 +11,3 @@ pub fun (mut a Array) trim(new_len i32) {
 		a.length = new_len
 	}
 }
-
-@overload('==')
-fun (a Array) eq (b Array) bool {
-	if a.length != b.length {
-		return false
-	}
-
-	for i := 0; i < a.length; i += 1 {
-		if a.data[i] != b.data[i] {
-			return false
-		}
-	}
-	return true
-}

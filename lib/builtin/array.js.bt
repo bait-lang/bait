@@ -108,6 +108,21 @@ pub fun (a Array) filter(fn fun (any) bool) Array {
 	return from_js_arr(a.data.filter(fn as #JS.Any))
 }
 
+
+@overload('==')
+fun (a Array) eq (b Array) bool {
+	if a.length != b.length {
+		return false
+	}
+
+	for i := 0; i < a.length; i += 1 {
+		if a.data[i] != b.data[i] {
+			return false
+		}
+	}
+	return true
+}
+
 pub fun from_js_arr(a #JS.Array) Array {
 	return Array{
 		data = a
