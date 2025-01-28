@@ -27,7 +27,7 @@ pub fun (mut t Transformer) transform_files(mut files []ast.File) {
 pub fun (mut t Transformer) stmts(mut stmts []ast.Stmt) {
 	// TODO js: fix crash with InvalidExpr
 	// for mut stmt in stmts {
-	// 	stmt = t.stmt(stmt)
+	// 	stmt = t.stmt(mut stmt)
 	// }
 
 	for i := 0; i < stmts.length; i += 1 {
@@ -182,8 +182,7 @@ fun (mut t Transformer) for_in_loop(mut node ast.ForInLoop) ast.ForInLoop {
 			index = node.idxvar
 		}
 	} as ast.Stmt
-	// TODO array.insert(el, idx)
-	node.stmts = [val_decl].concat(node.stmts)
+	node.stmts.insert(0, val_decl)
 
 	t.stmts(node.stmts)
 
@@ -226,9 +225,7 @@ fun (mut t Transformer) call_expr(mut node ast.CallExpr) {
 				field_name = "msg"
 			}
 		} as ast.Stmt
-
-		// TODO array.insert(el, idx)
-		node.or_block.stmts = [err_decl].concat(node.or_block.stmts)
+		node.or_block.stmts.insert(0, err_decl)
 
 		// Last line: Set Result data
 		//   `_t12.data = <expr>`

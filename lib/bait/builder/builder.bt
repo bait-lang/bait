@@ -198,8 +198,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 		return 1
 	}
 
-	// TODO sema_ctx.free()
-
 	// Transformer
 	timers.start('TRANSFORM')
 	mut trans := transformer.Transformer{

@@ -170,8 +170,6 @@ fun (mut g Gen) save_stmt_offset() {
 	g.stmt_offsets.push(g.out.length)
 }
 
-// TODO evaluate where c_esc can be replaced by this (see also jsgen)
-// TODO consider splitting this up even further for different places
 fun c_name(n string) string {
 	return n.replace('.', '__').replace('[]', 'Array_')
 }
