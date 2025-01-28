@@ -8,6 +8,12 @@ fun test_trim() {
 	assert a.length == 2
 }
 
+fun test_insert() {
+	mut a := [1, 3, 4]
+	a.insert(1, 2)
+	assert a == [1, 2, 3, 4]
+}
+
 fun test_index_and_index_last() {
 	nums := [1, 2, 1, 2]
 	assert nums.index(1) == 0

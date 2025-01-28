@@ -22,7 +22,7 @@ All notable changes are documented in this file.
 ### Standard Library
 - builtin:
   - array: Add runtime bounds checking for methods `get()`, `set()` and `last()`
-  - New array methods: `trim(new_len)`
+  - New array methods: `insert(i, el)` and `trim(new_len)`
   - array: Fix equality checking
 
 ### Other Changes

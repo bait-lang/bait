@@ -40,6 +40,15 @@ pub fun (mut a Array) push_many(b Array) {
 	a.length += b.length
 }
 
+pub fun (mut a Array) insert(i i32, el any) {
+	if i < 0 or i > a.length {
+		panic("array index out of bounds (0..=${a.length}): ${i}")
+	}
+
+	a.length += 1
+	#JS.'a.data.splice(i, 0, el)'
+}
+
 pub fun (a Array) index[T](val T) i32 {
 	for i := 0; i < a.length; i += 1 {
 		if a.get(i) as T == val {
