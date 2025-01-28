@@ -18,3 +18,9 @@ fun test_array_slice_syntax() {
 
 	assert a[2..4] == [3, 4]
 }
+
+fun test_slice_in_if_expr() {
+	a := [1, 2, 3]
+	b := if true { a[0 + 1..] } else { a }
+	assert b.length == 2
+}

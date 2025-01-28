@@ -41,7 +41,7 @@ fun (mut t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 		ast.AssignStmt { return t.assign_stmt(mut stmt) }
 		ast.Block { t.stmts(mut stmt.stmts) }
 		ast.ConstDecl { return t.const_decl(stmt) }
-		ast.ExprStmt { _ = t.expr(mut stmt.expr) }
+		ast.ExprStmt { stmt.expr = t.expr(mut stmt.expr) }
 		ast.EnumDecl {}
 		ast.ForLoop { t.for_loop(mut stmt) }
 		ast.ForClassicLoop { t.for_classic_loop(mut stmt) }
@@ -74,7 +74,7 @@ fun (mut t Transformer) expr(mut expr ast.Expr) ast.Expr {
 		ast.FloatLiteral {}
 		ast.HashExpr {}
 		ast.Ident {}
-		ast.IfMatch {}
+		ast.IfMatch { t.if_match(mut expr) }
 		ast.IndexExpr { return t.index_expr(expr) }
 		ast.InfixExpr { t.infix_expr(mut expr) }
 		ast.IntegerLiteral {}
@@ -200,6 +200,7 @@ fun (mut t Transformer) fun_decl(mut node ast.FunDecl) ast.Stmt {
 
 fun (mut t Transformer) if_match(mut node ast.IfMatch) {
 	for mut branch in node.branches {
+		_ = t.expr(branch.cond)
 		t.stmts(branch.stmts)
 	}
 }
