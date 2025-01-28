@@ -19,6 +19,9 @@ All notable changes are documented in this file.
 - Infer type of last expr in or-block
 - Change `unnecessary mut` from error to warning
 
+### Standard Library
+- builtin: Runtime bounds checking for array indexing (get/set)
+
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword
 - lexer: Disallow floats with trailing decimal point
