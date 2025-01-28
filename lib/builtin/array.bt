@@ -5,3 +5,9 @@ package builtin
 pub fun (a Array) contains[T](val T) bool {
 	return a.index(val) >= 0
 }
+
+pub fun (mut a Array) trim(new_len i32) {
+	if new_len < a.length {
+		a.length = new_len
+	}
+}

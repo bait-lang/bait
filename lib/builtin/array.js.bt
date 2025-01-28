@@ -7,15 +7,26 @@ struct Array {
 	pub mut length i32
 }
 
+fun (a Array) check_bounds(i i32) {
+	if i < 0 or i >= a.length {
+		panic("array index out of bounds (0..${a.length}): ${i}")
+	}
+}
+
 fun (a Array) get(i i32) any {
+	a.check_bounds(i)
 	return a.data.at(i as #JS.Number)
 }
 
 fun (a Array) set(i i32, val any) {
+	a.check_bounds(i)
 	#JS.'a.data[i] = val'
 }
 
 pub fun (a Array) last() any {
+	if a.length == 0 {
+		panic("array is empty")
+	}
 	return a.get(a.length - 1)
 }
 
@@ -27,6 +38,15 @@ pub fun (mut a Array) push(el any) {
 pub fun (mut a Array) push_many(b Array) {
 	a.data = a.data.concat(b.data)
 	a.length += b.length
+}
+
+pub fun (mut a Array) insert(i i32, el any) {
+	if i < 0 or i > a.length {
+		panic("array index out of bounds (0..=${a.length}): ${i}")
+	}
+
+	a.length += 1
+	#JS.'a.data.splice(i, 0, el)'
 }
 
 pub fun (a Array) index[T](val T) i32 {
@@ -86,6 +106,21 @@ pub fun (a Array) reverse_in_place() {
 
 pub fun (a Array) filter(fn fun (any) bool) Array {
 	return from_js_arr(a.data.filter(fn as #JS.Any))
+}
+
+
+@overload('==')
+fun (a Array) eq (b Array) bool {
+	if a.length != b.length {
+		return false
+	}
+
+	for i := 0; i < a.length; i += 1 {
+		if a.data[i] != b.data[i] {
+			return false
+		}
+	}
+	return true
 }
 
 pub fun from_js_arr(a #JS.Array) Array {

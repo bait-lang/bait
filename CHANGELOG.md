@@ -19,6 +19,12 @@ All notable changes are documented in this file.
 - Infer type of last expr in or-block
 - Change `unnecessary mut` from error to warning
 
+### Standard Library
+- builtin:
+  - array: Add runtime bounds checking for methods `get()`, `set()` and `last()`
+  - New array methods: `insert(i, el)` and `trim(new_len)`
+  - array: Fix equality checking
+
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword
 - lexer: Disallow floats with trailing decimal point

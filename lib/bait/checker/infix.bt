@@ -48,8 +48,9 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 	}
 
 	lsym := c.table.get_sym(node.left_type)
-	if lsym.overloads.contains(node.op.js_repr()) {
-		return lsym.overloads[node.op.js_repr()].return_type
+	overload := c.table.get_overload(lsym, node.op.js_repr())
+	if overload.name.length > 0 {
+		return overload.return_type
 	}
 
 	return node.left_type
