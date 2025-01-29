@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024-present Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
 static g_counter := 0
