@@ -104,7 +104,7 @@ pub fun (a Array) reverse_in_place() {
 	a.data.reverse()
 }
 
-pub fun (a Array) filter(fn fun (any) bool) Array {
+pub fun (a Array) filter(fn fun (cond any) bool) Array {
 	return from_js_arr(a.data.filter(fn as #JS.Any))
 }
 

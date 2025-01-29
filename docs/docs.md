@@ -479,7 +479,7 @@ type NewType := ExistingType
 Type aliases can also name a specific function signature:
 
 ```bait
-type CheckInt := fun (i32) bool
+type CheckInt := fun (i i32) bool
 
 // You can use the alias like any other type, for example as parameter
 fun check_nums(nums []i32, c CheckInt) {
