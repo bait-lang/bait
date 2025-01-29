@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 struct Helpers{
-	num_to_str fun (i32) string
+	num_to_str fun (i i32) string
 }
 
 fun test_struct_field_method() {

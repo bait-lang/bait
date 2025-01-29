@@ -5,6 +5,9 @@ All notable changes are documented in this file.
 
 
 ## 0.0.9 - unreleased
+### Breaking Changes
+- Syntax: Require argument names in function type declarations ([GH-308](https://github.com/bait-lang/bait/pull/308))
+
 ### New Language Features
 - Array slicing using range indexing: `arr[low..high]`
 

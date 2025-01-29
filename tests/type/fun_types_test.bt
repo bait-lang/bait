@@ -3,10 +3,10 @@
 
 // This struct has to compile
 struct Foo {
-	fun_field fun (string) i32
+	fun_field fun (s string) i32
 }
 
-fun takes_callback(s string, cb fun (string) i32) i32 {
+fun takes_callback(s string, cb fun (s string) i32) i32 {
 	return cb(s)
 }
 
