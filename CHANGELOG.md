@@ -25,12 +25,15 @@ All notable changes are documented in this file.
   - New array methods: `insert(i, el)` and `trim(new_len)`
   - array: Fix equality checking
 
+### JS Backend
+- Properly escape reserved keywords in struct declarations
+- Fix rare conflict between generated temporary variables
+
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword
 - lexer: Disallow floats with trailing decimal point
 - gen.c: Prevent c error if blank identifier is used
 - parser: Fix IndexExpr and ArrayInit precedence error
-- gen.js: Fix rare conflict between generated temporary variables
 
 ### Compiler internals
 - refac: improve handling of FunDecl and CallExpr
