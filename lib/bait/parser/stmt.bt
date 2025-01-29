@@ -29,10 +29,7 @@ fun (mut p Parser) pub_stmt() !ast.Stmt {
 		.key_interface{ p.interface_decl()! }
 		.key_static { p.static_decl()! }
 		.key_struct{ p.struct_decl()! }
-		else{
-			p.error('cannot use pub keyword before ${p.peek()}')!
-			ast.InvalidStmt{}
-		}
+		else{ error('cannot use pub keyword before ${p.peek()}') }
 	}
 }
 
@@ -41,8 +38,7 @@ fun (mut p Parser) script_mode_or_error() !ast.Stmt {
 		return p.script_mode_main()!
 	}
 
-	p.error('bad toplevel token: kind = ${p.tok}, val = ${p.val}')!
-	return ast.InvalidStmt{}
+	return error('bad toplevel token: kind = ${p.tok}, val = ${p.val}')
 }
 
 fun (mut p Parser) script_mode_main() !ast.FunDecl {
@@ -318,7 +314,7 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 		f_is_global := p.tok == .key_global
 		if f_is_global {
 			if f_is_pub or f_is_mut {
-				p.error('unexpected `global`')!
+				return error('unexpected `global`')
 			}
 			p.next()
 		}

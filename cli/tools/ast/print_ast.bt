@@ -39,7 +39,7 @@ fun main() {
 	p.init(text, path, '')
 	file_ast := p.parse_result() or {
 		p.warnings.print()
-		p.error.print()
+		p.to_error(err).print()
 		exit(1)
 	}
 

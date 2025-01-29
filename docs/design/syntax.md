@@ -46,3 +46,19 @@ For details, I recommend reading https://futhark-lang.org/blog/2017-10-10-block-
 
 ### References
 - [GH-249 by @StunxFS](https://github.com/bait-lang/bait/issues/249)
+
+
+## Function Types
+Parameter names of function types must be named, e.g.
+```bait
+type Fetch := fun (method string, url string) []u8
+```
+
+### Benefits
+- **Improved Readability**:
+  - Purpose of each argument is easier to understand
+  - Reduced chance of parameter mix-ups
+- **Better tooling support and documentation**
+
+### Alternatives considered
+- `type Fetch := fun (string, string) []u8`
