@@ -37,7 +37,7 @@ fun (mut p Parser) parse_type() !ast.Type {
 	if p.tok == .lsqr{
 		p.next()
 		p.check(.rsqr)!
-		elem_type := p.parse_type()!
+		elem_type := p.parse_type() or { ast.PLACEHOLDER_TYPE }
 		return p.table.find_or_register_array(elem_type)
 	}
 
@@ -67,10 +67,6 @@ fun (mut p Parser) parse_type() !ast.Type {
 }
 
 fun (mut p Parser) parse_name_type(lang ast.Language) !ast.Type {
-	if p.tok != .name {
-		return ast.PLACEHOLDER_TYPE
-	}
-
 	mut name := lang.prepend_to(p.check_name()!)
 
 	// Build full name and handle imported types
@@ -114,6 +110,11 @@ fun (mut p Parser) parse_fun_type() !ast.Type {
 	p.check(.lpar)!
 	mut param_types := []ast.Type
 	for p.tok != .rpar{
+		if p.peek() != .rpar {
+			_ = p.check_name()! // Require argument name but ignore it for now
+		} else {
+			p.warn("expected argument name")
+		}
 		typ := p.parse_type()!
 		param_types.push(typ)
 		if p.tok != .rpar{

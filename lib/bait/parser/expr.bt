@@ -114,7 +114,7 @@ fun (mut p Parser) array_init() !ast.ArrayInit{
 	// Type init, e.g. `[]i32`
 	if p.tok == .rsqr {
 		p.next()
-		elem_type := p.parse_type()!
+		elem_type := p.parse_type() or { ast.PLACEHOLDER_TYPE }
 		typ := p.table.find_or_register_array(elem_type)
 
 		// Optional parameters, e.g. `[]i32{ length = 10 cap = 20 }`
