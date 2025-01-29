@@ -3,14 +3,22 @@ Why is the syntax the way it is?
 
 
 ## No Block Comments
-Bait does not support block comments:
-- Complicates lexing and parsing, especially nested block comments
-- Hard to format, especially inline comments _(a built-in formatter is planned)_
+Bait only supports line comments (`//`) and _no_ block comments (`/* */`).
 
-Using a decent editor with line wrapping and shortcuts,
-you can achieve almost the same level of convenience!
+### Benefits
+- **Simpler lexing parsing**: Nested block comments are somewhat complicated
+- **Improved Readability**: Line comments are unlikely to disrupt the visual flow of code
+- **Code is easily formattable**
 
-For details, I recommend reading https://futhark-lang.org/blog/2017-10-10-block-comments-are-a-bad-idea.html.
+### Drawbacks
+- Hard to comment larger passages
+- Potentially long comment lines
+
+### Mitigation
+Modern editors and IDEs support line wrapping and shortcuts for (un)commenting.
+
+### References
+- https://futhark-lang.org/blog/2017-10-10-block-comments-are-a-bad-idea.html.
 
 
 ## Casting: `val as Type`
@@ -31,7 +39,7 @@ For details, I recommend reading https://futhark-lang.org/blog/2017-10-10-block-
 
 ### References
 - [Discord: Thoughts by @zeozeozeo](https://discord.com/channels/1204569231992295494/1204741190432325652/1302526862982905866)
-- [soc.me: `ident: Type` over `Type ident`](https://soc.me/languages/type-annotations)
+- https://soc.me/languages/type-annotations
 
 
 ## Static Variables
