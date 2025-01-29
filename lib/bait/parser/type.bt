@@ -136,7 +136,7 @@ fun (mut p Parser) parse_map_type() !ast.Type {
 	p.check(.lsqr)!
 	key_type := p.parse_type()!
 	if key_type != ast.STRING_TYPE {
-		p.error('map key type must be string')!
+		return error('map key type must be string')
 	}
 	p.check(.rsqr)!
 	val_type := p.parse_type()!
@@ -153,10 +153,10 @@ fun (mut p Parser) generic_type_names() ![]string {
 	for true {
 		name := p.check_name()!
 		if name.length > 1 {
-			p.error('generic types names have to be exactly one character')!
+			return error('generic types names have to be exactly one character')
 		}
 		if not name[0].is_upper() {
-			p.error('generic type names have to be capital letters')!
+			return error('generic type names have to be capital letters')
 		}
 		names.push(name)
 

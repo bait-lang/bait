@@ -34,7 +34,7 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 		f_is_global := p.tok == .key_global
 		if f_is_global {
 			if f_is_pub or f_is_mut {
-				p.error('unexpected `global`')!
+				return error('unexpected `global`')
 			}
 			p.next()
 		}

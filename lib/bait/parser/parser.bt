@@ -31,7 +31,6 @@ pub struct Parser {
 	pub mut lexer lexer.Lexer
 	pub mut infos []errors.Message
 	pub mut warnings []errors.Message
-	pub mut error errors.Message
 }
 
 pub fun new(table ast.Table, sema_ctx &context.SemanticContext, pref preference.Prefs) Parser {
@@ -64,7 +63,7 @@ pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
 
 pub fun (mut p Parser) parse() ast.File {
 	return p.parse_result() or {
-		p.file_error()
+		p.file_error(err)
 	}
 }
 
@@ -178,7 +177,7 @@ fun (mut p Parser) skip(tok token.Token) {
 
 fun (mut p Parser) check (expected token.Token) ! {
 	if p.tok != expected {
-		p.error('unexpected ${p.tok}, expecting ${expected}')!
+		return error('unexpected ${p.tok}, expecting ${expected}')
 	}
 	p.next()
 }
@@ -278,13 +277,13 @@ fun (mut p Parser) peek() token.Token {
 	return p.next_tok
 }
 
-fun (p Parser) file_error() ast.File {
+fun (p Parser) file_error(msg string) ast.File {
 	return ast.File{
 		path = p.path
 		pkg_name = p.pkg_name
 		infos = p.infos
 		warnings = p.warnings
-		errors = [p.error]
+		errors = [p.to_error(msg)]
 	}
 }
 
@@ -308,13 +307,12 @@ fun (mut p Parser) warn(msg string) {
 	})
 }
 
-fun (mut p Parser) error(msg string) ! {
-	p.error = errors.Message{
+pub fun (p Parser) to_error(msg string) errors.Message {
+	return errors.Message{
 		kind = .error
 		path = p.path
 		pos = p.pos
 		title = 'error'
 		msg = msg
 	}
-	return error('')
 }
