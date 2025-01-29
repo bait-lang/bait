@@ -25,3 +25,17 @@ fun test_alias_default_value(){
 	assert f.i == 0 as Int
 	assert f.n == 5
 }
+
+struct Math {
+	default i32
+}
+
+fun test_reserved_names() {
+	mut m := Math{}
+	assert m.default == 0
+
+	n := Math{
+		default = 1
+	}
+	assert n.default == 1
+}
