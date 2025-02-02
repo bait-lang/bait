@@ -11,7 +11,7 @@ const LB := if os.platform() == 'windows' { '\\r\\n' } else { '\\n' }
 fun (mut g Gen) get_str_fun(typ ast.Type) string {
 	g.table.needed_str_funs.push(typ)
 	sym := g.table.get_sym(typ)
-	return c_esc('${sym.name}_str')
+	return c_esc('${sym.mix_name}_str')
 }
 
 // TODO transformer?
@@ -27,7 +27,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 
 	g.generated_str_funs.push(typ)
 
-	sname := c_esc(sym.name)
+	sname := c_esc(sym.mix_name)
 	fname := sname + '_str'
 
 	if sym.kind == .struct_ {
@@ -40,14 +40,14 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	string space = string_repeat(from_c_string(" "), indent * 2);
 	strings__Builder b = strings__new_builder(100);
 	strings__Builder_write(&b, space);
-	strings__Builder_write(&b, from_c_string("${sym.name}{"));\n'
+	strings__Builder_write(&b, from_c_string("${sym.mix_name}{"));\n'
 		if info.fields.length > 0 {
 			g.auto_funs_out += '\tstrings__Builder_write(&b, from_c_string("${LB}"));\n'
 		}
 		for field in info.fields {
 			if typ == field.typ {
 				g.auto_funs_out += '\tstrings__Builder_write(&b, space);
-	strings__Builder_write(&b, from_c_string("  ${field.name} = ${sym.name}{...}${LB}"));\n'
+	strings__Builder_write(&b, from_c_string("  ${field.name} = ${sym.mix_name}{...}${LB}"));\n'
 				continue
 			}
 
@@ -69,6 +69,6 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 
 	// TODO other types
 
-	errors.generic_error('cannot convert ${sym.name} to string')
+	errors.generic_error('cannot convert ${sym.mix_name} to string')
 	exit(1)
 }

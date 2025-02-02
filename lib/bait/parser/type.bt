@@ -12,7 +12,7 @@ fun (mut p Parser) parse_type() !ast.Type {
 		if p.tok == .lcur {
 			return p.table.register_sym(ast.TypeSymbol{
 				kind = .result
-				name = 'Result[void]'
+				mix_name = 'Result[void]'
 				parent = ast.VOID_TYPE
 			})
 		}
@@ -21,7 +21,7 @@ fun (mut p Parser) parse_type() !ast.Type {
 		tsym := p.table.get_sym(typ)
 		return p.table.register_sym(ast.TypeSymbol{
 			kind = .result
-			name = 'Result[' + tsym.name + ']'
+			mix_name = 'Result[' + tsym.mix_name + ']'
 			parent = typ
 		})
 	}
@@ -160,7 +160,7 @@ fun (mut p Parser) generic_type_names() ![]string {
 		idx := p.table.get_idx(name)
 		if idx == 0 {
 			_ = p.table.register_sym(ast.TypeSymbol{
-				name = name
+				mix_name = name
 				kind = .generic
 				is_pub = true
 			})

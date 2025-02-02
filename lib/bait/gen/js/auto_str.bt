@@ -11,7 +11,7 @@ const LB := if os.platform() == 'windows' { '\\r\\n' } else { '\\n' }
 fun (mut g Gen) get_str_fun(typ ast.Type) string {
 	g.table.needed_str_funs.push(typ)
 	sym := g.table.get_sym(typ)
-	return js_esc('${sym.name}_str')
+	return js_esc('${sym.mix_name}_str')
 }
 
 fun (mut g Gen) generate_str_fun(typ ast.Type) {
@@ -26,7 +26,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 
 	g.generated_str_funs.push(typ)
 
-	name := js_esc('${sym.name}_str')
+	name := js_esc('${sym.mix_name}_str')
 
 	if sym.kind == .array {
 		info := sym.info as ast.ArrayInfo
@@ -49,13 +49,13 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		info := sym.info as ast.StructInfo
 		g.fun_decls_out += 'function ${name}(it, indent) {
 	const space = " ".repeat(indent * 2)
-	let s = "${sym.name}{"\n'
+	let s = "${sym.mix_name}{"\n'
 		if info.fields.length > 0 {
 			g.fun_decls_out += '\ts += "${LB}"\n'
 		}
 		for field in info.fields {
 			if typ == field.typ {
-				g.fun_decls_out += '\ts += space + "  ${field.name} = ${sym.name}{...}${LB}"\n'
+				g.fun_decls_out += '\ts += space + "  ${field.name} = ${sym.mix_name}{...}${LB}"\n'
 				continue
 			}
 
@@ -103,7 +103,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		g.fun_decls_out += 'function ${name}(it, indent) {\n'
 		for var in info.variants {
 			var_sym := g.table.get_sym(var)
-			g.fun_decls_out += '\tif (it instanceof ${js_esc(var_sym.name)}) {
+			g.fun_decls_out += '\tif (it instanceof ${js_esc(var_sym.mix_name)}) {
 		return ${g.get_str_fun(var)}(it, indent)
 	}
 '
@@ -117,7 +117,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	switch(it) {\n'
 		info := sym.info as ast.EnumInfo
 		for val in info.vals {
-			g.fun_decls_out += '\t\tcase ${js_esc(sym.name)}.${val}: return from_js_string("${val}")\n'
+			g.fun_decls_out += '\t\tcase ${js_esc(sym.mix_name)}.${val}: return from_js_string("${val}")\n'
 		}
 		g.fun_decls_out += '\t}\n}\n\n'
 		return
@@ -131,6 +131,6 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		return
 	}
 
-	errors.generic_error('cannot convert ${sym.name} to string')
+	errors.generic_error('cannot convert ${sym.mix_name} to string')
 	exit(1)
 }

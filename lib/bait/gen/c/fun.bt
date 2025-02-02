@@ -41,7 +41,7 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	mut name := ""
 	if node.is_method {
 		sym := g.table.get_sym(node.params[0].typ)
-		name = c_name(sym.name + '_' + node.name)
+		name = c_name(sym.mix_name + '_' + node.name)
 	} else {
 		// TODO remove exception for main and builtin
 		if g.pkg == "main" or g.pkg == "builtin" or node.is_test {
@@ -113,7 +113,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 			}
 		}
 
-		name = c_name(sym.name + '_' + node.name)
+		name = c_name(sym.mix_name + '_' + node.name)
 	} else if node.lang != .bait{
 		name = node.name.replace('C.', '')
 	}

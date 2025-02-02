@@ -33,6 +33,6 @@ fun (g Gen) equality_fun(typ ast.Type) string {
 		return ''
 	}
 
-	errors.generic_error('cannot generate equality function for type ${sym.name}')
+	errors.generic_error('cannot generate equality function for type ${sym.mix_name}')
 	exit(1)
 }
