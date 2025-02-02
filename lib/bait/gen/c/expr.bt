@@ -184,7 +184,7 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 		if node.op == .ne {
 			g.write('!')
 		}
-		g.write(c_esc(lsym.name + '_' + overload.name))
+		g.write(c_esc(lsym.mix_name + '_' + overload.name))
 		g.write('(')
 		g.expr(node.left)
 		g.write(', ')
@@ -282,7 +282,7 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 fun (mut g Gen) type_of(node ast.TypeOf){
 	sym := g.concrete_sym(node.typ)
 	amp := '*'.repeat(node.typ.get_nr_amp())
-	g.write('from_c_string("' + amp + sym.name + '")')
+	g.write('from_c_string("' + amp + sym.mix_name + '")')
 }
 
 fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
@@ -295,7 +295,7 @@ fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 	str_def := g.table.get_method(sym, 'str')
 	if str_def.name.length > 0 {
 		final_sym := g.table.get_sym(str_def.params[0].typ)
-		mut name := c_esc(final_sym.name)
+		mut name := c_esc(final_sym.mix_name)
 		g.write('${name}_str(')
 		g.expr(expr)
 		g.write(')')
@@ -303,7 +303,7 @@ fun (mut g Gen) expr_to_string(expr ast.Expr, typ ast.Type) {
 	}
 
 	if sym.kind == .generic {
-		g.expr_to_string(expr, g.cur_concrete_types[sym.name])
+		g.expr_to_string(expr, g.cur_concrete_types[sym.mix_name])
 		return
 	}
 

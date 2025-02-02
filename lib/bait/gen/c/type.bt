@@ -10,13 +10,13 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 		return sym
 	}
 
-	return g.table.get_sym(g.cur_concrete_types[sym.name])
+	return g.table.get_sym(g.cur_concrete_types[sym.mix_name])
 }
 
 fun (g Gen) typ(typ ast.Type) string {
 	sym := g.concrete_sym(typ)
 
-	name := sym.name.replace('[]', 'Array_').replace('C.', '').replace('.', '__')
+	name := sym.mix_name.replace('[]', 'Array_').replace('C.', '').replace('.', '__')
 	ptrs := '*'.repeat(typ.get_nr_amp())
 	prefix := if sym.kind == .enum_ { 'enum ' } else { '' }
 	return prefix + name + ptrs
@@ -24,11 +24,11 @@ fun (g Gen) typ(typ ast.Type) string {
 
 fun (mut g Gen) write_types() {
 	for sym in g.table.type_symbols {
-		if sym.name.starts_with('C.') {
+		if sym.mix_name.starts_with('C.') {
 			continue
 		}
 
-		cname := c_esc(sym.name)
+		cname := c_esc(sym.mix_name)
 		if sym.info is ast.StructInfo {
 			info := sym.info as ast.StructInfo
 			g.type_defs_out += 'typedef struct ${cname} ${cname};\n'

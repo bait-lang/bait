@@ -211,7 +211,7 @@ fun (mut g Gen) write_default_value(typ ast.Type) {
 					keys = []ast.Expr
 				})
 			} else if sym.kind == .struct_ {
-				g.write('new ${js_esc(sym.name)}({})')
+				g.write('new ${js_esc(sym.mix_name)}({})')
 			} else if sym.kind == .alias_type {
 				g.write_default_value(sym.parent)
 			} else if sym.kind == .enum_ {
@@ -227,7 +227,7 @@ fun (mut g Gen) write_default_value(typ ast.Type) {
 fun (g Gen) get_concrete_name(name string, concrete_types []ast.Type) string {
 	mut full_name := name
 	for t in concrete_types {
-		full_name += '_' + g.table.get_sym(t).name
+		full_name += '_' + g.table.get_sym(t).mix_name
 	}
 	return js_esc(full_name)
 }
@@ -238,7 +238,7 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 		return sym
 	}
 
-	return g.table.get_sym(g.cur_concrete_types[sym.name])
+	return g.table.get_sym(g.cur_concrete_types[sym.mix_name])
 }
 
 fun js_name(n string) string {

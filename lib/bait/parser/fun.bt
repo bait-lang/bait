@@ -90,7 +90,7 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 		sym := p.table.get_sym(params[0].typ)
 		// TODO move this error into checker
 		if lang == .bait and sym.has_method(name) {
-			return error('Method "${name}" already exists on type "${sym.name}"')
+			return error('Method "${name}" already exists on type "${sym.mix_name}"')
 		}
 		sym.methods.push(node)
 	} else {
