@@ -20,6 +20,7 @@ All notable changes are documented in this file.
 - Functions can no longer be shadowed by variables
 - Check mutability of for-in-expr
 - Infer type of last expr in or-block
+- Do not infer invalid number type for indexing
 - Change `unnecessary mut` from error to warning
 
 ### Standard Library
