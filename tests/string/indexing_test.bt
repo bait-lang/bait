@@ -1,6 +1,16 @@
 // SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
+// Test that the compiler does not infer `u8` for the index
+fun index_is_i32() u8 {
+	s := "hi"
+	return s[0]
+}
+
+fun test_index_is_i32() {
+	assert index_is_i32() == `h`
+}
+
 fun test_string_indexing(){
 	s := 'abc'
 	assert s[1] == `b`

@@ -216,7 +216,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 }
 
 fun (mut c Checker) integer_literal(node ast.IntegerLiteral) ast.Type {
-	if c.expected_type.is_int() {
+	if not c.is_index and c.expected_type.is_int() {
 		return c.expected_type
 	}
 
