@@ -28,9 +28,8 @@ pub fun u8(v #JS.Any) u8 {
 		return #JS.'v.charCodeAt(0)' as u8
 	}
 
-	// TODO this could probably be changed to Bait `v is string` and string indexing
-	if #JS.'v instanceof string' as bool {
-		return #JS.'v.str.charCodeAt(0)' as u8
+	if v is string {
+		return v[0]
 	}
 
 	return #JS.'v & 0xFF' as u8
