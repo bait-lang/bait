@@ -3,7 +3,7 @@
 package ast
 
 pub struct Table {
-	pub mut type_idxs map[string]Type
+	mut type_idxs map[string]Type
 	pub mut type_symbols []TypeSymbol
 	pub mut needed_equality_funs []Type
 	pub mut needed_str_funs []Type
@@ -32,6 +32,10 @@ pub fun (t Table) type_exists(name string) bool {
 
 	sym := t.get_sym(idx)
 	return sym.kind != .placeholder
+}
+
+pub fun (t Table) type_idx_exists(name string) bool {
+	return t.type_idxs.contains(name)
 }
 
 pub fun (t Table) unwrap_result(typ Type) Type {

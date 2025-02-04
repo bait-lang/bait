@@ -82,7 +82,7 @@ fun (mut p Parser) parse_name_type(lang ast.Language) !ast.Type {
 
 	} else if p.expr_pkg.length > 0 {
 		name = p.prepend_expr_pkg(name)
-	} else if not name.contains('.') and not p.table.type_idxs.contains(name) {
+	} else if not name.contains('.') and not p.table.type_idx_exists(name) {
 		name = p.prepend_pkg(name)
 	}
 
