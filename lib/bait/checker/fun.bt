@@ -32,16 +32,8 @@ fun (mut c Checker) fun_decl(mut node ast.FunDecl) {
 				}
 			}
 		}
-	} else {
-		if node.is_test {
-			c.gen_ctx.test_fun_names.push(node.name)
-		} else if c.prefs.is_test {
-			if node.name == "testsuite_begin" {
-				c.gen_ctx.has_test_begin = true
-			} else if node.name == "testsuite_end" {
-				c.gen_ctx.has_test_end = true
-			}
-		}
+	} else if c.prefs.is_test {
+		c.testing_fun_checks(node)
 	}
 
 	if node.generic_names.length > 0 and c.cur_concrete_types.length == 0 {
@@ -117,6 +109,18 @@ fun (c Checker) fun_params(params []ast.Param){
 				is_mut = p.is_mut
 				kind = .variable
 			})
+		}
+	}
+}
+
+fun (mut c Checker) testing_fun_checks(node ast.FunDecl) {
+	if node.is_test {
+		c.gen_ctx.test_fun_names.push(node.name)
+	} else {
+		if node.name == "testsuite_begin" {
+			c.gen_ctx.has_test_begin = true
+		} else if node.name == "testsuite_end" {
+			c.gen_ctx.has_test_end = true
 		}
 	}
 }
