@@ -19,6 +19,12 @@ pub fun cp(src string, dest string) {
 }
 
 pub fun exists(path string) bool {
+	$if WINDOWS {
+		ap := abs_path(path)
+		return #JS.fs.existsSync(ap.str) as bool
+
+	}
+
 	return #JS.fs.existsSync(path.str) as bool
 }
 
