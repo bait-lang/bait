@@ -15,7 +15,7 @@ fun main() {
 	mut fails := 0
 
 	for tool in TOOLS {
-		cmd := 'node ${$BAITEXE} ${tool}'
+		cmd := 'bun ${$BAITEXE} ${tool}'
 		code := os.system(cmd)
 		if code != 0 {
 			fails += 1
@@ -24,7 +24,7 @@ fun main() {
 
 	for tool, args in TOOLS_WITH_ARGS {
 		for arg_string in args {
-			cmd := 'node ${$BAITEXE} ${tool} ${arg_string}'
+			cmd := 'bun ${$BAITEXE} ${tool} ${arg_string}'
 			code := os.system(cmd)
 			if code != 0 {
 				fails += 1

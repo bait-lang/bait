@@ -34,7 +34,7 @@ pub fun launch_tool(name string, args []string) i32 {
 
 	// Run Bait to compile the tool
 	baitexe := os.executable()
-	comp_res := os.exec('node ${baitexe} ${tool_source} -o ${tool_exe}')
+	comp_res := os.exec('bun ${baitexe} ${tool_source} -o ${tool_exe}')
 	if comp_res.code != 0 {
 		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
 		return 1
@@ -48,7 +48,7 @@ pub fun launch_tool(name string, args []string) i32 {
 		println('  exe:    ${tool_exe}')
 		println('  args:   ${args_string}')
 	}
-	return os.system('node ${tool_exe} ${args_string}')
+	return os.system('bun ${tool_exe} ${args_string}')
 }
 
 fun find_tool_source(base string) string {

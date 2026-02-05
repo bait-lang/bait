@@ -26,9 +26,9 @@ fun main() {
 	}
 
 	// Recompile Bait
-	self_res := os.exec('node ${$BAITEXE} self')
+	self_res := os.exec('bun ${$BAITEXE} self')
 	if self_res.code == 0 {
-		new_version := os.exec('node ${$BAITEXE} version').stdout.trim_space()
+		new_version := os.exec('bun ${$BAITEXE} version').stdout.trim_space()
 		println('Bait updated successfully to ${new_version}.')
 		return
 	}

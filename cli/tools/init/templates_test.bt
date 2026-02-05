@@ -11,16 +11,16 @@ fun testsuite_begin() {
 }
 
 fun test_bin() {
-	assert os.system('node ${$BAITEXE} init -t bin mybin') == 0
+	assert os.system('bun ${$BAITEXE} init -t bin mybin') == 0
 
-	assert os.system('node ${$BAITEXE} build ${TMP}/mybin/src') == 0
+	assert os.system('bun ${$BAITEXE} build ${TMP}/mybin/src') == 0
 }
 
 fun test_lib() {
-	assert os.system('node ${$BAITEXE} init -t lib mylib') == 0
+	assert os.system('bun ${$BAITEXE} init -t lib mylib') == 0
 
-	assert os.system('node ${$BAITEXE} build --library ${TMP}/mylib/src') == 0
-	assert os.system('node ${$BAITEXE} test ${TMP}/mylib/tests') == 0
+	assert os.system('bun ${$BAITEXE} build --library ${TMP}/mylib/src') == 0
+	assert os.system('bun ${$BAITEXE} test ${TMP}/mylib/tests') == 0
 }
 
 fun testsuite_end() {

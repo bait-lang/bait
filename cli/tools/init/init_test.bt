@@ -11,7 +11,7 @@ fun testsuite_begin() {
 }
 
 fun test_with_name() {
-	assert os.system('node ${$BAITEXE} init with_name') == 0
+	assert os.system('bun ${$BAITEXE} init with_name') == 0
 
 	assert os.exists_dir('${TMP}/with_name/src')
 	assert os.ls('${TMP}/with_name').length > 6
@@ -21,7 +21,7 @@ fun test_dot() {
 	os.mkdir('dot')
 	os.chdir('dot')
 
-	assert os.system('node ${$BAITEXE} init .') == 0
+	assert os.system('bun ${$BAITEXE} init .') == 0
 
 	assert os.exists_dir('${TMP}/dot/src')
 	assert os.ls('${TMP}/dot').length > 6
@@ -30,7 +30,7 @@ fun test_dot() {
 }
 
 fun test_template_option() {
-	assert os.system('node ${$BAITEXE} init -t lib mylib') == 0
+	assert os.system('bun ${$BAITEXE} init -t lib mylib') == 0
 
 	assert os.exists('${TMP}/mylib/tests/mylib_test.bt')
 	assert os.ls('${TMP}/mylib').length > 7
@@ -39,9 +39,9 @@ fun test_template_option() {
 fun test_errors() {
 	os.mkdir('exi')
 
-	assert os.exec('node ${$BAITEXE} init exi').code != 0
+	assert os.exec('bun ${$BAITEXE} init exi').code != 0
 
-	assert os.exec('node ${$BAITEXE} init').code != 0
+	assert os.exec('bun ${$BAITEXE} init').code != 0
 
 	assert os.ls('exi').length == 0
 }

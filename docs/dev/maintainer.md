@@ -19,6 +19,6 @@ In case it was broken anyways, e.g. due to a prematurely merged PR, follow these
 4. Test the bootstrapping with an extra pass
    ```sh
    bait self -o b.js
-   node b.js self -o b2.js
-   node b2.js self -o bait.js
+   bun b.js self -o b2.js
+   bun b2.js self -o bait.js
    ```
