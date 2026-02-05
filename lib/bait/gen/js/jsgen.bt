@@ -75,7 +75,6 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		table = table
 		indent = -1
 		empty_line = true
-		tmp_counter = -1
 	}
 
 	for file in files {
