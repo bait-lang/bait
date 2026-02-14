@@ -10,8 +10,8 @@ fun main(){
 	println('OS: ${os.user_os()}/${os.arch()}')
 	git_version := os.exec('git --version').stdout.trim_space()
 	println('Git: ${git_version}')
-	node_version := os.exec('node --version').stdout.trim_space()
-	println('Node.js: ${node_version}')
+	bun_version := os.exec('bun --version').stdout.trim_space()
+	println('Bun.js: ${bun_version}')
 	cc_version := os.exec('cc --version').stdout.all_before('\n').trim_space()
 	println('CC: ${cc_version}')
 }

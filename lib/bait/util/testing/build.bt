@@ -20,7 +20,7 @@ pub struct BuildRunner{
 }
 
 pub fun (mut runner BuildRunner) build_single(name string) {
-	cmd := 'node ${$BAITEXE} ${runner.cmd_options} ${runner.root}/${name}'
+	cmd := 'bun ${$BAITEXE} ${runner.cmd_options} ${runner.root}/${name}'
 	code := os.system(cmd)
 
 	if code == 0 {

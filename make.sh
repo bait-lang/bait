@@ -40,14 +40,14 @@ bootstrap() {
   # Just compile once (required for implementing breaking changes)
   if [ $NO_SELF == 1 ]; then
     cp $BAITJS_DIR/bait.js . # Required to set correct value for $BAITDIR, etc.
-    node bait.js cli/bait.bt -o bait.js
+    bun bait.js cli/bait.bt -o bait.js
     return
   fi
 
   # Compile new bait.js and ensure self compilation is working
-  node $BAITJS_DIR/bait.js cli/bait.bt -o bait1.js
-  node bait1.js cli/bait.bt -o bait2.js
-  node bait2.js self -o bait.js
+  bun $BAITJS_DIR/bait.js cli/bait.bt -o bait1.js
+  bun bait1.js cli/bait.bt -o bait2.js
+  bun bait2.js self -o bait.js
 }
 
 check_success() {

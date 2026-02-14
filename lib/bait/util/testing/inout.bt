@@ -23,7 +23,7 @@ pub fun (runner InOutRunner) test_dir(dir string) {
 		return
 	}
 
-	res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} run ${abs_dir}')
+	res := os.exec('bun ${$BAITEXE} --nocolor ${runner.cmd_options} run ${abs_dir}')
 	if runner.check_stdout and res.code != 0 {
 		eprintln('compilation failed: ${res.stderr}')
 		assert false
@@ -94,7 +94,7 @@ pub fun in_out_runner(runner InOutRunner) {
 			cmd = 'test'
 		}
 
-		res := os.exec('node ${$BAITEXE} --nocolor ${runner.cmd_options} ${cmd} ${file}')
+		res := os.exec('bun ${$BAITEXE} --nocolor ${runner.cmd_options} ${cmd} ${file}')
 
 		runner.check_result(res, file.replace('.in.bt', '.out'))
 	}

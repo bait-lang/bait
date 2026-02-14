@@ -18,7 +18,7 @@ fun main() {
 		args.push(out)
 	}
 
-	res := os.exec('node ${$BAITEXE} ${args.join(' ')} cli/bait.bt')
+	res := os.exec('bun ${$BAITEXE} ${args.join(' ')} cli/bait.bt')
 	if res.stdout.length > 0 {
 		println(res.stdout)
 	}

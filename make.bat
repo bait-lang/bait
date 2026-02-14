@@ -27,9 +27,9 @@ if exist "%BAITJS_DIR%\bait.js" (
 
 :bootstrap
 REM Compile new bait.js and ensure self compilation is working
-node "%BAITJS_DIR%\bait.js" cli\bait.bt -o bait1.js
-node bait1.js cli\bait.bt -o bait2.js
-node bait2.js self -o bait.js
+bun "%BAITJS_DIR%\bait.js" cli\bait.bt -o bait1.js
+bun bait1.js cli\bait.bt -o bait2.js
+bun bait2.js self -o bait.js
 
 :check_success
 set "allow_retry=%1"

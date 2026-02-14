@@ -49,7 +49,7 @@ Precompiled binaries will be available in the future.
 
 
 ## Building from source
-> Required dependencies: `git` and `NodeJS >= 18`
+> Required dependencies: `git`, `NodeJS` and `Bun >= 1.3.9`
 
 Linux:
 ```sh
