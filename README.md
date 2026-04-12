@@ -20,8 +20,8 @@ fun main() {
 
 
 ## Key Features
-> **Status:** Active Development.<br>
-> Bait is usable for personal projects, but please be aware of bugs and incomplete features.
+> **Status:** Infreqent Development.<br>
+> Bait is still mostly unusable. Please be aware of bugs and incomplete features.
 
 - Consistent syntax balancing simplicity for newcomers with power for experienced developers
 - Type and memory safety with immutability by default
