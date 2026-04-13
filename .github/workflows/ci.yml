@@ -43,6 +43,9 @@ jobs:
           ./bait symlink
       - name: Build examples
         run: bait build-examples -b c
+      - name: Run compiler tests
+        # run: bait test tests
+        run: bait test -b c tests/for/loop_test.bt
 
   windows-js:
     runs-on: windows-latest

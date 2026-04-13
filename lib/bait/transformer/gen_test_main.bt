@@ -7,6 +7,7 @@ import bait.ast
 fun (t Transformer) gen_test_main() &ast.File {
 	mut test_main := ast.FunDecl{
 		name = "main"
+		return_type = ast.VOID_TYPE
 	}
 
 	if t.gen_ctx.has_test_begin {
