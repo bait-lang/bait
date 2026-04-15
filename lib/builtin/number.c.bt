@@ -30,3 +30,22 @@ pub fun (n i64) str() string {
 	_ = #C.snprintf(buf, length + 1, "%d".str, n)
 	return from_c_string(buf)
 }
+
+pub fun (n u8) str() string {
+	return (n as u64).str()
+}
+
+pub fun (n u16) str() string {
+	return (n as u64).str()
+}
+
+pub fun (n u32) str() string {
+	return (n as u64).str()
+}
+
+pub fun (n u64) str() string {
+	length := #C.snprintf(#C.'NULL' as &u8, 0, "%lu".str, n)
+	buf := #C.malloc(length + 1)
+	_ = #C.snprintf(buf, length + 1, "%lu".str, n)
+	return from_c_string(buf)
+}
