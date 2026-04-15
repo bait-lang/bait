@@ -47,7 +47,7 @@ jobs:
         # run: bait test tests
         run: |
           bait test -b c tests/for/loop_test.bt
-          bait test -b c tests/other/bitwise.bt
+          bait test -b c tests/other/bitwise_test.bt
 
   windows-js:
     runs-on: windows-latest
