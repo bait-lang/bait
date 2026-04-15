@@ -266,6 +266,17 @@ fun (mut g Gen) par_expr(node ast.ParExpr){
 }
 
 fun (mut g Gen) prefix_expr(node ast.PrefixExpr){
+	if node.op == .tilde {
+		sym := g.concrete_sym(node.typ)
+		if sym.kind == .number {
+			g.write('${sym.mix_name}(')
+			g.write(node.op.js_repr())
+			g.expr(node.right)
+			g.write(')')
+			return
+		}
+	}
+
 	if node.op != .mul and node.op != .amp {
 		g.write(node.op.js_repr())
 	}

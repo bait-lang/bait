@@ -60,6 +60,8 @@ pub fun (n i64) hex() string {
 	return (n as u64).hex()
 }
 
+// Converts `num` to lowercase hexadecimal and trims leading zeros.
+// `len` is the max number of hex digits to consider.
 fun to_hex(num u64, len u8) string {
 	mut n := num
 	mut buf := []u8{ length = len as i32 }
@@ -77,6 +79,8 @@ fun to_hex(num u64, len u8) string {
 	return buf.slice(i, buf.length).to_string()
 }
 
+// Converts `num` to lowercase hexadecimal with fixed width `len`.
+// Leading zeros are preserved.
 fun to_hex_padded(num u64, len u8) string {
 	mut n := num
 	mut buf := []u8{ length = len as i32 }
