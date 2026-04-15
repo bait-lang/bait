@@ -7,6 +7,7 @@ All notable changes are documented in this file.
 ## 0.0.9 - unreleased
 ### Breaking Changes
 - Syntax: Require argument names in function type declarations ([GH-308](https://github.com/bait-lang/bait/pull/308))
+- Dependencies: Bait now uses Bun instead of NodeJS to run JS output
 
 ### New Language Features
 - Array slicing using range indexing: `arr[low..high]`
@@ -28,6 +29,7 @@ All notable changes are documented in this file.
   - array: Add runtime bounds checking for methods `get()`, `set()` and `last()`
   - New array methods: `insert(i, el)` and `trim(new_len)`
   - array: Fix equality checking
+  - bool: move .str() to both backends
 
 ### JS Backend
 - Properly escape reserved keywords in struct declarations

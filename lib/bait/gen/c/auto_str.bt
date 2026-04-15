@@ -30,6 +30,8 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	sname := c_esc(sym.mix_name)
 	fname := sname + '_str'
 
+	// TODO array
+
 	if sym.kind == .struct_ {
 		info := sym.info as ast.StructInfo
 
@@ -67,7 +69,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		return
 	}
 
-	// TODO other types
+	// TODO map, alias, sumtype, enum, result
 
 	errors.generic_error('cannot convert ${sym.mix_name} to string')
 	exit(1)

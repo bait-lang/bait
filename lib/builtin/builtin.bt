@@ -1,0 +1,10 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+package builtin
+
+pub fun (b bool) str() string {
+	if b {
+		return 'true'
+	}
+	return 'false'
+}
