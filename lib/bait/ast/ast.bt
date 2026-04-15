@@ -339,6 +339,7 @@ pub struct ParExpr {
 }
 
 pub struct PrefixExpr {
+	global typ Type
 	pub op token.Token
 	pub right Expr
 	pub pos token.Pos

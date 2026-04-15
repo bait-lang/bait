@@ -29,16 +29,21 @@ All notable changes are documented in this file.
   - array: Add runtime bounds checking for methods `get()`, `set()` and `last()`
   - New array methods: `insert(i, el)` and `trim(new_len)`
   - array: Fix equality checking
-  - bool: move .str() to both backends
+  - move `bool.str()` to backend-agnostic code
+  - c backend: implement `.str()` for unsigned integers
 
 ### JS Backend
 - Properly escape reserved keywords in struct declarations
 - Fix rare conflict between generated temporary variables
+- Fix bitwise not for unsigned integers
+
+### C Backend
+- gen.c: Prevent c error if blank identifier is used
+- Allow printing of more value types
 
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword
 - lexer: Disallow floats with trailing decimal point
-- gen.c: Prevent c error if blank identifier is used
 - parser: Fix IndexExpr and ArrayInit precedence error
 
 ### Compiler internals
