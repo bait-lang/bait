@@ -42,9 +42,7 @@ pub fun (c CrcTable) sum(data []u8) u32 {
 		crc = c.table[(crc as u8 ^ byte) as i32] ^ (crc >> 8)
 	}
 
-	// FIXME js: ~ also inverts the sign bit and not stays in the u32 bounds.
-	// The "& MAX_U32" is a workaround and should be inserted by the compiler
-	return ~crc & MAX_U32
+	return ~crc
 }
 
 // Calculates the CRC32 checksum of `data` using the IEEE polynomial
