@@ -1,0 +1,36 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+fun test_bin() {
+	b := 0b1001
+	assert b == 9
+
+	b2 := 0b1010
+	assert b2 == 0xA
+
+	b3 := 0b0
+	assert b3 == 0
+}
+
+fun test_oct() {
+	o := 0o17
+	assert o == 15
+}
+
+fun test_hex() {
+	h := 0x01b
+	assert h == 27
+
+	ten := 0xA
+	assert ten == 10
+
+	ten2 := 0xa
+	assert ten2 == ten
+}
+
+fun test_to_hex() {
+	assert (0 as u8).hex() == '00'
+	i := 44444 // TODO fix methods on number literals `44444.hex()`
+	assert i.hex() == 'ad9c'
+	assert (12345 as u64).hex() == '3039'
+}
