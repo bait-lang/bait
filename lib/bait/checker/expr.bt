@@ -24,7 +24,7 @@ fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
 		ast.IfMatch { c.if_match(mut expr) }
 		ast.IndexExpr { c.index_expr(mut expr) }
 		ast.InfixExpr { c.infix_expr(mut expr) }
-		ast.IntegerLiteral { c.integer_literal(expr) }
+		ast.IntegerLiteral { c.integer_literal(mut expr) }
 		ast.MapInit { c.map_init(mut expr) }
 		ast.ParExpr { c.par_expr(expr) }
 		ast.PrefixExpr { c.prefix_expr(mut expr) }
@@ -105,6 +105,8 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 }
 
 fun (mut c Checker) as_cast(mut node ast.AsCast) ast.Type {
+	c.target_type = node.target
+
 	expr_type := c.expr(node.expr)
 	node.expr_type = expr_type
 	expr_sym := c.table.get_sym(expr_type)
@@ -114,6 +116,8 @@ fun (mut c Checker) as_cast(mut node ast.AsCast) ast.Type {
 	if not c.does_type_exist(target_sym, node.pos) {
 		return expr_type
 	}
+
+	_ := c.consume_target_type()
 
 	// TODO check cast is possible (e.g. prevent string to i32, ...)
 
@@ -215,12 +219,16 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	return obj.typ
 }
 
-fun (mut c Checker) integer_literal(node ast.IntegerLiteral) ast.Type {
+fun (mut c Checker) integer_literal(mut node ast.IntegerLiteral) ast.Type {
 	if not c.is_index and c.expected_type.is_int() {
-		return c.expected_type
+		node.typ = c.expected_type
+	} else if c.target_type != ast.VOID_TYPE {
+		node.typ = c.consume_target_type()
+	} else {
+		node.typ = ast.I32_TYPE
 	}
 
-	return ast.I32_TYPE
+	return node.typ
 }
 
 fun (mut c Checker) map_init(mut node ast.MapInit) ast.Type {

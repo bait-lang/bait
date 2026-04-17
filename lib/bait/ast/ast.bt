@@ -319,6 +319,7 @@ pub struct InfixExpr {
 }
 
 pub struct IntegerLiteral {
+	global typ Type
 	pub val string
 	pub pos token.Pos
 }

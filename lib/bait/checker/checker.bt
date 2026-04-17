@@ -25,6 +25,7 @@ pub struct Checker{
 	mut cur_concrete_types []ast.Type
 	mut need_generic_resolve bool
 	mut cur_generic_names []string
+	mut target_type ast.Type
 	mut expected_type ast.Type
 	mut expecting_expr bool
 	mut is_index bool
@@ -157,6 +158,12 @@ fun (c Checker) find_in_scope(name string, pkg string) context.ScopeObject {
 
 	// From current file or package
 	return c.scope.get_parent(name)
+}
+
+fun (mut c Checker) consume_target_type() ast.Type {
+	target := c.target_type
+	c.target_type = ast.VOID_TYPE
+	return target
 }
 
 fun (c Checker) info(msg string, pos token.Pos){
