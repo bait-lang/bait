@@ -11,7 +11,7 @@ fun test_dir(){
 }
 
 fun test_read_lines() {
-	lines := os.read_lines("${$BAITDIR}/lib/os/tests/3_lines.txt")
+	lines := os.read_lines("${$BAITDIR}/lib/os/testdata/3_lines.txt")
 	assert lines.length == 3
 	assert lines[1] == '2'
 }

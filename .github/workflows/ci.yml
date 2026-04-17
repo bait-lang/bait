@@ -48,6 +48,16 @@ jobs:
         run: |
           bait test -b c tests/for/loop_test.bt
           bait test -b c tests/other/bitwise_test.bt
+      - name: Run lib tests
+        run: |
+          # bait test -b c lib/bait
+          # bait test -b c lib/builtin
+          # bait test -b c lib/cli
+          bait test -b c lib/encoding
+          bait test -b c lib/hash/crc32
+          # bait test -b c lib/hash/fnv1a
+          # bait test -b c lib/os
+          bait test -b c lib/strings
 
   windows-js:
     runs-on: windows-latest
