@@ -4,7 +4,7 @@ All notable changes are documented in this file.
 > Bait is currently in an Alpha State (`0.0.x`). Breaking changes may occur at any time.
 
 
-## 0.0.9 - unreleased
+## 0.0.9 - 2026-04-17
 ### Breaking Changes
 - Syntax: Require argument names in function type declarations ([GH-308](https://github.com/bait-lang/bait/pull/308))
 - Dependencies: Bait now uses Bun instead of NodeJS to run JS output
@@ -41,6 +41,7 @@ All notable changes are documented in this file.
 ### C Backend
 - gen.c: Prevent c error if blank identifier is used
 - Allow printing of more value types
+- Fix u32, u64 and i64 by using correct number suffix during declaration
 
 ### Other Changes
 - `static` visibility is now controlled by `pub` keyword
