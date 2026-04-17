@@ -41,6 +41,8 @@ jobs:
         run: |
           ./make.sh
           ./bait symlink
+      # - name: Build tools
+      #   run: bait build-tools
       - name: Build examples
         run: bait build-examples -b c
       - name: Run compiler tests
@@ -58,6 +60,12 @@ jobs:
           # bait test -b c lib/hash/fnv1a
           # bait test -b c lib/os
           bait test -b c lib/strings
+      # - name: Run tool tests
+        # run: bait test cli/tools
+      # - name: Check markdown code blocks
+      #   run: |
+      #     bait check-md docs/docs.md
+      #     bait check-md README.md
 
   windows-js:
     runs-on: windows-latest
