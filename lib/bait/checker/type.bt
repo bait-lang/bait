@@ -80,6 +80,32 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 	return false
 }
 
+fun (c Checker) can_promote(got ast.Type, expected ast.Type) bool {
+	// Unsigned targets
+	if expected == ast.U64_TYPE {
+		return got == ast.U32_TYPE or got == ast.U16_TYPE or got == ast.U8_TYPE
+	}
+	if expected == ast.U32_TYPE {
+		return got == ast.U16_TYPE or got == ast.U8_TYPE
+	}
+	if expected == ast.U16_TYPE {
+		return got == ast.U8_TYPE
+	}
+
+	// Signed targets
+	if expected == ast.I64_TYPE {
+		return got == ast.I32_TYPE or got == ast.I16_TYPE or got == ast.I8_TYPE or got == ast.U32_TYPE or got == ast.U16_TYPE or got == ast.U8_TYPE
+	}
+	if expected == ast.I32_TYPE {
+		return got == ast.I16_TYPE or got == ast.I8_TYPE or got == ast.U16_TYPE or got == ast.U8_TYPE
+	}
+	if expected == ast.I16_TYPE {
+		return got == ast.I8_TYPE or got == ast.U8_TYPE
+	}
+
+	return false
+}
+
 fun (c Checker) does_type_exist(sym ast.TypeSymbol, pos token.Pos) bool {
 	if (sym.kind == .placeholder and sym.mix_name != '_') or (sym.kind == .generic and not (c.cur_generic_names.contains(sym.mix_name))) {
 		c.error('unknown type ${sym.mix_name}', pos)

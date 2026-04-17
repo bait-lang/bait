@@ -46,9 +46,9 @@ jobs:
       - name: Build examples
         run: bait build-examples -b c
       - name: Run compiler tests
-        # run: bait test tests
         run: |
           bait test -b c tests/for/loop_test.bt
+          bait test -b c tests/int/promotion_test.bt
           bait test -b c tests/other/bitwise_test.bt
       - name: Run lib tests
         run: |

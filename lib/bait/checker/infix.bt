@@ -11,8 +11,6 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 		return ast.ERROR_TYPE
 	}
 
-	c.table.needed_equality_funs.push(node.left_type)
-
 	if c.is_sumtype_match and node.op == .eq {
 		node.op = .key_is
 	}
@@ -27,13 +25,27 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 	}
 
 	if not c.check_types(node.right_type, node.left_type) {
-		mut err_msg := ''
-		if node.is_match {
-			err_msg = 'cannot match ${c.table.type_name(node.right_type)} to ${c.table.type_name(node.left_type)}'
+		if c.can_promote(node.right_type, node.left_type) {
+			node.right = ast.AsCast{
+				expr = node.right
+				target = node.left_type
+			}
+			node.right_type = node.left_type
+		} else if c.can_promote(node.left_type, node.right_type) {
+			node.left = ast.AsCast{
+				expr = node.left
+				target = node.right_type
+			}
+			node.left_type = node.right_type
 		} else {
-			err_msg = 'infix expr: types ${c.table.type_name(node.left_type)} and ${c.table.type_name(node.right_type)} do not match'
+			mut err_msg := ''
+			if node.is_match {
+				err_msg = 'cannot match ${c.table.type_name(node.right_type)} to ${c.table.type_name(node.left_type)}'
+			} else {
+				err_msg = 'infix expr: types ${c.table.type_name(node.left_type)} and ${c.table.type_name(node.right_type)} do not match'
+			}
+			c.error(err_msg, node.pos)
 		}
-		c.error(err_msg, node.pos)
 	}
 
 	if node.left_type == ast.I64_TYPE or node.left_type == ast.U64_TYPE or node.left_type == ast.U32_TYPE {
@@ -44,6 +56,9 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 	}
 
 	if node.op.is_compare() {
+		if node.op == .eq or node.op == .ne {
+			c.table.needed_equality_funs.push(node.left_type)
+		}
 		return ast.BOOL_TYPE
 	}
 

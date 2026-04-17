@@ -1,7 +1,0 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
-// SPDX-License-Identifier: MIT
-
-fun test_bin() {
-	h := 0b1001
-	assert h == 9
-}

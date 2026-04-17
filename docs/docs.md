@@ -91,8 +91,19 @@ f32 f64
 num := 123
 ```
 
-By default all integers are of type `i32` and all floats of type `f64`.
-To get a different type, you can use casting (see [Casting](#casting))
+Integers default to `i32` and floats default to `f64`.
+To get a different type, see [`as` casting](#casting).
+
+#### Number Promotion
+These implicit type promotions are also supported:
+```text
+u8 → u16 → u32 → u64
+   ↘     ↘     ↘
+i8 → i16 → i32 → i64
+```
+
+> floats are still TODO
+
 
 #### Base Prefixes
 It's also possible to define numbers with a different base by using a prefix:
@@ -108,11 +119,9 @@ o := 0o755
 h := 0x12a
 ```
 
-#### Number Promotion
-> Not yet implemented
 
 ### Casting
-To perform type casting you can use `var as Type`:
+To perform type casting, use `var as Type`:
 ```bait
 n := 123 as i16
 ```

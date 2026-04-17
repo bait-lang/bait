@@ -11,6 +11,7 @@ All notable changes are documented in this file.
 
 ### New Language Features
 - Array slicing using range indexing: `arr[low..high]`
+- Properly implement integer auto-promotion for compatible types
 
 ### Checker Improvements
 - Warn if return value of function is unused

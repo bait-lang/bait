@@ -1,0 +1,55 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+fun test_unsigned_integer_promotion() {
+	u8v := 1 as u8
+	u16v := 2 as u16
+	u32v := 3 as u32
+	u64v := 4 as u64
+
+	assert u16v + u8v == 3 as u16
+	assert u8v + u16v == 3 as u16
+	assert u32v + u16v == 5 as u32
+	assert u16v + u32v == 5 as u32
+	assert u64v + u32v == 7 as u64
+	assert u32v + u64v == 7 as u64
+}
+
+fun test_signed_integer_promotion() {
+	i8v := 1 as i8
+	i16v := 2 as i16
+	i32v := 3 as i32
+	i64v := 4 as i64
+
+	assert i16v + i8v == 3 as i16
+	assert i8v + i16v == 3 as i16
+	assert i32v + i16v == 5 as i32
+	assert i16v + i32v == 5 as i32
+	assert i64v + i32v == 7 as i64
+	assert i32v + i64v == 7 as i64
+}
+
+fun test_unsigned_to_signed_promotion() {
+	u8v := 1 as u8
+	u16v := 2 as u16
+	u32v := 3 as u32
+
+	i16v := 4 as i16
+	i32v := 5 as i32
+	i64v := 6 as i64
+
+	assert i16v + u8v == 5 as i16
+	assert u8v + i16v == 5 as i16
+	assert i32v + u16v == 7 as i32
+	assert u16v + i32v == 7 as i32
+	assert i64v + u32v == 9 as i64
+	assert u32v + i64v == 9 as i64
+}
+
+fun test_math_assign() {
+	u8v := 1 as u8
+
+	mut x := 3 as u16
+	x += u8v
+	assert x == 4 as u16
+}
