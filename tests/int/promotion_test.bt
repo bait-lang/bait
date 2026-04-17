@@ -45,3 +45,11 @@ fun test_unsigned_to_signed_promotion() {
 	assert i64v + u32v == 9 as i64
 	assert u32v + i64v == 9 as i64
 }
+
+fun test_math_assign() {
+	u8v := 1 as u8
+
+	mut x := 3 as u16
+	x += u8v
+	assert x == 4 as u16
+}
