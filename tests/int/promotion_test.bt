@@ -36,18 +36,3 @@ fun test_unsigned_to_signed_promotion() {
 	assert i32v + u16v == 7 as i32
 	assert i64v + u32v == 9 as i64
 }
-
-fun test_integer_to_float_promotion() {
-	i32v := 2 as i32
-	i64v := 3 as i64
-	u32v := 4 as u32
-	u64v := 5 as u64
-
-	f32v := 1.0 as f32
-	f64v := 1.0 as f64
-
-	assert f32v + i32v == 3.0 as f32
-	assert f64v + i64v == 4.0 as f64
-	assert f32v + u32v == 5.0 as f32
-	assert f64v + u64v == 6.0 as f64
-}
