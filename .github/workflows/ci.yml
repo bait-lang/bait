@@ -56,8 +56,7 @@ jobs:
           # bait test -b c lib/builtin
           # bait test -b c lib/cli
           bait test -b c lib/encoding
-          bait test -b c lib/hash/crc32
-          # bait test -b c lib/hash/fnv1a
+          bait test -b c lib/hash
           # bait test -b c lib/os
           bait test -b c lib/strings
       # - name: Run tool tests

@@ -203,6 +203,14 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 
 fun (mut g Gen) integer_literal(node ast.IntegerLiteral) {
 	g.write(node.val)
+
+	if node.typ == ast.U32_TYPE {
+		g.write('U')
+	} else if node.typ == ast.U64_TYPE {
+		g.write('ULL')
+	} else if node.typ == ast.I64_TYPE {
+		g.write('LL')
+	}
 }
 
 fun (mut g Gen) par_expr(node ast.ParExpr) {
