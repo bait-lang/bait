@@ -11,8 +11,6 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 		return ast.ERROR_TYPE
 	}
 
-	c.table.needed_equality_funs.push(node.left_type)
-
 	if c.is_sumtype_match and node.op == .eq {
 		node.op = .key_is
 	}
@@ -33,6 +31,12 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 				target = node.left_type
 			}
 			node.right_type = node.left_type
+		} else if c.can_promote(node.left_type, node.right_type) {
+			node.left = ast.AsCast{
+				expr = node.left
+				target = node.right_type
+			}
+			node.left_type = node.right_type
 		} else {
 			mut err_msg := ''
 			if node.is_match {
@@ -43,6 +47,8 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 			c.error(err_msg, node.pos)
 		}
 	}
+
+	c.table.needed_equality_funs.push(node.left_type)
 
 	if node.left_type == ast.I64_TYPE or node.left_type == ast.U64_TYPE or node.left_type == ast.U32_TYPE {
 		node.right = ast.AsCast{
