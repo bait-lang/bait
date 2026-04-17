@@ -105,19 +105,20 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 }
 
 fun (mut c Checker) as_cast(mut node ast.AsCast) ast.Type {
-	c.target_type = node.target
+	prev_expected := c.expected_type
+	c.expected_type = node.target
 
 	expr_type := c.expr(node.expr)
 	node.expr_type = expr_type
 	expr_sym := c.table.get_sym(expr_type)
+
+	c.expected_type = prev_expected
 
 	// Check the target exists
 	target_sym := c.table.get_sym(node.target)
 	if not c.does_type_exist(target_sym, node.pos) {
 		return expr_type
 	}
-
-	_ := c.consume_target_type()
 
 	// TODO check cast is possible (e.g. prevent string to i32, ...)
 
@@ -222,8 +223,6 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 fun (mut c Checker) integer_literal(mut node ast.IntegerLiteral) ast.Type {
 	if not c.is_index and c.expected_type.is_int() {
 		node.typ = c.expected_type
-	} else if c.target_type != ast.VOID_TYPE {
-		node.typ = c.consume_target_type()
 	} else {
 		node.typ = ast.I32_TYPE
 	}
