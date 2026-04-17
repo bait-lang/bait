@@ -48,8 +48,6 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 		}
 	}
 
-	c.table.needed_equality_funs.push(node.left_type)
-
 	if node.left_type == ast.I64_TYPE or node.left_type == ast.U64_TYPE or node.left_type == ast.U32_TYPE {
 		node.right = ast.AsCast{
 			expr = node.right
@@ -58,6 +56,9 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 	}
 
 	if node.op.is_compare() {
+		if node.op == .eq or node.op == .ne {
+			c.table.needed_equality_funs.push(node.left_type)
+		}
 		return ast.BOOL_TYPE
 	}
 
