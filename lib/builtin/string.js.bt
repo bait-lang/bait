@@ -39,10 +39,6 @@ pub fun (s string) repeat(count i32) string {
 	return from_js_string(s.str.repeat(count as #JS.Number))
 }
 
-pub fun (s string) trim_space() string {
-	return from_js_string(s.str.trim())
-}
-
 pub fun (s string) starts_with(prefix string) bool {
 	return s.str.startsWith(prefix.str) as bool
 }

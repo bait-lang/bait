@@ -24,6 +24,13 @@ fun test_all_after_last() {
 	assert 'photo'.all_after_last('o') == ''
 }
 
+fun test_trim_space() {
+	assert '  hello  '.trim_space() == 'hello'
+	assert '\t\nfoo\r\n'.trim_space() == 'foo'
+	assert 'no_space'.trim_space() == 'no_space'
+	assert '   '.trim_space() == ''
+}
+
 fun test_trim_left() {
 	assert 'bbbar'.trim_left('b') == 'ar'
 }

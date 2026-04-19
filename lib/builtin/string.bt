@@ -42,6 +42,10 @@ pub fun (s string) all_after_last(search string) string {
 	return s.substr(idx + 1, s.length)
 }
 
+pub fun (s string) trim_space() string {
+	return s.trim_left(' \t\n\r').trim_right(' \t\n\r')
+}
+
 pub fun (s string) trim_left(cutset string) string {
 	mut pos := 0
 	for pos < s.length {
