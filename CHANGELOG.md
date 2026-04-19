@@ -4,6 +4,17 @@ All notable changes are documented in this file.
 > Bait is currently in an Alpha State (`0.0.x`). Breaking changes may occur at any time.
 
 
+## 0.0.10 - unreleased
+### C Backend
+- Increase test coverage
+
+### Testing
+- respect `.c.bt` and `.js.bt` file extensions for test files
+
+### Other Changes
+- remove `test-all` tool
+
+
 ## 0.0.9 - 2026-04-17
 ### Breaking Changes
 - Syntax: Require argument names in function type declarations ([GH-308](https://github.com/bait-lang/bait/pull/308))

@@ -43,6 +43,7 @@ jobs:
           ./bait symlink
       # - name: Build tools
       #   run: bait build-tools -b c
+
       - name: Build examples
         run: bait build-examples -b c
       - name: Run compiler tests
