@@ -193,6 +193,22 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 		return
 	}
 
+	if node.op == .eq or node.op == .ne {
+		eq_fun := g.equality_fun(node.left_type)
+		if eq_fun.length > 0 {
+			if node.op == .ne {
+				g.write('!')
+			}
+			g.write(eq_fun)
+			g.write('(')
+			g.expr(node.left)
+			g.write(', ')
+			g.expr(node.right)
+			g.write(')')
+			return
+		}
+	}
+
 	// Normal cases
 	g.expr(node.left)
 	g.write(' ')

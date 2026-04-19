@@ -9,6 +9,7 @@ fun test_init_with_length() {
 	assert b == ["", "", ""]
 }
 
+// TODO C fix
 fun test_typeless_init() {
 	// Assign
 	mut a := [1,2,3]
@@ -30,6 +31,7 @@ struct Foo{
 	mut arr []string
 }
 
+// TODO C fix
 fun test_struct_field_array_type(){
 	mut f := Foo{
 		arr = ['a', 'b']
