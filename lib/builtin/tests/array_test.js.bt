@@ -1,0 +1,38 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+fun test_trim() {
+	mut a := [1, 2, 3]
+	a.trim(2)
+	assert a == [1, 2]
+	assert a.length == 2
+}
+
+fun test_insert() {
+	mut a := [1, 3, 4]
+	a.insert(1, 2)
+	assert a == [1, 2, 3, 4]
+}
+
+fun test_reverse() {
+	a := [1, 2, 3]
+	b := a.reverse()
+	assert a == [1, 2, 3]
+	assert b == [3, 2, 1]
+}
+
+fun test_reverse_in_place() {
+	a := [1, 2, 3]
+	a.reverse_in_place()
+	assert a == [3, 2, 1]
+}
+
+fun test_other_methods() {
+	mut b := [6, 5]
+	b.push(4)
+	b.push_many([3, 2, 1])
+	rb := b.reverse()
+	c := rb.slice(0, 3)
+	assert b.length == 6
+	assert c == [1, 2, 3]
+}
