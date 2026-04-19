@@ -53,7 +53,7 @@ jobs:
       - name: Run lib tests
         run: |
           # bait test -b c lib/bait
-          # bait test -b c lib/builtin
+          bait test -b c lib/builtin
           # bait test -b c lib/cli
           bait test -b c lib/encoding
           bait test -b c lib/hash
