@@ -1,6 +1,10 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 package builtin
+
+fun (s string) str() string {
+	return s
+}
 
 pub fun (s string) index(search string) i32 {
 	return s.index_after(search, 0)

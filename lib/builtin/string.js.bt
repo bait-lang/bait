@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 package builtin
 
@@ -75,10 +75,6 @@ pub fun (s string) toI32() i32 {
 
 pub fun (s string) toF64() f64 {
 	return #JS.'parseFloat(s.str)' as f64
-}
-
-fun (s string) str() string {
-	return s
 }
 
 @overload('+')
