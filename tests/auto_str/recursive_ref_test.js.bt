@@ -12,6 +12,7 @@ fun test_recursive_struct() {
 }'
 }
 
+// TODO C implement sumtype.str()
 type SumRec := Bar | Var
 
 struct Bar {

@@ -1,6 +1,7 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 
+// TODO C enum.str()
 enum Color{
 	red
 	green
