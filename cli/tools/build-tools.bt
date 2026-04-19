@@ -7,9 +7,12 @@ import bait.util.testing
 
 fun main() {
 	println('Building tools...')
+
 	mut r := testing.BuildRunner{
 		root = os.join_path($BAITDIR, ['cli', 'tools'])
+		cmd_options = os.user_args().join(' ')
 	}
+
 	r.build_all_in_root()
 	if r.fails > 0 {
 		exit(1)
