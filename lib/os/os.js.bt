@@ -95,11 +95,6 @@ pub fun read_file(path string) string {
 	return from_js_string(#JS.'JS.fs.readFileSync(path.str).toString()' as #JS.String)
 }
 
-pub fun read_lines(path string) []string {
-	text := read_file(path).replace('\r\n', '\n')
-	return text.split_lines()
-}
-
 pub fun write_file(path string, text string) {
 	#JS.fs.writeFileSync(path.str, text.str)
 }

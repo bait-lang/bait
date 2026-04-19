@@ -40,3 +40,8 @@ pub fun dir(path string) string {
 pub fun exists_dir(path string) bool {
 	return exists(path) and is_dir(path)
 }
+
+pub fun read_lines(path string) []string {
+	text := read_file(path).replace('\r\n', '\n')
+	return text.split_lines()
+}
