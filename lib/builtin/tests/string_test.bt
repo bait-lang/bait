@@ -38,3 +38,13 @@ fun test_trim_left() {
 fun test_trim_right() {
 	assert 'fo o '.trim_right(' o') == 'f'
 }
+
+fun test_is_upper() {
+	assert 'HELLO'.is_upper()
+	assert 'HELLO WORLD'.is_upper()
+	assert not 'Hello'.is_upper()
+	assert not 'hello'.is_upper()
+	assert not ''.is_upper()
+	assert not '123'.is_upper()
+	assert 'ABC123'.is_upper()
+}

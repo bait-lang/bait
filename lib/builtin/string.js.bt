@@ -61,10 +61,6 @@ pub fun (s string) is_capital() bool {
 	return true
 }
 
-pub fun (s string) is_upper() bool {
-	return s.str == s.str.toUpperCase() and s.str != s.str.toLowerCase()
-}
-
 pub fun (s string) split(delim string) []string {
 	mut res := []string
 	mut i := 0

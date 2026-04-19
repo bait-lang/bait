@@ -87,3 +87,19 @@ pub fun (s string) trim_right(cutset string) string {
 
 	return s.substr(0, pos + 1)
 }
+
+pub fun (s string) is_upper() bool {
+	if s.length == 0 {
+		return false
+	}
+	mut has_upper := false
+	for c in s {
+		if c.is_lower() {
+			return false
+		}
+		if c.is_upper() {
+			has_upper = true
+		}
+	}
+	return has_upper
+}
