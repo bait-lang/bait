@@ -42,6 +42,10 @@ pub fun (s string) all_after_last(search string) string {
 	return s.substr(idx + 1, s.length)
 }
 
+pub fun (s string) trim_space() string {
+	return s.trim_left(' \t\n\r').trim_right(' \t\n\r')
+}
+
 pub fun (s string) trim_left(cutset string) string {
 	mut pos := 0
 	for pos < s.length {
@@ -82,4 +86,20 @@ pub fun (s string) trim_right(cutset string) string {
 	}
 
 	return s.substr(0, pos + 1)
+}
+
+pub fun (s string) is_upper() bool {
+	if s.length == 0 {
+		return false
+	}
+	mut has_upper := false
+	for c in s {
+		if c.is_lower() {
+			return false
+		}
+		if c.is_upper() {
+			has_upper = true
+		}
+	}
+	return has_upper
 }
