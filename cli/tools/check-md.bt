@@ -15,10 +15,14 @@ fun main() {
 	mut opt := options.new_option_parser(os.user_args())
 
 	backend := opt.string('backend', `b`, 'js')
+	if backend != 'js' and backend != 'c' {
+		eprintln('check-md: invalid backend')
+		exit(1)
+	}
 	args := opt.remaining()
 
 	if args.length == 0 {
-		eprintln('check-md error: please provide a filarg_stringe to be checked')
+		eprintln('check-md: provide a file to be checked')
 		exit(1)
 	}
 
