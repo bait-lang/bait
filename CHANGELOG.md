@@ -5,8 +5,17 @@ All notable changes are documented in this file.
 
 
 ## 0.0.10 - unreleased
+### Standard Library
+- builtin:
+  - _[C]_ string methods: `split()`, `split_lines()`, `trim_space()`, `is_upper()`
+- os:
+  - _[C]_ functions: `read_lines()`
+
 ### C Backend
 - Increase test coverage
+- arrays
+  - Implement comparison
+  - Implement auto-string conversion
 
 ### Testing
 - respect `.c.bt` and `.js.bt` file extensions for test files
@@ -42,7 +51,7 @@ All notable changes are documented in this file.
   - New array methods: `insert(i, el)` and `trim(new_len)`
   - array: Fix equality checking
   - move `bool.str()` to backend-agnostic code
-  - c backend: implement `.str()` for unsigned integers
+  - _[C]_: implement `.str()` for unsigned integers
 
 ### JS Backend
 - Properly escape reserved keywords in struct declarations
