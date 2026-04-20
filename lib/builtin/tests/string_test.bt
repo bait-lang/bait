@@ -40,8 +40,6 @@ fun test_split_lines() {
 	assert 'foo\r\nbar\r\n'.split_lines() == ['foo', 'bar']
 }
 
-
-
 fun test_trim_space() {
 	assert '  hello  '.trim_space() == 'hello'
 	assert '\t\nfoo\r\n'.trim_space() == 'foo'
@@ -65,4 +63,12 @@ fun test_is_upper() {
 	assert not ''.is_upper()
 	assert not '123'.is_upper()
 	assert 'ABC123'.is_upper()
+}
+
+fun test_join() {
+	assert ([]string).join(',') == ''
+	assert ['a'].join(',') == 'a'
+	assert ['a', 'b', 'c'].join(',') == 'a,b,c'
+	assert ['a', '', 'c'].join('-') == 'a--c'
+	assert ['a', 'b'].join(', ') == 'a, b'
 }

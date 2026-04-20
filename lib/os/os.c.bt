@@ -52,8 +52,6 @@ pub fun is_dir(path string) bool {
 	return false
 }
 
-
-
 pub fun read_bytes(path string) []u8 {
 	mut size := 0 as i64
 	#C.'FILE* fp;
