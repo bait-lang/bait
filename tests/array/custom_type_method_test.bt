@@ -12,6 +12,7 @@ fun (arr []Foo) perform() i32 {
 	return arr.length
 }
 
+// TODO C fix warnings
 fun test_method_on_array_of_user_type() {
 	// This code just has to compile
 

@@ -5,14 +5,18 @@ package c
 import bait.ast
 import bait.errors
 
-fun (g Gen) gen_equality_funs() {
+fun (mut g Gen) gen_equality_funs() {
 	for typ in g.table.needed_equality_funs {
 		_ = g.equality_fun(typ)
 	}
 }
 
-fun (g Gen) equality_fun(typ ast.Type) string {
+fun (mut g Gen) equality_fun(typ ast.Type) string {
 	sym := g.table.get_sym(typ)
+	if g.generated_eq_funs.contains(typ) {
+		return c_esc('${sym.mix_name}_eq')
+	}
+
 	if sym.kind == .number or sym.kind == .other {
 		// Simple builtin types have this type. They don't need an equality function
 		return ''
@@ -25,12 +29,48 @@ fun (g Gen) equality_fun(typ ast.Type) string {
 
 	// Equality is manually defined as overload
 	if sym.overloads.contains('==') {
-		return ''
+		overload := sym.overloads['==']
+		return c_esc(sym.mix_name + '_' + overload.name)
 	}
 
 	// Generics types don't need an equality function
 	if sym.kind == .generic {
 		return ''
+	}
+
+	if sym.kind == .array {
+		g.generated_eq_funs.push(typ)
+
+		info := sym.info as ast.ArrayInfo
+		sname := c_esc(sym.mix_name)
+		fname := c_esc('${sym.mix_name}_eq')
+		elem_type_str := g.typ(info.elem_type)
+
+		g.fun_decls_out += 'bool ${fname}(${sname} a, ${sname} b);\n'
+
+		g.auto_funs_out += 'bool ${fname}(${sname} a, ${sname} b) {\n'
+
+		// Compare length
+		g.auto_funs_out += '\tif (a.length != b.length) {\n'
+		g.auto_funs_out += '\t\treturn false;\n'
+		g.auto_funs_out += '\t}\n'
+
+		// Compare elements
+		elem_eq_fun := g.equality_fun(info.elem_type)
+		g.auto_funs_out += '\tfor (int i = 0; i < a.length; i++) {\n'
+		if elem_eq_fun.length > 0 {
+			g.auto_funs_out += '\t\tif (!${elem_eq_fun}(*(${elem_type_str}*)Array_get(a, i), *(${elem_type_str}*)Array_get(b, i))) {\n'
+		} else {
+			g.auto_funs_out += '\t\tif (*(${elem_type_str}*)Array_get(a, i) != *(${elem_type_str}*)Array_get(b, i)) {\n'
+		}
+		g.auto_funs_out += '\t\t\treturn false;\n'
+		g.auto_funs_out += '\t\t}\n'
+
+		g.auto_funs_out += '\t}\n'
+		g.auto_funs_out += '\treturn true;\n'
+		g.auto_funs_out += '}\n\n'
+
+		return fname
 	}
 
 	errors.generic_error('cannot generate equality function for type ${sym.mix_name}')

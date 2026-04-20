@@ -24,6 +24,24 @@ fun test_all_after_last() {
 	assert 'photo'.all_after_last('o') == ''
 }
 
+fun test_split() {
+	assert 'bar'.split('') == ['b', 'a', 'r']
+	assert 'foo'.split('o') == ['f', '', '']
+	assert ' qw e rt '.split(' ') == ['', 'qw', 'e', 'rt', '']
+	assert 'barbarian'.split('ar') == ['b', 'b', 'ian']
+}
+
+fun test_split_lines() {
+	assert 'foo\nbar'.split_lines() == ['foo', 'bar']
+	assert 'foo\nbar\n'.split_lines() == ['foo', 'bar']
+	assert '\n'.split_lines() == ['']
+
+	// Windows line endings
+	assert 'foo\r\nbar\r\n'.split_lines() == ['foo', 'bar']
+}
+
+
+
 fun test_trim_space() {
 	assert '  hello  '.trim_space() == 'hello'
 	assert '\t\nfoo\r\n'.trim_space() == 'foo'

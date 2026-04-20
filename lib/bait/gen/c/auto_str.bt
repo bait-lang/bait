@@ -30,7 +30,28 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	sname := c_esc(sym.mix_name)
 	fname := sname + '_str'
 
-	// TODO array
+	if sym.kind == .array {
+		info := sym.info as ast.ArrayInfo
+		elem_type_str := g.typ(info.elem_type)
+		el_str := g.get_str_fun(info.elem_type)
+
+		g.fun_decls_out += 'string ${fname}(${sname} a);\n'
+
+		g.auto_funs_out += 'string ${fname}(${sname} a) {
+	strings__Builder b = strings__new_builder(100);
+	strings__Builder_write(&b, from_c_string("["));
+	for (int i = 0; i < a.length; i++) {
+		string el = ${el_str}(*(${elem_type_str}*)Array_get(a, i));
+		strings__Builder_write(&b, el);
+		if (i < a.length - 1) {
+			strings__Builder_write(&b, from_c_string(", "));
+		}
+	}
+	strings__Builder_write_u8(&b, \']\');
+	return strings__Builder_str(b);
+}\n\n'
+		return
+	}
 
 	if sym.kind == .struct_ {
 		info := sym.info as ast.StructInfo

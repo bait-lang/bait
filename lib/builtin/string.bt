@@ -1,6 +1,10 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 package builtin
+
+fun (s string) str() string {
+	return s
+}
 
 pub fun (s string) index(search string) i32 {
 	return s.index_after(search, 0)
@@ -40,6 +44,41 @@ pub fun (s string) all_after_last(search string) string {
 		return s
 	}
 	return s.substr(idx + 1, s.length)
+}
+
+pub fun (s string) split(delim string) []string {
+	mut res := []string
+	mut i := 0
+
+	if delim.length == 0 {
+		for c in s {
+			res.push(c.ascii())
+		}
+		return res
+	}
+
+	mut start := 0
+	for i < s.length {
+		is_delim := i + delim.length <= s.length and s.substr(i, i + delim.length) == delim
+		if is_delim {
+			res.push(s.substr(start, i))
+			start = i + delim.length
+			i = start
+		} else {
+			i += 1
+		}
+	}
+	res.push(s.substr(start, s.length))
+	return res
+}
+
+pub fun (s string) split_lines() []string {
+	normalized := s.replace('\r\n', '\n')
+	res := normalized.split('\n')
+	if res.length > 0 and res[res.length - 1].length == 0 {
+		return res.slice(0, res.length - 1)
+	}
+	return res
 }
 
 pub fun (s string) trim_space() string {

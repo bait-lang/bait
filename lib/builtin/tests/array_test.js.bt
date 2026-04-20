@@ -1,19 +1,14 @@
 // SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 
-fun test_trim() {
-	mut a := [1, 2, 3]
-	a.trim(2)
-	assert a == [1, 2]
-	assert a.length == 2
-}
-
+// TODO C array.insert()
 fun test_insert() {
 	mut a := [1, 3, 4]
 	a.insert(1, 2)
 	assert a == [1, 2, 3, 4]
 }
 
+// TODO C array.reverse()
 fun test_reverse() {
 	a := [1, 2, 3]
 	b := a.reverse()

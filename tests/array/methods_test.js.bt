@@ -1,6 +1,7 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 
+// TODO C array.insert()
 fun test_array_filter() {
 	// From https://github.com/bait-lang/bait/issues/13
 	args := ['a.txt', 'b.md', 'c.md']
