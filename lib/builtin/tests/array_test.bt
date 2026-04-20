@@ -17,3 +17,11 @@ fun test_index_and_index_last() {
 	assert strings.index('c') == 2
 	assert strings.index_last('c') == 3
 }
+
+fun test_copy() {
+	mut a := [1, 2, 3]
+	b := a.copy()
+	a[0] = 9
+	assert a == [9, 2, 3]
+	assert b == [1, 2, 3]
+}
