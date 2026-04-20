@@ -127,13 +127,27 @@ pub fun system(cmd string) i32 {
 }
 
 pub fun getenv(key string) string {
-	res := #C.getenv(key.str)
-	if res == 0 as &u8 {
-		return ''
+	mut out := ''
+	$if WINDOWS {
+		#C.'char* tmp = NULL;
+		size_t tmp_len = 0;
+		if (_dupenv_s(&tmp, &tmp_len, key.str) == 0 && tmp != NULL) {
+			out = from_c_string(tmp);
+			free(tmp);
+		}'
+	} $else {
+		res := #C.getenv(key.str)
+		if res != 0 as &u8 {
+			out = from_c_string(res)
+		}
 	}
-	return from_c_string(res)
+	return out
 }
 
 pub fun setenv(key string, value string) {
-	_ := #C.setenv(key.str, value.str, 1)
+	$if WINDOWS {
+		_ := #C._putenv_s(key.str, value.str)
+	} $else {
+		_ := #C.setenv(key.str, value.str, 1)
+	}
 }

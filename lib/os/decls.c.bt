@@ -14,4 +14,6 @@ pub fun #C.getenv(name &u8) &u8
 
 pub fun #C.setenv(name &u8, value &u8, overwrite i32) i32
 
+pub fun #C._putenv_s(name &u8, value &u8) i32
+
 pub fun #C.system(cmd &u8) i32
