@@ -7,6 +7,7 @@ import bait.util.testing
 
 fun main() {
 	println('Building examples...')
+
 	examples_dir := os.join_path($BAITDIR, ['examples'])
 	mut r := testing.BuildRunner{
 		root = examples_dir
