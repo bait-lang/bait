@@ -145,6 +145,7 @@ pub fun parse_args(args []string) Prefs {
 		p.should_run = true
 		p.keep_exe = true
 		p.is_test = true
+		p.is_script = false // `test` command implies compilation, so script mode is disabled
 	}
 
 	// Set default out name if empty
