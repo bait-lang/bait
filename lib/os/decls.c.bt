@@ -6,7 +6,14 @@ import 'unistd.h' as #C._
 import 'dirent.h' as #C._
 import 'sys/stat.h' as #C._
 import 'sys/types.h' as #C._
+import 'stdlib.h' as #C._
 
 pub fun #C.access(path &u8, mode i32) i32
+
+pub fun #C.getenv(name &u8) &u8
+
+pub fun #C.setenv(name &u8, value &u8, overwrite i32) i32
+
+pub fun #C._putenv_s(name &u8, value &u8) i32
 
 pub fun #C.system(cmd &u8) i32

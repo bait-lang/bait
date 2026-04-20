@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 package builtin
 
@@ -106,4 +106,10 @@ pub fun (a Array) slice(start i32, end i32) Array {
 		cap = a.cap - start
 		elem_size = a.elem_size
 	}
+}
+
+pub fun (a Array) copy() Array {
+	mut b := new_array(a.length, a.cap, a.elem_size)
+	#C.memcpy(b.data, a.data, a.length * a.elem_size)
+	return b
 }

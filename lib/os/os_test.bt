@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 import os
 
@@ -26,4 +26,29 @@ fun test_exists_dir() {
 	assert os.exists_dir("${$BAITDIR}/lib")
 	assert not os.exists_dir("${$BAITDIR}/README.md")
 	assert not os.exists_dir('i/hope/this/never/exists/anywhere')
+}
+
+fun test_getenv_missing_returns_empty() {
+	key := 'BAIT_TEST_ENV_MISSING_${$LINE}'
+	assert os.getenv(key) == ''
+}
+
+fun test_setenv_getenv_roundtrip() {
+	key := 'BAIT_TEST_ENV_ROUNDTRIP_${$LINE}'
+	value := 'roundtrip_ok'
+	os.setenv(key, value)
+	assert os.getenv(key) == value
+}
+
+fun test_setenv_overwrite() {
+	key := 'BAIT_TEST_ENV_OVERWRITE_${$LINE}'
+	os.setenv(key, 'first')
+	os.setenv(key, 'second')
+	assert os.getenv(key) == 'second'
+}
+
+fun test_tmp_dir() {
+	tmp := os.tmp_dir()
+	assert tmp != ''
+	assert os.exists_dir(tmp)
 }

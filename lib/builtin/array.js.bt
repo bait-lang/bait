@@ -86,6 +86,7 @@ pub fun (a Array) concat(b Array) Array {
 	}
 }
 
+// TODO rename to clone()
 pub fun (a Array) copy() Array {
 	return Array{
 		data = #JS.'[...a.data]' as #JS.Array

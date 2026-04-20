@@ -234,6 +234,43 @@ fun (a string) eq (b string) bool {
 	return true
 }
 
+pub fun (arr []string) join(sep string) string {
+	if arr.length == 0 {
+		return ''
+	}
+
+	if arr.length == 1 {
+		return arr[0]
+	}
+
+	mut new_len := 0
+	for s in arr {
+		new_len += s.length
+	}
+	new_len += sep.length * (arr.length - 1)
+
+	mut buf := #C.calloc(1, new_len + 1)
+	mut pos := 0
+
+	for i, s in arr {
+		if i > 0 and sep.length > 0 {
+			#C.memcpy(#C.'buf + pos' as &void, sep.str, sep.length)
+			pos += sep.length
+		}
+
+		if s.length > 0 {
+			#C.memcpy(#C.'buf + pos' as &void, s.str, s.length)
+			pos += s.length
+		}
+	}
+
+	buf[new_len] = 0 as u8
+	return string{
+		str = buf
+		length = new_len
+	}
+}
+
 pub fun from_c_string(cs &u8) string {
 	return string{
 		str = cs

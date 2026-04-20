@@ -85,7 +85,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.out += "\n"
 	}
 
-	if not pref.is_library {
+	if not g.pref.is_library and not g.pref.is_script {
 		g.main_call()
 	}
 

@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 package main
 
+import cli.options
 import os
 
 struct CodeBlock {
@@ -11,35 +12,52 @@ struct CodeBlock {
 }
 
 fun main() {
-	if os.ARGS.length <= 2 {
-		eprintln('check-md error: please provide a file to be checked')
+	mut opt := options.new_option_parser(os.user_args())
+
+	backend := opt.string('backend', `b`, 'js')
+	if backend != 'js' and backend != 'c' {
+		eprintln('check-md: invalid backend')
 		exit(1)
 	}
-	file := os.ARGS[2]
+	args := opt.remaining()
+
+	if args.length == 0 {
+		eprintln('check-md: provide a file to be checked')
+		exit(1)
+	}
+
+	file := args[0]
 	if not file.ends_with('.md') {
 		eprintln('check-md error: file must be a markdown file')
 		exit(1)
 	}
+
 	println('Checking code blocks in ${file}...')
 	blocks := collect_code_blocks(file)
-	mut has_errors := false
+
+	mut nr_errors := 0
 	for block in blocks {
-		res := check_block_runs(block)
+		res := check_block_runs(block, backend)
 		if not res {
-			has_errors = true
+			nr_errors += 1
 		}
 	}
-	if has_errors {
+
+	println('ok: ${blocks.length - nr_errors}, failed: ${nr_errors}, total: ${blocks.length}')
+
+	if nr_errors > 0 {
 		exit(1)
 	}
 }
 
 fun collect_code_blocks(path string) []CodeBlock{
 	lines := os.read_lines(path)
+
 	mut blocks := []CodeBlock
 	mut inside_block := false
 	mut start := 0
 	mut text := ''
+
 	for i, line in lines {
 		if line.starts_with('```bait') {
 			inside_block = true
@@ -56,13 +74,17 @@ fun collect_code_blocks(path string) []CodeBlock{
 			text += line + '\n'
 		}
 	}
+
 	return blocks
 }
 
-fun check_block_runs(block CodeBlock) bool {
-	tmp_file := os.join_path(os.tmp_dir(), ['tmp.bt'])
+fun check_block_runs(block CodeBlock, backend string) bool {
+	tmp_name := 'check-md-${block.start_idx}.bt'
+	tmp_file := os.join_path(os.tmp_dir(), [tmp_name])
 	os.write_file(tmp_file, block.text)
-	res := os.exec('bun ${$BAITEXE} ${tmp_file} --script')
+
+	res := os.exec('bun ${$BAITEXE} "${tmp_file}" --script --backend ${backend}')
+
 	if res.code != 0 {
 		println('Error in block ${block.start_idx + 1}:${block.end_idx + 1}')
 		println(res.stderr)
