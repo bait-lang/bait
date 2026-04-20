@@ -46,3 +46,9 @@ fun test_setenv_overwrite() {
 	os.setenv(key, 'second')
 	assert os.getenv(key) == 'second'
 }
+
+fun test_tmp_dir() {
+	tmp := os.tmp_dir()
+	assert tmp != ''
+	assert os.exists_dir(tmp)
+}
