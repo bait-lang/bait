@@ -31,6 +31,16 @@ fun test_split() {
 	assert 'barbarian'.split('ar') == ['b', 'b', 'ian']
 }
 
+fun test_split_lines() {
+	assert 'foo\nbar'.split_lines() == ['foo', 'bar']
+	assert 'foo\nbar\n'.split_lines() == ['foo', 'bar']
+	assert '\n'.split_lines() == ['']
+
+	// Windows line endings
+	assert 'foo\r\nbar\r\n'.split_lines() == ['foo', 'bar']
+}
+
+
 
 fun test_trim_space() {
 	assert '  hello  '.trim_space() == 'hello'

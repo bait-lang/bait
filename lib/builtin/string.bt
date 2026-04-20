@@ -72,6 +72,15 @@ pub fun (s string) split(delim string) []string {
 	return res
 }
 
+pub fun (s string) split_lines() []string {
+	normalized := s.replace('\r\n', '\n')
+	res := normalized.split('\n')
+	if res.length > 0 and res[res.length - 1].length == 0 {
+		return res.slice(0, res.length - 1)
+	}
+	return res
+}
+
 pub fun (s string) trim_space() string {
 	return s.trim_left(' \t\n\r').trim_right(' \t\n\r')
 }

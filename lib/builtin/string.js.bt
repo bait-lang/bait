@@ -61,14 +61,6 @@ pub fun (s string) is_capital() bool {
 	return true
 }
 
-pub fun (s string) split_lines() []string {
-	res := from_js_string_arr(s.str.split(#JS.'"\n"' as #JS.String))
-	if res[res.length - 1].length == 0 {
-		return res.slice(0, res.length - 1)
-	}
-	return res
-}
-
 pub fun (s string) toI32() i32 {
 	return #JS.'parseInt(s.str)' as i32
 }
