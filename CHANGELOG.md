@@ -8,8 +8,9 @@ All notable changes are documented in this file.
 ### Standard Library
 - builtin:
   - _[C]_ string methods: `split()`, `split_lines()`, `trim_space()`, `is_upper()`
+  - _[C]_ []string method: `join()`
 - os:
-  - _[C]_ functions: `read_lines()`
+  - _[C]_ functions: `read_lines()`, `getenv()`, `setenv()`, `tmp_dir()`
 
 ### C Backend
 - Increase test coverage
@@ -17,10 +18,14 @@ All notable changes are documented in this file.
   - Implement comparison
   - Implement auto-string conversion
 
+### CLI and Tooling
+- check-md: add `--backend` option
+
 ### Testing
 - respect `.c.bt` and `.js.bt` file extensions for test files
 
 ### Other Changes
+- gen: do not generate main call in script mode
 - remove `test-all` tool
 
 
