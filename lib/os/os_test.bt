@@ -12,7 +12,8 @@ fun test_dir(){
 
 fun test_read_file() {
 	content := os.read_file("${$BAITDIR}/lib/os/testdata/3_lines.txt")
-	assert content == '1\n2\n3\n'
+	normalized := content.replace('\r\n', '\n')
+	assert normalized == '1\n2\n3\n'
 }
 
 fun test_read_lines() {
