@@ -52,6 +52,8 @@ pub fun is_dir(path string) bool {
 	return false
 }
 
+
+
 pub fun read_bytes(path string) []u8 {
 	mut size := 0 as i64
 	#C.'FILE* fp;
@@ -122,4 +124,16 @@ pub fun exec(cmd string) CmdRes {
 
 pub fun system(cmd string) i32 {
 	return #C.system(cmd.str)
+}
+
+pub fun getenv(key string) string {
+	res := #C.getenv(key.str)
+	if res == 0 as &u8 {
+		return ''
+	}
+	return from_c_string(res)
+}
+
+pub fun setenv(key string, value string) {
+	_ := #C.setenv(key.str, value.str, 1)
 }
