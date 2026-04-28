@@ -16,7 +16,7 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 fun (g Gen) typ(typ ast.Type) string {
 	sym := g.concrete_sym(typ)
 
-	name := sym.mix_name.replace('[]', 'Array_').replace('C.', '').replace('.', '__').replace('[', '_').replace(']', '_')
+	name := c_name(sym.mix_name.replace('C.', ''))
 	ptrs := '*'.repeat(typ.get_nr_amp())
 	prefix := if sym.kind == .enum_ { 'enum ' } else { '' }
 	return prefix + name + ptrs
