@@ -12,6 +12,7 @@ struct Map {
 	mut hashes []u32
 	mut used []bool
 	mut keys []string
+	mut order []string
 	mut vals Array
 	pub mut length i32
 	mut cap i32
@@ -53,6 +54,7 @@ pub fun new_map(val_size i32, min_cap i32) Map {
 		hashes = []u32{length = cap}
 		used = []bool{length = cap}
 		keys = []string{length = cap}
+		order = []string{cap = cap}
 		vals = new_array(cap, cap, val_size)
 		cap = cap
 		val_size = val_size
@@ -71,23 +73,35 @@ pub fun new_map_from_c(len i32, val_size i32, keys &string, vals &void) Map {
 }
 
 fun map_rehash(mut m &Map, new_cap i32) {
+	old_hashes := m.hashes
 	old_used := m.used
 	old_keys := m.keys
+	old_order := m.order
 	old_vals := m.vals
 	old_cap := m.cap
 
 	m.hashes = []u32{length = new_cap}
 	m.used = []bool{length = new_cap}
 	m.keys = []string{length = new_cap}
+	m.order = []string{cap = old_order.length}
 	m.vals = new_array(new_cap, new_cap, m.val_size)
 	m.cap = new_cap
 	m.length = 0
 
-	for i := 0; i < old_cap; i += 1 {
-		if not old_used[i] {
-			continue
-		}
-		map_set(mut m, old_keys[i], old_vals.get(i))
+	old_map := Map{
+		hashes = old_hashes
+		used = old_used
+		keys = old_keys
+		order = old_order
+		vals = old_vals
+		length = old_order.length
+		cap = old_cap
+		val_size = m.val_size
+		zero = m.zero
+	}
+
+	for key in old_order {
+		map_set(mut m, key, map_get(&old_map, key))
 	}
 }
 
@@ -136,6 +150,7 @@ pub fun map_set(mut m &Map, key string, val &void) {
 			m.used[i] = true
 			m.hashes[i] = hash
 			m.keys[i] = key
+			m.order.push(key)
 			m.vals.set(i, val)
 			m.length += 1
 			return
@@ -179,4 +194,8 @@ pub fun map_get(m &Map, key string) &void {
 	}
 
 	return m.zero
+}
+
+pub fun (m Map) keys() []string {
+	return m.order.copy()
 }
