@@ -50,8 +50,7 @@ jobs:
         run: |
           bait test -b c tests/array
           bait test -b c tests/auto_str
-          bait test -b c tests/for/loop_test.bt
-          bait test -b c tests/for/for_in_test.bt
+          bait test -b c tests/for
           bait test -b c tests/int/promotion_test.bt
           # bait test -b c tests/int/bitwise_test.bt
       - name: Run lib tests
