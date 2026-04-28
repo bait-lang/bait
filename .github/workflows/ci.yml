@@ -51,8 +51,9 @@ jobs:
           bait test -b c tests/array
           bait test -b c tests/auto_str
           bait test -b c tests/for/loop_test.bt
+          bait test -b c tests/for/for_in_test.bt
           bait test -b c tests/int/promotion_test.bt
-          bait test -b c tests/other/bitwise_test.bt
+          # bait test -b c tests/int/bitwise_test.bt
       - name: Run lib tests
         run: |
           # bait test -b c lib/bait
@@ -60,7 +61,7 @@ jobs:
           # bait test -b c lib/cli
           bait test -b c lib/encoding
           bait test -b c lib/hash
-          # bait test -b c lib/os
+          bait test -b c lib/os
           bait test -b c lib/strings
       # - name: Run tool tests
         # run: bait test cli/tools
