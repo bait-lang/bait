@@ -32,6 +32,8 @@ struct Gen {
 	mut generated_eq_funs []ast.Type
 	mut generated_str_funs []ast.Type
 	mut tmp_counter i32
+	mut loop_label_names []string
+	mut loop_continue_targets []string
 	mut cur_concrete_types map[string]ast.Type
 	mut cur_fun ast.FunDecl
 	mut is_lhs_assign bool

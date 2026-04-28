@@ -113,21 +113,54 @@ fun (mut g Gen) expr_stmt(node ast.ExprStmt) {
 
 fun (mut g Gen) write_label(label string){
 	if label.length > 0 {
-		g.writeln('${label}: ')
+		g.writeln('${c_esc(label)}: ;')
 	}
 }
 
+fun (mut g Gen) push_loop_continue_label(label string) string {
+	cont_label := g.new_temp_var()
+	g.loop_label_names.push(label)
+	g.loop_continue_targets.push(cont_label)
+	return cont_label
+}
+
+fun (mut g Gen) pop_loop_continue_label() {
+	last := g.loop_label_names.length - 1
+	g.loop_label_names.delete(last)
+	g.loop_continue_targets.delete(last)
+}
+
+fun (g Gen) get_loop_continue_label(label string) string {
+	for i := g.loop_label_names.length - 1; i >= 0; i -= 1 {
+		if g.loop_label_names[i] == label {
+			return g.loop_continue_targets[i]
+		}
+	}
+	return c_esc(label)
+}
+
 fun (mut g Gen) for_loop(node ast.ForLoop) {
+	mut continue_label := ''
+	if node.label.length > 0 {
+		continue_label = g.push_loop_continue_label(node.label)
+	}
 	g.write('while (')
 	g.expr(node.cond)
 	g.writeln(') {')
 	g.stmts(node.stmts)
+	if continue_label.length > 0 {
+		g.writeln('${continue_label}: ;')
+		g.pop_loop_continue_label()
+	}
 	g.writeln('}')
-
 	g.write_label(node.label)
 }
 
 fun (mut g Gen) for_classic_loop(node ast.ForClassicLoop) {
+	mut continue_label := ''
+	if node.label.length > 0 {
+		continue_label = g.push_loop_continue_label(node.label)
+	}
 	g.is_for_loop_head = true
 	g.write('for (')
 	g.stmt(node.init)
@@ -138,8 +171,11 @@ fun (mut g Gen) for_classic_loop(node ast.ForClassicLoop) {
 	g.writeln(') {')
 	g.is_for_loop_head = false
 	g.stmts(node.stmts)
+	if continue_label.length > 0 {
+		g.writeln('${continue_label}: ;')
+		g.pop_loop_continue_label()
+	}
 	g.writeln('}')
-
 	g.write_label(node.label)
 }
 
@@ -150,14 +186,27 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 		return
 	}
 
+	mut continue_label := ''
+	if node.label.length > 0 {
+		continue_label = g.push_loop_continue_label(node.label)
+	}
 	i := g.expr_string(node.idxvar)
 	container := g.expr_string(node.expr)
 	g.writeln('for (i32 ${i} = 0; ${i} < ${container}.length; ${i}++) {')
 	g.stmts(node.stmts)
+	if continue_label.length > 0 {
+		g.writeln('${continue_label}: ;')
+		g.pop_loop_continue_label()
+	}
 	g.writeln('}')
+	g.write_label(node.label)
 }
 
 fun (mut g Gen) for_in_map(node ast.ForInLoop){
+	mut continue_label := ''
+	if node.label.length > 0 {
+		continue_label = g.push_loop_continue_label(node.label)
+	}
 	container := g.expr_string(node.expr)
 	keys_var := g.new_temp_var()
 	g.writeln('Array ${keys_var} = Map_keys(${container});')
@@ -166,10 +215,23 @@ fun (mut g Gen) for_in_map(node ast.ForInLoop){
 	g.writeln('for (i32 ${i} = 0; ${i} < ${keys_var}.length; ${i}++) {')
 	g.writeln('\tstring ${idxvar} = *(string*)(Array_get(${keys_var}, ${i}));')
 	g.stmts(node.stmts)
+	if continue_label.length > 0 {
+		g.writeln('${continue_label}: ;')
+		g.pop_loop_continue_label()
+	}
 	g.writeln('}')
+	g.write_label(node.label)
 }
 
 fun (mut g Gen) loop_control_stmt(node ast.LoopControlStmt){
+	if node.label.length > 0 {
+		if node.kind == .key_break {
+			g.writeln('goto ${c_esc(node.label)};')
+		} else {
+			g.writeln('goto ${g.get_loop_continue_label(node.label)};')
+		}
+		return
+	}
 	g.writeln(node.kind.c_repr() + ';')
 }
 
