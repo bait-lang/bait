@@ -41,6 +41,8 @@ fun (mut g Gen) write_types() {
 			g.type_impls_out += '};\n'
 		} else if sym.info is ast.ArrayInfo {
 			g.type_defs_out += 'typedef Array ${cname};\n'
+		} else if sym.info is ast.MapInfo {
+			g.type_defs_out += 'typedef Map ${cname};\n'
 		} else if sym.kind == .fun_ {
 			info := sym.info as ast.FunInfo
 			if not info.is_alias {
