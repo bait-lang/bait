@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 
 fun test_bitwise_operators() {
@@ -18,4 +18,13 @@ fun test_bitwise_u32() {
 	a := 0b11101101101110001000001100100000 as u32 // 3988292384
 	b := 0b1110110110111000100000110010000 as u32 // 1994146192
 	assert a >> 1 == b
+}
+
+// Verify bitwise not on u32 stays within u32 bounds.
+fun test_unsigned_not() {
+	zero := 0 as u32
+	one := 1 as u32
+
+	assert ~zero == MAX_U32
+	assert ~one == (MAX_U32 - 1)
 }

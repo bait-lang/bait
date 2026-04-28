@@ -5,8 +5,12 @@ fun test_type_init() {
 	mut m := map[string]string
 	m['a'] = 'A'
 	m['b'] = 'B'
+
 	assert m.length == 2
 	assert m['b'] == 'B'
+
+	m['c'] = 'C'
+	assert m.keys() == ['a', 'b', 'c']
 }
 
 fun test_literal_init() {
@@ -14,6 +18,7 @@ fun test_literal_init() {
 		'a': 'A'
 		'b': 'B'
 	}
+
 	assert m.length == 2
 	assert m['b'] == 'B'
 }

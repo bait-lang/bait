@@ -16,7 +16,7 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 fun (g Gen) typ(typ ast.Type) string {
 	sym := g.concrete_sym(typ)
 
-	name := sym.mix_name.replace('[]', 'Array_').replace('C.', '').replace('.', '__')
+	name := c_name(sym.mix_name.replace('C.', ''))
 	ptrs := '*'.repeat(typ.get_nr_amp())
 	prefix := if sym.kind == .enum_ { 'enum ' } else { '' }
 	return prefix + name + ptrs
@@ -41,6 +41,8 @@ fun (mut g Gen) write_types() {
 			g.type_impls_out += '};\n'
 		} else if sym.info is ast.ArrayInfo {
 			g.type_defs_out += 'typedef Array ${cname};\n'
+		} else if sym.info is ast.MapInfo {
+			g.type_defs_out += 'typedef Map ${cname};\n'
 		} else if sym.kind == .fun_ {
 			info := sym.info as ast.FunInfo
 			if not info.is_alias {

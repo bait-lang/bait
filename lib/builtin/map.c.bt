@@ -1,0 +1,201 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+package builtin
+
+import hash.fnv1a
+
+const map_min_cap := 8
+const map_max_load_num := 7
+const map_max_load_den := 10
+
+struct Map {
+	mut hashes []u32
+	mut used []bool
+	mut keys []string
+	mut order []string
+	mut vals Array
+	pub mut length i32
+	mut cap i32
+	mut val_size i32
+	mut zero &void
+}
+
+fun map_hash(key string) u32 {
+	hash := fnv1a.sum32_string(key)
+	if hash == 0 {
+		return 1
+	}
+	return hash
+}
+
+fun map_key_eq(a string, b string) bool {
+	if a.length != b.length {
+		return false
+	}
+	for i := 0; i < a.length; i += 1 {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+fun map_next_cap(min_cap i32) i32 {
+	mut cap := map_min_cap
+	for cap < min_cap {
+		cap *= 2
+	}
+	return cap
+}
+
+pub fun new_map(val_size i32, min_cap i32) Map {
+	cap := map_next_cap(min_cap)
+	return Map{
+		hashes = []u32{length = cap}
+		used = []bool{length = cap}
+		keys = []string{length = cap}
+		order = []string{cap = cap}
+		vals = new_array(cap, cap, val_size)
+		cap = cap
+		val_size = val_size
+		zero = #C.calloc(1, val_size) as &void
+	}
+}
+
+pub fun new_map_from_c(len i32, val_size i32, keys &string, vals &void) Map {
+	mut m := new_map(val_size, len * 2)
+	for i := 0; i < len; i += 1 {
+		key := *(#C.'keys + i' as &string)
+		val := #C.'vals + i * val_size' as &void
+		map_set(&m, key, val)
+	}
+	return m
+}
+
+fun map_rehash(mut m &Map, new_cap i32) {
+	old_hashes := m.hashes
+	old_used := m.used
+	old_keys := m.keys
+	old_order := m.order
+	old_vals := m.vals
+	old_cap := m.cap
+
+	m.hashes = []u32{length = new_cap}
+	m.used = []bool{length = new_cap}
+	m.keys = []string{length = new_cap}
+	m.order = []string{cap = old_order.length}
+	m.vals = new_array(new_cap, new_cap, m.val_size)
+	m.cap = new_cap
+	m.length = 0
+
+	old_map := Map{
+		hashes = old_hashes
+		used = old_used
+		keys = old_keys
+		order = old_order
+		vals = old_vals
+		length = old_order.length
+		cap = old_cap
+		val_size = m.val_size
+		zero = m.zero
+	}
+
+	for key in old_order {
+		map_set(mut m, key, map_get(&old_map, key))
+	}
+}
+
+fun map_ensure_cap(mut m &Map, min_len i32) {
+	if m.cap == 0 {
+		map_rehash(mut m, map_min_cap)
+		return
+	}
+
+	if min_len * map_max_load_den < m.cap * map_max_load_num {
+		return
+	}
+
+	map_rehash(mut m, m.cap * 2)
+}
+
+pub fun map_contains(m &Map, key string) bool {
+	if m.cap == 0 {
+		return false
+	}
+
+	hash := map_hash(key)
+	mut i := (hash % (m.cap as u32)) as i32
+	for step := 0; step < m.cap; step += 1 {
+		if not m.used[i] {
+			return false
+		}
+		if m.hashes[i] == hash and map_key_eq(m.keys[i], key) {
+			return true
+		}
+		i += 1
+		if i == m.cap {
+			i = 0
+		}
+	}
+	return false
+}
+
+pub fun map_set(mut m &Map, key string, val &void) {
+	map_ensure_cap(mut m, m.length + 1)
+
+	hash := map_hash(key)
+	mut i := (hash % (m.cap as u32)) as i32
+	for step := 0; step < m.cap; step += 1 {
+		if not m.used[i] {
+			m.used[i] = true
+			m.hashes[i] = hash
+			m.keys[i] = key
+			m.order.push(key)
+			m.vals.set(i, val)
+			m.length += 1
+			return
+		}
+
+		if m.hashes[i] == hash and map_key_eq(m.keys[i], key) {
+			m.vals.set(i, val)
+			return
+		}
+
+		i += 1
+		if i == m.cap {
+			i = 0
+		}
+	}
+
+	map_rehash(mut m, m.cap * 2)
+	map_set(mut m, key, val)
+}
+
+pub fun map_get(m &Map, key string) &void {
+	if m.cap == 0 {
+		return m.zero
+	}
+
+	hash := map_hash(key)
+	mut i := (hash % (m.cap as u32)) as i32
+	for step := 0; step < m.cap; step += 1 {
+		if not m.used[i] {
+			return m.zero
+		}
+
+		if m.hashes[i] == hash and map_key_eq(m.keys[i], key) {
+			return m.vals.get(i)
+		}
+
+		i += 1
+		if i == m.cap {
+			i = 0
+		}
+	}
+
+	return m.zero
+}
+
+pub fun (m Map) keys() []string {
+	return m.order.copy()
+}

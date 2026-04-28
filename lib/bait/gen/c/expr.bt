@@ -24,7 +24,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.IndexExpr { g.index_expr(expr) }
 		ast.InfixExpr { g.infix_expr(expr) }
 		ast.IntegerLiteral { g.integer_literal(expr) }
-		ast.MapInit { panic('maps not implemented') } // TODO
+		ast.MapInit { g.map_init(expr) }
 		ast.ParExpr { g.par_expr(expr) }
 		ast.PrefixExpr { g.prefix_expr(expr)}
 		ast.RangeExpr { panic('ranges not implemented') } // TODO
@@ -82,6 +82,31 @@ fun (mut g Gen) array_init(node ast.ArrayInit){
 	g.write('})')
 }
 
+fun (mut g Gen) map_init(node ast.MapInit) {
+	val_type_str := g.typ(node.val_type)
+	if node.keys.length == 0 {
+		g.write('new_map(sizeof(${val_type_str}), 0)')
+		return
+	}
+
+	len := node.keys.length
+	g.write('new_map_from_c(${len}, sizeof(${val_type_str}), (string[${len}]){')
+	for i, key in node.keys {
+		g.expr_to_string(key, node.key_type)
+		if i < len - 1 {
+			g.write(', ')
+		}
+	}
+	g.write('}, (${val_type_str}[${len}]){')
+	for i, val in node.vals {
+		g.expr(val)
+		if i < len - 1 {
+			g.write(', ')
+		}
+	}
+	g.write('})')
+}
+
 fun (mut g Gen) as_cast(node ast.AsCast) {
 	type_str := g.typ(node.target)
 	g.write('(${type_str})(')
@@ -126,7 +151,7 @@ fun (mut g Gen) index_expr(node ast.IndexExpr) {
 		val_type_str := g.typ(info.val_type)
 		if g.is_lhs_assign and not node.is_selector {
 			g.is_array_map_set = true
-			g.write('map_set((map*)&')
+			g.write('map_set((Map*)&')
 			g.expr(node.left)
 			g.write(', ')
 			g.expr(node.index)
