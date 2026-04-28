@@ -173,7 +173,7 @@ fun (mut g Gen) save_stmt_offset() {
 }
 
 fun c_name(n string) string {
-	return n.replace('.', '__').replace('[]', 'Array_')
+	return n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_')
 }
 
 fun c_esc(n string) string {

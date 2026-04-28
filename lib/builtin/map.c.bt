@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 package builtin
 
+import hash.fnv1a
+
 const map_min_cap := 8
 const map_max_load_num := 7
 const map_max_load_den := 10
@@ -18,10 +20,7 @@ struct Map {
 }
 
 fun map_hash(key string) u32 {
-	mut hash := 2166136261 as u32
-	for c in key {
-		hash = (hash ^ (c as u32)) * (16777619 as u32)
-	}
+	hash := fnv1a.sum32_string(key)
 	if hash == 0 {
 		return 1
 	}
