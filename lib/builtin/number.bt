@@ -11,7 +11,7 @@ pub const MAX_I16 := 32767 as i16
 pub const MIN_I32 := -2147483648
 pub const MAX_I32 := 2147483647
 
-pub const MIN_I64 := -9223372036854775808 as i64
+pub const MIN_I64 := -9223372036854775807 as i64 - 1
 pub const MAX_I64 := 9223372036854775807 as i64
 
 pub const MIN_U8 := 0 as u8
