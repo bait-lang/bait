@@ -28,6 +28,7 @@ All notable changes are documented in this file.
 
 ### Other Changes
 - gen: do not generate main call in script mode
+- gen: Handle more expressions in failed asserts
 - remove `test-all` tool
 
 
