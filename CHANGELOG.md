@@ -17,6 +17,7 @@ All notable changes are documented in this file.
 - Arrays
   - Implement comparison
   - Implement auto-string conversion
+- Fix integer overflows
 - Fix loop labels
 - Increase test coverage
 

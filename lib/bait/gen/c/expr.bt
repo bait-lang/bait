@@ -235,11 +235,21 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 	}
 
 	// Normal cases
+	wrap_int_result := node.left_type.is_int() and (node.op.is_math() or node.op.is_bitwise())
+	if wrap_int_result {
+		type_str := g.typ(node.left_type)
+		g.write('(${type_str})(')
+	}
+
 	g.expr(node.left)
 	g.write(' ')
 	g.write(node.op.c_repr())
 	g.write(' ')
 	g.expr(node.right)
+
+	if wrap_int_result {
+		g.write(')')
+	}
 }
 
 fun (mut g Gen) integer_literal(node ast.IntegerLiteral) {
