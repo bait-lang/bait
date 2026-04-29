@@ -57,7 +57,7 @@ jobs:
           # bait test -b c tests/generics
           # bait test -b c tests/ident
           # bait test -b c tests/if
-          # bait test -b c tests/int
+          bait test -b c tests/int
           # bait test -b c tests/match
           # bait test -b c tests/method
           # bait test -b c tests/out
