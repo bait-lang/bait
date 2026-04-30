@@ -642,7 +642,7 @@ println(demo.shared_var) // 130
 ### JS Imports and Declarations
 It's possible to import JavaScript packages and call JS code from Bait.
 
-```bait
+```bait js
 import 'fs' as #JS.fs
 
 fun #JS.fs.existsSync(path #JS.String) #JS.Boolean
