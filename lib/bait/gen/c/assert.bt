@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 package c
 
@@ -17,7 +17,7 @@ fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 		expr := node.expr as ast.InfixExpr
 		g.write('\tTestRunner_fail_infix(&builtin__test_runner, ${node.pos.line}, from_c_string("assert ')
 		g.assert_side_expr(expr.left)
-		g.write(' ${expr.op.js_repr()} ')
+		g.write(' ${expr.op.c_repr()} ')
 		g.assert_side_expr(expr.right)
 		g.write('"), ')
 		g.expr_to_string(expr.left, expr.left_type)
@@ -37,6 +37,25 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 		g.bool_literal(node)
 	} else if node is ast.IntegerLiteral {
 		g.integer_literal(node)
+	} else if node is ast.InfixExpr {
+		g.assert_side_expr(node.left)
+		g.write(' ')
+		g.write(node.op.c_repr())
+		g.write(' ')
+		g.assert_side_expr(node.right)
+	} else if node is ast.PrefixExpr {
+		g.write(node.op.c_repr())
+		g.assert_side_expr(node.right)
+	} else if node is ast.ParExpr {
+		g.write('(')
+		g.assert_side_expr(node.expr)
+		g.write(')')
+	} else if node is ast.AsCast {
+		g.write('(')
+		g.assert_side_expr(node.expr)
+		g.write(' as ')
+		g.write(g.table.type_name(node.target))
+		g.write(')')
 	} else if node is ast.StringLiteral {
 		g.write("'")
 		g.write(escape.linebreak(node.val))

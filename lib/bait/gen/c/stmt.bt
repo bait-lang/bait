@@ -98,6 +98,9 @@ fun (mut g Gen) const_decl(node ast.ConstDecl){
 		typ := g.typ(node.typ)
 		g.type_defs_out += '${typ} ${full_name};\n'
 		g.main_inits_out += '\t${full_name} = ${val};\n'
+	} else if node.typ.is_int() {
+		typ := g.typ(node.typ)
+		g.type_impls_out += 'static const ${typ} ${full_name} = ${val};\n'
 	} else {
 		g.type_impls_out += '#define ${full_name} ${val}\n'
 	}

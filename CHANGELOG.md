@@ -13,10 +13,13 @@ All notable changes are documented in this file.
   - _[C]_ functions: `read_lines()`, `getenv()`, `setenv()`, `tmp_dir()`
 
 ### C Backend
-- Increase test coverage
-- arrays
+- Implement hashmaps
+- Arrays
   - Implement comparison
   - Implement auto-string conversion
+- Fix integer overflows
+- Fix loop labels
+- Increase test coverage
 
 ### CLI and Tooling
 - check-md: add `--backend` option
@@ -26,6 +29,7 @@ All notable changes are documented in this file.
 
 ### Other Changes
 - gen: do not generate main call in script mode
+- gen: Handle more expressions in failed asserts
 - remove `test-all` tool
 
 
