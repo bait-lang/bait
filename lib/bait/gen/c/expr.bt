@@ -253,7 +253,15 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 }
 
 fun (mut g Gen) integer_literal(node ast.IntegerLiteral) {
-	g.write(node.val)
+	if node.val.starts_with('0o') {
+		g.write('0')
+		g.write(node.val.substr(2, node.val.length))
+	} else if node.val.starts_with('-0o') {
+		g.write('-0')
+		g.write(node.val.substr(3, node.val.length))
+	} else {
+		g.write(node.val)
+	}
 
 	if node.typ == ast.U32_TYPE {
 		g.write('U')
