@@ -12,6 +12,9 @@ type u16 := #C.uint16_t
 type u32 := #C.uint32_t
 type u64 := #C.uint64_t
 
+type f32 := #C.float
+type f64 := #C.double
+
 pub fun (n i8) str() string {
 	return (n as i64).str()
 }
@@ -47,5 +50,19 @@ pub fun (n u64) str() string {
 	length := #C.snprintf(#C.'NULL' as &u8, 0, "%llu".str, n)
 	buf := #C.malloc(length + 1)
 	_ = #C.snprintf(buf, length + 1, "%llu".str, n)
+	return from_c_string(buf)
+}
+
+pub fun (n f32) str() string {
+	length := #C.snprintf(#C.'NULL' as &u8, 0, "%.9g".str, n as f64)
+	buf := #C.malloc(length + 1)
+	_ = #C.snprintf(buf, length + 1, "%.9g".str, n as f64)
+	return from_c_string(buf)
+}
+
+pub fun (n f64) str() string {
+	length := #C.snprintf(#C.'NULL' as &u8, 0, "%.17g".str, n)
+	buf := #C.malloc(length + 1)
+	_ = #C.snprintf(buf, length + 1, "%.17g".str, n)
 	return from_c_string(buf)
 }

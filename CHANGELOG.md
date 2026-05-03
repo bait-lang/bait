@@ -14,6 +14,7 @@ All notable changes are documented in this file.
 
 ### C Backend
 - Implement hashmaps
+- Implement floats
 - Arrays
   - Implement comparison
   - Implement auto-string conversion

@@ -44,6 +44,14 @@ pub fun (t Type) is_int() bool {
 	return t >= I8_TYPE and t <= U64_TYPE
 }
 
+pub fun (t Type) is_signed_int() bool {
+	return t >= I8_TYPE and t <= I64_TYPE
+}
+
+pub fun (t Type) is_unsigned_int() bool {
+	return t >= U8_TYPE and t <= U64_TYPE
+}
+
 const BUILTIN_STRUCT_TYPES := [
 	STRING_TYPE,
 	ARRAY_TYPE,
@@ -131,8 +139,8 @@ pub fun (t Table) register_builtins(){
 	_ = t.register_num('u16')
 	_ = t.register_num('u32')
 	_ = t.register_num('u64')
-	_ = t.register_sym(TypeSymbol{ mix_name = 'f32' })
-	_ = t.register_sym(TypeSymbol{ mix_name = 'f64' })
+	_ = t.register_num('f32')
+	_ = t.register_num('f64')
 	_ = t.register_sym(TypeSymbol{ mix_name = 'bool' })
 	_ = t.register_sym(TypeSymbol{
 		mix_name = 'string'
