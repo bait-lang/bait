@@ -10,7 +10,6 @@ fun test_map() {
 	assert m.str() == "{'foo': 62, 'bar': 31}"
 }
 
-// TODO C floats
 struct Bar {
 	f f64
 }
@@ -19,15 +18,7 @@ struct Foo {
 	b Bar
 }
 
-fun test_struct() {
-	b := Bar {
-		f = 3.14
-	}
-	assert b.str() == 'Bar{
-  f = 3.14
-}'
-}
-
+// TODO C fix nested structs
 fun test_nested_struct() {
 	f := Foo {}
 	assert f.str() == 'Foo{

@@ -54,15 +54,15 @@ pub fun (n u64) str() string {
 }
 
 pub fun (n f32) str() string {
-	length := #C.snprintf(#C.'NULL' as &u8, 0, "%g".str, n as f64)
+	length := #C.snprintf(#C.'NULL' as &u8, 0, "%.9g".str, n as f64)
 	buf := #C.malloc(length + 1)
-	_ = #C.snprintf(buf, length + 1, "%g".str, n as f64)
+	_ = #C.snprintf(buf, length + 1, "%.9g".str, n as f64)
 	return from_c_string(buf)
 }
 
 pub fun (n f64) str() string {
-	length := #C.snprintf(#C.'NULL' as &u8, 0, "%g".str, n)
+	length := #C.snprintf(#C.'NULL' as &u8, 0, "%.17g".str, n)
 	buf := #C.malloc(length + 1)
-	_ = #C.snprintf(buf, length + 1, "%g".str, n)
+	_ = #C.snprintf(buf, length + 1, "%.17g".str, n)
 	return from_c_string(buf)
 }

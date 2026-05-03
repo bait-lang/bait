@@ -5,3 +5,16 @@ fun test_array() {
 	a := [true, false, true]
 	assert a.str() == "[true, false, true]"
 }
+
+struct Bar {
+	f f64
+}
+
+fun test_struct() {
+	b := Bar {
+		f = 3.14
+	}
+	assert b.str() == 'Bar{
+  f = 3.14
+}'
+}

@@ -1,0 +1,7 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+fun test_float_str_precision() {
+	f := 123.45678901234567890
+	assert f.str() == '123.45678901234568'
+}
