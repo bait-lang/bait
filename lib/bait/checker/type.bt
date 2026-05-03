@@ -81,34 +81,41 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 }
 
 fun (c Checker) can_promote(got ast.Type, expected ast.Type) bool {
-	// Unsigned targets
-	if expected == ast.U64_TYPE {
-		return got == ast.U32_TYPE or got == ast.U16_TYPE or got == ast.U8_TYPE
-	}
-	if expected == ast.U32_TYPE {
-		return got == ast.U16_TYPE or got == ast.U8_TYPE
-	}
-	if expected == ast.U16_TYPE {
-		return got == ast.U8_TYPE
+	// Unsigned to unsigned (u8 to u64)
+	if expected.is_unsigned_int() {
+		return got.is_unsigned_int() and got < expected
 	}
 
-	// Signed targets
-	if expected == ast.I64_TYPE {
-		return got == ast.I32_TYPE or got == ast.I16_TYPE or got == ast.I8_TYPE or got == ast.U32_TYPE or got == ast.U16_TYPE or got == ast.U8_TYPE
-	}
-	if expected == ast.I32_TYPE {
-		return got == ast.I16_TYPE or got == ast.I8_TYPE or got == ast.U16_TYPE or got == ast.U8_TYPE
-	}
-	if expected == ast.I16_TYPE {
-		return got == ast.I8_TYPE or got == ast.U8_TYPE
+	// To signed
+	if expected.is_signed_int() {
+		// From smaller signed
+		if got.is_signed_int() {
+			return got < expected
+		}
+
+		// From unsigned
+		if got == ast.U8_TYPE {
+			return expected >= ast.I16_TYPE
+		}
+		if got == ast.U16_TYPE {
+			return expected >= ast.I32_TYPE
+		}
+		if got == ast.U32_TYPE {
+			return expected == ast.I64_TYPE
+		}
 	}
 
-	// Float targets
-	if expected == ast.F32_TYPE {
-		return got == ast.I64_TYPE or got == ast.I32_TYPE or got == ast.I16_TYPE or got == ast.I8_TYPE or got == ast.U64_TYPE or got == ast.U32_TYPE or got == ast.U16_TYPE or got == ast.U8_TYPE
-	}
-	if expected == ast.F64_TYPE {
-		return got == ast.F32_TYPE or got == ast.I64_TYPE or got == ast.I32_TYPE or got == ast.I16_TYPE or got == ast.I8_TYPE or got == ast.U64_TYPE or got == ast.U32_TYPE or got == ast.U16_TYPE or got == ast.U8_TYPE
+	// To float
+	if expected == ast.F32_TYPE or expected == ast.F64_TYPE {
+		// From int
+		if got.is_int() {
+			return true
+		}
+
+		// f32 to f64
+		if expected == ast.F64_TYPE and got == ast.F32_TYPE {
+			return true
+		}
 	}
 
 	return false
