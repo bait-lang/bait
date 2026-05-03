@@ -1,0 +1,30 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+fun test_float_promotion() {
+	f32v := 1.5 as f32
+	f64v := 2.5 as f64
+
+	assert f32v + f64v == 4.0
+	assert f64v + f32v == 4.0
+}
+
+fun test_int_to_float_promotion() {
+	u8v := 1 as u8
+	i16v := 2 as i16
+	f32v := 3.5 as f32
+	f64v := 4.5 as f64
+
+	assert f32v + u8v == 4.5
+	assert u8v + f32v == 4.5
+	assert f64v + i16v == 6.5
+	assert i16v + f64v == 6.5
+}
+
+fun test_float_math_assign() {
+	u16v := 2 as u16
+
+	mut x := 3.5 as f64
+	x += u16v
+	assert x == 5.5
+}

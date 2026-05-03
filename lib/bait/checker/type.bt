@@ -103,6 +103,14 @@ fun (c Checker) can_promote(got ast.Type, expected ast.Type) bool {
 		return got == ast.I8_TYPE or got == ast.U8_TYPE
 	}
 
+	// Float targets
+	if expected == ast.F32_TYPE {
+		return got == ast.I64_TYPE or got == ast.I32_TYPE or got == ast.I16_TYPE or got == ast.I8_TYPE or got == ast.U64_TYPE or got == ast.U32_TYPE or got == ast.U16_TYPE or got == ast.U8_TYPE
+	}
+	if expected == ast.F64_TYPE {
+		return got == ast.F32_TYPE or got == ast.I64_TYPE or got == ast.I32_TYPE or got == ast.I16_TYPE or got == ast.I8_TYPE or got == ast.U64_TYPE or got == ast.U32_TYPE or got == ast.U16_TYPE or got == ast.U8_TYPE
+	}
+
 	return false
 }
 
