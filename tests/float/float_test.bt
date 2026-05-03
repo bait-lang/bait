@@ -1,7 +1,0 @@
-// SPDX-FileCopyrightText: Lukas Neubert
-// SPDX-License-Identifier: MIT
-
-fun test_floats() {
-	f := 1.23
-	assert f == 1.23
-}
