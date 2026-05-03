@@ -131,8 +131,8 @@ pub fun (t Table) register_builtins(){
 	_ = t.register_num('u16')
 	_ = t.register_num('u32')
 	_ = t.register_num('u64')
-	_ = t.register_sym(TypeSymbol{ mix_name = 'f32' })
-	_ = t.register_sym(TypeSymbol{ mix_name = 'f64' })
+	_ = t.register_num('f32')
+	_ = t.register_num('f64')
 	_ = t.register_sym(TypeSymbol{ mix_name = 'bool' })
 	_ = t.register_sym(TypeSymbol{
 		mix_name = 'string'
