@@ -17,7 +17,7 @@ fun (mut g Gen) expr(expr ast.Expr) {
 		ast.CharLiteral { g.char_literal(expr) }
 		ast.ComptimeVar { g.comptime_var(expr) }
 		ast.EnumVal { g.enum_val(expr) }
-		ast.FloatLiteral { panic('floats not implemented') } // TODO
+		ast.FloatLiteral { g.float_literal(expr) }
 		ast.HashExpr { g.hash_expr(expr) }
 		ast.Ident { g.ident(expr) }
 		ast.IfMatch { g.if_match(expr) }
@@ -129,6 +129,10 @@ fun (mut g Gen) char_literal(node ast.CharLiteral) {
 
 fun (mut g Gen) enum_val(node ast.EnumVal) {
 	g.write(c_esc(node.val))
+}
+
+fun (mut g Gen) float_literal(node ast.FloatLiteral) {
+	g.write(node.val)
 }
 
 fun (mut g Gen) hash_expr(node ast.HashExpr) {

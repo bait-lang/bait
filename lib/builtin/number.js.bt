@@ -47,6 +47,14 @@ pub fun u64(n #JS.Any) u64 {
 	return #JS.'BigInt.asUintN(64, n)' as u64
 }
 
+pub fun f32(n #JS.Any) f32 {
+	return #JS.'Math.fround(n)' as f32
+}
+
+pub fun f64(n #JS.Any) f64 {
+	return #JS.'Number(n)' as f64
+}
+
 pub fun (n i8) str() string {
 	return from_js_string(#JS.'n.toString()' as #JS.String)
 }
