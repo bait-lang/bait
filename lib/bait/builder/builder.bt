@@ -259,7 +259,11 @@ fun (mut b Builder) code_gen_c() i32 {
 	if b.prefs.is_library {
 		cflags += '-shared -fPIC '
 	}
-	comp_res := os.system('${b.prefs.cc} ${tmp_c_path} ${cflags} -o ${b.prefs.out_name}')
+	mut lflags := ''
+	if b.prefs.os != .windows {
+		lflags += '-lm '
+	}
+	comp_res := os.system('${b.prefs.cc} ${tmp_c_path} ${cflags} -o ${b.prefs.out_name} ${lflags}')
 	if comp_res != 0 {
 		return comp_res
 	}
