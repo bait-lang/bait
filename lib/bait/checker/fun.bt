@@ -383,7 +383,15 @@ fun (mut c Checker) call_args(mut node ast.CallExpr, poffset i32, generic_names 
 		}
 
 		if not c.check_types(arg.typ, param_type) {
-			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
+			if c.can_promote(arg.typ, param_type) {
+				arg.expr = ast.AsCast{
+					expr = arg.expr
+					target = param_type
+				}
+				arg.typ = param_type
+			} else {
+				c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
+			}
 		}
 
 		if arg.expr is ast.Ident {
