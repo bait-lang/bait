@@ -1,0 +1,17 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+import math
+
+fun test_max() {
+	assert math.max(1, 2) == 2
+	assert math.max(5, 3) == 5
+	assert math.max(4, 4) == 4
+	assert math.max(1.5, 2.5) == 2.5
+}
+
+fun test_min() {
+	assert math.min(1, 2) == 1
+	assert math.min(5, 3) == 3
+	assert math.min(4, 4) == 4
+	assert math.min(1.9, 1.91) == 1.9
+}
