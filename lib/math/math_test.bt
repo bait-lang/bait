@@ -15,3 +15,35 @@ fun test_min() {
 	assert math.min(4, 4) == 4
 	assert math.min(1.9, 1.91) == 1.9
 }
+
+fun test_pow() {
+	// Basic integer powers
+	assert math.pow(2, 0) == 1
+	assert math.pow(2, 1) == 2
+	assert math.pow(2, 3) == 8
+	assert math.pow(2, 10) == 1024
+
+	// Negative exponents
+	assert math.pow(2, -1) == 0.5
+	assert math.pow(2, -2) == 0.25
+	assert math.pow(10, -1) == 0.1
+
+	// Fractional exponents (square root)
+	assert math.pow(4, 0.5) == 2
+	assert math.pow(9, 0.5) == 3
+	assert math.pow(16, 0.5) == 4
+
+	// Base of 1
+	assert math.pow(1, 5) == 1
+	assert math.pow(1, 100) == 1
+	assert math.pow(1, -5) == 1
+
+	// Base of 0
+	assert math.pow(0, 5) == 0
+	assert math.pow(0, 0) == 1 // By convention: 0^0 = 1
+
+	// Larger bases
+	assert math.pow(3, 4) == 81
+	assert math.pow(5, 3) == 125
+	assert math.pow(10, 2) == 100
+}
