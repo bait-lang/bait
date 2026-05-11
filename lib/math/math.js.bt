@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 package math
 
@@ -8,4 +8,8 @@ pub fun ceil(x f64) f64 {
 
 pub fun log2(x f64) f64 {
 	return #JS.'Math.log2(x)' as f64
+}
+
+pub fun pow(base f64, exponent f64) f64 {
+	return #JS.'Math.pow(base, exponent)' as f64
 }

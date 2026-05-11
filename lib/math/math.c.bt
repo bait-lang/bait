@@ -1,0 +1,11 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+package math
+
+import 'math.h' as #C._
+
+pub fun #C.pow(base f64, exponent f64) f64
+
+pub fun pow(base f64, exponent f64) f64 {
+	return #C.'pow(base, exponent)' as f64
+}

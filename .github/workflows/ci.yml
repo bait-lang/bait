@@ -75,6 +75,7 @@ jobs:
           # bait test -b c lib/cli
           bait test -b c lib/encoding
           bait test -b c lib/hash
+          bait test -b c lib/math
           bait test -b c lib/os
           bait test -b c lib/strings
       # - name: Run tool tests
