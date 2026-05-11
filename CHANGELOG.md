@@ -11,6 +11,8 @@ All notable changes are documented in this file.
   - _[C]_ []string method: `join()`
 - os:
   - _[C]_ functions: `read_lines()`, `getenv()`, `setenv()`, `tmp_dir()`
+- math:
+  - add function `pow()`
 
 ### C Backend
 - Implement hashmaps
@@ -31,6 +33,7 @@ All notable changes are documented in this file.
 ### Other Changes
 - gen: do not generate main call in script mode
 - gen: Handle more expressions in failed asserts
+- checker: fix number promotion in function call arguments
 - remove `test-all` tool
 
 
