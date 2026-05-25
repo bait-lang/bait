@@ -1,0 +1,35 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+interface Sensor {
+	unit string
+	read_val() f64
+}
+
+struct TemperatureSensor implements Sensor {
+	unit string := '°C'
+}
+
+fun (t TemperatureSensor) read_val() f64 {
+	return 21.5
+}
+
+struct PressureSensor implements Sensor {
+	unit string := 'hPa'
+}
+
+fun (p PressureSensor) read_val() f64 {
+	return 1013.25
+}
+
+fun test_interfaces() {
+	ts := TemperatureSensor{}
+	ps := PressureSensor{}
+
+	mut wheater_sensors := []Sensor{}
+	wheater_sensors.push(ts)
+	wheater_sensors.push(ps)
+
+	assert wheater_sensors[0].read_val() == 21.5
+	assert wheater_sensors[1].read_val() == 1013.25
+}

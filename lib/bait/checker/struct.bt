@@ -45,7 +45,58 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 		}
 	}
 
+	c.check_struct_interfaces(node)
+
 	c.cur_generic_names = prev_generic_names
+}
+
+fun (mut c Checker) check_struct_interfaces(node ast.StructDecl) {
+	struct_sym := c.table.get_sym(node.typ)
+	for iface_typ in node.interfaces {
+		iface_sym := c.table.get_final_sym(c.table.get_sym(iface_typ))
+		if not c.does_type_exist(iface_sym, node.pos) {
+			continue
+		}
+		if iface_sym.kind != .interface_ {
+			c.error('`${c.table.type_name(iface_typ)}` is not an interface', node.pos)
+			continue
+		}
+
+		iface_info := iface_sym.info as ast.StructInfo
+		for iface_field in iface_info.fields {
+			struct_field := struct_sym.find_field(iface_field.name, c.table)
+			if struct_field.name.length == 0 {
+				c.error('struct `${node.name}` does not implement field `${iface_field.name}` of interface `${iface_sym.mix_name}`', node.pos)
+				continue
+			}
+			if not c.check_types(struct_field.typ, iface_field.typ) {
+				c.error('field `${node.name}.${iface_field.name}` has type `${c.table.type_name(struct_field.typ)}` but `${iface_sym.mix_name}` expects `${c.table.type_name(iface_field.typ)}`', node.pos)
+			}
+		}
+
+		for iface_method in iface_sym.methods {
+			struct_method := c.table.get_method(struct_sym, iface_method.name)
+			if struct_method.name.length == 0 {
+				c.error('struct `${node.name}` does not implement method `${iface_method.name}()` of interface `${iface_sym.mix_name}`', node.pos)
+				continue
+			}
+
+			if iface_method.params.length != struct_method.params.length {
+				c.error('method `${node.name}.${iface_method.name}` has incompatible parameter count for interface `${iface_sym.mix_name}`', node.pos)
+				continue
+			}
+
+			for i := 1; i < iface_method.params.length; i += 1 {
+				if not c.check_types(struct_method.params[i].typ, iface_method.params[i].typ) {
+					c.error('method `${node.name}.${iface_method.name}` has incompatible parameter type at position ${i}', node.pos)
+				}
+			}
+
+			if not c.check_types(struct_method.return_type, iface_method.return_type) {
+				c.error('method `${node.name}.${iface_method.name}` has return type `${c.table.type_name(struct_method.return_type)}` but `${iface_sym.mix_name}` expects `${c.table.type_name(iface_method.return_type)}`', node.pos)
+			}
+		}
+	}
 }
 
 fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {

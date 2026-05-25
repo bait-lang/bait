@@ -3,7 +3,6 @@
 package js
 
 import bait.ast
-import bait.errors
 import bait.token
 import bait.util.escape
 
@@ -217,11 +216,7 @@ fun (mut g Gen) static_decl(node ast.StaticDecl){
 }
 
 fun (mut g Gen) interface_decl(node ast.InterfaceDecl){
-	if node.lang != .bait {
-		return
-	}
-	errors.err(g.path, node.pos, 'Bait interfaces are not yet supported')
-	exit(1)
+	_ = node
 }
 
 fun (mut g Gen) return_stmt(node ast.ReturnStmt){

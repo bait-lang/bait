@@ -148,6 +148,7 @@ pub struct StructDecl {
 	pub name string
 	pub typ Type
 	pub fields []StructField
+	pub interfaces []Type
 	pub generic_names []string
 	pub pos token.Pos
 }

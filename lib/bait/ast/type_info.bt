@@ -29,6 +29,7 @@ pub struct MapInfo{
 
 pub struct StructInfo{
 	pub fields []StructField
+	pub interfaces []Type
 	pub generic_names []string
 }
 
