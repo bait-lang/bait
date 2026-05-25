@@ -3,11 +3,13 @@
 
 interface Sensor {
 	unit string
+	interval f64
 	read_val() f64
 }
 
 struct TemperatureSensor implements Sensor {
 	unit string := '°C'
+	interval f64
 }
 
 fun (t TemperatureSensor) read_val() f64 {
@@ -16,6 +18,7 @@ fun (t TemperatureSensor) read_val() f64 {
 
 struct PressureSensor implements Sensor {
 	unit string := 'hPa'
+	interval f64
 }
 
 fun (p PressureSensor) read_val() f64 {
@@ -23,8 +26,12 @@ fun (p PressureSensor) read_val() f64 {
 }
 
 fun test_interfaces() {
-	ts := TemperatureSensor{}
-	ps := PressureSensor{}
+	ts := TemperatureSensor{
+		interval = 1.0
+	}
+	ps := PressureSensor{
+		interval = 2.5
+	}
 
 	mut wheater_sensors := []Sensor{}
 	wheater_sensors.push(ts)
