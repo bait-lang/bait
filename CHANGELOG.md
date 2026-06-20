@@ -24,6 +24,9 @@ All notable changes are documented in this file.
 - Fix loop labels
 - Increase test coverage
 
+### Performance
+- gen: Improve Performance by optimizing reserved keyword lookup (~5x for self compile)
+
 ### CLI and Tooling
 - check-md: add `--backend` option
 

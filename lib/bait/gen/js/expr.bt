@@ -202,6 +202,8 @@ fun (mut g Gen) index_expr(node ast.IndexExpr){
 
 fun (mut g Gen) infix_expr(node ast.InfixExpr){
 	lsym := g.concrete_sym(node.left_type)
+
+	// Operator overload
 	overload := g.table.get_overload(lsym, node.op.js_repr())
 	if overload.name.length > 0 {
 		final_lsym := g.table.get_sym(overload.params[0].typ)
