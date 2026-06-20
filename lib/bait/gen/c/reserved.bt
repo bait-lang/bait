@@ -1,0 +1,45 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+package c
+
+// References:
+//   - C99 reserved keywords. See https://en.cppreference.com/w/c/keyword
+//   - Builtin function and type names
+
+// Not listed as already reserved in Bait: if
+// Not listed as already reserved in Bait: for
+const RESERVED_LEN_3 := [
+	'int', 'DIR',
+]
+// Not listed as already reserved in Bait: else, enum
+const RESERVED_LEN_4 := [
+	'goto', 'main', 'exit', 'void', 'long', 'case', 'char', 'auto',
+]
+// Not listed as already reserved in Bait: const, break
+const RESERVED_LEN_5 := [
+	'while', 'union', 'short', 'float',
+]
+// Not listed as already reserved in Bait: return, struct, static
+const RESERVED_LEN_6 := [
+	'switch', 'signed', 'sizeof', 'inline', 'extern', 'double',
+]
+const RESERVED_LEN_7 := [
+	'typedef', 'default',
+]
+// Not listed as already reserved in Bait: continue
+const RESERVED_LEN_8 := [
+	'volatile', 'unsigned', 'restrict', 'register',
+]
+
+fun is_reserved(name string) bool {
+	return match name.length {
+		2 { name == 'do' }
+		3 { RESERVED_LEN_3.contains(name) }
+		4 { RESERVED_LEN_4.contains(name) }
+		5 { RESERVED_LEN_5.contains(name) }
+		6 { RESERVED_LEN_6.contains(name) }
+		7 { RESERVED_LEN_7.contains(name) }
+		8 { RESERVED_LEN_8.contains(name) }
+		else { false }
+	}
+}

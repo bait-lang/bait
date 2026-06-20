@@ -6,13 +6,6 @@ import bait.preference
 import bait.ast
 import bait.errors
 
-const C_RESERVED := [
-	// C99 reserved keywords. See https://en.cppreference.com/w/c/keyword
-	'auto', 'break', 'case', 'char', 'const', 'continue', 'default', 'do', 'double', 'else', 'enum', 'extern', 'float', 'for', 'goto', 'if', 'inline', 'int', 'long', 'register', 'restrict', 'return', 'short', 'signed', 'sizeof', 'static', 'struct', 'switch', 'typedef', 'union', 'unsigned', 'void', 'volatile', 'while',
-	// Builtin function and type names
-	'main', 'exit', 'DIR',
-]
-
 struct Gen {
 	pref preference.Prefs
 	table ast.Table
@@ -180,7 +173,7 @@ fun c_name(n string) string {
 
 fun c_esc(n string) string {
 	name := c_name(n)
-	if C_RESERVED.contains(name) {
+	if is_reserved(name) {
 		return 'bait_${name}'
 	}
 	return name

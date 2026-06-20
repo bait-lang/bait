@@ -7,7 +7,9 @@ package js
 //   - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
 
 // Not listed as already reserved in Bait: as, if, in, is
-const RESERVED_LEN_2 := ['do', 'of']
+const RESERVED_LEN_2 := [
+	'do', 'of'
+]
 // Not listed as already reserved in Bait: for
 const RESERVED_LEN_3 := [
 	'var', 'let', 'new', 'try', 'get', 'set', 'NaN', 'Map', 'Set'
@@ -40,12 +42,11 @@ const RESERVED_LEN_10 := [
 	'instanceof', 'implements', 'globalThis', 'parseFloat', 'RangeError', 'Uint8Array', 'Int16Array',
 ]
 const RESERVED_LONGER := [
-	 'decodeURIComponent', 'encodeURIComponent', 'AggregateError', 'ReferenceError', 'SyntaxError', 'InternalError', 'Uint8ClampedArray', 'Uint16Array', 'Int32Array', 'Uint32Array', 'Float32Array', 'Float64Array', 'BigInt64Array', 'BigUint64Array', 'ArrayBuffer', 'SharedArrayBuffer', 'FinalizationRegistry', 'GeneratorFunction', 'AsyncFunction', 'AsyncGenerator', 'AsyncGeneratorFunction',
+	'decodeURIComponent', 'encodeURIComponent', 'AggregateError', 'ReferenceError', 'SyntaxError', 'InternalError', 'Uint8ClampedArray', 'Uint16Array', 'Int32Array', 'Uint32Array', 'Float32Array', 'Float64Array', 'BigInt64Array', 'BigUint64Array', 'ArrayBuffer', 'SharedArrayBuffer', 'FinalizationRegistry', 'GeneratorFunction', 'AsyncFunction', 'AsyncGenerator', 'AsyncGeneratorFunction',
 ]
 
 fun is_reserved(name string) bool {
 	return match name.length {
-		1 { false }
 		2 { RESERVED_LEN_2.contains(name) }
 		3 { RESERVED_LEN_3.contains(name) }
 		4 { RESERVED_LEN_4.contains(name) }
@@ -53,6 +54,8 @@ fun is_reserved(name string) bool {
 		6 { RESERVED_LEN_6.contains(name) }
 		7 { RESERVED_LEN_7.contains(name) }
 		8 { RESERVED_LEN_8.contains(name) }
+		9 { RESERVED_LEN_9.contains(name) }
+		10 { RESERVED_LEN_10.contains(name) }
 		else { RESERVED_LONGER.contains(name) }
 	}
 }
