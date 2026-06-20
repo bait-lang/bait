@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 package js
 
@@ -6,42 +6,6 @@ import bait.preference
 import bait.ast
 import bait.errors
 import bait.token
-
-// References:
-//   - https://tc39.es/ecma262/multipage/ecmascript-language-lexical-grammar.html#sec-keywords-and-reserved-words
-//   - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
-const JS_RESERVED := [
-	// Reserved keywords
-	'await', 'break', 'case', 'catch', 'class', 'const', 'continue', 'debugger', 'default', 'delete', 'do', 'else', 'enum', 'export', 'extends', 'false', 'finally', 'for', 'function', 'if', 'import', 'in', 'instanceof', 'new', 'null', 'return', 'super', 'switch', 'this', 'throw', 'true', 'try', 'typeof', 'var', 'void', 'while', 'with', 'yield',
-	// Disallowed in strict mode
-	'let', 'static', 'implements', 'interface', 'package', 'private', 'protected', 'public',
-	// Contextual keywords
-	'as', 'async', 'from', 'get', 'meta', 'of', 'set', 'target',
-	// Standard objects
-	'globalThis', 'Infinity', 'NaN', 'undefined',
-	// Global functions
-	'eval', 'isFinite', 'isNaN', 'parseFloat', 'parseInt', 'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent', 'escape', 'unescape',
-	// Fundamental and Error objects
-	'Object', 'Function', 'Boolean', 'Symbol', 'Error', 'AggregateError', 'EvalError', 'RangeError', 'ReferenceError', 'SyntaxError', 'TypeError', 'URIError', 'InternalError',
-	// Numbers and dates
-	'Number', 'BigInt', 'Math', 'Date',
-	// Text processing
-	'String', 'RegExp',
-	// Indexed collections
-	'Array', 'Int8Array', 'Uint8Array', 'Uint8ClampedArray', 'Int16Array', 'Uint16Array', 'Int32Array', 'Uint32Array', 'Float32Array', 'Float64Array', 'BigInt64Array', 'BigUint64Array',
-	// Keyed collections
-	'Map', 'Set', 'WeakMap', 'WeakSet',
-	// Structured data
-	'ArrayBuffer', 'SharedArrayBuffer', 'Atomics', 'DataView', 'JSON',
-	// Memory
-	'FinalizationRegistry', 'WeakRef',
-	// Control abstraction objects
-	'Iterator', 'Promise', 'Generator', 'GeneratorFunction', 'AsyncFunction', 'AsyncGenerator', 'AsyncGeneratorFunction',
-	// Reflection
-	'Reflect', 'Proxy',
-	// Internationalization
-	'Intl',
-]
 
 struct Gen {
 	pref preference.Prefs
@@ -246,7 +210,7 @@ fun js_name(n string) string {
 
 fun js_esc(n string) string {
 	name := js_name(n)
-	if JS_RESERVED.contains(name) {
+	if is_reserved(name) {
 		return 'bait_${name}'
 	}
 	return name

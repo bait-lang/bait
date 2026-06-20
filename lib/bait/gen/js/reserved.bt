@@ -1,0 +1,58 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+package js
+
+// References:
+//   - https://tc39.es/ecma262/multipage/ecmascript-language-lexical-grammar.html#sec-keywords-and-reserved-words
+//   - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
+
+// Not listed as already reserved in Bait: as, if, in, is
+const RESERVED_LEN_2 := ['do', 'of']
+// Not listed as already reserved in Bait: for
+const RESERVED_LEN_3 := [
+	'var', 'let', 'new', 'try', 'get', 'set', 'NaN', 'Map', 'Set'
+]
+// Not listed as already reserved in Bait: else, enum, true
+const RESERVED_LEN_4 := [
+	'eval', 'from', 'meta', 'with', 'void', 'null', 'case', 'this', 'Math', 'Date', 'JSON', 'Intl'
+]
+// Not listed as already reserved in Bait: const, false, break
+const RESERVED_LEN_5 := [
+	'isNaN', 'async', 'while', 'yield', 'await', 'super', 'catch', 'class', 'throw', 'Error', 'Proxy', 'Array'
+]
+// Not listed as already reserved in Bait: import, typeof, static, return
+const RESERVED_LEN_6 := [
+	'delete', 'export', 'switch', 'public', 'target', 'escape', 'Object', 'Symbol', 'Number', 'BigInt', 'String', 'RegExp',
+]
+// Not listed as already reserved in Bait: package
+const RESERVED_LEN_7 := [
+	'finally', 'default', 'extends', 'private', 'Boolean', 'WeakMap', 'WeakSet', 'Atomics', 'WeakRef', 'Promise', 'Reflect',
+]
+// Not listed as already reserved in Bait: continue
+const RESERVED_LEN_8 := [
+	'debugger', 'function', 'Infinity', 'isFinite', 'parseInt', 'unescape', 'Function', 'URIError', 'DataView', 'Iterator',
+]
+// Not listed as already reserved in Bait: interface
+const RESERVED_LEN_9 := [
+	'protected', 'undefined', 'decodeURI', 'encodeURI', 'EvalError', 'TypeError', 'Int8Array', 'Generator',
+]
+const RESERVED_LEN_10 := [
+	'instanceof', 'implements', 'globalThis', 'parseFloat', 'RangeError', 'Uint8Array', 'Int16Array',
+]
+const RESERVED_LONGER := [
+	 'decodeURIComponent', 'encodeURIComponent', 'AggregateError', 'ReferenceError', 'SyntaxError', 'InternalError', 'Uint8ClampedArray', 'Uint16Array', 'Int32Array', 'Uint32Array', 'Float32Array', 'Float64Array', 'BigInt64Array', 'BigUint64Array', 'ArrayBuffer', 'SharedArrayBuffer', 'FinalizationRegistry', 'GeneratorFunction', 'AsyncFunction', 'AsyncGenerator', 'AsyncGeneratorFunction',
+]
+
+fun is_reserved(name string) bool {
+	return match name.length {
+		1 { false }
+		2 { RESERVED_LEN_2.contains(name) }
+		3 { RESERVED_LEN_3.contains(name) }
+		4 { RESERVED_LEN_4.contains(name) }
+		5 { RESERVED_LEN_5.contains(name) }
+		6 { RESERVED_LEN_6.contains(name) }
+		7 { RESERVED_LEN_7.contains(name) }
+		8 { RESERVED_LEN_8.contains(name) }
+		else { RESERVED_LONGER.contains(name) }
+	}
+}
