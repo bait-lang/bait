@@ -1,7 +1,20 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 
 import hash.fnv1a
+
+// Empty input should return the offset constant
+fun test_empty_inputs() {
+	b := fnv1a.sum32([]u8)
+	s := fnv1a.sum32_string('')
+	assert b == s
+	assert b == 2166136261
+
+	b64 := fnv1a.sum64([]u8)
+	s64 := fnv1a.sum64_string('')
+	assert b64 == s64
+	assert b64 == 14695981039346656037
+}
 
 fun test_fnv1a_32() {
 	s := 'input'
