@@ -3,11 +3,14 @@
 
 package fnv1a
 
+// FNV hash parameters.
+// See https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function#FNV_hash_parameters
 const prime_32 := 16777619 as u32
 const offset_basis_32 := 2166136261 as u32
 const prime_64 := 1099511628211 as u64
 const offset_basis_64 := 14695981039346656037 as u64
 
+// Calculates 32-bit hash of the given byte array.
 pub fun sum32(data []u8) u32 {
 	mut hash := offset_basis_32
 	for d in data {
@@ -16,6 +19,7 @@ pub fun sum32(data []u8) u32 {
 	return hash
 }
 
+// Calculates 64-bit hash of the given byte array.
 pub fun sum64(data []u8) u64 {
 	mut hash := offset_basis_64
 	for d in data {
@@ -24,6 +28,7 @@ pub fun sum64(data []u8) u64 {
 	return hash
 }
 
+// Calculates 32-bit hash of the given string.
 pub fun sum32_string(data string) u32 {
 	mut hash := offset_basis_32
 	for d in data {
@@ -32,6 +37,7 @@ pub fun sum32_string(data string) u32 {
 	return hash
 }
 
+// Calculates 64-bit hash of the given string.
 pub fun sum64_string(data string) u64 {
 	mut hash := offset_basis_64
 	for d in data {
