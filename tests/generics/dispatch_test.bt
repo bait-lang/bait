@@ -1,0 +1,18 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+fun inner_type_name[V](v V) string {
+	return typeof(v)
+}
+
+fun outer_type_name[T](v T) string {
+	return inner_type_name(v)
+}
+
+fun test_nested_generic_dispatch() {
+	// The string instantiation runs first: the later instantiations must not
+	// reuse the inner call types inferred during the first pass.
+	assert outer_type_name('hi') == 'string'
+	assert outer_type_name(42) == 'i32'
+	assert outer_type_name(true) == 'bool'
+}
