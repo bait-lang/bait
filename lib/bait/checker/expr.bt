@@ -6,6 +6,8 @@ import bait.ast
 import bait.context
 import bait.token
 
+const FIELD_ACCESS_KINDS := [ast.TypeKind.struct_, .interface_, .array, .string, .map]
+
 fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
 	expected_save := c.expected_type
 	t := match expr {
@@ -322,7 +324,7 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 	gen_sym := c.table.get_sym(node.expr_type)
 	sym := c.table.get_final_sym(c.table.unwrap_generic(gen_sym))
 
-	if [ast.TypeKind.struct_, .interface_, .array, .string, .map].contains(sym.kind) {
+	if FIELD_ACCESS_KINDS.contains(sym.kind) {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
 			c.error('${sym.mix_name} has no field ${node.field_name}', node.pos)

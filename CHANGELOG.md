@@ -26,6 +26,7 @@ All notable changes are documented in this file.
 
 ### Performance
 - gen: Improve Performance by optimizing reserved keyword lookup (~5x for self compile)
+- Store arrays in hot lookup paths as constants
 - token: Utilize enum ranges for token kind lookups instead of array scans
 
 ### CLI and Tooling

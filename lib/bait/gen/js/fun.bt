@@ -4,6 +4,9 @@ package js
 
 import bait.ast
 
+const ARRAY_PUSH_METHODS := ['push', 'push_many', 'push_many_with_len']
+const PRINT_FUNS := ['println', 'eprintln', 'print', 'eprint']
+
 fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	if node.generic_names.length > 0 and g.cur_concrete_types.length == 0 {
 		gtypes := g.table.generic_fun_types[node.key]
@@ -121,7 +124,7 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 
 		sym := g.table.get_sym(node.left_type)
 		final_sym := g.table.get_final_sym(sym)
-		if final_sym.kind == .array and ['push', 'push_many', 'push_many_with_len'].contains(node.name) {
+		if final_sym.kind == .array and ARRAY_PUSH_METHODS.contains(node.name) {
 			g.gen_array_method(node.name, node, final_sym)
 			return
 		}
@@ -137,7 +140,7 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 
 	g.write(name)
 
-	if not node.is_method and ['println', 'eprintln', 'print', 'eprint'].contains(node.name) {
+	if not node.is_method and PRINT_FUNS.contains(node.name) {
 		g.write('(')
 		g.expr_to_string(node.args[0].expr, node.args[0].typ)
 		g.write(')')
