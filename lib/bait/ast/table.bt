@@ -63,7 +63,13 @@ pub fun (mut t Table) register_concrete(key string, concrete []Type) bool {
 		return false
 	}
 
-	t.generic_fun_types[key].push(concrete)
+	// Store a copy: `concrete` is often a call node's `concrete_types` field,
+	// which later checker passes overwrite in place.
+	mut copy := []Type
+	for typ in concrete {
+		copy.push(typ)
+	}
+	t.generic_fun_types[key].push(copy)
 	return true
 }
 
