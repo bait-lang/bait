@@ -6,6 +6,11 @@ import bait.ast
 import bait.context
 import bait.token
 
+const ARRAY_PUSH_METHODS := ['push', 'push_many', 'push_many_with_len']
+const ARRAY_ELEM_ARG_METHODS := ['push', 'push_many_with_len']
+const ARRAY_CONCAT_METHODS := ['concat', 'push_many']
+const ARRAY_RETURN_ARRAY_METHODS := ['filter', 'reverse', 'slice', 'copy', 'from_js_arr']
+
 fun (mut c Checker) anon_fun(node ast.AnonFun) ast.Type {
 	root_fun_decl := c.cur_fun
 	c.cur_fun = node.decl
@@ -263,7 +268,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 
 		// The following is required for some builtin array and map methods
 		node.left_type = def.params[0].typ
-		if final_sym.kind == .array and ['push', 'push_many_with_len', 'push_many'].contains(node.name) {
+		if final_sym.kind == .array and ARRAY_PUSH_METHODS.contains(node.name) {
 			node.left_type = left_expr_type
 		}
 
@@ -294,7 +299,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	// Array methods with one argument of `any` type, expecting the element
-	if final_sym.kind == .array and ['push', 'push_many_with_len'].contains(node.name) {
+	if final_sym.kind == .array and ARRAY_ELEM_ARG_METHODS.contains(node.name) {
 		mut arg := node.args[0]
 		info := final_sym.info as ast.ArrayInfo
 		c.expected_type = info.elem_type
@@ -305,7 +310,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		return node.return_type
 	}
 	// Array methods with one argument of `array` type, expecting the specific array type
-	if final_sym.kind == .array and ['concat', 'push_many'].contains(node.name) {
+	if final_sym.kind == .array and ARRAY_CONCAT_METHODS.contains(node.name) {
 		mut arg := node.args[0]
 		c.expected_type = left_expr_type
 		arg.typ = c.expr(arg.expr)
@@ -319,7 +324,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	c.call_args(mut node, arg_offset, def.generic_names, def.params)
 
 	// Array methods with return type `array`
-	if left_sym.kind == .array and ['filter', 'reverse', 'slice', 'copy', 'from_js_arr'].contains(node.name) {
+	if left_sym.kind == .array and ARRAY_RETURN_ARRAY_METHODS.contains(node.name) {
 		return left_expr_type
 	}
 

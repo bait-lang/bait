@@ -4,6 +4,10 @@ package checker
 
 import bait.ast
 
+const NON_OVERLOADABLE_OPS := ['!=', '>', '<=', '>=']
+const MATH_OVERLOADABLE_OPS := ['+', '-', '*', '/', '%']
+const BASE_OVERLOADABLE_OPS := ['==', '<']
+
 enum AttrValue {
 	none
 	optional
@@ -65,12 +69,12 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 	}
 
 	// Check the operator can be overloaded
-	if ['!=', '>', '<=', '>='].contains(attr.value) {
+	if NON_OVERLOADABLE_OPS.contains(attr.value) {
 		c.error('cannot overload "!=", ">", "<=" and ">=" as they are generated from "==" and "<"', attr.pos)
 		return
 	}
-	is_math_overload := ['+', '-', '*', '/', '%'].contains(attr.value)
-	if not is_math_overload and not ['==', '<'].contains(attr.value) {
+	is_math_overload := MATH_OVERLOADABLE_OPS.contains(attr.value)
+	if not is_math_overload and not BASE_OVERLOADABLE_OPS.contains(attr.value) {
 		c.error('cannot overload "${attr.value}"', attr.pos)
 		return
 	}
