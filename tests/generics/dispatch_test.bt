@@ -9,10 +9,27 @@ fun outer_type_name[T](v T) string {
 	return inner_type_name(v)
 }
 
+fun swap_inner[A, B](a A, b B) string {
+	return typeof(a) + '_' + typeof(b)
+}
+
+fun swap_outer[T, U](t T, u U) string {
+	return swap_inner(u, t)
+}
+
 fun test_nested_generic_dispatch() {
 	// The string instantiation runs first: the later instantiations must not
 	// reuse the inner call types inferred during the first pass.
 	assert outer_type_name('hi') == 'string'
 	assert outer_type_name(42) == 'i32'
 	assert outer_type_name(true) == 'bool'
+}
+
+fun test_nested_generic_dispatch_reordered() {
+	// The inner call passes its arguments in a different order than the
+	// enclosing fun's generic parameters: the concrete types of the inner
+	// call must be resolved from the argument bindings, not from the
+	// position of the generic parameter in the enclosing fun.
+	assert swap_outer('hi', 42) == 'i32_string'
+	assert swap_outer(42, 'hi') == 'string_i32'
 }
