@@ -357,24 +357,16 @@ fun (mut c Checker) set_conc_types(mut node ast.CallExpr, generic_names []string
 
 // TODO clean this up
 fun (mut c Checker) call_args(mut node ast.CallExpr, poffset i32, generic_names []string, params []ast.Param) {
+	// Inside a generic instantiation the shared AST node may already hold
+	// concrete types from a previous pass, so always re-resolve those calls.
 	should_resolve_generics := generic_names.length != node.concrete_types.length
-	mut save_as_concrete := false
+		or c.cur_concrete_types.length > 0
+	mut resolved := []ast.Type{length = generic_names.length}
 
 	for i, mut arg in node.args {
 		param := params[i + poffset]
 		mut param_type := param.typ
 		psym := c.table.get_sym(param_type)
-
-		if should_resolve_generics and psym.kind == .generic {
-			gi := generic_names.index(psym.mix_name)
-			if gi < node.concrete_types.length {
-				param_type = node.concrete_types[gi]
-			} else if gi < c.cur_concrete_types.length {
-				node.concrete_types.push(c.cur_concrete_types[gi])
-			} else {
-				save_as_concrete = true
-			}
-		}
 
 		c.expected_type = param_type
 		arg.typ = c.expr(arg.expr)
@@ -382,9 +374,32 @@ fun (mut c Checker) call_args(mut node ast.CallExpr, poffset i32, generic_names 
 			continue
 		}
 
-		if save_as_concrete {
-			node.concrete_types.push(arg.typ)
-			save_as_concrete = false
+		if should_resolve_generics and psym.kind == .generic {
+			gi := generic_names.index(psym.mix_name)
+			// Resolve the concrete type from the actual argument binding:
+			// `gi` indexes the callee's generic names, while
+			// `c.cur_concrete_types` follows the enclosing fun's order,
+			// so indexing it with `gi` alone yields the wrong type when the
+			// generic parameters are passed in a different order.
+			arg_sym := c.table.get_sym(arg.typ)
+			if arg_sym.kind == .generic {
+				pi := c.cur_fun.generic_names.index(arg_sym.mix_name)
+				if pi >= 0 and pi < c.cur_concrete_types.length {
+					arg.typ = c.cur_concrete_types[pi]
+				}
+			}
+			// A generic name bound to several parameters stays consistent.
+			if resolved[gi] == 0 {
+				resolved[gi] = arg.typ
+				// Generic fun bodies are re-checked once per concrete instantiation on
+				// shared AST nodes: overwrite entries left behind by previous passes.
+				if gi < node.concrete_types.length {
+					node.concrete_types[gi] = arg.typ
+				} else {
+					node.concrete_types.push(arg.typ)
+				}
+			}
+			param_type = resolved[gi]
 		}
 
 		if not c.check_types(arg.typ, param_type) {
@@ -413,6 +428,12 @@ fun (mut c Checker) call_args(mut node ast.CallExpr, poffset i32, generic_names 
 				c.error('add `mut` to argument for parameter `${param.name}`', expr.pos)
 			}
 		}
+	}
+
+	if c.cur_concrete_types.length > 0 {
+		// Record the resolved types for the gen backend, which re-walks the
+		// fun body once per instantiation without access to argument bindings.
+		node.register_inst_types(ast.inst_key(c.cur_concrete_types), node.concrete_types)
 	}
 }
 
