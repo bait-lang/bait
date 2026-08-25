@@ -127,26 +127,20 @@ pub fun (tok Token) has_val() bool {
 	return tok < ._last_with_val
 }
 
-const COMPARE_KINDS := [Token.eq, .ne, .lt, .gt, .le, .ge, .key_is]
-const MATH_KINDS := [Token.plus, .minus, .mul, .div, .mod]
-const OTHER_INFIXES := [Token.key_and, .key_or]
-const MATH_ASSIGNS := [Token.plus_assign, .minus_assign, .mul_assign, .div_assign, .mod_assign]
-const BITWISE_INFIX := [Token.amp, .pipe, .caret, .lshift, .rshift]
-
 pub fun (kind Token) is_compare() bool {
-	return COMPARE_KINDS.contains(kind)
+	return (kind >= .eq and kind <= .ge) or kind == .key_is
 }
 
 pub fun (kind Token) is_infix() bool {
-	return kind.is_compare() or kind.is_math() or OTHER_INFIXES.contains(kind) or kind.is_bitwise()
+	return kind.is_compare() or kind.is_math() or kind == .key_and or kind == .key_or or kind.is_bitwise()
 }
 
 pub fun (tok Token) is_math() bool {
-	return MATH_KINDS.contains(tok)
+	return tok >= .plus and tok <= .mod
 }
 
 pub fun (tok Token) is_bitwise() bool {
-	return BITWISE_INFIX.contains(tok)
+	return tok >= .amp and tok <= .rshift
 }
 
 pub fun (kind Token) is_assign() bool {
@@ -154,7 +148,7 @@ pub fun (kind Token) is_assign() bool {
 }
 
 pub fun (tok Token) is_math_assign() bool {
-	return MATH_ASSIGNS.contains(tok)
+	return tok >= .plus_assign and tok <= .mod_assign
 }
 
 pub fun (tok Token) math_from_assign() Token {
