@@ -205,12 +205,31 @@ pub struct CallExpr {
 	global left_type Type
 	global left Expr := InvalidExpr{}
 	global concrete_types []Type
+	global inst_types map[string][]Type
 	global is_field bool
 	global noreturn bool
 	global args []CallArg
 	global or_block OrBlock
 	pub is_method bool
 	pub pos token.Pos
+}
+
+// inst_key returns a unique key for a concrete types instantiation, used to
+// store and look up the resolved concrete types of nested generic calls.
+pub fun inst_key(concrete []Type) string {
+	mut key := ""
+	for t in concrete {
+		key += '${t.idx()}_'
+	}
+	return key
+}
+
+pub fun (mut node CallExpr) register_inst_types(key string, conc []Type) {
+	mut copy := []Type
+	for t in conc {
+		copy.push(t)
+	}
+	node.inst_types[key] = copy
 }
 
 pub fun (node CallExpr) full_name() string {
