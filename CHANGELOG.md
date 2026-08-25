@@ -37,7 +37,9 @@ All notable changes are documented in this file.
 - gen: do not generate main call in script mode
 - gen: Handle more expressions in failed asserts
 - checker: fix number promotion in function call arguments
-- checker,gen: fix stale concrete types on shared generic call nodes, which made nested generic calls dispatch to the wrong instantiation
+- Generics:
+  - fix stale concrete types on shared generic call nodes
+  - resolve concrete types of nested generic calls in the correct order
 - remove `test-all` tool
 
 

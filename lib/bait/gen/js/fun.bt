@@ -134,10 +134,13 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 	if node.concrete_types.length > 0 {
 		// Inside a generic instantiation, `node.concrete_types` holds whatever the
 		// last checker pass left behind on the shared AST node: resolve the inner
-		// call name from the concrete types of the current pass instead.
+		// call name from the types recorded for the current instantiation instead.
 		mut conc_types := node.concrete_types
 		if g.cur_concrete_types.length > 0 {
-			conc_types = g.cur_concrete_types.values()[..node.concrete_types.length]
+			key := ast.inst_key(g.cur_concrete_types.values())
+			if node.inst_types.contains(key) {
+				conc_types = node.inst_types[key]
+			}
 		}
 		name = g.get_concrete_name(name, conc_types)
 	}
