@@ -100,12 +100,9 @@ pub fun (a Array) index_last[T](val T) i32 {
 }
 
 pub fun (a Array) slice(start i32, end i32) Array {
-	return Array{
-		data = #C.'a.data + start * a.elem_size' as &void
-		length = end - start
-		cap = a.cap - start
-		elem_size = a.elem_size
-	}
+	mut b := new_array(end - start, end - start, a.elem_size)
+	#C.memcpy(b.data, #C.'a.data + start * a.elem_size' as &void, b.length * b.elem_size)
+	return b
 }
 
 pub fun (a Array) copy() Array {
