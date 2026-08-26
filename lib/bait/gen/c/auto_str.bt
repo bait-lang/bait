@@ -48,7 +48,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		}
 	}
 	strings__Builder_write_u8(&b, \']\');
-	return strings__Builder_str(b);
+	return strings__Builder_str(&b);
 }\n\n'
 		return
 	}
@@ -85,7 +85,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 
 		g.auto_funs_out += '\tstrings__Builder_write(&b, space);
 	strings__Builder_write_u8(&b, \'}\');
-	return strings__Builder_str(b);
+	return strings__Builder_str(&b);
 }\n\n'
 		return
 	}

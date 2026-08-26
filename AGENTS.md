@@ -12,5 +12,4 @@
 
 ## Commits, PRs
 - Focused commits: one logical change
-- Commit messages: `<scope>: <what changed>` in imperative mood
 - Ask user in case of git conflicts
