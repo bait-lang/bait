@@ -1,0 +1,13 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+import strings
+
+fun test_str_is_null_terminated() {
+	mut b := strings.new_builder(6)
+	#C.'((char*) b.data)[5] = 1;'
+	b.write('hello')
+	s := b.str()
+
+	is_terminated := #C.memchr(s.str, 0, s.length + 1) != #C.'NULL' as &void
+	assert is_terminated
+}

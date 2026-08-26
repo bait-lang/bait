@@ -40,6 +40,8 @@ pub fun #C.exit(code i32)
 
 pub fun #C.strlen(cs &u8) i32
 
+pub fun #C.memchr(cs &u8, c i32, n i32) &void
+
 pub fun #C.calloc(n i32, size i32) &u8
 
 pub fun #C.malloc(size i32) &u8
