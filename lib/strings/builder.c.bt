@@ -22,7 +22,8 @@ pub fun (mut b Builder) write_u8(c u8) {
 
 // Returns the built string and clears the builder.
 pub fun (mut b Builder) str() string {
-	// b.push(0 as u8)
+	b.ensure_cap(b.length + 1)
+	#C.'((char*) b->data)[b->length] = 0;'
 	s := string{
 		str = b.data as &u8
 		length = b.length
