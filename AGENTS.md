@@ -6,7 +6,7 @@
 
 
 ## Testing
-- Run both backends: `./bait -b <js|c> test <path>`
+- Run both backends: `bun bait2.js -b <js|c> test <path>`
 - Default backend is JS; catch C-only regressions with `-b c`
 
 
