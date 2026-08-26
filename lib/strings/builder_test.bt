@@ -6,22 +6,29 @@ fun test_builder() {
 	mut b := strings.new_builder(50)
 
 	b.write_u8(104 as u8)
-	assert b.str() == 'h'
-
 	b.write_u8(`e`)
 	b.write('llo')
-	assert b.str() == 'ello'
+	assert b.str() == 'hello'
 
 	b.clear()
+	b.write('foo')
+	assert b.str() == 'foo'
+}
+
+fun test_str_copies_value() {
+	mut b := strings.new_builder(50)
 	b.write('foo')
 	mut previous := b.str()
 	b.write('bar')
+
 	assert previous == 'foo'
 	assert b.str() == 'bar'
+}
 
-	b.clear()
-	assert b.str().length == 0
-
+fun test_str_clears_builder() {
+	mut b := strings.new_builder(50)
 	b.write('foo')
+
 	assert b.str() == 'foo'
+	assert b.str().length == 0
 }

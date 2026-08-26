@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 package strings
 
@@ -23,8 +23,9 @@ pub fun (mut b Builder) write_u8(c u8) {
 	b.push(c)
 }
 
+// Returns the built string and clears the builder.
 pub fun (mut b Builder) str() string {
-	mut s := string{
+	s := string{
 		str = #JS.'String.fromCharCode(...b.data)' as #JS.String
 		length = b.length
 	}
