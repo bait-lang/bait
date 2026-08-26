@@ -13,6 +13,13 @@ fun test_builder() {
 	assert b.str() == 'hello'
 
 	b.clear()
+	b.write('foo')
+	mut previous := b.str()
+	b.write('bar')
+	assert previous == 'foo'
+	assert b.str() == 'bar'
+
+	b.clear()
 	assert b.str().length == 0
 
 	b.write('foo')
