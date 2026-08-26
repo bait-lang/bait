@@ -23,9 +23,11 @@ pub fun (mut b Builder) write_u8(c u8) {
 	b.push(c)
 }
 
-pub fun (b Builder) str() string {
-	return string{
+pub fun (mut b Builder) str() string {
+	mut s := string{
 		str = #JS.'String.fromCharCode(...b.data)' as #JS.String
 		length = b.length
 	}
+	b.clear()
+	return s
 }

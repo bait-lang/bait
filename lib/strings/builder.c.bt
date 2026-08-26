@@ -20,10 +20,12 @@ pub fun (mut b Builder) write_u8(c u8) {
 	b.push(c)
 }
 
-pub fun (b Builder) str() string {
+pub fun (mut b Builder) str() string {
 	// b.push(0 as u8)
-	return string{
+	mut s := string{
 		str = b.data as &u8
 		length = b.length
 	}
+	b.clear()
+	return s
 }

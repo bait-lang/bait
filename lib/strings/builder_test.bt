@@ -10,7 +10,7 @@ fun test_builder() {
 
 	b.write_u8(`e`)
 	b.write('llo')
-	assert b.str() == 'hello'
+	assert b.str() == 'ello'
 
 	b.clear()
 	b.write('foo')
