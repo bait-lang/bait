@@ -4,6 +4,15 @@
 fun test_index() {
 	assert 'foobar'.index('oo') == 1
 	assert 'spam'.index('x') == -1
+	assert 'xaby'.index('ab') == 1
+	assert 'aabc'.index('ab') == 1
+	assert 'ab'.index('cd') == -1
+}
+
+fun test_replace() {
+	assert 'xaby'.replace('ab', 'X') == 'xXy'
+	assert 'aaa'.replace('aa', 'b') == 'ba'
+	assert 'foo'.replace('bar', 'baz') == 'foo'
 }
 
 fun test_all_before() {

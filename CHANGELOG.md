@@ -7,7 +7,9 @@ All notable changes are documented in this file.
 ## 0.0.10 - unreleased
 ### Standard Library
 - builtin:
-  - _[C]_ string methods: `split()`, `split_lines()`, `trim_space()`, `is_upper()`
+  - _[C]_ string methods
+    - Add `split()`, `split_lines()`, `trim_space()`, `is_upper()`
+    - Fix infinite loop of `index()` and `replace()` on multi-char patterns
   - _[C]_ []string method: `join()`
 - os:
   - _[C]_ functions: `read_lines()`, `getenv()`, `setenv()`, `tmp_dir()`

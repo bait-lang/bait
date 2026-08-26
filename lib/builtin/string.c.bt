@@ -112,9 +112,11 @@ fun (pattern string) kmp_prefix_table() []i32 {
 	mut prefix := []i32{length = pattern.length}
 	mut j := 0
 
-	for i, c in pattern {
+	// prefix[0] is always 0, start at 1 to avoid self-match
+	for i := 1; i < pattern.length; i += 1 {
+		c := pattern[i]
 		for j > 0 and pattern[j] != c {
-			j = prefix[j - i]
+			j = prefix[j - 1]
 		}
 		if pattern[j] == c {
 			j += 1
