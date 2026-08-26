@@ -15,6 +15,9 @@ All notable changes are documented in this file.
   - _[C]_ functions: `read_lines()`, `getenv()`, `setenv()`, `tmp_dir()`
 - math:
   - add function `pow()`
+- strings: `Builder.str()`
+  - Clears the builder after returning its string
+  - _[C]_ Returns null-terminated strings
 
 ### C Backend
 - Implement hashmaps
@@ -22,6 +25,7 @@ All notable changes are documented in this file.
 - Arrays
   - Implement comparison
   - Implement auto-string conversion
+  - Fix `slice()` to copy its data
 - Fix integer overflows
 - Fix loop labels
 - Increase test coverage
