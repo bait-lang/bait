@@ -96,13 +96,13 @@ fun (mut g Gen) const_decl(node ast.ConstDecl){
 
 	if node.expr is ast.ArrayInit or node.expr is ast.CallExpr or node.expr is ast.MapInit {
 		typ := g.typ(node.typ)
-		g.type_defs_out += '${typ} ${full_name};\n'
-		g.main_inits_out += '\t${full_name} = ${val};\n'
+		g.type_defs_out.write('${typ} ${full_name};\n')
+		g.main_inits_out.write('\t${full_name} = ${val};\n')
 	} else if node.typ.is_int() {
 		typ := g.typ(node.typ)
-		g.type_impls_out += 'static const ${typ} ${full_name} = ${val};\n'
+		g.type_impls_out.write('static const ${typ} ${full_name} = ${val};\n')
 	} else {
-		g.type_impls_out += '#define ${full_name} ${val}\n'
+		g.type_impls_out.write('#define ${full_name} ${val}\n')
 	}
 }
 
@@ -243,7 +243,7 @@ fun (mut g Gen) static_decl(node ast.StaticDecl){
 	pkg := c_name(g.pkg)
 	expr := g.expr_string(node.expr)
 	typ := g.typ(node.typ)
-	g.globals_out += '${typ} ${pkg}__${name} = ${expr};\n'
+	g.globals_out.write('${typ} ${pkg}__${name} = ${expr};\n')
 }
 
 fun (g Gen) interface_decl(node ast.InterfaceDecl){
