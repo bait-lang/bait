@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 package c
 
+import strings
 import bait.preference
 import bait.ast
 import bait.errors
@@ -11,13 +12,13 @@ struct Gen {
 	table ast.Table
 	mut path string
 	mut pkg string
-	mut main_inits_out string
-	mut type_defs_out string := '// Type definitions\n'
-	mut fun_decls_out string := '// Function declarations\n'
-	mut type_impls_out string := '// Type implementations\n'
-	mut auto_funs_out string := '// Generated functions\n'
-	mut globals_out string := '// Static variables\n'
-	mut out string := '// Main code\n'
+	mut main_inits_out strings.Builder
+	mut type_defs_out strings.Builder
+	mut fun_decls_out strings.Builder
+	mut type_impls_out strings.Builder
+	mut auto_funs_out strings.Builder
+	mut globals_out strings.Builder
+	mut out strings.Builder
 	mut indent i32 := -1
 	mut empty_line bool := true
 	mut stmt_offsets []i32
@@ -42,6 +43,15 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	mut g := Gen{
 		pref = pref
 		table = table
+		indent = -1
+		empty_line = true
+		main_inits_out = strings.new_builder(100)
+		type_defs_out = strings.new_builder(100)
+		fun_decls_out = strings.new_builder(100)
+		type_impls_out = strings.new_builder(100)
+		auto_funs_out = strings.new_builder(100)
+		globals_out = strings.new_builder(100)
+		out = strings.new_builder(1000)
 	}
 
 	g.write_types()
@@ -53,7 +63,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 
 		g.process_imports(file.imports)
 		g.stmts(file.stmts)
-		g.out += "\n"
+		g.out.write("\n")
 	}
 
 	if not g.pref.is_library {
@@ -66,7 +76,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	}
 
 	// Join all parts
-	return g.headers() + g.type_defs_out + g.fun_decls_out + g.type_impls_out + g.auto_funs_out + g.globals_out + '\n' + g.out
+	return g.headers() + g.type_defs_out.str() + g.fun_decls_out.str() + g.type_impls_out.str() + g.auto_funs_out.str() + g.globals_out.str() + '\n' + g.out.str()
 }
 
 fun (g Gen) process_imports(imports []ast.Import) {
@@ -80,16 +90,18 @@ fun (g Gen) process_imports(imports []ast.Import) {
 }
 
 fun (g Gen) headers() string {
-	mut headers := '// Headers and includes\n'
+	mut headers := strings.new_builder(100)
+	headers.write('// Headers and includes\n')
 	for name in g.foreign_imports {
-		headers += '#include <${name}>\n'
+		headers.write('#include <${name}>\n')
 	}
-	return headers + '\n'
+	headers.write('\n')
+	return headers.str()
 }
 
 fun (mut g Gen) c_main() {
 	g.writeln('int main(int argc, char* argv[]) {')
-	g.writeln(g.main_inits_out)
+	g.writeln(g.main_inits_out.str())
 	if not g.pref.is_script {
 		g.writeln('\tbait_main();')
 	}
@@ -117,49 +129,50 @@ fun (mut g Gen) new_temp_var() string {
 
 fun (mut g Gen) write_indent() {
 	if g.indent > 0 and g.empty_line {
-		g.out += '\t'.repeat(g.indent)
+		g.out.write('\t'.repeat(g.indent))
 	}
 }
 
 fun (mut g Gen) write(s string){
 	g.write_indent()
-	g.out += s
+	g.out.write(s)
 	g.empty_line = false
 }
 
 fun (mut g Gen) writeln (s string){
 	g.write_indent()
-	g.out += s + "\n"
+	g.out.write(s)
+	g.out.write("\n")
 	g.empty_line = true
 }
 
 fun (mut g Gen) cut_before(to u8) string {
 	for i := g.out.length - 1; i >= 0; i -= 1 {
-		if g.out[i] == to {
-			mut cut := g.out.substr(i + 1, g.out.length)
-			g.out = g.out.substr(0, i)
+		if g.out.at(i) == to {
+			cut := g.out.substr(i + 1, g.out.length)
+			g.out.truncate(i)
 			return cut
 		}
 	}
-	return g.out
+	return g.out.substr(0, g.out.length)
 }
 
 fun (mut g Gen) cut_before_any(chars string) string {
 	for i := g.out.length - 1; i >= 0; i -= 1 {
 		for c in chars {
-			if g.out[i] == c {
-				mut cut := g.out.substr(i + 1, g.out.length)
-				g.out = g.out.substr(0, i)
+			if g.out.at(i) == c {
+				cut := g.out.substr(i + 1, g.out.length)
+				g.out.truncate(i)
 				return cut
 			}
 		}
 	}
-	return g.out
+	return g.out.substr(0, g.out.length)
 }
 
 fun (mut g Gen) cut_back_to(pos i32) string {
 	cut := g.out.substr(pos, g.out.length)
-	g.out = g.out.substr(0, pos)
+	g.out.truncate(pos)
 	return cut
 }
 

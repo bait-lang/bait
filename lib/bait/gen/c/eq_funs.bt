@@ -46,29 +46,29 @@ fun (mut g Gen) equality_fun(typ ast.Type) string {
 		fname := c_esc('${sym.mix_name}_eq')
 		elem_type_str := g.typ(info.elem_type)
 
-		g.fun_decls_out += 'bool ${fname}(${sname} a, ${sname} b);\n'
+		g.fun_decls_out.write('bool ${fname}(${sname} a, ${sname} b);\n')
 
-		g.auto_funs_out += 'bool ${fname}(${sname} a, ${sname} b) {\n'
+		g.auto_funs_out.write('bool ${fname}(${sname} a, ${sname} b) {\n')
 
 		// Compare length
-		g.auto_funs_out += '\tif (a.length != b.length) {\n'
-		g.auto_funs_out += '\t\treturn false;\n'
-		g.auto_funs_out += '\t}\n'
+		g.auto_funs_out.write('\tif (a.length != b.length) {\n')
+		g.auto_funs_out.write('\t\treturn false;\n')
+		g.auto_funs_out.write('\t}\n')
 
 		// Compare elements
 		elem_eq_fun := g.equality_fun(info.elem_type)
-		g.auto_funs_out += '\tfor (int i = 0; i < a.length; i++) {\n'
+		g.auto_funs_out.write('\tfor (int i = 0; i < a.length; i++) {\n')
 		if elem_eq_fun.length > 0 {
-			g.auto_funs_out += '\t\tif (!${elem_eq_fun}(*(${elem_type_str}*)Array_get(a, i), *(${elem_type_str}*)Array_get(b, i))) {\n'
+			g.auto_funs_out.write('\t\tif (!${elem_eq_fun}(*(${elem_type_str}*)Array_get(a, i), *(${elem_type_str}*)Array_get(b, i))) {\n')
 		} else {
-			g.auto_funs_out += '\t\tif (*(${elem_type_str}*)Array_get(a, i) != *(${elem_type_str}*)Array_get(b, i)) {\n'
+			g.auto_funs_out.write('\t\tif (*(${elem_type_str}*)Array_get(a, i) != *(${elem_type_str}*)Array_get(b, i)) {\n')
 		}
-		g.auto_funs_out += '\t\t\treturn false;\n'
-		g.auto_funs_out += '\t\t}\n'
+		g.auto_funs_out.write('\t\t\treturn false;\n')
+		g.auto_funs_out.write('\t\t}\n')
 
-		g.auto_funs_out += '\t}\n'
-		g.auto_funs_out += '\treturn true;\n'
-		g.auto_funs_out += '}\n\n'
+		g.auto_funs_out.write('\t}\n')
+		g.auto_funs_out.write('\treturn true;\n')
+		g.auto_funs_out.write('}\n\n')
 
 		return fname
 	}

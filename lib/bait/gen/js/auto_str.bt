@@ -32,7 +32,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		info := sym.info as ast.ArrayInfo
 		el_str := g.get_str_fun(info.elem_type)
 
-		g.fun_decls_out += 'function ${name}(a, indent) {
+		g.fun_decls_out.write('function ${name}(a, indent) {
 	let s = "["
 	for (let i = 0; i < a.length; i++) {
 		s += ${el_str}(a.data[i], indent + 1).str
@@ -41,29 +41,29 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		}
 	}
 	return from_js_string(s + "]")
-}\n'
+}\n')
 		return
 	}
 
 	if sym.kind == .struct_ {
 		info := sym.info as ast.StructInfo
-		g.fun_decls_out += 'function ${name}(it, indent) {
+		g.fun_decls_out.write('function ${name}(it, indent) {
 	const space = " ".repeat(indent * 2)
-	let s = "${sym.mix_name}{"\n'
+	let s = "${sym.mix_name}{"\n')
 		if info.fields.length > 0 {
-			g.fun_decls_out += '\ts += "${LB}"\n'
+			g.fun_decls_out.write('\ts += "${LB}"\n')
 		}
 		for field in info.fields {
 			if typ == field.typ {
-				g.fun_decls_out += '\ts += space + "  ${field.name} = ${sym.mix_name}{...}${LB}"\n'
+				g.fun_decls_out.write('\ts += space + "  ${field.name} = ${sym.mix_name}{...}${LB}"\n')
 				continue
 			}
 
 			str_fun_name := g.get_str_fun(field.typ)
-			g.fun_decls_out += '\ts += space + "  ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "${LB}"\n'
+			g.fun_decls_out.write('\ts += space + "  ${field.name} = " + ${str_fun_name}(it.${field.name}, indent + 1).str + "${LB}"\n')
 		}
-		g.fun_decls_out += '\treturn from_js_string(s + space + "}")
-}\n\n'
+		g.fun_decls_out.write('\treturn from_js_string(s + space + "}")
+}\n\n')
 		return
 	}
 
@@ -71,7 +71,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		info := sym.info as ast.MapInfo
 		val_str := g.get_str_fun(info.val_type)
 
-		g.fun_decls_out += 'function ${name}(m) {
+		g.fun_decls_out.write('function ${name}(m) {
 	let s = "{"
 	let i = 0
 	for (const [k, v] of m.data.entries()) {
@@ -85,49 +85,49 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		}
 	}
 	return from_js_string(s + "}")
-}\n'
+}\n')
 		return
 	}
 
 	// TODO alias should print it's own name instead of the aliased type
 	if sym.kind == .alias_type {
 		par_fun_name := g.get_str_fun(sym.parent)
-		g.fun_decls_out += 'function ${name}(it, indent) {
+		g.fun_decls_out.write('function ${name}(it, indent) {
 	return ${par_fun_name}(it, indent)
-}'
+}')
 		return
 	}
 
 	if sym.kind == .sum_type {
 		info := sym.info as ast.SumTypeInfo
-		g.fun_decls_out += 'function ${name}(it, indent) {\n'
+		g.fun_decls_out.write('function ${name}(it, indent) {\n')
 		for var in info.variants {
 			var_sym := g.table.get_sym(var)
-			g.fun_decls_out += '\tif (it instanceof ${js_esc(var_sym.mix_name)}) {
+			g.fun_decls_out.write('\tif (it instanceof ${js_esc(var_sym.mix_name)}) {
 		return ${g.get_str_fun(var)}(it, indent)
 	}
-'
+')
 		}
-		g.fun_decls_out += '}\n\n'
+		g.fun_decls_out.write('}\n\n')
 	return
 	}
 
 	if sym.kind == .enum_ {
-		g.fun_decls_out += 'function ${name}(it) {
-	switch(it) {\n'
+		g.fun_decls_out.write('function ${name}(it) {
+	switch(it) {\n')
 		info := sym.info as ast.EnumInfo
 		for val in info.vals {
-			g.fun_decls_out += '\t\tcase ${js_esc(sym.mix_name)}.${val}: return from_js_string("${val}")\n'
+			g.fun_decls_out.write('\t\tcase ${js_esc(sym.mix_name)}.${val}: return from_js_string("${val}")\n')
 		}
-		g.fun_decls_out += '\t}\n}\n\n'
+		g.fun_decls_out.write('\t}\n}\n\n')
 		return
 	}
 
 	if sym.kind == .result {
 		par_fun_name := g.get_str_fun(sym.parent)
-		g.fun_decls_out += 'function ${name}(it, indent) {
+		g.fun_decls_out.write('function ${name}(it, indent) {
 	return ${par_fun_name}(it, indent)
-}'
+}')
 		return
 	}
 

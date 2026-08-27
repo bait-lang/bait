@@ -23,6 +23,22 @@ pub fun (mut b Builder) write_u8(c u8) {
 	b.push(c)
 }
 
+pub fun (b Builder) at(i i32) u8 {
+	return #JS.'b.data[i]' as u8
+}
+
+pub fun (b Builder) substr(start i32, end i32) string {
+	return string{
+		str = #JS.'String.fromCharCode(...b.data.slice(start, end))' as #JS.String
+		length = end - start
+	}
+}
+
+pub fun (mut b Builder) truncate(n i32) {
+	#JS.'b.data.length = n
+	b.length = n'
+}
+
 // Returns the built string and clears the builder.
 pub fun (mut b Builder) str() string {
 	s := string{

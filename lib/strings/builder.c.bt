@@ -20,6 +20,22 @@ pub fun (mut b Builder) write_u8(c u8) {
 	b.push(c)
 }
 
+pub fun (b Builder) at(i i32) u8 {
+	return #C.'((u8*)b.data)[i]' as u8
+}
+
+pub fun (b Builder) substr(start i32, end i32) string {
+	mut tmp := new_builder(end - start)
+	for i := start; i < end; i += 1 {
+		tmp.write_u8(b.at(i))
+	}
+	return tmp.str()
+}
+
+pub fun (mut b Builder) truncate(n i32) {
+	#C.'b->length = n;'
+}
+
 // Returns the built string and clears the builder.
 pub fun (mut b Builder) str() string {
 	b.ensure_cap(b.length + 1)

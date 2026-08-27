@@ -35,9 +35,9 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		elem_type_str := g.typ(info.elem_type)
 		el_str := g.get_str_fun(info.elem_type)
 
-		g.fun_decls_out += 'string ${fname}(${sname} a);\n'
+		g.fun_decls_out.write('string ${fname}(${sname} a);\n')
 
-		g.auto_funs_out += 'string ${fname}(${sname} a) {
+		g.auto_funs_out.write('string ${fname}(${sname} a) {
 	strings__Builder b = strings__new_builder(100);
 	strings__Builder_write(&b, from_c_string("["));
 	for (int i = 0; i < a.length; i++) {
@@ -49,44 +49,44 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	}
 	strings__Builder_write_u8(&b, \']\');
 	return strings__Builder_str(&b);
-}\n\n'
+}\n\n')
 		return
 	}
 
 	if sym.kind == .struct_ {
 		info := sym.info as ast.StructInfo
 
-		g.fun_decls_out += 'string ${fname}(${sname} it);'
+		g.fun_decls_out.write('string ${fname}(${sname} it);')
 
-		g.auto_funs_out += 'string ${fname}(${sname} it) {
+		g.auto_funs_out.write('string ${fname}(${sname} it) {
 	int indent = 0;
 	string space = string_repeat(from_c_string(" "), indent * 2);
 	strings__Builder b = strings__new_builder(100);
 	strings__Builder_write(&b, space);
-	strings__Builder_write(&b, from_c_string("${sym.mix_name}{"));\n'
+	strings__Builder_write(&b, from_c_string("${sym.mix_name}{"));\n')
 		if info.fields.length > 0 {
-			g.auto_funs_out += '\tstrings__Builder_write(&b, from_c_string("${LB}"));\n'
+			g.auto_funs_out.write('\tstrings__Builder_write(&b, from_c_string("${LB}"));\n')
 		}
 		for field in info.fields {
 			if typ == field.typ {
-				g.auto_funs_out += '\tstrings__Builder_write(&b, space);
-	strings__Builder_write(&b, from_c_string("  ${field.name} = ${sym.mix_name}{...}${LB}"));\n'
+				g.auto_funs_out.write('\tstrings__Builder_write(&b, space);
+	strings__Builder_write(&b, from_c_string("  ${field.name} = ${sym.mix_name}{...}${LB}"));\n')
 				continue
 			}
 
 			str_fun_name := g.get_str_fun(field.typ)
 			// TODO pass indent to str fun if needed
-			g.auto_funs_out += '\tstrings__Builder_write(&b, space);
+			g.auto_funs_out.write('\tstrings__Builder_write(&b, space);
 	strings__Builder_write(&b, from_c_string("  ${field.name} = "));
 	string val = ${str_fun_name}(it.${field.name});
 	strings__Builder_write(&b, val);
-	strings__Builder_write(&b, from_c_string("${LB}"));\n'
+	strings__Builder_write(&b, from_c_string("${LB}"));\n')
 		}
 
-		g.auto_funs_out += '\tstrings__Builder_write(&b, space);
+		g.auto_funs_out.write('\tstrings__Builder_write(&b, space);
 	strings__Builder_write_u8(&b, \'}\');
 	return strings__Builder_str(&b);
-}\n\n'
+}\n\n')
 		return
 	}
 

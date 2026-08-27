@@ -31,18 +31,18 @@ fun (mut g Gen) write_types() {
 		cname := c_esc(sym.mix_name)
 		if sym.info is ast.StructInfo {
 			info := sym.info as ast.StructInfo
-			g.type_defs_out += 'typedef struct ${cname} ${cname};\n'
-			g.type_impls_out += 'struct ${cname} {\n'
+			g.type_defs_out.write('typedef struct ${cname} ${cname};\n')
+			g.type_impls_out.write('struct ${cname} {\n')
 			for field in info.fields {
 				type_str := g.typ(field.typ)
 				field_name := c_esc(field.name)
-				g.type_impls_out += '\t${type_str} ${field_name};\n'
+				g.type_impls_out.write('\t${type_str} ${field_name};\n')
 			}
-			g.type_impls_out += '};\n'
+			g.type_impls_out.write('};\n')
 		} else if sym.info is ast.ArrayInfo {
-			g.type_defs_out += 'typedef Array ${cname};\n'
+			g.type_defs_out.write('typedef Array ${cname};\n')
 		} else if sym.info is ast.MapInfo {
-			g.type_defs_out += 'typedef Map ${cname};\n'
+			g.type_defs_out.write('typedef Map ${cname};\n')
 		} else if sym.kind == .fun_ {
 			info := sym.info as ast.FunInfo
 			if not info.is_alias {
@@ -50,24 +50,24 @@ fun (mut g Gen) write_types() {
 			}
 
 			ccname := cname.replace(" ", "_").replace("(", "_").replace(")", "_").replace(",", "")
-			g.type_defs_out += 'typedef ${g.typ(info.return_type)} (*${ccname})('
+			g.type_defs_out.write('typedef ${g.typ(info.return_type)} (*${ccname})(')
 			for i, param in info.param_types {
-				g.type_defs_out += g.typ(param)
+				g.type_defs_out.write(g.typ(param))
 				if i < info.param_types.length - 1 {
-					g.type_defs_out += ', '
+					g.type_defs_out.write(', ')
 				}
 			}
-			g.type_defs_out += ');\n'
+			g.type_defs_out.write(');\n')
 		}
 		 else if sym.kind == .alias_type or sym.kind == .number {
-			g.type_defs_out += 'typedef ${g.typ(sym.parent)} ${cname};\n'
+			g.type_defs_out.write('typedef ${g.typ(sym.parent)} ${cname};\n')
 		} else if sym.kind == .enum_ {
 			info := sym.info as ast.EnumInfo
-			g.type_defs_out += 'enum ${cname} {\n'
+			g.type_defs_out.write('enum ${cname} {\n')
 			for val in info.vals {
-				g.type_defs_out += '\t${c_esc(val)},\n'
+				g.type_defs_out.write('\t${c_esc(val)},\n')
 			}
-			g.type_defs_out += '};\n'
+			g.type_defs_out.write('};\n')
 		}
 	}
 }

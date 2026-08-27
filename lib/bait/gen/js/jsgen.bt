@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 package js
 
+import strings
 import bait.preference
 import bait.ast
 import bait.errors
@@ -12,10 +13,10 @@ struct Gen {
 	table ast.Table
 	mut path string
 	mut pkg string
-	mut type_defs_out string
-	mut global_out string
-	mut fun_decls_out string
-	mut out string
+	mut type_defs_out strings.Builder
+	mut global_out strings.Builder
+	mut fun_decls_out strings.Builder
+	mut out strings.Builder
 	mut indent i32
 	mut empty_line bool
 	mut stmt_offsets []i32
@@ -39,6 +40,10 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		table = table
 		indent = -1
 		empty_line = true
+		type_defs_out = strings.new_builder(100)
+		global_out = strings.new_builder(100)
+		fun_decls_out = strings.new_builder(100)
+		out = strings.new_builder(1000)
 	}
 
 	for file in files {
@@ -46,7 +51,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.pkg = file.pkg_name
 		g.process_imports(file.imports)
 		g.stmts(file.stmts)
-		g.out += "\n"
+		g.out.write("\n")
 	}
 
 	if not g.pref.is_library and not g.pref.is_script {
@@ -57,7 +62,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.generate_str_fun(typ)
 	}
 
-	return g.headers() + g.type_defs_out + g.global_out + '\n' + g.fun_decls_out + g.out
+	return g.headers() + g.type_defs_out.str() + g.global_out.str() + '\n' + g.fun_decls_out.str() + g.out.str()
 }
 
 fun (mut g Gen) process_imports(imports []ast.Import) {
@@ -71,11 +76,13 @@ fun (mut g Gen) process_imports(imports []ast.Import) {
 }
 
 fun (g Gen) headers() string {
-	mut headers := 'const JS = {}\n'
+	mut headers := strings.new_builder(100)
+	headers.write('const JS = {}\n')
 	for alias, name in g.foreign_imports {
-		headers += '${alias} = require("${name}")\n'
+		headers.write('${alias} = require("${name}")\n')
 	}
-	return headers + '\n'
+	headers.write('\n')
+	return headers.str()
 }
 
 fun (mut g Gen) tmp_var() {
@@ -89,50 +96,51 @@ fun (mut g Gen) new_temp_var() string {
 
 fun (mut g Gen) write_indent() {
 	if g.indent > 0 and g.empty_line {
-		g.out += '\t'.repeat(g.indent)
+		g.out.write('\t'.repeat(g.indent))
 	}
 }
 
 fun (mut g Gen) write(s string){
 	g.write_indent()
-	g.out += s
+	g.out.write(s)
 	g.empty_line = false
 }
 
 fun (mut g Gen) writeln (s string){
 	g.write_indent()
-	g.out += s + "\n"
+	g.out.write(s)
+	g.out.write("\n")
 	g.empty_line = true
 }
 
 fun (mut g Gen) cut_back_to(pos i32) string {
 	cut := g.out.substr(pos, g.out.length)
-	g.out = g.out.substr(0, pos)
+	g.out.truncate(pos)
 	return cut
 }
 
 fun (mut g Gen) cut_before(to u8) string {
 	for i := g.out.length - 1; i >= 0; i -= 1 {
-		if g.out[i] == to {
-			mut cut := g.out.substr(i + 1, g.out.length)
-			g.out = g.out.substr(0, i)
+		if g.out.at(i) == to {
+			cut := g.out.substr(i + 1, g.out.length)
+			g.out.truncate(i)
 			return cut
 		}
 	}
-	return g.out
+	return g.out.substr(0, g.out.length)
 }
 
 fun (mut g Gen) cut_before_any(chars string) string {
 	for i := g.out.length - 1; i >= 0; i -= 1 {
 		for c in chars {
-			if g.out[i] == c {
-				mut cut := g.out.substr(i + 1, g.out.length)
-				g.out = g.out.substr(0, i)
+			if g.out.at(i) == c {
+				cut := g.out.substr(i + 1, g.out.length)
+				g.out.truncate(i)
 				return cut
 			}
 		}
 	}
-	return g.out
+	return g.out.substr(0, g.out.length)
 }
 
 fun (mut g Gen) save_stmt_offset() {
@@ -140,7 +148,7 @@ fun (mut g Gen) save_stmt_offset() {
 }
 
 fun (mut g Gen) main_call() {
-	g.out += "main()"
+	g.out.write("main()")
 }
 
 fun (mut g Gen) write_default_value(typ ast.Type) {
