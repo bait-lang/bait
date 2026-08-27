@@ -213,7 +213,7 @@ fun (mut g Gen) static_decl(node ast.StaticDecl){
 	name := js_name(node.name)
 	pkg := js_name(g.pkg)
 	expr := g.expr_string(node.expr)
-	g.global_out += 'var ${pkg}__${name} = ${expr}\n'
+	g.global_out.write('var ${pkg}__${name} = ${expr}\n')
 }
 
 fun (mut g Gen) interface_decl(node ast.InterfaceDecl){

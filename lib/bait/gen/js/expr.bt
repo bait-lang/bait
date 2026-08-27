@@ -45,8 +45,7 @@ fun (mut g Gen) expr_string(expr ast.Expr) string {
 	was_line_empty := g.empty_line
 	start := g.out.length
 	g.expr(expr)
-	s := g.out.substr(start, g.out.length)
-	g.out = g.out.substr(0, start)
+	s := g.cut_back_to(start)
 	g.empty_line = was_line_empty
 	return s.trim_space()
 }
