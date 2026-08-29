@@ -321,7 +321,7 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 
 		fname := p.check_name()!
 		if p.tok == .lpar {
-			m := p.interface_method(fname, typ)!
+			m := p.interface_method(fname, typ, lang)!
 			methods.push(m)
 			tsym.methods.push(m)
 			continue
@@ -351,7 +351,7 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 	}
 }
 
-fun (mut p Parser) interface_method(name string, rec_type ast.Type) !ast.FunDecl {
+fun (mut p Parser) interface_method(name string, rec_type ast.Type, lang ast.Language) !ast.FunDecl {
 	p.check(.lpar)!
 	// The first param is a fictional receiver in this case
 	mut params := [ast.Param{
@@ -366,7 +366,7 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) !ast.FunDecl
 		return_type = p.parse_type()!
 	}
 	return ast.FunDecl{
-		lang = .js
+		lang = lang
 		name = name
 		params = params
 		return_type = return_type

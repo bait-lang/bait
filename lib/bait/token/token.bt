@@ -70,6 +70,7 @@ pub enum Token {
 	key_fun
 	key_global
 	key_if
+	key_implements
 	key_import
 	key_in
 	key_interface
@@ -103,6 +104,7 @@ pub fun kind_from_string(name string) Token {
 		'fun' { .key_fun }
 		'global' { .key_global }
 		'if' { .key_if }
+		'implements' { .key_implements }
 		'import' { .key_import }
 		'in' { .key_in }
 		'interface' { .key_interface }
@@ -268,6 +270,7 @@ pub fun (kind Token) str() string {
 		.key_fun { 'key_fun' }
 		.key_global { 'key_global' }
 		.key_if { 'key_if' }
+		.key_implements { 'key_implements' }
 		.key_import { 'key_import' }
 		.key_in { 'key_in' }
 		.key_interface { 'key_interface' }

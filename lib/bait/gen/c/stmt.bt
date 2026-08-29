@@ -3,7 +3,6 @@
 package c
 
 import bait.ast
-import bait.errors
 
 fun (mut g Gen) stmts(stmts []ast.Stmt) {
 	g.save_stmt_offset()
@@ -247,11 +246,7 @@ fun (mut g Gen) static_decl(node ast.StaticDecl){
 }
 
 fun (g Gen) interface_decl(node ast.InterfaceDecl){
-	if node.lang != .bait {
-		return
-	}
-	errors.err(g.path, node.pos, 'Bait interfaces are not yet supported')
-	exit(1)
+	_ = node
 }
 
 fun (mut g Gen) return_stmt(node ast.ReturnStmt){
