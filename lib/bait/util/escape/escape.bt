@@ -7,25 +7,23 @@ import os
 // TODO simplify and refactor this function
 pub fun char(s string, esc_char u8) string {
 	mut res := ''
+	mut start := 0
 	mut is_escaped := false
-	mut i := 0
-	for i < s.length {
+	for i := 0; i < s.length; i += 1 {
 		c := s[i]
-		if c == esc_char {
-			if not is_escaped {
-				res += '\\'
-			}
-		}
-		res += c.ascii()
-		i += 1
-		// Set is_escaped with respect to double backslashes
-		if c == `\\` and not is_escaped {
-			is_escaped = true
-		} else {
+		// On JS, s[i] keeps only the low byte, so non-ASCII chars may look like ASCII
+		if (c != esc_char and c != `\\`) or s.substr(i, i + 1) != c.ascii() {
 			is_escaped = false
+			continue
 		}
+		if c == esc_char and not is_escaped {
+			res += s.substr(start, i) + '\\'
+			start = i
+		}
+		// Set is_escaped with respect to double backslashes
+		is_escaped = c == `\\` and not is_escaped
 	}
-	return res
+	return res + s.substr(start, s.length)
 }
 
 pub fun linebreak(s string) string {

@@ -39,7 +39,6 @@ fun (mut a Array) ensure_cap(min i32) {
 	}
 	for min > cap {
 		cap *= 2
-		break
 	}
 
 	new_size := cap * a.elem_size

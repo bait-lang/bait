@@ -13,10 +13,12 @@ pub fun (mut b Builder) clear() {
 	b.length = 0'
 }
 
+// Stores UTF-16 code units, like JS strings, so non-ASCII text stays intact
 pub fun (mut b Builder) write(s string) {
-	for c in s {
-		b.push(c)
+	#JS.'for (let i = 0; i < s.length; i++) {
+		b.data.push(s.str.charCodeAt(i))
 	}
+	b.length = b.data.length'
 }
 
 pub fun (mut b Builder) write_u8(c u8) {
@@ -29,7 +31,7 @@ pub fun (b Builder) at(i i32) u8 {
 
 pub fun (b Builder) substr(start i32, end i32) string {
 	return string{
-		str = #JS.'String.fromCharCode(...b.data.slice(start, end))' as #JS.String
+		str = b.to_js_string(start, end)
 		length = end - start
 	}
 }
@@ -42,9 +44,20 @@ pub fun (mut b Builder) truncate(n i32) {
 // Returns the built string and clears the builder.
 pub fun (mut b Builder) str() string {
 	s := string{
-		str = #JS.'String.fromCharCode(...b.data)' as #JS.String
+		str = b.to_js_string(0, b.length)
 		length = b.length
 	}
 	b.clear()
 	return s
+}
+
+// Converts in chunks, as spreading all codes as arguments overflows the stack for large builders
+fun (b Builder) to_js_string(start i32, end i32) #JS.String {
+	return #JS.'(() => {
+		let s = ""
+		for (let i = start; i < end; i += 8192) {
+			s += String.fromCharCode.apply(null, b.data.slice(i, Math.min(i + 8192, end)))
+		}
+		return s
+	})()' as #JS.String
 }
