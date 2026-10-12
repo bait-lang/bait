@@ -251,7 +251,7 @@ fun (mut l Lexer) simple_token(c u8) token.Token {
 			return .dollar
 		}
 		else {
-			return l.unexpected_char(c)
+			return l.unexpected_char()
 		}
 	}
 }
@@ -326,8 +326,8 @@ fun (mut l Lexer) char_val() token.Token {
 	return .char
 }
 
-fun (mut l Lexer) unexpected_char(c u8) token.Token {
-	l.val = 'unexpected char ${c.ascii()} [L0001]'
+fun (mut l Lexer) unexpected_char() token.Token {
+	l.val = 'unexpected char ${l.text.substr(l.pos - 1, l.pos)} [L0001]'
 	return .error
 }
 

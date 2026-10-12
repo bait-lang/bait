@@ -1,0 +1,24 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+// C strings are UTF-8 bytes
+fun test_literal_keeps_non_ascii() {
+	s := '€ ü 日本'
+	assert s.length == 13
+	assert s[0] == 0xE2
+	assert s[1] == 0x82
+	assert s[2] == 0xAC
+	assert s[7] == 0xE6
+	assert s[8] == 0x97
+	assert s[9] == 0xA5
+}
+
+fun test_interpolation_keeps_non_ascii() {
+	x := 'ü'
+	s := '€${x}日'
+	assert s.length == 8
+	assert s[0] == 0xE2
+	assert s[3] == 0xC3
+	assert s[4] == 0xBC
+	assert s[5] == 0xE6
+}
