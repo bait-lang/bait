@@ -1,0 +1,18 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+// JS strings are UTF-16 code units
+fun test_literal_keeps_non_ascii() {
+	s := '€ ü 日本'
+	assert s.length == 6
+	assert #JS.'s.str.charCodeAt(0)' as i32 == 0x20AC
+	assert #JS.'s.str.charCodeAt(4)' as i32 == 0x65E5
+}
+
+fun test_interpolation_keeps_non_ascii() {
+	x := 'ü'
+	s := '€${x}日'
+	assert s.length == 3
+	assert #JS.'s.str.charCodeAt(0)' as i32 == 0x20AC
+	assert #JS.'s.str.charCodeAt(2)' as i32 == 0x65E5
+}

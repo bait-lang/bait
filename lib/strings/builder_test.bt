@@ -32,3 +32,25 @@ fun test_str_clears_builder() {
 	assert b.str() == 'foo'
 	assert b.str().length == 0
 }
+
+fun test_non_ascii() {
+	mut b := strings.new_builder(10)
+	b.write('€ ü 日本')
+	assert b.substr(0, b.length) == '€ ü 日本'
+	assert b.str() == '€ ü 日本'
+}
+
+// Builds 2M chars, more than the compiler's own output (~460k chars).
+// Spreading all chars into String.fromCharCode overflowed the stack on JS
+// at ~125k chars on Node 26 and ~640k chars on Bun 1.4.
+fun test_large_output() {
+	mut b := strings.new_builder(10)
+	chunk := 'abcdefghij'.repeat(1000)
+	for i := 0; i < 200; i += 1 {
+		b.write(chunk)
+	}
+	assert b.substr(0, 2000000).length == 2000000
+	s := b.str()
+	assert s.length == 2000000
+	assert s.substr(1999990, 2000000) == 'abcdefghij'
+}

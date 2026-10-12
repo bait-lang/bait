@@ -10,3 +10,15 @@ fun test_escape_char(){
 	// assert escape.char('\\"', `\"`) == '\\\"'
 	// assert escape.char('\\\"', `\"`) == '\\\"'
 }
+
+fun test_escape_char_non_ascii() {
+	q := `"`
+	input := '€ "ü" 日本'
+	expected := '€ \\"ü\\" 日本'
+	assert escape.char(input, q) == expected
+
+	// Low bytes of Ģ (U+0122) and Ŝ (U+015C) equal `"` and `\` on JS
+	input2 := 'Ģ"Ŝ"'
+	expected2 := 'Ģ\\"Ŝ\\"'
+	assert escape.char(input2, q) == expected2
+}
