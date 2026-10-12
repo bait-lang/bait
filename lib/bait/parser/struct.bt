@@ -19,6 +19,18 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 
 	generic_names := p.generic_type_names()!
 
+	mut interfaces := []ast.Type
+	if p.tok == .key_implements {
+		p.next()
+		for true {
+			interfaces.push(p.parse_type()!)
+			if p.tok != .comma {
+				break
+			}
+			p.next()
+		}
+	}
+
 	mut fields := []ast.StructField
 
 	p.check(.lcur)!
@@ -51,6 +63,7 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 		pkg = p.pkg_name
 		info = ast.StructInfo{
 			fields = fields
+			interfaces = interfaces
 			generic_names = generic_names
 		}
 	}
@@ -66,6 +79,7 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 		name = name
 		typ = typ
 		fields = fields
+		interfaces = interfaces
 		generic_names = generic_names
 		pos = pos
 	}
