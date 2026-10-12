@@ -52,3 +52,13 @@ fun test_tmp_dir() {
 	assert tmp != ''
 	assert os.exists_dir(tmp)
 }
+
+fun test_ls() {
+	names := os.ls("${$BAITDIR}/lib/os")
+	assert names.contains('os.bt')
+	assert names.contains('os_test.bt')
+	assert names.contains('testdata')
+	for n in names {
+		assert os.exists("${$BAITDIR}/lib/os/${n}")
+	}
+}
