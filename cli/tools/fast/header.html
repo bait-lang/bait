@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bait fast: compiler performance</title>
+<style>
+	.page {
+		color-scheme: light;
+		--surface-0: #f4f3f0;
+		--surface-1: #fcfcfb;
+		--border: #e2e1dc;
+		--grid: #ecebe7;
+		--text-primary: #0b0b0b;
+		--text-secondary: #52514e;
+		--text-muted: #7a7974;
+		--series-1: #2a78d6;
+		--series-2: #eb6834;
+		--series-3: #1baf7a;
+		--series-4: #eda100;
+		--series-5: #e87ba4;
+		--good: #0ca30c;
+		--good-text: #006300;
+		--critical: #d03b3b;
+		--critical-text: #b02a2a;
+		--row-hover: #f0efec;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:where(:not([data-theme="light"])) .page {
+			color-scheme: dark;
+			--surface-0: #121211;
+			--surface-1: #1a1a19;
+			--border: #31312e;
+			--grid: #2a2a28;
+			--text-primary: #f0efec;
+			--text-secondary: #c3c2b7;
+			--text-muted: #8f8e86;
+			--series-1: #3987e5;
+			--series-2: #d95926;
+			--series-3: #199e70;
+			--series-4: #c98500;
+			--series-5: #d55181;
+			--good-text: #3fc23f;
+			--critical-text: #ef7777;
+			--row-hover: #24241f;
+		}
+	}
+	:root[data-theme="dark"] .page {
+		color-scheme: dark;
+		--surface-0: #121211;
+		--surface-1: #1a1a19;
+		--border: #31312e;
+		--grid: #2a2a28;
+		--text-primary: #f0efec;
+		--text-secondary: #c3c2b7;
+		--text-muted: #8f8e86;
+		--series-1: #3987e5;
+		--series-2: #d95926;
+		--series-3: #199e70;
+		--series-4: #c98500;
+		--series-5: #d55181;
+		--good-text: #3fc23f;
+		--critical-text: #ef7777;
+		--row-hover: #24241f;
+	}
+
+	html, body { margin: 0; }
+	.page {
+		background: var(--surface-0);
+		color: var(--text-primary);
+		font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+		font-size: 14px;
+		line-height: 1.45;
+		padding: 24px;
+		border-radius: 12px;
+	}
+	.wrap { max-width: 1040px; margin: 0 auto; }
+	code, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; }
+	a { color: var(--series-1); text-decoration: none; }
+	a:hover { text-decoration: underline; }
+
+	header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+	header h1 { font-size: 20px; margin: 0; letter-spacing: -0.01em; }
+	header h1 span { color: var(--text-muted); font-weight: 400; }
+	header .meta { color: var(--text-secondary); font-size: 12.5px; }
+
+	.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+	.tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+	.tile .label { color: var(--text-secondary); font-size: 12px; }
+	.tile .value { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+	.tile .value small { font-size: 14px; font-weight: 400; color: var(--text-secondary); margin-left: 2px; }
+	.tile .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+	.delta { display: inline-flex; align-items: center; gap: 3px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+	.delta.up { color: var(--critical-text); }
+	.delta.down { color: var(--good-text); }
+	.delta.flat { color: var(--text-muted); }
+	.delta svg { width: 10px; height: 10px; flex: none; }
+
+	.charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+	.chart-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+	.chart-head h2 { font-size: 14px; margin: 0; font-weight: 600; }
+	.chart-head .hint { font-size: 12px; color: var(--text-muted); }
+	.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--text-secondary); }
+	.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+	.chart { position: relative; }
+	.chart svg { display: block; width: 100%; overflow: visible; }
+	.axis text { fill: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+	.gridline { stroke: var(--grid); stroke-width: 1; }
+	.baseline { stroke: var(--border); stroke-width: 1; }
+
+	.tooltip {
+		position: absolute; pointer-events: none; z-index: 5;
+		background: var(--surface-1); color: var(--text-primary);
+		border: 1px solid var(--border); border-radius: 8px;
+		box-shadow: 0 4px 16px rgba(0,0,0,.12);
+		padding: 8px 10px; font-size: 12px; min-width: 180px; max-width: 280px;
+		opacity: 0; transition: opacity .08s;
+	}
+	.tooltip.show { opacity: 1; }
+	.tooltip .t-head { font-weight: 600; margin-bottom: 2px; }
+	.tooltip .t-sub { color: var(--text-secondary); margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.tooltip .t-row { display: flex; justify-content: space-between; gap: 12px; font-variant-numeric: tabular-nums; }
+	.tooltip .t-row span:first-child { color: var(--text-secondary); }
+	.tooltip .t-row i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+	.tooltip .t-total { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 4px; font-weight: 600; }
+
+	.table-card { padding: 0; overflow: hidden; }
+	.table-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 14px 16px 10px; }
+	.table-head h2 { font-size: 14px; margin: 0; }
+	.filters { display: flex; gap: 6px; }
+	.filters button {
+		font: inherit; font-size: 12px; color: var(--text-secondary);
+		background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; cursor: pointer;
+	}
+	.filters button[aria-pressed="true"] { color: var(--text-primary); background: var(--row-hover); border-color: var(--text-muted); }
+	.scroll { overflow-x: auto; }
+	table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+	th, td { padding: 7px 10px; text-align: right; white-space: nowrap; border-top: 1px solid var(--grid); }
+	th { font-size: 11.5px; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .03em; border-top: 1px solid var(--border); }
+	th:first-child, td:first-child { padding-left: 16px; }
+	th:last-child, td:last-child { padding-right: 16px; }
+	td.l, th.l { text-align: left; }
+	td.subject { max-width: 220px; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary); }
+	td.date { color: var(--text-muted); }
+	td.total { font-weight: 600; }
+	td .cell { display: inline-flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+	td .cell .delta { font-size: 11px; }
+	tbody tr:hover { background: var(--row-hover); }
+	tbody tr.hl { background: var(--row-hover); }
+	tr.failed td { color: var(--text-muted); }
+	.badge { font-size: 11px; border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; color: var(--critical-text); }
+	.sw { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
+
+	footer { margin-top: 14px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+	.charts .wide { grid-column: 1 / -1; }
+	.chart .empty { color: var(--text-muted); font-size: 12px; padding: 24px 0; text-align: center; }
+	@media (max-width: 720px) {
+		.tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+		.charts { grid-template-columns: minmax(0, 1fr); }
+		td.subject { max-width: 160px; }
+	}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="wrap">
+
+	<header>
+		<h1>bait fast <span>· compiler performance</span></h1>
+		<div class="meta">Self-compile of <code>cli/bait.bt</code> on the JS backend · min of @RUNS@ runs (time and peak RSS) · @MACHINE@</div>
+	</header>
+
+	<section class="tiles" id="tiles"></section>
+
+	<section class="charts">
+		<div class="card">
+			<div class="chart-head">
+				<h2>Total self-compile time</h2>
+				<span class="hint">ms per commit, lower is better</span>
+			</div>
+			<div class="chart" id="line"></div>
+		</div>
+		<div class="card">
+			<div class="chart-head">
+				<h2>Peak memory (RSS)</h2>
+				<span class="hint">MB per commit, lower is better</span>
+			</div>
+			<div class="chart" id="mem"></div>
+		</div>
+		<div class="card wide">
+			<div class="chart-head">
+				<h2>Time per stage</h2>
+				<div class="legend" id="legend"></div>
+			</div>
+			<div class="chart" id="stack"></div>
+		</div>
+	</section>
+
+	<section class="card table-card">
+		<div class="table-head">
+			<h2>Commits</h2>
+			<div class="filters" role="group" aria-label="Filter rows">
+				<button type="button" data-f="all" aria-pressed="true">All</button>
+				<button type="button" data-f="changed" aria-pressed="false">±5% only</button>
+			</div>
+		</div>
+		<div class="scroll">
+			<table>
+				<thead>
+					<tr>
+						<th class="l">Commit</th>
+						<th class="l">Date</th>
+						<th class="l">Subject</th>
+						<th>Total</th>
+						<th><i class="sw" style="background:var(--series-1)"></i>Parse</th>
+						<th><i class="sw" style="background:var(--series-2)"></i>Depgraph</th>
+						<th><i class="sw" style="background:var(--series-3)"></i>Check</th>
+						<th><i class="sw" style="background:var(--series-4)"></i>Transform</th>
+						<th><i class="sw" style="background:var(--series-5)"></i>Gen</th>
+						<th>Peak RSS</th>
+						<th>Out lines</th>
+						<th>Lines/s</th>
+					</tr>
+				</thead>
+				<tbody id="rows">

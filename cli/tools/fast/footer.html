@@ -1,0 +1,253 @@
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+	<footer>
+		<span>Data: <a href="fast.csv">fast.csv</a> · Source: <a href="https://github.com/bait-lang/bait/tree/main/cli/tools/fast">cli/tools/fast</a></span>
+		<span>Last run @GENERATED@ · Δ vs previous commit, ±5% highlighted</span>
+	</footer>
+
+</div>
+</div>
+
+<script>
+// [hash, date, subject, total, parse, depgraph, check, transform, gen, max_rss_kb, out_lines, src_lines], oldest first
+const DATA = @DATA@;
+const REPO = 'https://github.com/bait-lang/bait/commit/';
+const THRESHOLD = 5;
+const MIN_DIFF = 3;
+const STAGES = [
+	['parse', 'Parse', '--series-1'],
+	['depgraph', 'Depgraph', '--series-2'],
+	['check', 'Check', '--series-3'],
+	['transform', 'Transform', '--series-4'],
+	['gen', 'Gen', '--series-5'],
+];
+
+const rows = DATA.map(([hash, date, subject, total, parse, depgraph, check, transform, gen, rssKb, outLines, srcLines]) => {
+	const r = { hash, short: hash.slice(0, 7), date, subject, failed: total === null, total, parse, depgraph, check, transform, gen, outLines, srcLines };
+	if (r.failed) return r;
+	r.rss = Math.round(rssKb / 1024 * 10) / 10;
+	const stageSum = STAGES.reduce((s, [k]) => s + r[k], 0);
+	r.lps = stageSum > 0 ? Math.round(srcLines / (stageSum / 1000)) : 0;
+	return r;
+});
+const ok = rows.filter(r => !r.failed);
+
+// --- helpers ---
+const css = (v) => getComputedStyle(document.querySelector('.page')).getPropertyValue(v).trim();
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const ARROW_UP = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1 9 8H1z" fill="currentColor"/></svg>';
+const ARROW_DOWN = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 9 1 2h8z" fill="currentColor"/></svg>';
+const isChange = (cur, prev) => prev > 0 && Math.abs(cur - prev) >= MIN_DIFF && Math.abs(cur - prev) / prev * 100 >= THRESHOLD;
+function delta(cur, prev) {
+	if (prev == null || !(prev > 0)) return '';
+	const pct = (cur - prev) / prev * 100;
+	const txt = (pct > 0 ? '+' : '') + pct.toFixed(1) + '%';
+	if (isChange(cur, prev) && pct > 0) return `<span class="delta up" title="worse">${ARROW_UP}${txt}</span>`;
+	if (isChange(cur, prev) && pct < 0) return `<span class="delta down" title="better">${ARROW_DOWN}${txt}</span>`;
+	return `<span class="delta flat">${txt}</span>`;
+}
+const fmt = (n) => n.toLocaleString('en-US');
+// Round tick steps to 1, 2 or 5 times a power of ten, aiming for about four grid lines
+function niceTick(range) {
+	const raw = Math.max(range, 1) / 4;
+	const pow = 10 ** Math.floor(Math.log10(raw));
+	return [1, 2, 5, 10].map(f => f * pow).find(t => t >= raw);
+}
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs = {}, parent) {
+	const e = document.createElementNS(NS, tag);
+	for (const k in attrs) e.setAttribute(k, attrs[k]);
+	if (parent) parent.appendChild(e);
+	return e;
+}
+function tooltipFor(container) {
+	const t = document.createElement('div');
+	t.className = 'tooltip';
+	container.appendChild(t);
+	return {
+		show(html, x, y) {
+			t.innerHTML = html;
+			t.classList.add('show');
+			const w = container.clientWidth, tw = t.offsetWidth;
+			let left = x + 14;
+			if (left + tw > w) left = x - tw - 14;
+			t.style.left = Math.max(0, left) + 'px';
+			t.style.top = Math.max(0, y - 10) + 'px';
+		},
+		hide() { t.classList.remove('show'); },
+	};
+}
+function tipHtml(r) {
+	const i = ok.indexOf(r);
+	const prev = i > 0 ? ok[i - 1] : null;
+	let h = `<div class="t-head"><span class="mono">${r.short}</span> · ${r.date}</div><div class="t-sub">${esc(r.subject)}</div>`;
+	for (const [k, label, v] of STAGES) {
+		h += `<div class="t-row"><span><i style="background:var(${v})"></i>${label}</span><span>${fmt(r[k])} ms</span></div>`;
+	}
+	h += `<div class="t-row t-total"><span>Total</span><span>${fmt(r.total)} ms ${prev ? delta(r.total, prev.total) : ''}</span></div>`;
+	h += `<div class="t-row"><span>Peak RSS</span><span>${r.rss.toFixed(1)} MB ${prev ? delta(r.rss * 1024, prev.rss * 1024) : ''}</span></div>`;
+	return h;
+}
+function highlightRow(hash) {
+	document.querySelectorAll('#rows tr').forEach(tr => tr.classList.toggle('hl', tr.dataset.hash === hash));
+}
+function notEnoughData(host) {
+	host.innerHTML = '<div class="empty">Not enough measurements yet</div>';
+}
+
+// --- tiles ---
+(function tiles() {
+	if (!ok.length) return;
+	const last = ok[ok.length - 1], prev = ok.length > 1 ? ok[ok.length - 2] : null;
+	const best = ok.reduce((a, b) => b.total < a.total ? b : a);
+	const first = ok[0];
+	const trend = (last.total - first.total) / first.total * 100;
+	const vs = (cur, old) => prev ? `${delta(cur, old)} vs <span class="mono">${prev.short}</span>` : 'first measurement';
+	document.getElementById('tiles').innerHTML = `
+		<div class="card tile"><div class="label">Latest total</div>
+			<div class="value">${fmt(last.total)}<small>ms</small></div>
+			<div class="sub">${vs(last.total, prev && prev.total)}</div></div>
+		<div class="card tile"><div class="label">Best total</div>
+			<div class="value">${fmt(best.total)}<small>ms</small></div>
+			<div class="sub"><a class="mono" href="${REPO}${best.hash}">${best.short}</a> · ${best.date}</div></div>
+		<div class="card tile"><div class="label">Since ${first.date}</div>
+			<div class="value">${trend > 0 ? '+' : ''}${trend.toFixed(1)}<small>%</small></div>
+			<div class="sub">${ok.length} commits measured</div></div>
+		<div class="card tile"><div class="label">Peak memory</div>
+			<div class="value">${last.rss.toFixed(1)}<small>MB</small></div>
+			<div class="sub">${vs(last.rss * 1024, prev && prev.rss * 1024)}</div></div>
+		<div class="card tile"><div class="label">Throughput</div>
+			<div class="value">${fmt(last.lps)}<small>lines/s</small></div>
+			<div class="sub">${fmt(last.srcLines)} source lines</div></div>`;
+})();
+
+// --- line chart ---
+function drawLine(id, key, label) {
+	const host = document.getElementById(id);
+	host.innerHTML = '';
+	if (ok.length < 2) return notEnoughData(host);
+	const W = host.clientWidth, H = 200, m = { t: 10, r: 8, b: 22, l: 44 };
+	const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': label }, host);
+	const vals = ok.map(r => r[key]);
+	let lo = Math.min(...vals), hi = Math.max(...vals);
+	const pad = Math.max((hi - lo) * 0.15, hi * 0.02);
+	const tick = niceTick(hi - lo + 2 * pad);
+	lo = Math.max(0, Math.floor((lo - pad) / tick) * tick); hi = Math.ceil((hi + pad) / tick) * tick;
+	const x = (i) => m.l + (W - m.l - m.r) * (i / (ok.length - 1));
+	const y = (v) => m.t + (H - m.t - m.b) * (1 - (v - lo) / (hi - lo));
+	const ax = el('g', { class: 'axis' }, svg);
+	for (let v = lo; v <= hi + tick / 1e6; v += tick) {
+		el('line', { class: 'gridline', x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }, ax);
+		el('text', { x: m.l - 6, y: y(v) + 4, 'text-anchor': 'end' }, ax).textContent = fmt(Math.round(v * 10) / 10);
+	}
+	const step = Math.max(1, Math.ceil(ok.length / Math.max(2, Math.floor(W / 110))));
+	ok.forEach((r, i) => {
+		if ((i % step === 0 && ok.length - 1 - i >= step / 2) || i === ok.length - 1) {
+			el('text', { x: x(i), y: H - 6, 'text-anchor': i === 0 ? 'start' : i === ok.length - 1 ? 'end' : 'middle' }, ax).textContent = r.date.slice(5);
+		}
+	});
+	const d = ok.map((r, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(r[key]).toFixed(1)}`).join('');
+	el('path', { d, fill: 'none', stroke: css('--series-1'), 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+
+	// regression / improvement markers (status color + glyph, never color alone)
+	const scale = key === 'rss' ? 1024 : 1;
+	ok.forEach((r, i) => {
+		if (!i || !isChange(r[key] * scale, ok[i - 1][key] * scale)) return;
+		const pct = (r[key] - ok[i - 1][key]) / ok[i - 1][key] * 100;
+		const up = pct > 0, cx = x(i), cy = y(r[key]);
+		el('circle', { cx, cy, r: 5, fill: css(up ? '--critical' : '--good'), stroke: css('--surface-1'), 'stroke-width': 2 }, svg);
+		el('text', { x: cx, y: up ? cy - 10 : cy + 18, 'text-anchor': 'middle', 'font-size': 11, fill: css(up ? '--critical-text' : '--good-text') }, svg)
+			.textContent = (up ? '▲ +' : '▼ ') + pct.toFixed(1) + '%';
+	});
+
+	const cross = el('line', { y1: m.t, y2: H - m.b, stroke: css('--text-muted'), 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0 }, svg);
+	const dot = el('circle', { r: 5, fill: css('--series-1'), stroke: css('--surface-1'), 'stroke-width': 2, opacity: 0 }, svg);
+	const hit = el('rect', { x: m.l, y: 0, width: W - m.l - m.r, height: H, fill: 'transparent' }, svg);
+	const tip = tooltipFor(host);
+	hit.addEventListener('mousemove', (e) => {
+		const bx = svg.getBoundingClientRect();
+		const px = (e.clientX - bx.left) * (W / bx.width);
+		const i = Math.max(0, Math.min(ok.length - 1, Math.round((px - m.l) / (W - m.l - m.r) * (ok.length - 1))));
+		const r = ok[i];
+		cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('opacity', 1);
+		dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(r[key])); dot.setAttribute('opacity', 1);
+		tip.show(tipHtml(r), x(i) * bx.width / W, y(r[key]) * bx.height / H);
+		highlightRow(r.hash);
+	});
+	hit.addEventListener('mouseleave', () => { cross.setAttribute('opacity', 0); dot.setAttribute('opacity', 0); tip.hide(); highlightRow(null); });
+}
+
+// --- stacked bars ---
+function drawStack() {
+	const host = document.getElementById('stack');
+	host.innerHTML = '';
+	document.getElementById('legend').innerHTML = STAGES.map(([, l, v]) => `<span><i style="background:var(${v})"></i>${l}</span>`).join('');
+	if (!ok.length) return notEnoughData(host);
+	const W = host.clientWidth, H = 220, m = { t: 8, r: 8, b: 22, l: 44 };
+	const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Time per compiler stage per commit' }, host);
+	const top = Math.max(...ok.map(r => STAGES.reduce((s, [k]) => s + r[k], 0)));
+	const tick = niceTick(top);
+	const max = Math.ceil(top / tick) * tick;
+	const y = (v) => m.t + (H - m.t - m.b) * (1 - v / max);
+	const ax = el('g', { class: 'axis' }, svg);
+	for (let v = 0; v <= max; v += tick) {
+		el('line', { class: v ? 'gridline' : 'baseline', x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }, ax);
+		el('text', { x: m.l - 6, y: y(v) + 4, 'text-anchor': 'end' }, ax).textContent = fmt(v);
+	}
+	const slot = (W - m.l - m.r) / ok.length;
+	const bw = Math.max(3, Math.min(22, slot - 2));
+	const step = Math.max(1, Math.ceil(ok.length / Math.max(2, Math.floor(W / 110))));
+	const tip = tooltipFor(host);
+	ok.forEach((r, i) => {
+		const cx = m.l + slot * i + slot / 2;
+		const g = el('g', {}, svg);
+		let acc = 0;
+		STAGES.forEach(([k, , v], si) => {
+			const y0 = y(acc), y1 = y(acc + r[k]);
+			acc += r[k];
+			const h = Math.max(0, y0 - y1 - (si ? 2 : 0)); // 2px surface gap between segments
+			const isTop = si === STAGES.length - 1;
+			const rx = isTop ? Math.min(4, bw / 2, h) : 0;
+			if (isTop) {
+				// rounded top cap only
+				const xL = cx - bw / 2, xR = cx + bw / 2, yb = y1 + h;
+				el('path', { d: `M${xL},${yb}V${y1 + rx}Q${xL},${y1} ${xL + rx},${y1}H${xR - rx}Q${xR},${y1} ${xR},${y1 + rx}V${yb}Z`, fill: css(v) }, g);
+			} else {
+				el('rect', { x: cx - bw / 2, y: y1, width: bw, height: h, fill: css(v) }, g);
+			}
+		});
+		if ((i % step === 0 && ok.length - 1 - i >= step / 2) || i === ok.length - 1) {
+			el('text', { x: cx, y: H - 6, 'text-anchor': 'middle' }, ax).textContent = r.date.slice(5);
+		}
+		const hit = el('rect', { x: cx - slot / 2, y: m.t, width: slot, height: H - m.t - m.b, fill: 'transparent' }, svg);
+		hit.addEventListener('mousemove', (e) => {
+			const bx = svg.getBoundingClientRect();
+			tip.show(tipHtml(r), cx * bx.width / W, (e.clientY - bx.top));
+			highlightRow(r.hash);
+		});
+		hit.addEventListener('mouseleave', () => { tip.hide(); highlightRow(null); });
+	});
+}
+
+// --- table filter (rows are rendered by bait fast) ---
+document.querySelectorAll('.filters button').forEach(b => b.addEventListener('click', () => {
+	const changedOnly = b.dataset.f === 'changed';
+	document.querySelectorAll('.filters button').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+	document.querySelectorAll('#rows tr').forEach(tr => { tr.hidden = changedOnly && !tr.dataset.changed; });
+}));
+
+function drawAll() {
+	drawLine('line', 'total', 'Total self-compile time per commit');
+	drawLine('mem', 'rss', 'Peak memory per commit');
+	drawStack();
+}
+drawAll();
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawAll, 100); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', drawAll);
+new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
+</script>
+</body>
+</html>

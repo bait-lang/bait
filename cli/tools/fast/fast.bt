@@ -12,12 +12,14 @@ const FAST_DIR := os.join_path(os.home_dir(), ['.bait', 'fast'])
 const BAIT_DIR := os.join_path(FAST_DIR, ['bait'])
 const RESULTS_DIR := os.join_path(FAST_DIR, ['results'])
 const CSV_PATH := os.join_path(RESULTS_DIR, ['fast.csv'])
+const HTML_PATH := os.join_path(RESULTS_DIR, ['index.html'])
 
 fun main() {
 	mut op := options.new_option_parser(os.user_args())
 	runs := op.int('runs', `r`, 5)
 	max := op.int('max', `m`, 10)
 	commit := op.string('commit', `c`, '')
+	no_render := op.bool('no-render', `n`, false)
 
 	if runs < 1 or max < 1 {
 		eprintln('--runs and --max must be at least 1')
@@ -59,6 +61,11 @@ fun main() {
 		if not row.failed() {
 			println('  total ${row.total}ms, peak RSS ${row.max_rss_kb / 1024}MB')
 		}
+	}
+
+	if not no_render {
+		write_html(HTML_PATH, read_rows(CSV_PATH), runs)
+		println('Rendered ${HTML_PATH}')
 	}
 }
 
