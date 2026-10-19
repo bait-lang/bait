@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Is Bait fast?</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+<div class="wrap">
+
+	<header>
+		<h1>Is Bait fast?</h1>
+		<div class="sub">
+			<div class="info"><span>Measurement</span><b>Minimum of @RUNS@</b></div>
+			<div class="info"><span>Machine</span><b>@MACHINE@</b></div>
+			<div class="info"><span>Last run</span><b>@GENERATED@</b></div>
+			<div class="info"><span>Source</span><b><a href="https://github.com/bait-lang/bait/tree/main/cli/tools/fast">cli/tools/fast</a></b></div>
+		</div>
+		<div class="filters" id="range" role="group" aria-label="Commits shown">
+			<button type="button" data-r="recent" aria-pressed="true">Last 30, weekly, monthly</button>
+			<button type="button" data-r="all" aria-pressed="false">Every commit</button>
+		</div>
+	</header>
+
+	<section class="charts">
+		<div class="card">
+			<div class="chart-head">
+				<h2>Self-compile time [ms]</h2>
+			</div>
+			<div class="chart" id="line"></div>
+		</div>
+		<div class="card">
+			<div class="chart-head">
+				<h2>Peak memory [MB]</h2>
+			</div>
+			<div class="chart" id="mem"></div>
+		</div>
+		<div class="card wide">
+			<div class="chart-head">
+				<h2>Time per stage</h2>
+				<div class="legend" id="legend"></div>
+			</div>
+			<div class="chart" id="stack"></div>
+		</div>
+	</section>
+
+	<section class="card table-card">
+		<div class="table-head">
+			<h2>Commits</h2>
+		</div>
+		<div class="scroll">
+			<table>
+				<thead>
+					<tr>
+						<th class="l">Date</th>
+						<th class="l">Commit</th>
+						<th class="l">Message</th>
+						<th>Total</th>
+						<th><i class="sw" style="background:var(--series-1)"></i>Parse</th>
+						<th><i class="sw" style="background:var(--series-3)"></i>Check</th>
+						<th><i class="sw" style="background:var(--series-4)"></i>Transform</th>
+						<th><i class="sw" style="background:var(--series-5)"></i>Gen</th>
+						<th>Peak memory</th>
+						<th>Out lines</th>
+						<th>bait.js size</th>
+						<th>Lines/s</th>
+					</tr>
+				</thead>
+				<tbody id="rows">

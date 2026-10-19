@@ -1,0 +1,194 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package main
+
+import os
+import strings
+
+const COMMIT_URL := 'https://github.com/bait-lang/bait/commit/'
+
+// A cell is highlighted if it changes by at least THRESHOLD percent
+// and MIN_DIFF units (timings have a resolution of 1ms)
+const THRESHOLD := 5
+const MIN_DIFF := 3
+
+// Deltas below HIDE_BELOW percent are not shown at all
+const HIDE_BELOW := 3
+
+fun write_html(path string, rows []Row, runs i32) {
+	runs_text := if runs == 1 { '1 run' } else { '${runs} runs' }
+	header := os.read_file(os.join_path($DIR, ['header.html']))
+		.replace('@RUNS@', runs_text)
+		.replace('@MACHINE@', machine())
+		.replace('@GENERATED@', os.exec('date -u "+%Y-%m-%d %H:%M UTC"').stdout.trim_space())
+	footer := os.read_file(os.join_path($DIR, ['footer.html']))
+		.replace('@DATA@', js_data(rows))
+	os.write_file(path, header + table_rows(rows) + footer)
+	os.write_file(os.join_path(os.dir(path), ['style.css']), os.read_file(os.join_path($DIR, ['style.css'])))
+}
+
+fun machine() string {
+	if os.getenv('GITHUB_ACTIONS') == 'true' {
+		return 'GitHub Actions runner'
+	}
+	return '${os.user_os()} ${os.arch()}'
+}
+
+// Table rows of successful builds, newest first. Deltas compare to the previous successful measurement
+fun table_rows(rows []Row) string {
+	mut prevs := []i32
+	mut prev := -1
+	for i, r in rows {
+		prevs.push(prev)
+		if not r.failed() {
+			prev = i
+		}
+	}
+
+	mut sb := strings.new_builder(rows.length * 1000)
+	for i := rows.length - 1; i >= 0; i -= 1 {
+		r := rows[i]
+		if r.failed() {
+			continue
+		}
+		short := r.hash.substr(0, 7)
+		subject := html_esc(r.subject)
+		link := '<a class="mono" href="${COMMIT_URL}${r.hash}">${short}</a>'
+		head := '<td class="l date">${r.date}</td><td class="l">${link}</td><td class="l subject" title="${subject}">${subject}</td>'
+
+		mut p := Row{}
+		if prevs[i] >= 0 {
+			p = rows[prevs[i]]
+		}
+
+		sb.write('\t\t\t\t\t<tr data-hash="${r.hash}">${head}')
+		sb.write('<td class="total">${cell(fmt_ms(r.total), r.total, p.total, 'ms')}</td>')
+		sb.write('<td>${cell(fmt_ms(r.parse), r.parse, p.parse, 'ms')}</td>')
+		sb.write('<td>${cell(fmt_ms(r.check), r.check, p.check, 'ms')}</td>')
+		sb.write('<td>${cell(fmt_ms(r.transform), r.transform, p.transform, 'ms')}</td>')
+		sb.write('<td>${cell(fmt_ms(r.gen), r.gen, p.gen, 'ms')}</td>')
+		sb.write('<td>${cell(fmt_mb(r.max_rss_kb), r.max_rss_kb, p.max_rss_kb, 'mb')}</td>')
+		sb.write('<td>${fmt_int(r.out_lines)}</td>')
+		sb.write('<td>${cell(fmt_kb(r.out_bytes), r.out_bytes, p.out_bytes, 'kb')}</td>')
+		sb.write('<td>${lines_per_sec(r)}</td></tr>\n')
+	}
+	return sb.str()
+}
+
+fun cell(text string, cur i32, prev i32, unit string) string {
+	return '<span class="cell">${text}${delta(cur, prev, unit)}</span>'
+}
+
+fun is_change(cur i32, prev i32) bool {
+	if cur < 0 or prev <= 0 {
+		return false
+	}
+	diff := abs(cur - prev)
+	return diff >= MIN_DIFF and diff * 100 >= THRESHOLD * prev
+}
+
+// Absolute change in the column's unit followed by the percentage, e.g. "+12 ms (+4.3%)"
+fun delta(cur i32, prev i32, unit string) string {
+	if cur < 0 or prev <= 0 {
+		return ''
+	}
+	// Percentage in tenths, rounded half up
+	tenths := (abs(cur - prev) * 2000 + prev) / (2 * prev)
+	if tenths < HIDE_BELOW * 10 {
+		return ''
+	}
+	diff := abs(cur - prev)
+	mut amount := fmt_ms(diff)
+	if unit == 'mb' {
+		amount = fmt_mb(diff)
+	} else if unit == 'kb' {
+		amount = fmt_kb(diff)
+	}
+	mut pct := fmt_tenths(tenths) + '%'
+	mut sign := ''
+	if cur > prev {
+		sign = '+'
+	} else if cur < prev {
+		sign = '-'
+	}
+	mut txt := sign + amount + ' (' + sign + pct + ')'
+
+	if is_change(cur, prev) {
+		if cur > prev {
+			return '<span class="delta up" title="worse">${txt}</span>'
+		}
+		return '<span class="delta down" title="better">${txt}</span>'
+	}
+	return '<span class="delta flat">${txt}</span>'
+}
+
+fun lines_per_sec(r Row) string {
+	stages := r.parse + r.check + r.transform + r.gen
+	if r.src_lines < 0 or stages <= 0 {
+		return '–'
+	}
+	return fmt_int(r.src_lines * 1000 / stages)
+}
+
+fun abs(n i32) i32 {
+	if n < 0 {
+		return -n
+	}
+	return n
+}
+
+// 1234567 -> 1,234,567
+fun fmt_int(n i32) string {
+	if n < 0 {
+		return '–'
+	}
+	s := n.str()
+	mut res := ''
+	for i := 0; i < s.length; i += 1 {
+		if i > 0 and (s.length - i) % 3 == 0 {
+			res += ','
+		}
+		res += s.substr(i, i + 1)
+	}
+	return res
+}
+
+fun fmt_ms(n i32) string {
+	return fmt_int(n) + ' ms'
+}
+
+fun fmt_tenths(n i32) string {
+	return '${n / 10}.${n % 10}'
+}
+
+fun fmt_mb(kb i32) string {
+	return fmt_tenths((kb * 10 + 512) / 1024) + ' MB'
+}
+
+fun fmt_kb(bytes i32) string {
+	if bytes < 0 {
+		return '–'
+	}
+	return fmt_tenths((bytes * 10 + 512) / 1024) + ' KB'
+}
+
+// JS array literal of all rows for the charts, oldest first
+fun js_data(rows []Row) string {
+	mut items := []string
+	for r in rows {
+		mut cols := ['"${r.hash}"', '"${r.date}"', js_str(r.subject)]
+		for n in [r.total, r.parse, r.check, r.transform, r.gen, r.max_rss_kb, r.out_lines, r.out_bytes, r.src_lines] {
+			cols.push(if n < 0 { 'null' } else { n.str() })
+		}
+		items.push('[' + cols.join(', ') + ']')
+	}
+	return '[\n' + items.join(',\n') + '\n]'
+}
+
+fun js_str(s string) string {
+	return '"' + s.replace('\\', '\\\\').replace('"', '\\"').replace('<', '\\x3c') + '"'
+}
+
+fun html_esc(s string) string {
+	return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+}

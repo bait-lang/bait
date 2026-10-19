@@ -163,7 +163,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 	// TODO move whole depgraph build and resolve into pkg
 
 	// Build a dependency map for each file
-	timers.start('DEPGRAPH')
 	mut deps := map[string][]string
 	for f in ast_files {
 		for imp in f.imports {
@@ -186,7 +185,6 @@ pub fun compile(prefs preference.Prefs) i32 {
 			}
 		}
 	}
-	timers.show('DEPGRAPH')
 
 	// Run the type resolver and checker
 	timers.start('CHECK')

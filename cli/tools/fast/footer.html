@@ -1,0 +1,229 @@
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+</div>
+</div>
+
+<script>
+// [hash, date, subject, total, parse, check, transform, gen, max_memory_kb, out_lines, out_bytes, src_lines], oldest first
+const DATA = @DATA@;
+const THRESHOLD = 5;
+const MIN_DIFF = 3;
+const HIDE_BELOW = 3;
+const STAGES = [
+	['parse', 'Parse', '--series-1'],
+	['check', 'Check', '--series-3'],
+	['transform', 'Transform', '--series-4'],
+	['gen', 'Gen', '--series-5'],
+];
+
+const rows = DATA.map(([hash, date, subject, total, parse, check, transform, gen, memKb, outLines, outBytes, srcLines]) => {
+	const r = { hash, short: hash.slice(0, 7), date, subject, failed: total === null, total, parse, check, transform, gen, outLines, outBytes, srcLines };
+	if (r.failed) return r;
+	r.memory = Math.round(memKb / 1024 * 10) / 10;
+	return r;
+});
+const ok = rows.filter(r => !r.failed);
+// Default view: the last RECENT commits, before them the last commit of each week
+// within WEEKLY_DAYS of the newest commit, and the last commit of each month before that
+const RECENT = 30;
+const WEEKLY_DAYS = 365;
+const day = (date) => Date.parse(date) / 864e5;
+const newest = ok.length ? day(ok[ok.length - 1].date) : 0;
+const bucket = (date) => newest - day(date) < WEEKLY_DAYS
+	? 'w' + Math.floor((day(date) + 3) / 7) // weeks start on Monday
+	: 'm' + date.slice(0, 7);
+const recent = ok.filter((r, i) => i >= ok.length - RECENT || bucket(r.date) !== bucket(ok[i + 1].date));
+let shown = recent;
+
+// --- helpers ---
+const css = (v) => getComputedStyle(document.querySelector('.page')).getPropertyValue(v).trim();
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const isChange = (cur, prev) => prev > 0 && Math.abs(cur - prev) >= MIN_DIFF && Math.abs(cur - prev) / prev * 100 >= THRESHOLD;
+function delta(cur, prev) {
+	if (prev == null || !(prev > 0)) return '';
+	const pct = (cur - prev) / prev * 100;
+	if (Math.abs(pct) < HIDE_BELOW) return '';
+	const txt = (pct > 0 ? '+' : '') + pct.toFixed(1) + '%';
+	if (isChange(cur, prev) && pct > 0) return `<span class="delta up" title="worse">${txt}</span>`;
+	if (isChange(cur, prev) && pct < 0) return `<span class="delta down" title="better">${txt}</span>`;
+	return `<span class="delta flat">${txt}</span>`;
+}
+const fmt = (n) => n.toLocaleString('en-US');
+// Round tick steps to 1, 2 or 5 times a power of ten, aiming for about four grid lines
+function niceTick(range) {
+	const raw = Math.max(range, 1) / 4;
+	const pow = 10 ** Math.floor(Math.log10(raw));
+	return [1, 2, 5, 10].map(f => f * pow).find(t => t >= raw);
+}
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs = {}, parent) {
+	const e = document.createElementNS(NS, tag);
+	for (const k in attrs) e.setAttribute(k, attrs[k]);
+	if (parent) parent.appendChild(e);
+	return e;
+}
+function tooltipFor(container) {
+	const t = document.createElement('div');
+	t.className = 'tooltip';
+	container.appendChild(t);
+	return {
+		show(html, x, y) {
+			t.innerHTML = html;
+			t.classList.add('show');
+			const w = container.clientWidth, tw = t.offsetWidth;
+			let left = x + 14;
+			if (left + tw > w) left = x - tw - 14;
+			t.style.left = Math.max(0, left) + 'px';
+			t.style.top = Math.max(0, y - 10) + 'px';
+		},
+		hide() { t.classList.remove('show'); },
+	};
+}
+// Separate line for a change, skipped if there is none
+const diffRow = (d) => d ? `<div class="t-row t-diff"><span>vs previous</span><span>${d}</span></div>` : '';
+function tipHtml(r) {
+	const i = ok.indexOf(r);
+	const prev = i > 0 ? ok[i - 1] : null;
+	let h = `<div class="t-head"><span class="mono">${r.short}</span> · ${r.date}</div><div class="t-sub">${esc(r.subject)}</div>`;
+	for (const [k, label, v] of STAGES) {
+		if (r[k] == null) continue; // stage didn't exist yet
+		h += `<div class="t-row"><span><i style="background:var(${v})"></i>${label}</span><span>${fmt(r[k])} ms</span></div>`;
+	}
+	h += `<div class="t-row t-total"><span>Total</span><span>${fmt(r.total)} ms</span></div>`;
+	if (prev) h += diffRow(delta(r.total, prev.total));
+	h += `<div class="t-row"><span>Peak memory</span><span>${r.memory.toFixed(1)} MB</span></div>`;
+	if (prev) h += diffRow(delta(r.memory * 1024, prev.memory * 1024));
+	return h;
+}
+function highlightRow(hash) {
+	document.querySelectorAll('#rows tr').forEach(tr => tr.classList.toggle('hl', tr.dataset.hash === hash));
+}
+function notEnoughData(host) {
+	host.innerHTML = '<div class="empty">Not enough measurements yet</div>';
+}
+
+// --- line chart ---
+function drawLine(id, key, label) {
+	const host = document.getElementById(id);
+	host.innerHTML = '';
+	if (shown.length < 2) return notEnoughData(host);
+	const W = host.clientWidth, H = 200, m = { t: 10, r: 8, b: 22, l: 44 };
+	const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': label }, host);
+	const vals = shown.map(r => r[key]);
+	let lo = Math.min(...vals), hi = Math.max(...vals);
+	const pad = Math.max((hi - lo) * 0.15, hi * 0.02);
+	const tick = niceTick(hi - lo + 2 * pad);
+	lo = Math.max(0, Math.floor((lo - pad) / tick) * tick); hi = Math.ceil((hi + pad) / tick) * tick;
+	const x = (i) => m.l + (W - m.l - m.r) * (i / (shown.length - 1));
+	const y = (v) => m.t + (H - m.t - m.b) * (1 - (v - lo) / (hi - lo));
+	const ax = el('g', { class: 'axis' }, svg);
+	for (let v = lo; v <= hi + tick / 1e6; v += tick) {
+		el('line', { class: 'gridline', x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }, ax);
+		el('text', { x: m.l - 6, y: y(v) + 4, 'text-anchor': 'end' }, ax).textContent = fmt(Math.round(v * 10) / 10);
+	}
+	const step = Math.max(1, Math.ceil(shown.length / Math.max(2, Math.floor(W / 110))));
+	shown.forEach((r, i) => {
+		if ((i % step === 0 && shown.length - 1 - i >= step / 2) || i === shown.length - 1) {
+			el('text', { x: x(i), y: H - 6, 'text-anchor': i === 0 ? 'start' : i === shown.length - 1 ? 'end' : 'middle' }, ax).textContent = r.date.slice(5);
+		}
+	});
+	const d = shown.map((r, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(r[key]).toFixed(1)}`).join('');
+	el('path', { d, fill: 'none', stroke: css('--series-1'), 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+
+	const cross = el('line', { y1: m.t, y2: H - m.b, stroke: css('--text-muted'), 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0 }, svg);
+	const dot = el('circle', { r: 5, fill: css('--series-1'), stroke: css('--surface-1'), 'stroke-width': 2, opacity: 0 }, svg);
+	const hit = el('rect', { x: m.l, y: 0, width: W - m.l - m.r, height: H, fill: 'transparent' }, svg);
+	const tip = tooltipFor(host);
+	hit.addEventListener('mousemove', (e) => {
+		const bx = svg.getBoundingClientRect();
+		const px = (e.clientX - bx.left) * (W / bx.width);
+		const i = Math.max(0, Math.min(shown.length - 1, Math.round((px - m.l) / (W - m.l - m.r) * (shown.length - 1))));
+		const r = shown[i];
+		cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('opacity', 1);
+		dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(r[key])); dot.setAttribute('opacity', 1);
+		tip.show(tipHtml(r), x(i) * bx.width / W, y(r[key]) * bx.height / H);
+		highlightRow(r.hash);
+	});
+	hit.addEventListener('mouseleave', () => { cross.setAttribute('opacity', 0); dot.setAttribute('opacity', 0); tip.hide(); highlightRow(null); });
+}
+
+// --- stacked bars ---
+function drawStack() {
+	const host = document.getElementById('stack');
+	host.innerHTML = '';
+	document.getElementById('legend').innerHTML = STAGES.map(([, l, v]) => `<span><i style="background:var(${v})"></i>${l}</span>`).join('');
+	if (!shown.length) return notEnoughData(host);
+	const W = host.clientWidth, H = 220, m = { t: 8, r: 8, b: 22, l: 44 };
+	const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Time per compiler stage per commit' }, host);
+	const top = Math.max(...shown.map(r => STAGES.reduce((s, [k]) => s + r[k], 0)));
+	const tick = niceTick(top);
+	const max = Math.ceil(top / tick) * tick;
+	const y = (v) => m.t + (H - m.t - m.b) * (1 - v / max);
+	const ax = el('g', { class: 'axis' }, svg);
+	for (let v = 0; v <= max; v += tick) {
+		el('line', { class: v ? 'gridline' : 'baseline', x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }, ax);
+		el('text', { x: m.l - 6, y: y(v) + 4, 'text-anchor': 'end' }, ax).textContent = fmt(v);
+	}
+	const slot = (W - m.l - m.r) / shown.length;
+	const bw = Math.max(3, Math.min(22, slot - 2));
+	const step = Math.max(1, Math.ceil(shown.length / Math.max(2, Math.floor(W / 110))));
+	const tip = tooltipFor(host);
+	shown.forEach((r, i) => {
+		const cx = m.l + slot * i + slot / 2;
+		const g = el('g', {}, svg);
+		// Stack in pixels so that small stages stay visible (at least 2px) despite the 2px gaps
+		const segs = STAGES.filter(([k]) => r[k] > 0);
+		let base = y(0);
+		segs.forEach(([k, , v], si) => {
+			const h = Math.max(2, y(0) - y(r[k]) - (si ? 2 : 0));
+			const y1 = base - (si ? 2 : 0) - h;
+			base = y1;
+			const isTop = si === segs.length - 1;
+			const rx = isTop ? Math.min(4, bw / 2, h) : 0;
+			if (isTop) {
+				// rounded top cap only
+				const xL = cx - bw / 2, xR = cx + bw / 2, yb = y1 + h;
+				el('path', { d: `M${xL},${yb}V${y1 + rx}Q${xL},${y1} ${xL + rx},${y1}H${xR - rx}Q${xR},${y1} ${xR},${y1 + rx}V${yb}Z`, fill: css(v) }, g);
+			} else {
+				el('rect', { x: cx - bw / 2, y: y1, width: bw, height: h, fill: css(v) }, g);
+			}
+		});
+		if ((i % step === 0 && shown.length - 1 - i >= step / 2) || i === shown.length - 1) {
+			el('text', { x: cx, y: H - 6, 'text-anchor': 'middle' }, ax).textContent = r.date.slice(5);
+		}
+		const hit = el('rect', { x: cx - slot / 2, y: m.t, width: slot, height: H - m.t - m.b, fill: 'transparent' }, svg);
+		hit.addEventListener('mousemove', (e) => {
+			const bx = svg.getBoundingClientRect();
+			tip.show(tipHtml(r), cx * bx.width / W, (e.clientY - bx.top));
+			highlightRow(r.hash);
+		});
+		hit.addEventListener('mouseleave', () => { tip.hide(); highlightRow(null); });
+	});
+}
+
+// --- range (table rows are rendered by bait fast) ---
+function filterRows() {
+	const inRange = new Set(shown.map(r => r.hash));
+	document.querySelectorAll('#rows tr').forEach(tr => { tr.hidden = !inRange.has(tr.dataset.hash); });
+}
+document.querySelectorAll('#range button').forEach(b => b.addEventListener('click', () => {
+	document.querySelectorAll('#range button').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+	shown = b.dataset.r === 'all' ? ok : recent;
+	filterRows();
+	drawAll();
+}));
+
+function drawAll() {
+	drawLine('line', 'total', 'Self-compile time [ms]');
+	drawLine('mem', 'memory', 'Peak memory [MB]');
+	drawStack();
+}
+filterRows();
+drawAll();
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawAll, 100); });
+</script>
+</body>
+</html>

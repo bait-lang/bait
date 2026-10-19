@@ -1,0 +1,127 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package main
+
+import os
+
+const CSV_HEADER := 'hash,date,total,parse,depgraph,check,transform,gen,max_rss_kb,out_lines,out_bytes,src_lines,subject'
+
+// Number of columns before the subject
+const NR_FIXED_COLS := 12
+
+// Measurement of a single commit. Missing values (e.g. a failed build) are -1
+struct Row {
+	mut hash string
+	mut date string
+	mut total i32 := -1
+	mut parse i32 := -1
+	mut depgraph i32 := -1
+	mut check i32 := -1
+	mut transform i32 := -1
+	mut gen i32 := -1
+	mut max_rss_kb i32 := -1
+	mut out_lines i32 := -1
+	mut out_bytes i32 := -1
+	mut src_lines i32 := -1
+	mut subject string
+}
+
+fun (r Row) failed() bool {
+	return r.total < 0
+}
+
+// The subject is the only free-text field. It's always quoted and goes last,
+// so a malformed quote can't shift the numeric columns
+fun (r Row) csv() string {
+	nums := [r.total, r.parse, r.depgraph, r.check, r.transform, r.gen, r.max_rss_kb, r.out_lines, r.out_bytes, r.src_lines]
+	mut cols := [r.hash, r.date]
+	for n in nums {
+		cols.push(csv_num(n))
+	}
+	cols.push('"' + r.subject.replace('"', '""') + '"')
+	return cols.join(',')
+}
+
+fun csv_num(n i32) string {
+	if n < 0 {
+		return ''
+	}
+	return n.str()
+}
+
+fun read_rows(path string) []Row {
+	mut rows := []Row
+	if not os.exists(path) {
+		return rows
+	}
+	lines := os.read_lines(path)
+	if lines.length == 0 {
+		return rows
+	}
+	// Files written before `out_bytes` was added have one column less
+	has_bytes := lines[0].split(',').contains('out_bytes')
+	nr_fixed := if has_bytes { NR_FIXED_COLS } else { NR_FIXED_COLS - 1 }
+	for i, line in lines {
+		if i == 0 or line.trim_space().length == 0 {
+			continue
+		}
+		if line.split(',').length <= nr_fixed {
+			eprintln('${path}:${i + 1}: skipping malformed row')
+			continue
+		}
+		rows.push(parse_row(line, has_bytes))
+	}
+	return rows
+}
+
+fun parse_row(line string, has_bytes bool) Row {
+	mut cols := line.split(',')
+	if not has_bytes {
+		cols.insert(10, '')
+	}
+	mut subject := cols.slice(NR_FIXED_COLS, cols.length).join(',')
+	if subject.length >= 2 and subject.starts_with('"') and subject.ends_with('"') {
+		subject = subject.substr(1, subject.length - 1).replace('""', '"')
+	}
+	return Row{
+		hash = cols[0]
+		date = cols[1]
+		total = parse_num(cols[2])
+		parse = parse_num(cols[3])
+		depgraph = parse_num(cols[4])
+		check = parse_num(cols[5])
+		transform = parse_num(cols[6])
+		gen = parse_num(cols[7])
+		max_rss_kb = parse_num(cols[8])
+		out_lines = parse_num(cols[9])
+		out_bytes = parse_num(cols[10])
+		src_lines = parse_num(cols[11])
+		subject = subject
+	}
+}
+
+fun parse_num(s string) i32 {
+	if s.length == 0 {
+		return -1
+	}
+	return s.toI32()
+}
+
+fun append_row(path string, row Row) {
+	mut content := CSV_HEADER + '\n'
+	if os.exists(path) {
+		content = os.read_file(path)
+		if content.length > 0 and not content.ends_with('\n') {
+			content += '\n'
+		}
+		// Rewrite files with an outdated header in the current format
+		if not content.starts_with(CSV_HEADER + '\n') {
+			mut lines := [CSV_HEADER]
+			for r in read_rows(path) {
+				lines.push(r.csv())
+			}
+			content = lines.join('\n') + '\n'
+		}
+	}
+	os.write_file(path, content + row.csv() + '\n')
+}
