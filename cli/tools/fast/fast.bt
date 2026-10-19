@@ -102,7 +102,7 @@ fun commits_to_measure(rows []Row, max i32) []string {
 	return hashes
 }
 
-// Clone or update the results repo (fast.csv and index.html)
+// Clone or update the results repo (fast.csv, index.html and style.css)
 fun prepare_results() {
 	if os.exists_dir(os.join_path(RESULTS_DIR, ['.git'])) {
 		// Nothing to pull while the results repo is still empty
@@ -145,7 +145,7 @@ fun push_results(hashes []string) {
 	errors += git(RESULTS_DIR, 'config user.name "${GIT_USER}"')
 	errors += git(RESULTS_DIR, 'config user.email "${GIT_MAIL}"')
 	errors += git(RESULTS_DIR, 'remote set-url origin ${results_url()}')
-	errors += git(RESULTS_DIR, 'add fast.csv index.html')
+	errors += git(RESULTS_DIR, 'add fast.csv index.html style.css')
 
 	// `diff --cached --quiet` exits with 1 if something is staged
 	if git(RESULTS_DIR, 'diff --cached --quiet') == 0 {

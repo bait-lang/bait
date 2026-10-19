@@ -4,10 +4,10 @@ package main
 
 import os
 
-const CSV_HEADER := 'hash,date,total,parse,depgraph,check,transform,gen,max_rss_kb,out_lines,src_lines,subject'
+const CSV_HEADER := 'hash,date,total,parse,depgraph,check,transform,gen,max_rss_kb,out_lines,out_bytes,src_lines,subject'
 
 // Number of columns before the subject
-const NR_FIXED_COLS := 11
+const NR_FIXED_COLS := 12
 
 // Measurement of a single commit. Missing values (e.g. a failed build) are -1
 struct Row {
@@ -21,6 +21,7 @@ struct Row {
 	mut gen i32 := -1
 	mut max_rss_kb i32 := -1
 	mut out_lines i32 := -1
+	mut out_bytes i32 := -1
 	mut src_lines i32 := -1
 	mut subject string
 }
@@ -32,7 +33,7 @@ fun (r Row) failed() bool {
 // The subject is the only free-text field. It's always quoted and goes last,
 // so a malformed quote can't shift the numeric columns
 fun (r Row) csv() string {
-	nums := [r.total, r.parse, r.depgraph, r.check, r.transform, r.gen, r.max_rss_kb, r.out_lines, r.src_lines]
+	nums := [r.total, r.parse, r.depgraph, r.check, r.transform, r.gen, r.max_rss_kb, r.out_lines, r.out_bytes, r.src_lines]
 	mut cols := [r.hash, r.date]
 	for n in nums {
 		cols.push(csv_num(n))
@@ -53,21 +54,31 @@ fun read_rows(path string) []Row {
 	if not os.exists(path) {
 		return rows
 	}
-	for i, line in os.read_lines(path) {
+	lines := os.read_lines(path)
+	if lines.length == 0 {
+		return rows
+	}
+	// Files written before `out_bytes` was added have one column less
+	has_bytes := lines[0].split(',').contains('out_bytes')
+	nr_fixed := if has_bytes { NR_FIXED_COLS } else { NR_FIXED_COLS - 1 }
+	for i, line in lines {
 		if i == 0 or line.trim_space().length == 0 {
 			continue
 		}
-		if line.split(',').length <= NR_FIXED_COLS {
+		if line.split(',').length <= nr_fixed {
 			eprintln('${path}:${i + 1}: skipping malformed row')
 			continue
 		}
-		rows.push(parse_row(line))
+		rows.push(parse_row(line, has_bytes))
 	}
 	return rows
 }
 
-fun parse_row(line string) Row {
-	cols := line.split(',')
+fun parse_row(line string, has_bytes bool) Row {
+	mut cols := line.split(',')
+	if not has_bytes {
+		cols.insert(10, '')
+	}
 	mut subject := cols.slice(NR_FIXED_COLS, cols.length).join(',')
 	if subject.length >= 2 and subject.starts_with('"') and subject.ends_with('"') {
 		subject = subject.substr(1, subject.length - 1).replace('""', '"')
@@ -83,7 +94,8 @@ fun parse_row(line string) Row {
 		gen = parse_num(cols[7])
 		max_rss_kb = parse_num(cols[8])
 		out_lines = parse_num(cols[9])
-		src_lines = parse_num(cols[10])
+		out_bytes = parse_num(cols[10])
+		src_lines = parse_num(cols[11])
 		subject = subject
 	}
 }
@@ -101,6 +113,14 @@ fun append_row(path string, row Row) {
 		content = os.read_file(path)
 		if content.length > 0 and not content.ends_with('\n') {
 			content += '\n'
+		}
+		// Rewrite files with an outdated header in the current format
+		if not content.starts_with(CSV_HEADER + '\n') {
+			mut lines := [CSV_HEADER]
+			for r in read_rows(path) {
+				lines.push(r.csv())
+			}
+			content = lines.join('\n') + '\n'
 		}
 	}
 	os.write_file(path, content + row.csv() + '\n')

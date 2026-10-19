@@ -28,7 +28,7 @@ bait fast -c 1a2b3c4
 ## How It Works
 Everything happens in `~/.bait/fast/`, so your working tree is never touched:
 - `bait/`: A separate clone of the bait repo that is measured
-- `results/`: A clone of the results repo containing `fast.csv` and `index.html`
+- `results/`: A clone of the results repo containing `fast.csv`, `index.html` and `style.css`
 
 Commits are taken from the first-parent history of `origin/main`,
 starting after the last measured one in `fast.csv`.
@@ -55,13 +55,14 @@ For each commit:
 | `parse`, `depgraph`, `check`, `transform`, `gen` | Time per compiler stage in ms     |
 | `max_rss_kb` | Peak resident set size, reported by `mem.js`                          |
 | `out_lines`  | Lines of the generated JS                                             |
+| `out_bytes`  | Size of the generated JS (`bait.js`) in bytes                         |
 | `src_lines`  | Lines of Bait code compiled, starting at `cli/bait.bt`                |
 | `subject`    | Commit subject                                                        |
 
 Empty values mean the build failed.
 
-`index.html` shows the results as a table with charts.
-Changes of at least 5% (and 3ms or 3KB) to the previous successful measurement are highlighted.
+`index.html` (styled by `style.css`) shows the results as a table with charts.
+Changes of at least 5% (and 3ms, 3KB or 3 bytes) to the previous successful measurement are highlighted.
 
 ## Automation
 The [fast workflow](../../../.github/workflows/fast.yml) runs `bait fast --push` daily.

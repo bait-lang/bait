@@ -54,6 +54,7 @@ fun (m Measurer) measure(hash string) Row {
 	}
 
 	row.out_lines = os.read_lines(out).length
+	row.out_bytes = file_size(out)
 	row.src_lines = source_lines(m.dir)
 	os.rm(out)
 	return row
@@ -131,6 +132,14 @@ fun min(a i32, b i32) i32 {
 		return b
 	}
 	return a
+}
+
+fun file_size(path string) i32 {
+	res := os.exec('wc -c < "${path}"')
+	if res.code != 0 {
+		return -1
+	}
+	return res.stdout.trim_space().toI32()
 }
 
 // Count the lines of all Bait files compiled for the JS backend,
