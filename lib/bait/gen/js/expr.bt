@@ -232,7 +232,9 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr){
 	}
 
 	// Normal cases
-	if lsym.kind == .number {
+	is_cmp := node.op == .lt or node.op == .gt or node.op == .le or node.op == .ge
+	wrap := lsym.kind == .number and not is_cmp
+	if wrap {
 		g.write('${lsym.mix_name}(')
 	}
 	g.expr(node.left)
@@ -240,7 +242,7 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr){
 	g.write(node.op.js_repr())
 	g.write(' ')
 	g.expr(node.right)
-	if lsym.kind == .number {
+	if wrap {
 		g.write(')')
 	}
 }

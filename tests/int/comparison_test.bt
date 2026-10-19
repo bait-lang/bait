@@ -1,0 +1,23 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+
+fun test_i32_comparison_is_bool() {
+	a := 1
+	b := 2
+	x := a < b
+	assert x == true
+	y := a > b
+	assert y == false
+	assert (a <= b) == true
+	assert (a >= b) == false
+}
+
+fun test_i64_comparison_is_bool() {
+	a := 3 as i64
+	b := 7 as i64
+	x := a < b
+	assert x == true
+	y := a >= b
+	assert y == false
+}
