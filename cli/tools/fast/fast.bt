@@ -1,0 +1,68 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package main
+
+import os
+import cli.options
+
+const BAIT_REPO := 'https://github.com/bait-lang/bait'
+
+const FAST_DIR := os.join_path(os.home_dir(), ['.bait', 'fast'])
+const BAIT_DIR := os.join_path(FAST_DIR, ['bait'])
+
+fun main() {
+	mut op := options.new_option_parser(os.user_args())
+	runs := op.int('runs', `r`, 5)
+	commit := op.string('commit', `c`, 'origin/main')
+
+	if runs < 1 {
+		eprintln('--runs must be at least 1')
+		exit(1)
+	}
+
+	prepare_bait_checkout()
+
+	m := Measurer{
+		dir = BAIT_DIR
+		stable = $BAITEXE
+		runs = runs
+	}
+	hash := git_out(BAIT_DIR, 'rev-parse ${commit}')
+	if hash.length == 0 {
+		eprintln('unknown commit "${commit}"')
+		exit(1)
+	}
+
+	println('Measuring ${hash.substr(0, 7)}...')
+	println(CSV_HEADER)
+	println(m.measure(hash).csv())
+}
+
+// Clone or update the bait checkout that is measured. The user's tree is never touched
+fun prepare_bait_checkout() {
+	if os.exists_dir(os.join_path(BAIT_DIR, ['.git'])) {
+		if git(BAIT_DIR, 'fetch --quiet origin') != 0 {
+			eprintln('failed to fetch ${BAIT_DIR}')
+			exit(1)
+		}
+		return
+	}
+
+	os.mkdir_all(FAST_DIR)
+	if os.system('git clone --quiet ${BAIT_REPO} ${BAIT_DIR}') != 0 {
+		eprintln('failed to clone ${BAIT_REPO}')
+		exit(1)
+	}
+}
+
+fun git(dir string, args string) i32 {
+	return os.exec('git -C "${dir}" ${args}').code
+}
+
+fun git_out(dir string, args string) string {
+	res := os.exec('git -C "${dir}" ${args}')
+	if res.code != 0 {
+		return ''
+	}
+	return res.stdout.trim_space()
+}

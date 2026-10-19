@@ -1,0 +1,47 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package main
+
+const CSV_HEADER := 'hash,date,total,parse,depgraph,check,transform,gen,max_rss_kb,out_lines,src_lines,subject'
+
+// Number of columns before the subject
+const NR_FIXED_COLS := 11
+
+// Measurement of a single commit. Missing values (e.g. a failed build) are -1
+struct Row {
+	mut hash string
+	mut date string
+	mut total i32 := -1
+	mut parse i32 := -1
+	mut depgraph i32 := -1
+	mut check i32 := -1
+	mut transform i32 := -1
+	mut gen i32 := -1
+	mut max_rss_kb i32 := -1
+	mut out_lines i32 := -1
+	mut src_lines i32 := -1
+	mut subject string
+}
+
+fun (r Row) failed() bool {
+	return r.total < 0
+}
+
+// The subject is the only free-text field. It's always quoted and goes last,
+// so a malformed quote can't shift the numeric columns
+fun (r Row) csv() string {
+	nums := [r.total, r.parse, r.depgraph, r.check, r.transform, r.gen, r.max_rss_kb, r.out_lines, r.src_lines]
+	mut cols := [r.hash, r.date]
+	for n in nums {
+		cols.push(csv_num(n))
+	}
+	cols.push('"' + r.subject.replace('"', '""') + '"')
+	return cols.join(',')
+}
+
+fun csv_num(n i32) string {
+	if n < 0 {
+		return ''
+	}
+	return n.str()
+}
