@@ -28,3 +28,13 @@ fun test_unsigned_overflow() {
 	assert MIN_U64 - 1 == MAX_U64
 	assert MAX_U64 + 1 == MIN_U64
 }
+
+fun test_signed_wrap_value() {
+	a := 100 as i8
+	assert a + 100 == -56
+	assert a + a + a == 44
+
+	b := 30000 as i16
+	assert b + 30000 == -5536
+	assert b + b + b == 24464
+}
