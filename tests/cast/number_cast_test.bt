@@ -6,3 +6,17 @@ fun test_number_casts() {
 	b := 17 as u8
 	assert (a as u8) + b == 140
 }
+
+fun test_narrowing_casts() {
+	x := 300
+	assert x as u8 == 44 as u8
+	assert -1 as u8 == 255 as u8
+	assert 70000 as u16 == 4464 as u16
+	assert (200 as u8) as i8 == -56 as i8
+	assert 40000 as i16 == -25536 as i16
+
+	big := 4294967297 as i64
+	assert big as i32 == 1
+	assert big as u8 == 1 as u8
+	assert (3000000000 as u32) as i32 == -1294967296
+}
