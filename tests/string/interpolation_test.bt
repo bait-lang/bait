@@ -16,3 +16,10 @@ fun test_escape_dollar() {
 	x := 'a'
 	assert '\${x} ${x}' == '\${x} a'
 }
+
+fun test_octal_escape() {
+	x := 'abc'
+	s := '\033[0;31m${x}\033[0m'
+	assert s.length == 14
+	assert s[0] == 27
+}
