@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 package main
 
+import os
+
 const CSV_HEADER := 'hash,date,total,parse,depgraph,check,transform,gen,max_rss_kb,out_lines,src_lines,subject'
 
 // Number of columns before the subject
@@ -44,4 +46,62 @@ fun csv_num(n i32) string {
 		return ''
 	}
 	return n.str()
+}
+
+fun read_rows(path string) []Row {
+	mut rows := []Row
+	if not os.exists(path) {
+		return rows
+	}
+	for i, line in os.read_lines(path) {
+		if i == 0 or line.trim_space().length == 0 {
+			continue
+		}
+		if line.split(',').length <= NR_FIXED_COLS {
+			eprintln('${path}:${i + 1}: skipping malformed row')
+			continue
+		}
+		rows.push(parse_row(line))
+	}
+	return rows
+}
+
+fun parse_row(line string) Row {
+	cols := line.split(',')
+	mut subject := cols.slice(NR_FIXED_COLS, cols.length).join(',')
+	if subject.length >= 2 and subject.starts_with('"') and subject.ends_with('"') {
+		subject = subject.substr(1, subject.length - 1).replace('""', '"')
+	}
+	return Row{
+		hash = cols[0]
+		date = cols[1]
+		total = parse_num(cols[2])
+		parse = parse_num(cols[3])
+		depgraph = parse_num(cols[4])
+		check = parse_num(cols[5])
+		transform = parse_num(cols[6])
+		gen = parse_num(cols[7])
+		max_rss_kb = parse_num(cols[8])
+		out_lines = parse_num(cols[9])
+		src_lines = parse_num(cols[10])
+		subject = subject
+	}
+}
+
+fun parse_num(s string) i32 {
+	if s.length == 0 {
+		return -1
+	}
+	return s.toI32()
+}
+
+fun append_row(path string, row Row) {
+	mut content := CSV_HEADER + '\n'
+	if os.exists(path) {
+		content = os.read_file(path)
+		if content.length > 0 and not content.ends_with('\n') {
+			content += '\n'
+		}
+	}
+	os.write_file(path, content + row.csv() + '\n')
 }

@@ -6,17 +6,21 @@ import os
 import cli.options
 
 const BAIT_REPO := 'https://github.com/bait-lang/bait'
+const RESULTS_REPO := 'https://github.com/bait-lang/fast'
 
 const FAST_DIR := os.join_path(os.home_dir(), ['.bait', 'fast'])
 const BAIT_DIR := os.join_path(FAST_DIR, ['bait'])
+const RESULTS_DIR := os.join_path(FAST_DIR, ['results'])
+const CSV_PATH := os.join_path(RESULTS_DIR, ['fast.csv'])
 
 fun main() {
 	mut op := options.new_option_parser(os.user_args())
 	runs := op.int('runs', `r`, 5)
-	commit := op.string('commit', `c`, 'origin/main')
+	max := op.int('max', `m`, 10)
+	commit := op.string('commit', `c`, '')
 
-	if runs < 1 {
-		eprintln('--runs must be at least 1')
+	if runs < 1 or max < 1 {
+		eprintln('--runs and --max must be at least 1')
 		exit(1)
 	}
 
@@ -27,15 +31,84 @@ fun main() {
 		stable = $BAITEXE
 		runs = runs
 	}
-	hash := git_out(BAIT_DIR, 'rev-parse ${commit}')
-	if hash.length == 0 {
-		eprintln('unknown commit "${commit}"')
+
+	// Measure a single commit without storing the result
+	if commit.length > 0 {
+		hash := git_out(BAIT_DIR, 'rev-parse --verify --quiet ${commit}^{commit}')
+		if hash.length == 0 {
+			eprintln('unknown commit "${commit}"')
+			exit(1)
+		}
+		println('Measuring ${hash.substr(0, 7)}...')
+		row := m.measure(hash)
+		println(CSV_HEADER)
+		println(row.csv())
+		exit(if row.failed() { 1 } else { 0 })
+	}
+
+	prepare_results()
+	hashes := commits_to_measure(read_rows(CSV_PATH), max)
+	if hashes.length == 0 {
+		println('No new commits to measure.')
+	}
+	for i, hash in hashes {
+		subject := git_out(BAIT_DIR, 'log -1 --format=%s ${hash}')
+		println('[${i + 1}/${hashes.length}] ${hash.substr(0, 7)} ${subject}')
+		row := m.measure(hash)
+		append_row(CSV_PATH, row)
+		if not row.failed() {
+			println('  total ${row.total}ms, peak RSS ${row.max_rss_kb / 1024}MB')
+		}
+	}
+}
+
+// Commits on main after the last measured one, oldest first.
+// Without previous results, start with the latest `max` commits
+fun commits_to_measure(rows []Row, max i32) []string {
+	mut range := '--max-count=${max} origin/main'
+	if rows.length > 0 {
+		last := rows[rows.length - 1].hash
+		range = '${last}..origin/main'
+	}
+
+	res := os.exec('git -C "${BAIT_DIR}" rev-list --first-parent --reverse ${range}')
+	if res.code != 0 {
+		eprintln('failed to list commits: ${res.stderr.trim_space()}')
 		exit(1)
 	}
 
-	println('Measuring ${hash.substr(0, 7)}...')
-	println(CSV_HEADER)
-	println(m.measure(hash).csv())
+	mut hashes := res.stdout.trim_space().split_lines()
+	if hashes.length == 1 and hashes[0].length == 0 {
+		return []string
+	}
+	if hashes.length > max {
+		hashes = hashes.slice(0, max)
+	}
+	return hashes
+}
+
+// Clone or update the results repo (fast.csv and index.html)
+fun prepare_results() {
+	if os.exists_dir(os.join_path(RESULTS_DIR, ['.git'])) {
+		// Nothing to pull while the results repo is still empty
+		if git(RESULTS_DIR, 'ls-remote --exit-code --heads origin') != 0 {
+			return
+		}
+		if git(RESULTS_DIR, 'pull --quiet --rebase') != 0 {
+			eprintln('failed to pull ${RESULTS_DIR}')
+			exit(1)
+		}
+		return
+	}
+
+	if os.exists_dir(RESULTS_DIR) {
+		return
+	}
+	os.mkdir_all(FAST_DIR)
+	if os.system('git clone --quiet ${RESULTS_REPO} ${RESULTS_DIR}') != 0 {
+		eprintln('failed to clone ${RESULTS_REPO}, storing results locally')
+		os.mkdir_all(RESULTS_DIR)
+	}
 }
 
 // Clone or update the bait checkout that is measured. The user's tree is never touched
