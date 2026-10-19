@@ -313,6 +313,11 @@ fun (mut g Gen) string_literal(node ast.StringLiteral) {
 }
 
 fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
+	if has_octal_escape(node.vals) {
+		g.string_inter_concat(node)
+		return
+	}
+
 	g.write('from_js_string(`')
 	for i, val in node.vals {
 		g.write(escape.char(val, `\``))
@@ -323,6 +328,43 @@ fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
 		}
 	}
 	g.write('`)')
+}
+
+// Template strings do not allow octal escapes, so these need string concatenation.
+// Plain string literals are emitted as "...", which accepts them, so only interpolation is affected.
+fun has_octal_escape(vals []string) bool {
+	for val in vals {
+		mut i := 0
+		for i < val.length - 1 {
+			if val[i] == `\\` {
+				next := val[i + 1]
+				if next >= `0` and next <= `7` {
+					return true
+				}
+				i += 1
+			}
+			i += 1
+		}
+	}
+	return false
+}
+
+fun (mut g Gen) string_inter_concat(node ast.StringInterLiteral) {
+	g.write('from_js_string("" + ')
+	for i, val in node.vals {
+		if i > 0 {
+			g.write(' + ')
+		}
+		g.write('"')
+		g.write(escape.char(escape.linebreak(val), `\"`))
+		g.write('"')
+		if i < node.exprs.length {
+			g.write(' + ')
+			g.expr_to_string(node.exprs[i], node.expr_types[i])
+			g.write('.str')
+		}
+	}
+	g.write(')')
 }
 
 fun (mut g Gen) type_of(node ast.TypeOf) {
