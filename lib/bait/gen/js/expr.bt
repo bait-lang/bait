@@ -94,7 +94,34 @@ fun (mut g Gen) as_cast(node ast.AsCast) {
 		return
 	}
 
-	if node.expr_type == ast.I64_TYPE or node.expr_type == ast.U64_TYPE or node.expr_type == ast.U32_TYPE {
+	is_bigint := node.expr_type == ast.I64_TYPE or node.expr_type == ast.U64_TYPE or node.expr_type == ast.U32_TYPE
+
+	// Truncate to the target width. Integer literals have the target type, so always truncate
+	if node.expr_type.is_int() {
+		trunc := match node.target {
+			ast.I8_TYPE { ' << 24 >> 24' }
+			ast.I16_TYPE { ' << 16 >> 16' }
+			ast.I32_TYPE { ' | 0' }
+			ast.U8_TYPE { ' & 0xFF' }
+			ast.U16_TYPE { ' & 0xFFFF' }
+			else { '' }
+		}
+		if trunc.length > 0 {
+			if is_bigint {
+				g.write('(Number(BigInt.asUintN(32, ')
+				g.expr(node.expr)
+				g.write('))')
+			} else {
+				g.write('((')
+				g.expr(node.expr)
+				g.write(')')
+			}
+			g.write('${trunc})')
+			return
+		}
+	}
+
+	if is_bigint {
 		g.write('Number(')
 		g.expr(node.expr)
 		g.write(')')
