@@ -39,3 +39,20 @@ fun test_reserved_names() {
 	}
 	assert n.default == 1
 }
+
+struct Counter {
+	mut signed i64
+	mut unsigned u64
+}
+
+fun test_64bit_default_value() {
+	mut c := Counter{}
+	c.signed += 5 as i64
+	c.unsigned += 7 as u64
+	assert c.signed == 5 as i64
+	assert c.unsigned == 7 as u64
+
+	mut m := map[string]u64
+	m['x'] += 2 as u64
+	assert m['x'] == 2 as u64
+}
