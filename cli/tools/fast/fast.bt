@@ -6,7 +6,10 @@ import os
 import cli.options
 
 const BAIT_REPO := 'https://github.com/bait-lang/bait'
-const RESULTS_REPO := 'https://github.com/bait-lang/fast'
+const RESULTS_REPO := 'github.com/bait-lang/fast'
+
+const GIT_USER := 'tiabeast-bot'
+const GIT_MAIL := '131296262+tiabeast-bot@users.noreply.github.com'
 
 const FAST_DIR := os.join_path(os.home_dir(), ['.bait', 'fast'])
 const BAIT_DIR := os.join_path(FAST_DIR, ['bait'])
@@ -20,6 +23,7 @@ fun main() {
 	max := op.int('max', `m`, 10)
 	commit := op.string('commit', `c`, '')
 	no_render := op.bool('no-render', `n`, false)
+	push := op.bool('push', `p`, false)
 
 	if runs < 1 or max < 1 {
 		eprintln('--runs and --max must be at least 1')
@@ -67,6 +71,10 @@ fun main() {
 		write_html(HTML_PATH, read_rows(CSV_PATH), runs)
 		println('Rendered ${HTML_PATH}')
 	}
+
+	if push {
+		push_results(hashes)
+	}
 }
 
 // Commits on main after the last measured one, oldest first.
@@ -112,10 +120,52 @@ fun prepare_results() {
 		return
 	}
 	os.mkdir_all(FAST_DIR)
-	if os.system('git clone --quiet ${RESULTS_REPO} ${RESULTS_DIR}') != 0 {
+	if os.system('git clone --quiet ${results_url()} ${RESULTS_DIR}') != 0 {
 		eprintln('failed to clone ${RESULTS_REPO}, storing results locally')
 		os.mkdir_all(RESULTS_DIR)
 	}
+}
+
+// Authenticate as the bot if a token is available
+fun results_url() string {
+	token := os.getenv('TIABEAST_BOT_TOKEN')
+	if token.length > 0 {
+		return 'https://${GIT_USER}:${token}@${RESULTS_REPO}.git'
+	}
+	return 'https://${RESULTS_REPO}.git'
+}
+
+fun push_results(hashes []string) {
+	if not os.exists_dir(os.join_path(RESULTS_DIR, ['.git'])) {
+		eprintln('cannot push: ${RESULTS_DIR} is not a clone of ${RESULTS_REPO}')
+		exit(1)
+	}
+
+	mut errors := 0
+	errors += git(RESULTS_DIR, 'config user.name "${GIT_USER}"')
+	errors += git(RESULTS_DIR, 'config user.email "${GIT_MAIL}"')
+	errors += git(RESULTS_DIR, 'remote set-url origin ${results_url()}')
+	errors += git(RESULTS_DIR, 'add fast.csv index.html')
+
+	// `diff --cached --quiet` exits with 1 if something is staged
+	if git(RESULTS_DIR, 'diff --cached --quiet') == 0 {
+		println('No changes to push.')
+		exit(errors)
+	}
+
+	mut msg := 'Re-render index.html'
+	if hashes.length > 0 {
+		last := hashes[hashes.length - 1].substr(0, 7)
+		msg = 'Measure ${hashes.length} commit(s) up to bait-lang/bait@${last}'
+	}
+	errors += git(RESULTS_DIR, 'commit --quiet -m "${msg}"')
+	errors += os.system('git -C "${RESULTS_DIR}" push --quiet origin HEAD:main')
+	if errors == 0 {
+		println('Pushed results to ${RESULTS_REPO}')
+	} else {
+		eprintln('failed to push results')
+	}
+	exit(errors)
 }
 
 // Clone or update the bait checkout that is measured. The user's tree is never touched
