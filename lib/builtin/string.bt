@@ -35,7 +35,7 @@ pub fun (s string) all_after(search string) string {
 	if idx == -1 {
 		return s
 	}
-	return s.substr(idx + 1, s.length)
+	return s.substr(idx + search.length, s.length)
 }
 
 pub fun (s string) all_after_last(search string) string {
@@ -43,7 +43,7 @@ pub fun (s string) all_after_last(search string) string {
 	if idx == -1 {
 		return s
 	}
-	return s.substr(idx + 1, s.length)
+	return s.substr(idx + search.length, s.length)
 }
 
 pub fun (s string) split(delim string) []string {

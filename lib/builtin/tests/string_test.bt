@@ -27,10 +27,15 @@ fun test_all_before_last() {
 
 fun test_all_after() {
 	assert 'photo'.all_after('o') == 'to'
+	assert 'key=value=x'.all_after('=') == 'value=x'
+	assert 'PREFIX_value'.all_after('PREFIX_') == 'value'
+	assert 'abc'.all_after('x') == 'abc'
 }
 
 fun test_all_after_last() {
 	assert 'photo'.all_after_last('o') == ''
+	assert 'a::b::c'.all_after_last('::') == 'c'
+	assert 'abc'.all_after_last('x') == 'abc'
 }
 
 fun test_split() {
