@@ -80,7 +80,7 @@ pub fun parse_args(args []string) Prefs {
 				i += 1
 				p.cc = args[i]
 				p.build_options.push(arg)
-				p.build_options.push(p.out_name)
+				p.build_options.push(args[i])
 			}
 			'-v', '--verbose' {
 				p.is_verbose = true

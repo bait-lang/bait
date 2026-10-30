@@ -14,6 +14,7 @@ struct Gen {
 	mut pkg string
 	mut main_inits_out strings.Builder
 	mut type_defs_out strings.Builder
+	mut sum_impls_out strings.Builder
 	mut fun_decls_out strings.Builder
 	mut type_impls_out strings.Builder
 	mut auto_funs_out strings.Builder
@@ -25,6 +26,7 @@ struct Gen {
 	mut foreign_imports []string // C header files
 	mut generated_eq_funs []ast.Type
 	mut generated_str_funs []ast.Type
+	mut generated_sum_casts []string
 	mut tmp_counter i32
 	mut loop_label_names []string
 	mut loop_continue_targets []string
@@ -47,6 +49,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		empty_line = true
 		main_inits_out = strings.new_builder(100)
 		type_defs_out = strings.new_builder(100)
+		sum_impls_out = strings.new_builder(100)
 		fun_decls_out = strings.new_builder(100)
 		type_impls_out = strings.new_builder(100)
 		auto_funs_out = strings.new_builder(100)
@@ -76,7 +79,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	}
 
 	// Join all parts
-	return g.headers() + g.type_defs_out.str() + g.fun_decls_out.str() + g.type_impls_out.str() + g.auto_funs_out.str() + g.globals_out.str() + '\n' + g.out.str()
+	return g.headers() + g.type_defs_out.str() + g.sum_impls_out.str() + g.fun_decls_out.str() + g.type_impls_out.str() + g.auto_funs_out.str() + g.globals_out.str() + '\n' + g.out.str()
 }
 
 fun (g Gen) process_imports(imports []ast.Import) {

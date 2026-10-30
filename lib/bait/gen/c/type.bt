@@ -39,6 +39,8 @@ fun (mut g Gen) write_types() {
 				g.type_impls_out.write('\t${type_str} ${field_name};\n')
 			}
 			g.type_impls_out.write('};\n')
+		} else if sym.kind == .sum_type {
+			g.write_sum_type(sym)
 		} else if sym.info is ast.ArrayInfo {
 			g.type_defs_out.write('typedef Array ${cname};\n')
 		} else if sym.info is ast.MapInfo {

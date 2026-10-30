@@ -28,7 +28,19 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 		}
 
 		// Are we in a sumtype match?
-		cond_type := c.expr((node.branches[0].cond as ast.InfixExpr).left)
+		// Multiple conditions in a branch are chained with `or`
+		mut first_cond := node.branches[0].cond as ast.InfixExpr
+		for first_cond.op == .key_or {
+			first_cond = first_cond.left as ast.InfixExpr
+		}
+
+		mut cond_type := c.expr(first_cond.left)
+		if first_cond.left is ast.Ident {
+			left := first_cond.left as ast.Ident
+			if left.smartcast_from != 0 as ast.Type {
+				cond_type = left.smartcast_from
+			}
+		}
 		cond_sym = c.table.get_sym(cond_type)
 		sumtype_match = cond_sym.kind == .sum_type
 	}
@@ -49,7 +61,9 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 					continue
 				}
 			} else {
+				c.can_smartcast = true
 				cond_type := c.expr(branch.cond)
+				c.can_smartcast = false
 
 				if node.is_match {
 					key := (branch.cond as ast.InfixExpr).right.repr()

@@ -10,9 +10,11 @@ fun (mut g Gen) anon_fun(node ast.AnonFun) {
 	was_line_empty := g.empty_line
 	start := g.out.length
 	last_indent := g.indent
+	last_fun := g.cur_fun
 
 	g.indent = 0
 	g.fun_decl(node.decl)
+	g.cur_fun = last_fun
 	g.type_impls_out.write(g.out.substr(start, g.out.length))
 
 	g.out.truncate(start)
@@ -155,7 +157,7 @@ fun (mut g Gen) call_expr(node ast.CallExpr) {
 
 fun (mut g Gen) call_args(args []ast.CallArg) {
 	for i, a in args {
-		g.expr(a.expr)
+		g.expr_as(a.expr, a.typ, a.exp_type)
 		if i < args.length - 1 {
 			g.write(", ")
 		}
@@ -174,7 +176,7 @@ fun (mut g Gen) gen_array_method(name string, node ast.CallExpr, sym ast.TypeSym
 		info := sym.info as ast.ArrayInfo
 		type_str := g.typ(info.elem_type)
 		g.write(', (${type_str}[]){')
-		g.expr(node.args[0].expr)
+		g.expr_as(node.args[0].expr, node.args[0].typ, info.elem_type)
 		g.write('}')
 	} else {
 		g.write(', ')

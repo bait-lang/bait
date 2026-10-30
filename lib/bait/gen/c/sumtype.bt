@@ -1,0 +1,115 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package c
+
+import bait.ast
+
+// A sum type is a tagged union of pointers to boxed variants.
+// `typ` holds the type index of the current variant, 0 means uninitialized.
+//
+// Definitions only need the typedefs of their variants but are a dependency of
+// structs that embed them, so they are emitted into `sum_impls_out`.
+fun (mut g Gen) write_sum_type(sym ast.TypeSymbol) {
+	cname := c_esc(sym.mix_name)
+	info := sym.info as ast.SumTypeInfo
+
+	g.type_defs_out.write('typedef struct ${cname} ${cname};\n')
+	g.sum_impls_out.write('struct ${cname} {\n\tunion {\n')
+	for var in info.variants {
+		g.sum_impls_out.write('\t\t${g.typ(var)}* ${g.variant_name(var)};\n')
+	}
+	g.sum_impls_out.write('\t};\n\tint typ;\n};\n')
+}
+
+fun (g Gen) variant_name(variant ast.Type) string {
+	return 'v_' + c_name(g.table.get_sym(variant).mix_name)
+}
+
+// The C expression for the pointer to `variant` stored in `val` of type `sum`
+fun (g Gen) sum_field(sum ast.Type, val string, variant ast.Type) string {
+	op := if sum.get_nr_amp() > 0 { '->' } else { '.' }
+	return '${val}${op}${g.variant_name(variant)}'
+}
+
+// The type of `expr` before a smartcast
+fun (g Gen) unsmartcast_type(expr ast.Expr, typ ast.Type) ast.Type {
+	if expr is ast.Ident and expr.smartcast_from != 0 as ast.Type {
+		return expr.smartcast_from
+	}
+	return typ
+}
+
+// Write `expr` without applying a smartcast
+fun (mut g Gen) raw_sum_expr(expr ast.Expr) string {
+	if expr is ast.Ident {
+		return c_esc(expr.full_name())
+	}
+	return g.expr_string(expr)
+}
+
+fun (g Gen) is_variant_of(typ ast.Type, sum ast.Type) bool {
+	sym := g.concrete_sym(sum)
+	if sum.get_nr_amp() > 0 or sym.kind != .sum_type {
+		return false
+	}
+
+	info := sym.info as ast.SumTypeInfo
+	return info.variants.contains(typ)
+}
+
+// The name of the function that boxes the variant `typ` into `sum`
+fun (mut g Gen) sum_cast_fun(typ ast.Type, sum ast.Type) string {
+	sum_name := c_esc(g.concrete_sym(sum).mix_name)
+	fname := '${g.variant_name(typ)}_to_${sum_name}'
+	if g.generated_sum_casts.contains(fname) {
+		return fname
+	}
+	g.generated_sum_casts.push(fname)
+
+	type_str := g.typ(typ)
+	field := g.variant_name(typ)
+	g.fun_decls_out.write('${sum_name} ${fname}(${type_str} x);\n')
+	g.auto_funs_out.write('${sum_name} ${fname}(${type_str} x) {
+	${type_str}* ptr = malloc(sizeof(${type_str}));
+	memcpy(ptr, &x, sizeof(${type_str}));
+	return (${sum_name}){ .${field} = ptr, .typ = ${typ.idx()} };
+}\n\n')
+	return fname
+}
+
+fun (mut g Gen) sum_cast_str(val string, typ ast.Type, exp ast.Type) string {
+	if g.is_variant_of(typ, exp) {
+		return '${g.sum_cast_fun(typ, exp)}(${val})'
+	}
+	return val
+}
+
+// Write `expr` of type `typ` where `exp` is expected, boxing it if needed
+fun (mut g Gen) expr_as(expr ast.Expr, typ ast.Type, exp ast.Type) {
+	if g.is_variant_of(typ, exp) {
+		g.write('${g.sum_cast_fun(typ, exp)}(')
+		g.expr(expr)
+		g.write(')')
+		return
+	}
+
+	g.expr(expr)
+}
+
+// `x as Variant`
+fun (mut g Gen) sum_unwrap(expr ast.Expr, sum ast.Type, target ast.Type) {
+	val := g.raw_sum_expr(expr)
+	field := g.sum_field(sum, val, target.set_nr_amp(0))
+	if target.get_nr_amp() > 0 {
+		g.write(field)
+	} else {
+		g.write('(*${field})')
+	}
+}
+
+// `x is Variant`
+fun (mut g Gen) sum_is(node ast.InfixExpr) {
+	sum := g.unsmartcast_type(node.left, node.left_type)
+	op := if sum.get_nr_amp() > 0 { '->' } else { '.' }
+	g.write('(${g.raw_sum_expr(node.left)}${op}typ == ${node.right_type.idx()})')
+}

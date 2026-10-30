@@ -1,0 +1,58 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+// TODO enable on JS: `instanceof` does not work for primitive variants
+struct Num {
+	mut n i32
+}
+
+type Value := Num | i32 | string
+
+fun make_string() Value {
+	return 'hi'
+}
+
+fun test_is_and_match() {
+	v := 3 as Value
+	assert v is i32
+
+	mut res := 0
+	match v {
+		i32 { res = v + 1 }
+		else { res = -1 }
+	}
+	assert res == 4
+
+	s := make_string()
+	if s is string {
+		assert s.length == 2
+	} else {
+		assert false
+	}
+}
+
+fun test_as_cast() {
+	v := 3 as Value
+	assert (v as i32) == 3
+}
+
+fun test_copy_on_box() {
+	mut n := Num{ n = 1 }
+	v := n as Value
+	n.n = 2
+	assert (v as Num).n == 1
+}
+
+fun test_equality() {
+	assert 1 as Value == 1 as Value
+	assert 1 as Value != 2 as Value
+	assert 'x' as Value == 'x' as Value
+	assert 1 as Value != 'x' as Value
+}
+
+fun test_str() {
+	i := 3 as Value
+	s := 'abc' as Value
+	assert '${i}' == '3'
+	assert '${s}' == 'abc'
+}

@@ -139,6 +139,7 @@ pub struct InterfaceDecl {
 
 pub struct ReturnStmt {
 	global expr Expr
+	global typ Type
 	pub pos token.Pos
 }
 
@@ -175,6 +176,7 @@ pub struct ArrayInit {
 	global typ Type
 	global elem_type Type
 	global exprs []Expr
+	global expr_types []Type
 	pub length_expr Expr := InvalidExpr{}
 	pub cap_expr Expr := InvalidExpr{}
 	pub pos token.Pos
@@ -242,6 +244,7 @@ pub fun (node CallExpr) full_name() string {
 
 pub struct CallArg {
 	global typ Type
+	global exp_type Type
 	global expr Expr
 	pub is_mut bool
 }
@@ -290,6 +293,8 @@ pub struct Ident {
 	pub name string
 	global pkg string
 	global is_mut bool
+	global smartcast_from Type // Sum type of a smartcasted variable, otherwise 0
+	global smartcast_to Type // Variant of a smartcasted variable
 	pub pos token.Pos
 	pub lang Language
 }
@@ -349,6 +354,7 @@ pub struct MapInit {
 	global val_type Type
 	global keys []Expr
 	pub vals []Expr
+	global val_types []Type
 	pub pos token.Pos
 }
 
@@ -402,6 +408,7 @@ pub struct StructInit {
 pub struct StructInitField {
 	pub name string
 	pub expr Expr
+	global typ Type
 	pub pos token.Pos
 }
 

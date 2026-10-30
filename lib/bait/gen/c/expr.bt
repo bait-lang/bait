@@ -74,8 +74,8 @@ fun (mut g Gen) array_init(node ast.ArrayInit){
 	len := node.exprs.length
 	g.write('new_array_from_c(${len}, ${len}, sizeof(${elem_type}), (${elem_type}[${len}]){')
 	g.indent += 1
-	for expr in node.exprs {
-		g.expr(expr)
+	for i, expr in node.exprs {
+		g.expr_as(expr, node.expr_types[i], node.elem_type)
 		g.write(', ')
 	}
 	g.indent -= 1
@@ -99,7 +99,7 @@ fun (mut g Gen) map_init(node ast.MapInit) {
 	}
 	g.write('}, (${val_type_str}[${len}]){')
 	for i, val in node.vals {
-		g.expr(val)
+		g.expr_as(val, node.val_types[i], node.val_type)
 		if i < len - 1 {
 			g.write(', ')
 		}
@@ -108,6 +108,17 @@ fun (mut g Gen) map_init(node ast.MapInit) {
 }
 
 fun (mut g Gen) as_cast(node ast.AsCast) {
+	if g.concrete_sym(node.target).kind == .sum_type {
+		g.expr_as(node.expr, node.expr_type, node.target)
+		return
+	}
+
+	from := g.unsmartcast_type(node.expr, node.expr_type)
+	if g.concrete_sym(from).kind == .sum_type {
+		g.sum_unwrap(node.expr, from, node.target)
+		return
+	}
+
 	type_str := g.typ(node.target)
 	g.write('(${type_str})(')
 	g.expr(node.expr)
@@ -145,7 +156,14 @@ fun (mut g Gen) ident(node ast.Ident) {
 		return
 	}
 
-	g.write(c_esc(node.full_name()))
+	name := c_esc(node.full_name())
+	if node.smartcast_from != 0 as ast.Type {
+		field := g.sum_field(node.smartcast_from, name, node.smartcast_to)
+		g.write('(*${field})')
+		return
+	}
+
+	g.write(name)
 }
 
 fun (mut g Gen) index_expr(node ast.IndexExpr) {
@@ -206,6 +224,11 @@ fun (mut g Gen) index_expr(node ast.IndexExpr) {
 }
 
 fun (mut g Gen) infix_expr(node ast.InfixExpr) {
+	if node.op == .key_is {
+		g.sum_is(node)
+		return
+	}
+
 	// Overloading
 	lsym := g.concrete_sym(node.left_type)
 	if lsym.overloads.contains(node.op.c_repr()) {
@@ -232,7 +255,7 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 			g.write('(')
 			g.expr(node.left)
 			g.write(', ')
-			g.expr(node.right)
+			g.expr_as(node.right, node.right_type, node.left_type)
 			g.write(')')
 			return
 		}
@@ -334,20 +357,28 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 		g.write('.${name} = ')
 		init_idx := inited_fields.index(field.name)
 		if init_idx == -1 {
-			g.write('0')
+			g.write(g.zero_init(field.typ))
 		} else {
-			g.expr(node.fields[init_idx].expr)
+			g.expr_as(node.fields[init_idx].expr, node.fields[init_idx].typ, field.typ)
 		}
 		if i < info.fields.length - 1 {
 			g.write(', ')
 		}
 	}
 
-	if info.fields.length == 0 {
-		g.write('0')
+	g.write('}')
+}
+
+fun (g Gen) zero_init(typ ast.Type) string {
+	if typ.get_nr_amp() > 0 {
+		return '0'
 	}
 
-	g.write('}')
+	sym := g.table.get_final_sym(g.concrete_sym(typ))
+	if sym.kind == .number or sym.kind == .enum_ or sym.kind == .fun_ or sym.kind == .other {
+		return '0'
+	}
+	return '{0}'
 }
 
 fun (mut g Gen) type_of(node ast.TypeOf){

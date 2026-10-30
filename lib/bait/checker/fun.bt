@@ -414,6 +414,8 @@ fun (mut c Checker) call_args(mut node ast.CallExpr, poffset i32, generic_names 
 			}
 		}
 
+		arg.exp_type = param_type
+
 		if arg.expr is ast.Ident {
 			expr := arg.expr as ast.Ident
 
