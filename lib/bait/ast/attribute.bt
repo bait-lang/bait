@@ -10,6 +10,9 @@ pub struct Attribute{
 	pub pos token.Pos
 }
 
+// Result of failed attribute lookups. Shared, so it must not be modified
+const NO_ATTR := Attribute{}
+
 pub fun (attrs []Attribute) has(name string) bool {
 	return attrs.find_attr(name).name.length > 0
 }
@@ -20,5 +23,5 @@ pub fun (attrs []Attribute) find_attr(name string) Attribute {
 			return attr
 		}
 	}
-	return Attribute{}
+	return NO_ATTR
 }

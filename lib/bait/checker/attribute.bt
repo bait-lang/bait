@@ -106,6 +106,10 @@ fun (c Checker) attr_export(attr ast.Attribute) {
 }
 
 fun (c Checker) check_fun_attrs_on_call(call ast.CallExpr, attrs []ast.Attribute) {
+	if attrs.length == 0 {
+		return
+	}
+
 	mut is_deprecated := false
 	mut depr_attr := ast.Attribute{}
 	mut depr_date_attr := ast.Attribute{}
