@@ -27,6 +27,7 @@ All notable changes are documented in this file.
 
 ### C Backend
 - Implement sum types: tagged union with boxed variants, smartcasts, `is`, `as`, `str()` and equality
+- Implement auto-string conversion for enums
 - Generate equality functions for structs and aliases
 - Implement hashmaps
 - Implement floats
