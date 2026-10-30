@@ -85,6 +85,39 @@ jobs:
       #     bait check-md docs/docs.md
       #     bait check-md README.md
 
+  linux-tcc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - name: Install tcc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tcc
+      # Note: this job still uses bait.js
+      - name: Bootstrap
+        run: |
+          ./make.sh
+          ./bait symlink
+      - name: Build examples
+        run: bait build-examples -b c -cc tcc
+      - name: Run compiler tests
+        run: |
+          bait test -b c -cc tcc tests/auto_str
+          bait test -b c -cc tcc tests/float
+          bait test -b c -cc tcc tests/for
+          bait test -b c -cc tcc tests/int
+          bait test -b c -cc tcc tests/interop
+          bait test -b c -cc tcc tests/overload
+          bait test -b c -cc tcc tests/string
+      - name: Run lib tests
+        run: |
+          bait test -b c -cc tcc lib/builtin
+          bait test -b c -cc tcc lib/encoding
+          bait test -b c -cc tcc lib/hash
+          bait test -b c -cc tcc lib/math
+          bait test -b c -cc tcc lib/strings
+
   windows-js:
     runs-on: windows-latest
     steps:

@@ -11,13 +11,19 @@ All notable changes are documented in this file.
     - Add `split()`, `split_lines()`, `trim_space()`, `is_upper()`
     - Fix infinite loop of `index()` and `replace()` on multi-char patterns
   - _[C]_ []string method: `join()`
+  - _[C]_ Fix array capacity growth
+  - Fix `all_after()` and `all_after_last()` for multi-char patterns
 - os:
   - _[C]_ functions: `read_lines()`, `getenv()`, `setenv()`, `tmp_dir()`
+  - _[C]_ Fix `ls()` and `exec()` accessing freed string
 - math:
   - add function `pow()`
-- strings: `Builder.str()`
-  - Clears the builder after returning its string
-  - _[C]_ Returns null-terminated strings
+- strings: `Builder`
+  - `str()` clears the builder after returning its string
+  - _[C]_ `str()` returns null-terminated strings
+  - Add methods `at()`, `substr()` and `truncate()`
+  - _[JS]_ Store UTF-16 code units to preserve non-ASCII text
+  - _[JS]_ Fix stack overflow when converting large builders
 
 ### C Backend
 - Implement hashmaps
@@ -29,6 +35,14 @@ All notable changes are documented in this file.
 - Fix integer overflows
 - Fix loop labels
 - Increase test coverage
+- Fix empty struct field inits with tcc
+
+### JS Backend
+- Fix wrapping of `i8`, `i16` and `i32`
+- Number comparisons return `bool` instead of numbers
+- Fix octal escapes in interpolated strings
+- Truncate narrowing integer casts
+- Use `0n` as default value of `i64` and `u64`
 
 ### Performance
 - gen: Improve Performance by optimizing reserved keyword lookup (~5x for self compile)
@@ -37,11 +51,18 @@ All notable changes are documented in this file.
 
 ### CLI and Tooling
 - check-md: add `--backend` option
+- add tool `fast` to measure compiler self-compilation time across commits
 
 ### Testing
 - respect `.c.bt` and `.js.bt` file extensions for test files
 
+### Compiler internals
+- gen: use `strings.Builder` instead of string concatenation
+- escape: fix `char()` mangling non-ASCII text
+- lexer: show the actual character in `unexpected char` errors
+
 ### Other Changes
+- CI: add linux-tcc job
 - gen: do not generate main call in script mode
 - gen: Handle more expressions in failed asserts
 - checker: fix number promotion in function call arguments
