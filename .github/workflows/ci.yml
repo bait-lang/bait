@@ -31,7 +31,7 @@ jobs:
           bait check-md docs/docs.md
           bait check-md README.md
 
-  linux-c:
+  linux-gcc:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -50,7 +50,7 @@ jobs:
         run: |
           bait test -b c tests/array
           bait test -b c tests/auto_str
-          # bait test -b c tests/cast
+          bait test -b c tests/cast
           bait test -b c tests/comptime
           bait test -b c tests/float
           bait test -b c tests/for
@@ -67,6 +67,7 @@ jobs:
           # bait test -b c tests/return
           # bait test -b c tests/string
           # bait test -b c tests/struct
+          bait test -b c tests/sumtype
           # bait test -b c tests/type
       - name: Run lib tests
         run: |
