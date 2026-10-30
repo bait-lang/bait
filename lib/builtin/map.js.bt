@@ -18,9 +18,18 @@ fun (mut m Map) set(key string, val any) {
 	m.data.set(key.str, val)
 }
 
+// TODO remove once baitjs generates calls to get_or_init
 fun (mut m Map) get_set(key string, val any) any {
 	if not m.contains(key) {
 		m.set(key, val)
+	}
+	return m.get(key)
+}
+
+// Like get_set, but only creates the default value if `key` is missing
+fun (mut m Map) get_or_init(key string, init fun () any) any {
+	if not m.contains(key) {
+		m.set(key, init())
 	}
 	return m.get(key)
 }
