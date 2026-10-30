@@ -78,8 +78,7 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 			// TODO pass indent to str fun if needed
 			g.auto_funs_out.write('\tstrings__Builder_write(&b, space);
 	strings__Builder_write(&b, from_c_string("  ${field.name} = "));
-	string val = ${str_fun_name}(it.${field.name});
-	strings__Builder_write(&b, val);
+	strings__Builder_write(&b, ${str_fun_name}(it.${field.name}));
 	strings__Builder_write(&b, from_c_string("${LB}"));\n')
 		}
 
