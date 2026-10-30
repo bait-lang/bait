@@ -111,7 +111,25 @@ ${cases}	}
 		return
 	}
 
-	// TODO map, alias, enum, result
+	if sym.kind == .enum_ {
+		info := sym.info as ast.EnumInfo
+		type_str := g.typ(typ)
+
+		g.fun_decls_out.write('string ${fname}(${type_str} it);\n')
+
+		mut cases := ''
+		for val in info.vals {
+			cases += '\t\tcase ${c_esc(val)}: return from_c_string("${val}");\n'
+		}
+		g.auto_funs_out.write('string ${fname}(${type_str} it) {
+	switch (it) {
+${cases}	}
+	return from_c_string("");
+}\n\n')
+		return
+	}
+
+	// TODO map, alias, result
 
 	errors.generic_error('cannot convert ${sym.mix_name} to string')
 	exit(1)
