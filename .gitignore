@@ -3,6 +3,7 @@
 !*.*
 !*/
 *.js
+!cli/tools/fast/mem.js
 *.bin
 bin/
 

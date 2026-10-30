@@ -1,0 +1,22 @@
+name: Measure compiler performance
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * *'
+
+jobs:
+  fast:
+    if: github.repository == 'bait-lang/bait'
+    runs-on: ubuntu-latest
+    env:
+      TIABEAST_BOT_TOKEN: ${{ secrets.TIABEAST_BOT_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+      - name: Build bait.js
+        run: ./make.sh --no-self
+      - name: Measure new commits and push the results
+        run: ./bait fast --push

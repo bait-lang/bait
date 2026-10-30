@@ -17,6 +17,7 @@ const TOOLS := [
 	'build-examples',
 	'build-tools',
 	'check-md',
+	'fast',
 ]
 
 pub fun is_tool(name string) bool {
