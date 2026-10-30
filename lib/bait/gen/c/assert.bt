@@ -13,7 +13,7 @@ fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 	g.writeln(') {')
 	g.writeln('\tTestRunner_pass(&builtin__test_runner);')
 	g.writeln('} else {')
-	if node.expr is ast.InfixExpr {
+	if has_printable_sides(node.expr) {
 		expr := node.expr as ast.InfixExpr
 		g.write('\tTestRunner_fail_infix(&builtin__test_runner, ${node.pos.line}, from_c_string("assert ')
 		g.assert_side_expr(expr.left)
@@ -30,6 +30,14 @@ fun (mut g Gen) assert_stmt(node ast.AssertStmt) {
 		g.writeln('"));')
 	}
 	g.writeln('}')
+}
+
+fun has_printable_sides(expr ast.Expr) bool {
+	if expr is ast.InfixExpr {
+		// The right side of `is` is a type
+		return expr.op != .key_is
+	}
+	return false
 }
 
 fun (mut g Gen) assert_side_expr(node ast.Expr) {

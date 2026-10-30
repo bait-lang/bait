@@ -34,7 +34,13 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 			first_cond = first_cond.left as ast.InfixExpr
 		}
 
-		cond_type := c.expr(first_cond.left)
+		mut cond_type := c.expr(first_cond.left)
+		if first_cond.left is ast.Ident {
+			left := first_cond.left as ast.Ident
+			if left.smartcast_from != 0 as ast.Type {
+				cond_type = left.smartcast_from
+			}
+		}
 		cond_sym = c.table.get_sym(cond_type)
 		sumtype_match = cond_sym.kind == .sum_type
 	}

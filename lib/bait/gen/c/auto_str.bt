@@ -89,7 +89,29 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		return
 	}
 
-	// TODO map, alias, sumtype, enum, result
+	if sym.kind == .sum_type {
+		info := sym.info as ast.SumTypeInfo
+
+		g.fun_decls_out.write('string ${fname}(${sname} it);\n')
+
+		mut cases := ''
+		for var in info.variants {
+			val := g.sum_field(typ, 'it', var)
+			if g.table.get_sym(var).kind == .string {
+				cases += '\t\tcase ${var.idx()}: return *${val};\n'
+			} else {
+				cases += '\t\tcase ${var.idx()}: return ${g.get_str_fun(var)}(*${val});\n'
+			}
+		}
+		g.auto_funs_out.write('string ${fname}(${sname} it) {
+	switch (it.typ) {
+${cases}	}
+	return from_c_string("");
+}\n\n')
+		return
+	}
+
+	// TODO map, alias, enum, result
 
 	errors.generic_error('cannot convert ${sym.mix_name} to string')
 	exit(1)

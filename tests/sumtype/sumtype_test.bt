@@ -1,0 +1,176 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+// Declared before its variants on purpose: definition order must not matter
+struct Holder {
+	val Value
+}
+
+struct Num {
+	mut n i32
+}
+
+struct Text {
+	s string
+	len i32
+}
+
+type Value := Num | Text | i32 | string
+
+// Recursive through a struct
+struct Pair {
+	left Tree
+	right Tree
+}
+
+struct Leaf {
+	n i32
+}
+
+type Tree := Leaf | Pair
+
+fun sum_tree(t Tree) i32 {
+	return match t {
+		Leaf { t.n }
+		Pair { sum_tree(t.left) + sum_tree(t.right) }
+	}
+}
+
+fun make_value(cond bool) Value {
+	if cond {
+		return Num{ n = 1 }
+	}
+	return 'text'
+}
+
+fun value_n(v Value) i32 {
+	if v is Num {
+		return v.n
+	}
+	return -1
+}
+
+fun test_implicit_cast_return() {
+	assert make_value(true) is Num
+	assert value_n(make_value(false)) == -1
+}
+
+fun test_implicit_cast_arg() {
+	assert value_n(Num{ n = 4 }) == 4
+	assert value_n(5) == -1
+}
+
+fun test_implicit_cast_assign() {
+	mut v := make_value(true)
+	v = Text{ s = 'a' len = 1 }
+	assert value_n(v) == -1
+	v = Num{ n = 7 }
+	assert value_n(v) == 7
+}
+
+fun test_implicit_cast_struct_field() {
+	h := Holder{
+		val = Num{ n = 2 }
+	}
+	assert value_n(h.val) == 2
+}
+
+fun test_implicit_cast_array() {
+	mut arr := [Num{ n = 1 } as Value, 'x', 3]
+	arr.push(Num{ n = 4 })
+	arr[1] = Num{ n = 2 }
+
+	assert arr.length == 4
+	assert value_n(arr[0]) == 1
+	assert value_n(arr[1]) == 2
+	assert value_n(arr[2]) == -1
+	assert value_n(arr[3]) == 4
+}
+
+fun test_implicit_cast_map() {
+	mut m := map{
+		'a': Num{ n = 1 } as Value
+		'b': 'str'
+	}
+	m['c'] = Num{ n = 3 }
+
+	assert value_n(m['a']) == 1
+	assert value_n(m['b']) == -1
+	assert value_n(m['c']) == 3
+}
+
+fun test_implicit_cast_if_match_expr() {
+	a := make_value(true)
+	x := if a is Num { Text{ s = 'b' len = 1 } as Value } else { 'c' }
+	assert x is Text
+
+	y := match x {
+		Text { 'd' as Value }
+		else { 5 }
+	}
+	assert value_n(y) == -1
+}
+
+fun test_as_cast() {
+	v := make_value(true)
+	assert (v as Num).n == 1
+}
+
+fun test_smartcast_negated() {
+	v := make_value(true)
+	if not (v is Text) {
+		assert value_n(v) == 1
+	} else {
+		assert false
+	}
+
+	is_num := v is Num
+	assert is_num
+	assert value_n(v) == 1
+}
+
+fun test_multi_variant_branch() {
+	v := make_value(true)
+	res := match v {
+		Num, Text { value_n(v) }
+		else { 0 }
+	}
+	assert res == 1
+}
+
+fun test_smartcast_field_mutation() {
+	mut v := Num{ n = 1 } as Value
+	if v is Num {
+		v.n = 5
+		assert v.n == 5
+	}
+	assert value_n(v) == 5
+}
+
+fun test_recursive() {
+	t := Pair{
+		left = Leaf{ n = 1 }
+		right = Pair{
+			left = Leaf{ n = 2 }
+			right = Leaf{ n = 3 }
+		}
+	} as Tree
+	assert sum_tree(t) == 6
+}
+
+fun test_equality() {
+	a := Num{ n = 1 } as Value
+	b := Num{ n = 1 } as Value
+	c := Num{ n = 2 } as Value
+	d := 1 as Value
+	assert a == b
+	assert a != c
+	assert a != d
+	assert a == Num{ n = 1 }
+	assert 'x' as Value == 'x' as Value
+}
+
+fun test_str() {
+	t := Leaf{ n = 1 } as Tree
+	assert '${t}'.contains('n = 1')
+}

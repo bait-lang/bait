@@ -64,7 +64,7 @@ fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 
 
 	node.name = sym.mix_name
-	for field in node.fields {
+	for mut field in node.fields {
 		def := sym.find_field(field.name, c.table)
 		if def.name.length == 0 {
 			c.error('struct ${sym.mix_name} has no field ${field.name}', node.pos)
@@ -73,6 +73,7 @@ fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 
 		c.expected_type = def.typ
 		expr_type := c.expr(field.expr)
+		field.typ = expr_type
 
 		if def.typ == ast.ERROR_TYPE or expr_type == ast.ERROR_TYPE {
 			continue

@@ -93,7 +93,7 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 	// Smartcast variable
 	if node.left is ast.Ident {
 		left := node.left as ast.Ident
-		c.scope.update_type(left.full_name(), node.right_type)
+		c.scope.smartcast(left.full_name(), node.right_type, node.left_type)
 		return ast.BOOL_TYPE
 	}
 

@@ -73,6 +73,10 @@ fun (mut g Gen) equality_fun(typ ast.Type) string {
 		return fname
 	}
 
+	if sym.kind == .sum_type {
+		return g.sum_equality_fun(typ, sym)
+	}
+
 	if sym.kind == .struct_ {
 		return g.struct_equality_fun(typ, sym)
 	}
@@ -100,6 +104,35 @@ fun (mut g Gen) eq_check(typ ast.Type, a string, b string) string {
 		return '${eq_fun}(${a}, ${b})'
 	}
 	return '${a} == ${b}'
+}
+
+fun (mut g Gen) sum_equality_fun(typ ast.Type, sym ast.TypeSymbol) string {
+	g.generated_eq_funs.push(typ)
+
+	info := sym.info as ast.SumTypeInfo
+	sname := c_esc(sym.mix_name)
+	fname := c_esc('${sym.mix_name}_eq')
+
+	g.fun_decls_out.write('bool ${fname}(${sname} a, ${sname} b);\n')
+
+	mut cases := ''
+	for var in info.variants {
+		a := '*' + g.sum_field(typ, 'a', var)
+		b := '*' + g.sum_field(typ, 'b', var)
+		cases += '\t\tcase ${var.idx()}: return ${g.eq_check(var, a, b)};\n'
+	}
+
+	g.auto_funs_out.write('bool ${fname}(${sname} a, ${sname} b) {\n')
+	g.auto_funs_out.write('\tif (a.typ != b.typ) {\n')
+	g.auto_funs_out.write('\t\treturn false;\n')
+	g.auto_funs_out.write('\t}\n')
+	g.auto_funs_out.write('\tswitch (a.typ) {\n')
+	g.auto_funs_out.write(cases)
+	g.auto_funs_out.write('\t}\n')
+	g.auto_funs_out.write('\treturn true;\n')
+	g.auto_funs_out.write('}\n\n')
+
+	return fname
 }
 
 fun (mut g Gen) struct_equality_fun(typ ast.Type, sym ast.TypeSymbol) string {

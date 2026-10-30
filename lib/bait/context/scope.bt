@@ -13,6 +13,7 @@ pub struct Scope {
 pub struct ScopeObject{
 	pub mut kind ObjectKind
 	global typ ast.Type
+	pub smartcast_from ast.Type // Sum type of a smartcasted variable
 	pub mut is_pub bool
 	pub mut is_mut bool
 	pub mut pkg string // TODO SCOPES move this into Scope (requires multi return)
@@ -75,6 +76,11 @@ pub fun (s Scope) get_parent(name string) ScopeObject {
 }
 
 pub fun (mut s Scope) update_type(name string, typ ast.Type) {
+	s.smartcast(name, typ, 0 as ast.Type)
+}
+
+// Narrow `name` to `typ`. `from` is the sum type unless already smartcasted in a parent scope
+pub fun (mut s Scope) smartcast(name string, typ ast.Type, from ast.Type) {
 	// FIXME `obj` should be a copy on js backend and below code not modify the original
 	// obj.typ = typ
 	// s.objects[name] = obj
@@ -83,6 +89,7 @@ pub fun (mut s Scope) update_type(name string, typ ast.Type) {
 	obj := s.get_parent(name)
 	s.objects[name] = ScopeObject{
 		typ = typ
+		smartcast_from = if obj.smartcast_from != 0 as ast.Type { obj.smartcast_from } else { from }
 		kind = obj.kind
 		is_pub = obj.is_pub
 		is_mut = obj.is_mut

@@ -40,14 +40,15 @@ fun (mut g Gen) if_match(node ast.IfMatch) {
 			if g.empty_line {
 				_ = g.cut_before(`\n`)
 			}
-			last_line_cut := g.cut_before_any('\n\t')
+			last_line_cut := g.cut_before_any('\n\t').trim_right(';')
 
 			branch_cut := g.cut_back_to(branch_start).trim_right('\n\t')
 			if branch_cut.length > 0 {
 				g.writeln(branch_cut)
 			}
 
-			g.writeln('\t${tmp} = ${last_line_cut};')
+			value := g.sum_cast_str(last_line_cut, branch_type(b), node.typ)
+			g.writeln('\t${tmp} = ${value};')
 		}
 	}
 	g.writeln('}')
@@ -56,5 +57,14 @@ fun (mut g Gen) if_match(node ast.IfMatch) {
 	if node.is_expr {
 		g.write(cut)
 		g.write(tmp)
+	}
+}
+
+fun branch_type(branch ast.IfBranch) ast.Type {
+	last := branch.stmts.last()
+	return match last {
+		ast.ExprStmt { last.typ }
+		ast.IfMatch { last.typ }
+		else { ast.VOID_TYPE }
 	}
 }
