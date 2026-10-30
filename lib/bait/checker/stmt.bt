@@ -41,7 +41,9 @@ fun (mut c Checker) stmt(mut stmt ast.Stmt){
 }
 
 fun (mut c Checker) assert_stmt(node ast.AssertStmt){
+	c.can_smartcast = true
 	typ := c.expr(node.expr)
+	c.can_smartcast = false
 	if not c.check_types(typ, ast.BOOL_TYPE) {
 		c.error('assert must be of type bool', node.pos)
 	}

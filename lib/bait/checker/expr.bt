@@ -273,6 +273,13 @@ fun (mut c Checker) par_expr(node ast.ParExpr) ast.Type {
 }
 
 fun (mut c Checker) prefix_expr(mut node ast.PrefixExpr) ast.Type {
+	if node.op == .key_not and c.can_smartcast {
+		c.can_smartcast = false
+		typ := c.prefix_expr(mut node)
+		c.can_smartcast = true
+		return typ
+	}
+
 	typ := c.expr(node.right)
 	if typ == ast.ERROR_TYPE {
 		node.typ = typ

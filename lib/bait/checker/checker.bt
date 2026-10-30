@@ -31,6 +31,7 @@ pub struct Checker{
 	mut is_lhs_assign bool
 	mut is_if_match_expr bool
 	mut is_sumtype_match bool
+	mut can_smartcast bool // Only positive `is` conditions narrow a variable
 	mut is_or_block bool
 	mut is_loop bool
 	mut returns bool

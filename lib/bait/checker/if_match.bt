@@ -55,7 +55,9 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 					continue
 				}
 			} else {
+				c.can_smartcast = true
 				cond_type := c.expr(branch.cond)
+				c.can_smartcast = false
 
 				if node.is_match {
 					key := (branch.cond as ast.InfixExpr).right.repr()
