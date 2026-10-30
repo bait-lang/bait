@@ -73,6 +73,55 @@ fun (mut g Gen) equality_fun(typ ast.Type) string {
 		return fname
 	}
 
+	if sym.kind == .struct_ {
+		return g.struct_equality_fun(typ, sym)
+	}
+
+	if sym.kind == .alias_type {
+		return g.equality_fun(sym.parent)
+	}
+
+	if sym.kind == .fun_ {
+		return ''
+	}
+
 	errors.generic_error('cannot generate equality function for type ${sym.mix_name}')
 	exit(1)
+}
+
+// Compare two values of `typ` given as C expressions
+fun (mut g Gen) eq_check(typ ast.Type, a string, b string) string {
+	if typ.get_nr_amp() > 0 {
+		return '${a} == ${b}'
+	}
+
+	eq_fun := g.equality_fun(typ)
+	if eq_fun.length > 0 {
+		return '${eq_fun}(${a}, ${b})'
+	}
+	return '${a} == ${b}'
+}
+
+fun (mut g Gen) struct_equality_fun(typ ast.Type, sym ast.TypeSymbol) string {
+	g.generated_eq_funs.push(typ)
+
+	info := sym.info as ast.StructInfo
+	sname := c_esc(sym.mix_name)
+	fname := c_esc('${sym.mix_name}_eq')
+
+	g.fun_decls_out.write('bool ${fname}(${sname} a, ${sname} b);\n')
+
+	mut checks := ''
+	for field in info.fields {
+		name := c_esc(field.name)
+		check := g.eq_check(field.typ, 'a.${name}', 'b.${name}')
+		checks += '\tif (!(${check})) {\n\t\treturn false;\n\t}\n'
+	}
+
+	g.auto_funs_out.write('bool ${fname}(${sname} a, ${sname} b) {\n')
+	g.auto_funs_out.write(checks)
+	g.auto_funs_out.write('\treturn true;\n')
+	g.auto_funs_out.write('}\n\n')
+
+	return fname
 }

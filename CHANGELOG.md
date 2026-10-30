@@ -26,6 +26,7 @@ All notable changes are documented in this file.
   - _[JS]_ Fix stack overflow when converting large builders
 
 ### C Backend
+- Generate equality functions for structs and aliases
 - Implement hashmaps
 - Implement floats
 - Arrays
