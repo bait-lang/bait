@@ -28,7 +28,13 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 		}
 
 		// Are we in a sumtype match?
-		cond_type := c.expr((node.branches[0].cond as ast.InfixExpr).left)
+		// Multiple conditions in a branch are chained with `or`
+		mut first_cond := node.branches[0].cond as ast.InfixExpr
+		for first_cond.op == .key_or {
+			first_cond = first_cond.left as ast.InfixExpr
+		}
+
+		cond_type := c.expr(first_cond.left)
 		cond_sym = c.table.get_sym(cond_type)
 		sumtype_match = cond_sym.kind == .sum_type
 	}
