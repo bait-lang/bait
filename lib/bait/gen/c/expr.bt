@@ -343,10 +343,6 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 		}
 	}
 
-	if info.fields.length == 0 {
-		g.write('0')
-	}
-
 	g.write('}')
 }
 
