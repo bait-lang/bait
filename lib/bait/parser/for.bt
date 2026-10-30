@@ -6,7 +6,7 @@ import bait.ast
 import bait.token
 
 fun (mut p Parser) for_loop(label string) !ast.Stmt{
-	pos := p.pos
+	pos := p.pos()
 	p.next()
 
 	if p.peek() == .decl_assign {

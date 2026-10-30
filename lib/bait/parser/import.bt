@@ -77,7 +77,7 @@ fun (mut p Parser) import_stmts() ![]ast.Import{
 	mut imports := p.add_builtin_imports()
 
 	for p.tok == .key_import {
-		pos := p.pos
+		pos := p.pos()
 		p.next()
 
 		mut imp := if p.tok == .string { p.foreign_import(pos)! } else { p.bait_import(pos)! }
