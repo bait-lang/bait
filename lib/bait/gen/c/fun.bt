@@ -10,9 +10,11 @@ fun (mut g Gen) anon_fun(node ast.AnonFun) {
 	was_line_empty := g.empty_line
 	start := g.out.length
 	last_indent := g.indent
+	last_fun := g.cur_fun
 
 	g.indent = 0
 	g.fun_decl(node.decl)
+	g.cur_fun = last_fun
 	g.type_impls_out.write(g.out.substr(start, g.out.length))
 
 	g.out.truncate(start)
