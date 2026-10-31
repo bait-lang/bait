@@ -83,6 +83,7 @@ All notable changes are documented in this file.
 ### Compiler internals
 - parser: support `pub type` and error instead of hanging on invalid `pub` statements
 - parser: parse struct inits of all-uppercase names like `A{}`
+- transformer: move struct field defaults that need statements (`or {}`, `if`) into functions
 - gen: use `strings.Builder` instead of string concatenation
 - escape: fix `char()` mangling non-ASCII text
 - lexer: show the actual character in `unexpected char` errors

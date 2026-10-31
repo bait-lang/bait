@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
+import bait.test_pkgs.structs
+
 enum Color {
 	red
 	green
@@ -39,4 +41,53 @@ fun test_inferred_from_field_type() {
 	i := Inferred{}
 	assert i.color == .green
 	assert i.list.length == 0
+}
+
+fun fails() !i32 {
+	return error('failed')
+}
+
+fun succeeds() !i32 {
+	return 3
+}
+
+fun fails_str() !string {
+	return error('failed str')
+}
+
+fun fails_i64() !i64 {
+	return error('failed')
+}
+
+struct Fallbacks {
+	fallback i32 := fails() or { 7 }
+	value i32 := succeeds() or { 8 }
+	nested i32 := (fails() or { 1 }) + 1
+	from_err string := fails_str() or { err }
+	big i64 := fails_i64() or { 9 }
+	if_expr string := if true { 'yes' } else { 'no' }
+}
+
+fun test_or_block() {
+	f := Fallbacks{}
+	assert f.fallback == 7
+	assert f.value == 3
+	assert f.nested == 2
+	assert f.from_err == 'failed str'
+	assert f.big == 9
+	assert f.if_expr == 'yes'
+}
+
+fun test_or_block_multiple_inits() {
+	a := Fallbacks{}
+	b := Fallbacks{}
+	c := Fallbacks{
+		fallback = 100
+	}
+	assert a.fallback + b.fallback + c.fallback == 114
+}
+
+fun test_or_block_in_other_package() {
+	w := structs.WithFallback{}
+	assert w.val == 8
 }

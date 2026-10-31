@@ -10,13 +10,19 @@ pub struct Transformer {
 	prefs preference.Prefs
 	gen_ctx &context.GenContext
 	mut path string
+	mut pkg string
+	mut default_funs []ast.Stmt // Functions lifted from struct field defaults
 }
 
 pub fun (mut t Transformer) transform_files(mut files []ast.File) {
 	for mut file in files {
 		t.path = file.path
+		t.pkg = file.pkg_name
 
 		t.stmts(mut file.stmts)
+
+		file.stmts.push_many(t.default_funs)
+		t.default_funs = []ast.Stmt
 	}
 
 	if t.prefs.is_test {
@@ -52,7 +58,7 @@ fun (mut t Transformer) stmt(mut stmt ast.Stmt) ast.Stmt {
 		ast.InterfaceDecl {}
 		ast.LoopControlStmt {}
 		ast.ReturnStmt { t.return_stmt(mut stmt) }
-		ast.StructDecl {}
+		ast.StructDecl { t.struct_decl(mut stmt) }
 		ast.TypeDecl {}
 		ast.Void {}
 		ast.InvalidStmt {}
@@ -249,6 +255,109 @@ fun (mut t Transformer) call_expr(mut node ast.CallExpr) {
 
 		t.stmts(node.or_block.stmts)
 	}
+}
+
+// The generators emit the default value of a struct field in expression position,
+// possibly many times. Values that require statements are moved into a function.
+fun (mut t Transformer) struct_decl(mut node ast.StructDecl) {
+	if node.lang != .bait {
+		return
+	}
+
+	for mut field in node.fields {
+		if not needs_stmts(field.expr) {
+			continue
+		}
+
+		name := '_default_${node.name}_${field.name}'
+		mut decl := ast.FunDecl{
+			name = name
+			return_type = field.expr_type
+			stmts = [
+				ast.ReturnStmt{
+					expr = field.expr
+					typ = field.expr_type
+				} as ast.Stmt
+			]
+		}
+		t.stmts(mut decl.stmts)
+		t.default_funs.push(decl)
+
+		field.expr = ast.CallExpr{
+			pkg = if t.pkg == 'main' or t.pkg == 'builtin' { '' } else { t.pkg }
+			name = name
+			return_type = field.expr_type
+		}
+	}
+}
+
+// Whether generating `expr` requires statements before the one using it
+fun needs_stmts(expr ast.Expr) bool {
+	if expr is ast.IfMatch {
+		return true
+	}
+	if expr is ast.CallExpr {
+		node := expr as ast.CallExpr
+		if node.or_block.kind != .none {
+			return true
+		}
+		if node.is_method and needs_stmts(node.left) {
+			return true
+		}
+		for arg in node.args {
+			if needs_stmts(arg.expr) {
+				return true
+			}
+		}
+		return false
+	}
+	if expr is ast.ArrayInit {
+		return any_needs_stmts((expr as ast.ArrayInit).exprs)
+	}
+	if expr is ast.AsCast {
+		return needs_stmts((expr as ast.AsCast).expr)
+	}
+	if expr is ast.IndexExpr {
+		node := expr as ast.IndexExpr
+		return needs_stmts(node.left) or needs_stmts(node.index)
+	}
+	if expr is ast.InfixExpr {
+		node := expr as ast.InfixExpr
+		return needs_stmts(node.left) or needs_stmts(node.right)
+	}
+	if expr is ast.MapInit {
+		node := expr as ast.MapInit
+		return any_needs_stmts(node.keys) or any_needs_stmts(node.vals)
+	}
+	if expr is ast.ParExpr {
+		return needs_stmts((expr as ast.ParExpr).expr)
+	}
+	if expr is ast.PrefixExpr {
+		return needs_stmts((expr as ast.PrefixExpr).right)
+	}
+	if expr is ast.SelectorExpr {
+		return needs_stmts((expr as ast.SelectorExpr).expr)
+	}
+	if expr is ast.StringInterLiteral {
+		return any_needs_stmts((expr as ast.StringInterLiteral).exprs)
+	}
+	if expr is ast.StructInit {
+		for field in (expr as ast.StructInit).fields {
+			if needs_stmts(field.expr) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+fun any_needs_stmts(exprs []ast.Expr) bool {
+	for expr in exprs {
+		if needs_stmts(expr) {
+			return true
+		}
+	}
+	return false
 }
 
 fun (mut t Transformer) struct_init(mut node ast.StructInit) {

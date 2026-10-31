@@ -25,3 +25,11 @@ pub fun (mut f Foo) add_to_mut(n i32) {
 pub fun (mut f Foo) sub_from_pub_mut(n i32) {
 	f.pub_mut_f -= n
 }
+
+fun may_fail() !i32 {
+	return error('failed')
+}
+
+pub struct WithFallback {
+	pub val i32 := may_fail() or { 8 }
+}
