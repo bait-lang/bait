@@ -50,6 +50,7 @@ All notable changes are documented in this file.
 - Fix default values of sum type struct fields
 - Implement generic structs: one C struct per instance, e.g. `Foo[i32]`
 - Fix `@noreturn` calls in branches of `if` and `match` expressions
+- Fix top-level array, map and call constants with tcc
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`
