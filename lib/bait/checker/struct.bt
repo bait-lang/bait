@@ -137,7 +137,7 @@ fun (c Checker) check_init_field_values(init ast.StructInit, info ast.StructInfo
 
 		// ... sum types and functions
 		if not is_required {
-			def_sym := c.table.get_sym(def_field.typ)
+			def_sym := c.table.get_final_sym(c.table.get_sym(def_field.typ))
 			is_required = def_sym.kind == .sum_type or def_sym.kind == .fun_
 		}
 

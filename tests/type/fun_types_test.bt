@@ -19,6 +19,58 @@ fun test_callback() {
 	assert takes_callback("you", my_cb) == 3
 }
 
+type Cb := fun (n i32) i32
+type CbAlias := Cb
+type CbAliasAlias := CbAlias
+
+struct WithAliasField {
+	cb CbAlias
+}
+
+fun add_one(n i32) i32 {
+	return n + 1
+}
+
+fun apply_alias(cb CbAlias, n i32) i32 {
+	return cb(n)
+}
+
+fun apply_cb(cb Cb, n i32) i32 {
+	return cb(n)
+}
+
+fun test_fun_alias_param() {
+	assert apply_alias(add_one, 1) == 2
+	assert apply_alias(fun (n i32) i32 {
+		return n + 2
+	}, 1) == 3
+}
+
+fun test_fun_alias_variable() {
+	mut cb := add_one as CbAlias
+	assert cb(1) == 2
+
+	cb = fun (n i32) i32 {
+		return n + 3
+	}
+	assert cb(1) == 4
+	assert apply_cb(cb, 1) == 4
+}
+
+fun test_fun_alias_of_alias() {
+	cb := add_one as CbAliasAlias
+	assert cb(1) == 2
+}
+
+fun test_fun_alias_field() {
+	s := WithAliasField{
+		cb = fun (n i32) i32 {
+			return n + 4
+		}
+	}
+	assert s.cb(1) == 5
+}
+
 fun test_call_local_fun() {
 	f := fun (n i32) i32 {
 		return n * 2

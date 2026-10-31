@@ -99,8 +99,9 @@ fun (c Checker) fun_params(params []ast.Param){
 			continue
 		}
 
-		if sym.kind == .fun_ {
-			info := sym.info as ast.FunInfo
+		final_sym := c.table.get_final_sym(sym)
+		if final_sym.kind == .fun_ {
+			info := final_sym.info as ast.FunInfo
 			c.scope.register(p.name, context.ScopeObject{
 				typ = p.typ
 				kind = .function
@@ -233,7 +234,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		if left_sym.kind == .struct_ {
 			field := left_sym.find_field(node.name, c.table)
 			if field.name.length > 0 {
-				field_sym := c.table.get_sym(field.typ)
+				field_sym := c.table.get_final_sym(c.table.get_sym(field.typ))
 				if field_sym.kind != .fun_ {
 					c.error('struct field `${field.name}` is not a method', node.pos)
 					return ast.ERROR_TYPE
