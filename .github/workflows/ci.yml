@@ -54,28 +54,41 @@ jobs:
           bait test -b c tests/comptime
           bait test -b c tests/float
           bait test -b c tests/for
-          # bait test -b c tests/generics
+          bait test -b c tests/generics
           bait test -b c tests/ident
-          # bait test -b c tests/if
-          bait test -b c tests/if/expr_with_propagation_test.bt
+          bait test -b c tests/if
           bait test -b c tests/int
-          # bait test -b c tests/match
-          # bait test -b c tests/method
+          bait test -b c tests/match
+          bait test -b c tests/method
           # bait test -b c tests/out
           # bait test -b c tests/other
+          bait test -b c tests/other/begin_end_test.bt
+          bait test -b c tests/other/char_escaping_test.bt
+          bait test -b c tests/other/const_static_resolve_test.bt
+          bait test -b c tests/other/enum_test.bt
+          bait test -b c tests/other/pub_test.bt
+          bait test -b c tests/other/reserved_names_test.bt
+          bait test -b c tests/other/typeof_test.bt
+          bait test -b c tests/other/u8_test.bt
           bait test -b c tests/overload
           bait test -b c tests/result
-          # bait test -b c tests/return
-          # bait test -b c tests/string
-          # bait test -b c tests/struct
+          bait test -b c tests/return
+          bait test -b c tests/string
+          bait test -b c tests/struct
           bait test -b c tests/sumtype
-          # bait test -b c tests/type
-          bait test -b c tests/type/infer_type_test.bt
+          bait test -b c tests/type
       - name: Run lib tests
         run: |
           # bait test -b c lib/bait
+          # bait test -b c lib/bait/lexer/tests
+          bait test -b c lib/bait/lexer/tests/comments_test.bt
+          bait test -b c lib/bait/lexer/tests/numbers_test.bt
+          bait test -b c lib/bait/lexer/tests/position_test.bt
+          bait test -b c lib/bait/lexer/tests/unclosed_string_test.bt
+          bait test -b c lib/bait/util/escape/escape_test.bt
           bait test -b c lib/builtin
           # bait test -b c lib/cli
+          bait test -b c lib/cli/parse_string_test.bt
           bait test -b c lib/encoding
           bait test -b c lib/hash
           bait test -b c lib/math
@@ -106,23 +119,52 @@ jobs:
         run: bait build-examples -b c -cc tcc
       - name: Run compiler tests
         run: |
+          bait test -b c -cc tcc tests/array
           bait test -b c -cc tcc tests/auto_str
+          bait test -b c -cc tcc tests/cast
+          bait test -b c -cc tcc tests/comptime
           bait test -b c -cc tcc tests/float
           bait test -b c -cc tcc tests/for
+          bait test -b c -cc tcc tests/generics
           bait test -b c -cc tcc tests/ident
-          bait test -b c -cc tcc tests/if/expr_with_propagation_test.bt
+          bait test -b c -cc tcc tests/if
           bait test -b c -cc tcc tests/int
           bait test -b c -cc tcc tests/interop
+          bait test -b c -cc tcc tests/match
+          bait test -b c -cc tcc tests/method
+          # bait test -b c -cc tcc tests/out
+          # bait test -b c -cc tcc tests/other
+          bait test -b c -cc tcc tests/other/begin_end_test.bt
+          bait test -b c -cc tcc tests/other/char_escaping_test.bt
+          bait test -b c -cc tcc tests/other/const_static_resolve_test.bt
+          bait test -b c -cc tcc tests/other/enum_test.bt
+          bait test -b c -cc tcc tests/other/pub_test.bt
+          bait test -b c -cc tcc tests/other/reserved_names_test.bt
+          bait test -b c -cc tcc tests/other/typeof_test.bt
+          bait test -b c -cc tcc tests/other/u8_test.bt
           bait test -b c -cc tcc tests/overload
           bait test -b c -cc tcc tests/result
+          bait test -b c -cc tcc tests/return
           bait test -b c -cc tcc tests/string
-          bait test -b c -cc tcc tests/type/infer_type_test.bt
+          bait test -b c -cc tcc tests/struct
+          bait test -b c -cc tcc tests/sumtype
+          bait test -b c -cc tcc tests/type
       - name: Run lib tests
         run: |
+          # bait test -b c -cc tcc lib/bait
+          # bait test -b c -cc tcc lib/bait/lexer/tests
+          bait test -b c -cc tcc lib/bait/lexer/tests/comments_test.bt
+          bait test -b c -cc tcc lib/bait/lexer/tests/numbers_test.bt
+          bait test -b c -cc tcc lib/bait/lexer/tests/position_test.bt
+          bait test -b c -cc tcc lib/bait/lexer/tests/unclosed_string_test.bt
+          bait test -b c -cc tcc lib/bait/util/escape/escape_test.bt
           bait test -b c -cc tcc lib/builtin
+          # bait test -b c -cc tcc lib/cli
+          bait test -b c -cc tcc lib/cli/parse_string_test.bt
           bait test -b c -cc tcc lib/encoding
           bait test -b c -cc tcc lib/hash
           bait test -b c -cc tcc lib/math
+          bait test -b c -cc tcc lib/os
           bait test -b c -cc tcc lib/strings
 
   windows-js:
