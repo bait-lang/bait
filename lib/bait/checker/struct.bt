@@ -40,7 +40,9 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 		if field.expr is ast.InvalidExpr {
 			continue
 		}
+		c.expected_type = field.typ
 		typ := c.expr(mut field.expr)
+		c.expected_type = ast.VOID_TYPE
 		field.expr_type = typ
 		if not c.check_types(typ, field.typ) {
 			c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.InvalidExpr).pos)

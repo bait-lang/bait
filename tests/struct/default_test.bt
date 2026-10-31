@@ -1,0 +1,42 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+enum Color {
+	red
+	green
+}
+
+struct Numbers {
+	mut signed i64 := 5
+	mut unsigned u64 := 6
+	negative i64 := -7
+	hex i64 := 0x10
+	sum i64 := 1 + 2
+	small u8 := 3
+}
+
+fun test_number_literals() {
+	mut n := Numbers{}
+	assert n.signed == 5
+	assert n.unsigned == 6
+	assert n.negative == -7
+	assert n.hex == 16
+	assert n.sum == 3
+	assert n.small == 3
+
+	n.signed += 1 as i64
+	n.unsigned += 1 as u64
+	assert n.signed == 6 as i64
+	assert n.unsigned == 7 as u64
+}
+
+struct Inferred {
+	color Color := .green
+	list []i32 := []
+}
+
+fun test_inferred_from_field_type() {
+	i := Inferred{}
+	assert i.color == .green
+	assert i.list.length == 0
+}
