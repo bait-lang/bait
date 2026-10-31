@@ -17,8 +17,9 @@ pub struct Parser {
 	mut tok token.Token
 	mut next_tok token.Token
 	mut val string
-	mut prev_pos token.Pos
-	mut pos token.Pos
+	mut prev_line i32
+	mut line i32
+	mut col i32
 	mut pkg_name string
 	mut pkg_scope &context.Scope := 0 as any // Reference to scope of current package
 	mut import_aliases map[string]string
@@ -139,7 +140,7 @@ fun (mut p Parser) package_decl() !string {
 // Parses one or more attributes
 fun (mut p Parser) parse_attributes() ! {
 	for p.tok == .attr {
-		pos := p.pos
+		pos := p.pos()
 		name := p.val
 		p.next()
 
@@ -266,8 +267,16 @@ fun (mut p Parser) next() {
 	}
 
 	p.val = p.lexer.val()
-	p.prev_pos = p.pos
-	p.pos = p.lexer.pos()
+	p.prev_line = p.line
+	p.line = p.lexer.line()
+	p.col = p.lexer.col()
+}
+
+fun (p Parser) pos() token.Pos {
+	return token.Pos{
+		line = p.line
+		col = p.col
+	}
 }
 
 fun (mut p Parser) peek() token.Token {
@@ -291,7 +300,7 @@ fun (mut p Parser) info(msg string) {
 	p.infos.push(errors.Message{
 		kind = .info
 		path = p.path
-		pos = p.pos
+		pos = p.pos()
 		title = 'info'
 		msg = msg
 	})
@@ -301,7 +310,7 @@ fun (mut p Parser) warn(msg string) {
 	p.warnings.push(errors.Message{
 		kind = .warning
 		path = p.path
-		pos = p.pos
+		pos = p.pos()
 		title = 'warning'
 		msg = msg
 	})
@@ -311,7 +320,7 @@ pub fun (p Parser) to_error(msg string) errors.Message {
 	return errors.Message{
 		kind = .error
 		path = p.path
-		pos = p.pos
+		pos = p.pos()
 		title = 'error'
 		msg = msg
 	}

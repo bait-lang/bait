@@ -43,10 +43,18 @@ pub fun (l Lexer) val() string {
 	return l.val
 }
 
+pub fun (l Lexer) line() i32 {
+	return l.cur_line + 1
+}
+
+pub fun (l Lexer) col() i32 {
+	return l.start - l.line_starts[l.cur_line]
+}
+
 pub fun (l Lexer) pos() token.Pos {
 	return token.Pos{
-		line = l.cur_line + 1
-		col = l.start - l.line_starts[l.cur_line]
+		line = l.line()
+		col = l.col()
 	}
 }
 

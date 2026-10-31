@@ -95,7 +95,7 @@ fun (mut p Parser) stmt_with_name() !ast.Stmt{
 
 fun (mut p Parser) assert_stmt() !ast.AssertStmt{
 	p.next()
-	pos := p.pos
+	pos := p.pos()
 	expr := p.expr(.lowest)!
 	return ast.AssertStmt{
 		expr = expr
@@ -122,7 +122,7 @@ fun (mut p Parser) partial_assign_stmt(left ast.Expr) !ast.AssignStmt {
 }
 
 fun (mut p Parser) block_stmt() !ast.Block {
-	pos := p.pos
+	pos := p.pos()
 	stmts := p.parse_block()!
 	return ast.Block{
 		stmts = stmts
@@ -131,7 +131,7 @@ fun (mut p Parser) block_stmt() !ast.Block {
 }
 
 fun (mut p Parser) const_decl() !ast.ConstDecl{
-	pos := p.pos
+	pos := p.pos()
 	is_pub := p.check_pub()
 	p.next()
 
@@ -180,7 +180,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 }
 
 fun (mut p Parser) loop_control_stmt() !ast.LoopControlStmt{
-	pos := p.pos
+	pos := p.pos()
 	kind := p.tok
 	p.next()
 
@@ -202,7 +202,7 @@ fun (mut p Parser) expr_stmt() !ast.ExprStmt{
 }
 
 fun (mut p Parser) enum_decl() !ast.EnumDecl{
-	pos := p.pos
+	pos := p.pos()
 	is_pub := p.check_pub()
 	p.next()
 
@@ -214,7 +214,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 	mut variants := []string
 	mut fields := []ast.EnumField
 	for p.tok != .rcur {
-		fpos := p.pos
+		fpos := p.pos()
 		fname := p.check_name()!
 		mut expr := ast.InvalidExpr{} as ast.Expr
 		if p.tok == .decl_assign {
@@ -254,7 +254,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 }
 
 fun (mut p Parser) static_decl() !ast.StaticDecl{
-	pos := p.pos
+	pos := p.pos()
 	is_pub := p.check_pub()
 	p.check(.key_static)!
 	name := p.check_name()!
@@ -278,7 +278,7 @@ fun (mut p Parser) static_decl() !ast.StaticDecl{
 }
 
 fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
-	pos := p.pos
+	pos := p.pos()
 	is_pub := p.check_pub()
 	p.check(.key_interface)!
 	lang := p.parse_lang()!
@@ -359,10 +359,10 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) !ast.FunDecl
 		typ = rec_type
 	}]
 	params.push_many(p.fun_params()!)
-	par_line := p.pos.line
+	par_line := p.line
 	p.check(.rpar)!
 	mut return_type := ast.VOID_TYPE
-	if p.pos.line == par_line {
+	if p.line == par_line {
 		return_type = p.parse_type()!
 	}
 	return ast.FunDecl{
@@ -376,7 +376,7 @@ fun (mut p Parser) interface_method(name string, rec_type ast.Type) !ast.FunDecl
 }
 
 fun (mut p Parser) return_stmt() !ast.ReturnStmt{
-	pos := p.pos
+	pos := p.pos()
 	p.check(.key_return)!
 	mut expr := ast.Void{} as ast.Expr
 	if p.tok != .semicolon {
@@ -390,7 +390,7 @@ fun (mut p Parser) return_stmt() !ast.ReturnStmt{
 }
 
 fun (mut p Parser) type_decl() !ast.TypeDecl {
-	pos := p.pos
+	pos := p.pos()
 	is_pub := p.check_pub()
 	p.next()
 
