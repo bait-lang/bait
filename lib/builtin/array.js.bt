@@ -15,7 +15,7 @@ fun (a Array) check_bounds(i i32) {
 
 fun (a Array) get(i i32) any {
 	a.check_bounds(i)
-	return a.data.at(i as #JS.Number)
+	return a.data[i]
 }
 
 fun (a Array) set(i i32, val any) {
