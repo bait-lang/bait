@@ -20,7 +20,7 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.AssignStmt { g.assign_stmt(stmt) }
 		ast.Block { g.block(stmt) }
 		ast.ConstDecl { g.const_decl(stmt) }
-		ast.EnumDecl {} // see write_types()
+		ast.EnumDecl {} // see write_enum_types()
 		ast.ExprStmt { g.expr_stmt(stmt) }
 		ast.ForLoop { g.for_loop(stmt) }
 		ast.ForClassicLoop { g.for_classic_loop(stmt) }

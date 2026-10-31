@@ -129,12 +129,30 @@ fun (mut g Gen) type_def(sym ast.TypeSymbol) {
 	} else if sym.kind == .alias_type or sym.kind == .number {
 		parent := g.typ(sym.parent)
 		g.type_defs_out.write('typedef ${parent} ${cname};\n')
-	} else if sym.kind == .enum_ {
-		info := sym.info as ast.EnumInfo
-		g.type_defs_out.write('enum ${cname} {\n')
-		for val in info.vals {
-			g.type_defs_out.write('\t${enum_val_name(sym.mix_name, val)},\n')
-		}
-		g.type_defs_out.write('};\n')
 	}
+}
+
+// Enum definitions are written from their declarations, because `ast.EnumInfo` only stores the names of the values.
+fun (mut g Gen) write_enum_types(files []ast.File) {
+	for file in files {
+		for stmt in file.stmts {
+			if stmt is ast.EnumDecl {
+				g.write_enum(stmt)
+			}
+		}
+	}
+}
+
+fun (mut g Gen) write_enum(node ast.EnumDecl) {
+	if node.lang != .bait {
+		return
+	}
+
+	g.type_defs_out.write('enum ${c_esc(node.name)} {\n')
+	for field in node.fields {
+		// The checker has filled in the values of all fields
+		val := (field.expr as ast.IntegerLiteral).val
+		g.type_defs_out.write('\t${enum_val_name(node.name, field.name)} = ${val},\n')
+	}
+	g.type_defs_out.write('};\n')
 }

@@ -62,6 +62,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		out = strings.new_builder(1000)
 	}
 
+	g.write_enum_types(files)
 	g.write_types()
 	g.gen_equality_funs()
 

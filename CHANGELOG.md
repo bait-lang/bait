@@ -30,6 +30,7 @@ All notable changes are documented in this file.
 - Implement result type, `!`, `or {}` and error handling
 - Implement auto-string conversion for enums
 - Prefix enum values with their enum name to avoid clashes with other enums and C identifiers
+- Support explicit enum values
 - Generate equality functions for structs and aliases
 - Implement hashmaps
 - Implement floats
