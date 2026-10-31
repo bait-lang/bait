@@ -61,15 +61,7 @@ jobs:
           bait test -b c tests/match
           bait test -b c tests/method
           # bait test -b c tests/out
-          # bait test -b c tests/other
-          bait test -b c tests/other/begin_end_test.bt
-          bait test -b c tests/other/char_escaping_test.bt
-          bait test -b c tests/other/const_static_resolve_test.bt
-          bait test -b c tests/other/enum_test.bt
-          bait test -b c tests/other/pub_test.bt
-          bait test -b c tests/other/reserved_names_test.bt
-          bait test -b c tests/other/typeof_test.bt
-          bait test -b c tests/other/u8_test.bt
+          bait test -b c tests/other
           bait test -b c tests/overload
           bait test -b c tests/result
           bait test -b c tests/return
@@ -133,15 +125,7 @@ jobs:
           bait test -b c -cc tcc tests/match
           bait test -b c -cc tcc tests/method
           # bait test -b c -cc tcc tests/out
-          # bait test -b c -cc tcc tests/other
-          bait test -b c -cc tcc tests/other/begin_end_test.bt
-          bait test -b c -cc tcc tests/other/char_escaping_test.bt
-          bait test -b c -cc tcc tests/other/const_static_resolve_test.bt
-          bait test -b c -cc tcc tests/other/enum_test.bt
-          bait test -b c -cc tcc tests/other/pub_test.bt
-          bait test -b c -cc tcc tests/other/reserved_names_test.bt
-          bait test -b c -cc tcc tests/other/typeof_test.bt
-          bait test -b c -cc tcc tests/other/u8_test.bt
+          bait test -b c -cc tcc tests/other
           bait test -b c -cc tcc tests/overload
           bait test -b c -cc tcc tests/result
           bait test -b c -cc tcc tests/return
