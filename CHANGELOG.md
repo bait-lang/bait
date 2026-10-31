@@ -57,6 +57,7 @@ All notable changes are documented in this file.
 - Fix non-test `assert`, which never fired for comparisons
 - Fix `str()` of pointers
 - Fix rebinding pointer variables
+- Fix `static` variables inside anonymous functions
 - Fix default values of by-value struct fields
 
 ### JS Backend

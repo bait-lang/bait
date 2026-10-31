@@ -15,7 +15,7 @@ fun (mut g Gen) anon_fun(node ast.AnonFun) {
 	g.indent = 0
 	g.fun_decl(node.decl)
 	g.cur_fun = last_fun
-	g.type_impls_out.write(g.out.substr(start, g.out.length))
+	g.anon_funs_out.write(g.out.substr(start, g.out.length))
 
 	g.out.truncate(start)
 	g.indent = last_indent

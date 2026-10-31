@@ -77,3 +77,12 @@ fun test_call_local_fun() {
 	}
 	assert f(2) == 4
 }
+
+static counter := 2
+
+fun test_anon_fun_uses_globals() {
+	f := fun (n i32) i32 {
+		return add_one(n) + counter
+	}
+	assert f(1) == 4
+}

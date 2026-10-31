@@ -20,6 +20,7 @@ struct Gen {
 	mut type_impls_out strings.Builder
 	mut auto_funs_out strings.Builder
 	mut globals_out strings.Builder
+	mut anon_funs_out strings.Builder
 	mut out strings.Builder
 	mut indent i32 := -1
 	mut empty_line bool := true
@@ -59,6 +60,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		type_impls_out = strings.new_builder(100)
 		auto_funs_out = strings.new_builder(100)
 		globals_out = strings.new_builder(100)
+		anon_funs_out = strings.new_builder(100)
 		out = strings.new_builder(1000)
 	}
 
@@ -88,7 +90,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	g.write_struct_bodies()
 
 	// Join all parts
-	return g.headers() + g.result_defs_out.str() + g.type_defs_out.str() + g.sum_impls_out.str() + g.fun_decls_out.str() + g.type_impls_out.str() + g.auto_funs_out.str() + g.globals_out.str() + '\n' + g.out.str()
+	return g.headers() + g.result_defs_out.str() + g.type_defs_out.str() + g.sum_impls_out.str() + g.fun_decls_out.str() + g.type_impls_out.str() + g.auto_funs_out.str() + g.globals_out.str() + g.anon_funs_out.str() + '\n' + g.out.str()
 }
 
 fun (g Gen) process_imports(imports []ast.Import) {
