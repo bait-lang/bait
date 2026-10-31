@@ -146,8 +146,29 @@ fun (mut c Checker) call_expr(mut node ast.CallExpr) ast.Type {
 	return c.fun_call(mut node)
 }
 
+// Variables of a function type can be called like the function they hold
+fun (c Checker) callable_object(obj context.ScopeObject) context.ScopeObject {
+	if obj.kind != .variable {
+		return obj
+	}
+
+	sym := c.table.get_final_sym(c.table.get_sym(obj.typ))
+	if sym.kind != .fun_ {
+		return obj
+	}
+
+	info := sym.info as ast.FunInfo
+	return context.ScopeObject{
+		typ = obj.typ
+		kind = .function
+		pkg = c.pkg
+		return_type = info.return_type
+		params = info.to_params()
+	}
+}
+
 fun (mut c Checker) fun_call(mut node ast.CallExpr) ast.Type {
-	obj := c.find_in_scope(node.name, node.pkg)
+	obj := c.callable_object(c.find_in_scope(node.name, node.pkg))
 	if obj.kind != .function {
 		c.error('unknown function ${node.full_name()}', node.pos)
 		return ast.ERROR_TYPE

@@ -18,3 +18,10 @@ fun test_callback() {
 	assert takes_callback("hi", my_cb) == 2
 	assert takes_callback("you", my_cb) == 3
 }
+
+fun test_call_local_fun() {
+	f := fun (n i32) i32 {
+		return n * 2
+	}
+	assert f(2) == 4
+}
