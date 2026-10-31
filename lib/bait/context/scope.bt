@@ -39,6 +39,11 @@ pub enum ObjectKind {
 	type_
 }
 
+// Result of failed lookups. Shared, so it must not be modified
+const UNKNOWN_OBJECT := ScopeObject{
+	kind = .unknown
+}
+
 // Register an object in the selected scope
 pub fun (s Scope) register(name string, obj ScopeObject) {
 	s.objects[name] = obj
@@ -58,9 +63,7 @@ pub fun (s Scope) get(name string) ScopeObject {
 	if s.objects.contains(name) {
 		return s.objects[name]
 	}
-	return ScopeObject{
-		kind = .unknown
-	}
+	return UNKNOWN_OBJECT
 }
 
 pub fun (s Scope) get_parent(name string) ScopeObject {
@@ -70,9 +73,7 @@ pub fun (s Scope) get_parent(name string) ScopeObject {
 	if s.parent != 0 as Scope {
 		return s.parent.get_parent(name)
 	}
-	return ScopeObject{
-		kind = .unknown
-	}
+	return UNKNOWN_OBJECT
 }
 
 pub fun (mut s Scope) update_type(name string, typ ast.Type) {
