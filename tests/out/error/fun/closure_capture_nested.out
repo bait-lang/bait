@@ -1,0 +1,1 @@
+tests/out/error/fun/closure_capture_nested.in.bt:4:11 error: anonymous function cannot capture local `a`

@@ -8,6 +8,8 @@ pub struct Scope {
 	pub parent &Scope
 	pub objects map[string]ScopeObject
 	pub redefined_syms []string
+	pub is_local bool // Inside a function, not a file or package scope
+	global is_closure bool // Outermost scope of an anonymous function
 }
 
 pub struct ScopeObject{
@@ -74,6 +76,20 @@ pub fun (s Scope) get_parent(name string) ScopeObject {
 		return s.parent.get_parent(name)
 	}
 	return UNKNOWN_OBJECT
+}
+
+// Whether `name` is a local of a function enclosing the anonymous function of this scope
+pub fun (s Scope) is_captured(name string) bool {
+	mut cur := s
+	mut crossed_closure := false
+	for cur.is_local {
+		if cur.objects.contains(name) {
+			return crossed_closure
+		}
+		crossed_closure = crossed_closure or cur.is_closure
+		cur = cur.parent
+	}
+	return false
 }
 
 pub fun (mut s Scope) update_type(name string, typ ast.Type) {

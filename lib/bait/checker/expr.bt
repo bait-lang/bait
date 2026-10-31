@@ -223,6 +223,8 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		}
 	}
 
+	c.check_capture(node.name, node.pkg, node.pos)
+
 	// Set mutability for other checks
 	node.is_mut = obj.is_mut
 	node.smartcast_from = obj.smartcast_from

@@ -1,0 +1,6 @@
+fun outer(cb fun (n i32) i32) {
+	f := fun () i32 {
+		return cb(1)
+	}
+	_ = f
+}

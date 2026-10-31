@@ -1,0 +1,9 @@
+fun main() {
+	f := fun (a i32) {
+		g := fun () i32 {
+			return a
+		}
+		_ = g
+	}
+	_ = f
+}

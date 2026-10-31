@@ -12,10 +12,11 @@ pub fun run_tests(prefs preference.Prefs) i32 {
 		if os.exists(a) and a.ends_with('.bt') and a.contains('_test.') and prefs.matches_backend(a) {
 			files_to_test.push(a)
 		} else if os.exists_dir(a){
-			t := os.walk_ext(a, '.bt').filter(fun (f string) bool {
-				return f.contains('_test.') and not f.contains('.in.') and prefs.matches_backend(f)
-			})
-			files_to_test.push_many(t)
+			for f in os.walk_ext(a, '.bt') {
+				if f.contains('_test.') and not f.contains('.in.') and prefs.matches_backend(f) {
+					files_to_test.push(f)
+				}
+			}
 		} else {
 			eprintln('Unrecognized test file or directory: "${a}"')
 			exit(1)

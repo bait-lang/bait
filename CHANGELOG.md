@@ -124,6 +124,7 @@ All notable changes are documented in this file.
 - Infer the type of struct field defaults from the field, e.g. for `i64` literals
 - `&x` has a pointer type
 - Struct init: support aliases and error for non-structs instead of crashing
+- Reject anonymous functions that capture locals of the enclosing function
 - Function type aliases of function types can be assigned to and called
 - Variables holding a function can be called
 - Error for type aliases that refer to themselves

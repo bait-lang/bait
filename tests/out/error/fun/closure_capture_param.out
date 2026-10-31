@@ -1,0 +1,1 @@
+tests/out/error/fun/closure_capture_param.in.bt:3:10 error: anonymous function cannot capture local `cb`

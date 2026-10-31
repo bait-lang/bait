@@ -1,0 +1,7 @@
+fun main() {
+	x := 3
+	f := fun () i32 {
+		return x
+	}
+	_ = f
+}
