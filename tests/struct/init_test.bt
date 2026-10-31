@@ -56,3 +56,24 @@ fun test_64bit_default_value() {
 	m['x'] += 2 as u64
 	assert m['x'] == 2 as u64
 }
+
+struct A {
+	b Account
+	n i32
+}
+
+struct ABC {
+	n i32 := 3
+}
+
+fun test_uppercase_struct_names() {
+	a := A{}
+	assert a.n == 0
+
+	b := A{
+		n = 2
+	}
+	assert b.n == 2
+
+	assert ABC{}.n == 3
+}

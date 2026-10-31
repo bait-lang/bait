@@ -375,9 +375,13 @@ fun (mut p Parser) name_expr(lang ast.Language) !ast.Expr {
 
 	capitalised := p.val[0].is_upper() and not p.val.is_upper()
 
-	if p.is_struct_possible and (p.peek() == .lcur or p.peek() == .lsqr) {
+	if p.is_struct_possible {
+		// `FOO[0]` indexes a constant, but `FOO{}` can only be a struct.
 		// TODO remove lowercase string struct
-		if capitalised or p.val == 'string' {
+		if p.peek() == .lcur and (p.val[0].is_upper() or p.val == 'string') {
+			return p.struct_init()!
+		}
+		if p.peek() == .lsqr and capitalised {
 			return p.struct_init()!
 		}
 	}
