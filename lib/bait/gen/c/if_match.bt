@@ -47,8 +47,13 @@ fun (mut g Gen) if_match(node ast.IfMatch) {
 				g.writeln(branch_cut)
 			}
 
-			value := g.sum_cast_str(last_line_cut, branch_type(b), node.typ)
-			g.writeln('\t${tmp} = ${value};')
+			if branch_type(b) == ast.VOID_TYPE {
+				// No value, e.g. a @noreturn call
+				g.writeln('\t${last_line_cut};')
+			} else {
+				value := g.sum_cast_str(last_line_cut, branch_type(b), node.typ)
+				g.writeln('\t${tmp} = ${value};')
+			}
 		}
 	}
 	g.writeln('}')
