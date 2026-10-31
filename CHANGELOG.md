@@ -45,6 +45,7 @@ All notable changes are documented in this file.
 - Implement function types as C function pointers in struct fields and parameters
 - Increase test coverage
 - Fix empty struct field inits with tcc
+- Fix zero values of empty struct fields with tcc
 - Fix struct fields named like C keywords (e.g. `default`, `signed`) on access and in `str()`
 - Initialize struct fields with their default values
 - Fix default values of sum type struct fields

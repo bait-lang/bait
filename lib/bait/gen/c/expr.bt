@@ -381,6 +381,12 @@ fun (g Gen) zero_init(typ ast.Type) string {
 	if sym.kind == .number or sym.kind == .enum_ or sym.kind == .fun_ or sym.kind == .other {
 		return '0'
 	}
+	if sym.info is ast.StructInfo {
+		info := sym.info as ast.StructInfo
+		if info.fields.length == 0 {
+			return '{}' // tcc rejects `{0}` for empty structs
+		}
+	}
 	return '{0}'
 }
 
