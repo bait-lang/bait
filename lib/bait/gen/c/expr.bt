@@ -361,6 +361,10 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 			g.expr_as(node.fields[init_idx].expr, node.fields[init_idx].typ, field.typ)
 		} else if not (field.expr is ast.InvalidExpr) {
 			g.expr_as(field.expr, field.expr_type, field.typ)
+		} else if g.has_field_defaults(field.typ) {
+			g.struct_init(ast.StructInit{
+				typ = field.typ
+			})
 		} else {
 			g.write(g.zero_init(field.typ))
 		}
@@ -370,6 +374,25 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 	}
 
 	g.write('}')
+}
+
+// Whether `typ` is stored by value and has fields with default values, directly or nested
+fun (g Gen) has_field_defaults(typ ast.Type) bool {
+	if typ.get_nr_amp() > 0 {
+		return false
+	}
+
+	sym := g.table.get_final_sym(g.concrete_sym(typ))
+	if sym.kind != .struct_ and sym.kind != .generic_inst {
+		return false
+	}
+
+	for field in g.struct_fields(typ) {
+		if not (field.expr is ast.InvalidExpr) or g.has_field_defaults(field.typ) {
+			return true
+		}
+	}
+	return false
 }
 
 fun (g Gen) zero_init(typ ast.Type) string {

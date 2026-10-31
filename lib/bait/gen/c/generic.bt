@@ -57,7 +57,7 @@ fun (g Gen) has_generic(typ ast.Type) bool {
 
 // Fields of a struct type. For instances of generic structs, the generic types are replaced by the concrete types.
 fun (g Gen) struct_fields(typ ast.Type) []ast.StructField {
-	return g.sym_fields(g.table.get_sym(g.concrete_type(typ)))
+	return g.sym_fields(g.table.get_final_sym(g.table.get_sym(g.concrete_type(typ))))
 }
 
 // Fields of a struct or an instance of a generic struct, see `struct_fields`

@@ -68,6 +68,7 @@ struct ABC {
 
 fun test_uppercase_struct_names() {
 	a := A{}
+	assert a.b.balance == 50
 	assert a.n == 0
 
 	b := A{
@@ -76,4 +77,13 @@ fun test_uppercase_struct_names() {
 	assert b.n == 2
 
 	assert ABC{}.n == 3
+}
+
+struct Outer {
+	a A
+}
+
+fun test_nested_default_values() {
+	o := Outer{}
+	assert o.a.b.balance == 50
 }

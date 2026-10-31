@@ -55,6 +55,7 @@ All notable changes are documented in this file.
 - Fix `static` variables with non-constant initialisers
 - Fix `if` and `match` expressions in top-level constants
 - Fix non-test `assert`, which never fired for comparisons
+- Fix default values of by-value struct fields
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`
