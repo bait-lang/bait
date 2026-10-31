@@ -19,7 +19,8 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 		c.warn('struct name `${node.name}` must start with a capital letter', node.pos)
 	}
 
-	outer: for i, field in node.fields {
+	mut fields := node.fields
+	outer: for i, mut field in fields {
 		mut should_continue := false
 		for j := 0; j < i; j += 1 {
 			if field.name == node.fields[j].name {
@@ -39,11 +40,20 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 		if field.expr is ast.InvalidExpr {
 			continue
 		}
-		typ := c.expr(field.expr)
+		typ := c.expr(mut field.expr)
 		if not c.check_types(typ, field.typ) {
 			c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.InvalidExpr).pos)
 		}
 	}
+
+	// The generators read the fields from the type symbol, so store the checked defaults there
+	mut sym := c.table.get_sym(node.typ)
+	info := sym.info as ast.StructInfo
+	sym.info = ast.StructInfo{
+		fields = fields
+		generic_names = info.generic_names
+	}
+	c.table.type_symbols[node.typ.idx()] = sym
 
 	c.cur_generic_names = prev_generic_names
 }

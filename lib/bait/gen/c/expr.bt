@@ -356,10 +356,12 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 		name := c_esc(field.name)
 		g.write('.${name} = ')
 		init_idx := inited_fields.index(field.name)
-		if init_idx == -1 {
-			g.write(g.zero_init(field.typ))
-		} else {
+		if init_idx != -1 {
 			g.expr_as(node.fields[init_idx].expr, node.fields[init_idx].typ, field.typ)
+		} else if not (field.expr is ast.InvalidExpr) {
+			g.expr(field.expr)
+		} else {
+			g.write(g.zero_init(field.typ))
 		}
 		if i < info.fields.length - 1 {
 			g.write(', ')
