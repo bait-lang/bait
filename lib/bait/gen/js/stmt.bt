@@ -91,9 +91,9 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 	}
 
 	if g.is_array_map_set {
+		g.is_array_map_set = false
 		g.expr(node.right)
 		g.writeln(')')
-		g.is_array_map_set = false
 		return
 	}
 

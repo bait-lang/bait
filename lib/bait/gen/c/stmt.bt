@@ -65,10 +65,10 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	}
 
 	if g.is_array_map_set {
+		g.is_array_map_set = false
 		g.write('{')
 		g.expr_as(node.right, node.right_type, node.left_type)
 		g.writeln('});')
-		g.is_array_map_set = false
 		return
 	}
 
