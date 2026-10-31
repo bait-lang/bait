@@ -40,6 +40,12 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 
 	g.cur_fun = node
 
+	// Generic results only have a concrete type inside an instantiation
+	ret_sym := g.table.get_sym(node.return_type)
+	if ret_sym.kind == .result {
+		_ = g.result_type(ret_sym.parent)
+	}
+
 	type_str := g.typ(node.return_type)
 
 	mut name := ""
@@ -84,6 +90,14 @@ fun (mut g Gen) fun_params(params []ast.Param){
 }
 
 fun (mut g Gen) call_expr(node ast.CallExpr) {
+	if node.or_block.kind == .none {
+		g.call_expr_no_or(node)
+	} else {
+		g.or_block(node)
+	}
+}
+
+fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 	if node.is_field {
 		g.expr(node.left)
 		if node.left_type.get_nr_amp() > 0 {

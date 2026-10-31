@@ -40,6 +40,13 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 
 fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	g.save_stmt_offset()
+	if node.left is ast.BlankIdent {
+		g.write('(void)(')
+		g.expr(node.right)
+		g.writeln(');')
+		return
+	}
+
 	if node.op == .decl_assign {
 		type_str := g.typ(node.right_type)
 		g.write('${type_str} ')
@@ -65,10 +72,10 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	}
 
 	if g.is_array_map_set {
+		g.is_array_map_set = false
 		g.write('{')
 		g.expr_as(node.right, node.right_type, node.left_type)
 		g.writeln('});')
-		g.is_array_map_set = false
 		return
 	}
 
@@ -256,6 +263,11 @@ fun (g Gen) interface_decl(node ast.InterfaceDecl){
 
 fun (mut g Gen) return_stmt(node ast.ReturnStmt){
 	g.save_stmt_offset()
+	if g.table.get_sym(g.cur_fun.return_type).kind == .result {
+		g.return_result(node)
+		return
+	}
+
 	g.write('return')
 	if not (node.expr is ast.InvalidExpr) {
 		g.write(" ")

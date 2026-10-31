@@ -27,6 +27,7 @@ All notable changes are documented in this file.
 
 ### C Backend
 - Implement sum types: tagged union with boxed variants, smartcasts, `is`, `as`, `str()` and equality
+- Implement result type, `!`, `or {}` and error handling
 - Implement auto-string conversion for enums
 - Generate equality functions for structs and aliases
 - Implement hashmaps
@@ -35,6 +36,7 @@ All notable changes are documented in this file.
   - Implement comparison
   - Implement auto-string conversion
   - Fix `slice()` to copy its data
+  - Fix element type of inferred empty arrays
 - Fix integer overflows
 - Fix loop labels
 - Increase test coverage

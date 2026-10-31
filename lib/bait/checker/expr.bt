@@ -70,6 +70,10 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 			}
 
 			node.typ = c.expected_type
+			exp_sym := c.table.get_final_sym(c.table.get_sym(node.typ))
+			if exp_sym.kind == .array {
+				node.elem_type = (exp_sym.info as ast.ArrayInfo).elem_type
+			}
 			return node.typ
 		}
 

@@ -15,6 +15,9 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 
 fun (g Gen) typ(typ ast.Type) string {
 	sym := g.concrete_sym(typ)
+	if sym.kind == .result {
+		return g.result_name(sym.parent)
+	}
 
 	name := c_name(sym.mix_name.replace('C.', ''))
 	ptrs := '*'.repeat(typ.get_nr_amp())
@@ -72,4 +75,6 @@ fun (mut g Gen) write_types() {
 			g.type_defs_out.write('};\n')
 		}
 	}
+
+	g.write_result_types()
 }

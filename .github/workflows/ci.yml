@@ -55,20 +55,22 @@ jobs:
           bait test -b c tests/float
           bait test -b c tests/for
           # bait test -b c tests/generics
-          # bait test -b c tests/ident
+          bait test -b c tests/ident
           # bait test -b c tests/if
+          bait test -b c tests/if/expr_with_propagation_test.bt
           bait test -b c tests/int
           # bait test -b c tests/match
           # bait test -b c tests/method
           # bait test -b c tests/out
           # bait test -b c tests/other
           bait test -b c tests/overload
-          # bait test -b c tests/result
+          bait test -b c tests/result
           # bait test -b c tests/return
           # bait test -b c tests/string
           # bait test -b c tests/struct
           bait test -b c tests/sumtype
           # bait test -b c tests/type
+          bait test -b c tests/type/infer_type_test.bt
       - name: Run lib tests
         run: |
           # bait test -b c lib/bait
@@ -107,10 +109,14 @@ jobs:
           bait test -b c -cc tcc tests/auto_str
           bait test -b c -cc tcc tests/float
           bait test -b c -cc tcc tests/for
+          bait test -b c -cc tcc tests/ident
+          bait test -b c -cc tcc tests/if/expr_with_propagation_test.bt
           bait test -b c -cc tcc tests/int
           bait test -b c -cc tcc tests/interop
           bait test -b c -cc tcc tests/overload
+          bait test -b c -cc tcc tests/result
           bait test -b c -cc tcc tests/string
+          bait test -b c -cc tcc tests/type/infer_type_test.bt
       - name: Run lib tests
         run: |
           bait test -b c -cc tcc lib/builtin

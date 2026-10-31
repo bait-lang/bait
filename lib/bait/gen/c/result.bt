@@ -1,0 +1,98 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package c
+
+import bait.ast
+
+// The name of the result struct with a value of type `value`
+fun (g Gen) result_name(value ast.Type) string {
+	return c_esc('Result[' + g.concrete_sym(value).mix_name + ']')
+}
+
+// Result structs share the fields of `builtin.Result`, followed by their value.
+//
+// Their definitions embed the value, so they have to be written after all other
+// structs. The typedefs have no dependencies, but function aliases need them.
+fun (mut g Gen) result_type(value ast.Type) string {
+	name := g.result_name(value)
+	if g.generated_results.contains(name) {
+		return name
+	}
+	g.generated_results.push(name)
+
+	g.result_defs_out.write('typedef struct ${name} ${name};\n')
+	g.type_impls_out.write('struct ${name} {\n\tbool is_error;\n\tstring msg;\n')
+	if value != ast.VOID_TYPE {
+		g.type_impls_out.write('\t${g.typ(value)} data;\n')
+	}
+	g.type_impls_out.write('};\n')
+	return name
+}
+
+fun (mut g Gen) write_result_types() {
+	for sym in g.table.type_symbols {
+		if sym.kind == .result and g.table.get_sym(sym.parent).kind != .generic {
+			_ = g.result_type(sym.parent)
+		}
+	}
+}
+
+// Return the error message `msg` from the current function
+fun (mut g Gen) return_error(msg string) {
+	value := g.table.get_sym(g.cur_fun.return_type).parent
+	g.writeln('return (${g.result_type(value)}){ .is_error = true, .msg = ${msg} };')
+}
+
+fun (mut g Gen) return_result(node ast.ReturnStmt) {
+	expr := node.expr
+
+	// The checker wraps values into a typeless `Result`, so anything else is an error
+	if expr is ast.StructInit {
+		if expr.typ == 0 as ast.Type {
+			g.return_value(node, expr)
+			return
+		}
+	}
+
+	g.return_error('(${g.expr_string(expr)}).msg')
+}
+
+fun (mut g Gen) return_value(node ast.ReturnStmt, init ast.StructInit) {
+	value := g.table.get_sym(g.cur_fun.return_type).parent
+	g.write('return (${g.result_type(value)}){ .is_error = false')
+	if init.fields.length > 0 {
+		g.write(', .data = ')
+		g.expr_as(init.fields[0].expr, node.typ, value)
+	}
+	g.writeln(' };')
+}
+
+// Handling a result needs statements, which are moved in front of the current one.
+// The call itself is replaced by the value.
+fun (mut g Gen) or_block(node ast.CallExpr) {
+	uid := node.or_block.uid
+	cut := g.cut_back_to(g.stmt_offsets.last()).trim_left('\t')
+	g.empty_line = true
+
+	g.write('${g.result_type(node.return_type)} ${uid} = ')
+	g.call_expr_no_or(node)
+	g.writeln(';')
+
+	g.writeln('if (${uid}.is_error) {')
+	if node.or_block.kind == .block {
+		g.stmts(node.or_block.stmts)
+	} else if g.cur_fun.is_main() {
+		g.writeln('\tpanic(${uid}.msg);')
+	} else {
+		g.indent += 1
+		g.return_error('${uid}.msg')
+		g.indent -= 1
+	}
+	g.writeln('}')
+	g.save_stmt_offset()
+
+	g.write(cut)
+	if node.return_type != ast.VOID_TYPE {
+		g.write('${uid}.data')
+	}
+}

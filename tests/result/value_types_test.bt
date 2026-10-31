@@ -1,0 +1,119 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+struct Foo {
+	v i32
+}
+
+struct Bar {}
+
+type Spam := Foo | Bar
+
+fun fail_int() !i32 {
+	return error('bad')
+}
+
+fun get_int(i i32) !i32 {
+	return i
+}
+
+fun fail_sum() !Spam {
+	return error('sum')
+}
+
+fun get_ptr() !&Foo {
+	return &Foo{
+		v = 4
+	}
+}
+
+fun (f Foo) get_value() !i32 {
+	return f.v
+}
+
+fun propagate_to_other_type() !string {
+	_ = fail_int()!
+	return 'unreachable'
+}
+
+fun sum_propagated() !i32 {
+	return get_int(1)! + get_int(2)!
+}
+
+fun rewrap_error() !i32 {
+	x := fail_int() or {
+		return error('wrapped ${err}')
+	}
+	return x
+}
+
+fun void_error() ! {
+	return error('void')
+}
+
+fun fail_arr() ![]i32 {
+	return error('arr')
+}
+
+fun return_or_in_result() !i32 {
+	return fail_int() or { 6 }
+}
+
+fun test_propagate_to_other_type() {
+	s := propagate_to_other_type() or { err }
+	assert s == 'bad'
+}
+
+fun test_sum_type_default() {
+	s := fail_sum() or {
+		Foo{
+			v = 2
+		}
+	}
+	assert s is Foo
+}
+
+fun test_pointer_data() {
+	p := get_ptr() or { panic('unreachable') }
+	assert p.v == 4
+}
+
+fun test_method() {
+	f := Foo{
+		v = 3
+	}
+	r := f.get_value() or { 0 }
+	assert r == 3
+}
+
+fun test_multiple_propagations() {
+	r := sum_propagated() or { 0 }
+	assert r == 3
+}
+
+fun test_rewrap_error() {
+	r := rewrap_error() or {
+		assert err == 'wrapped bad'
+		5
+	}
+	assert r == 5
+}
+
+fun test_void_call_as_last_statement() {
+	void_error() or { print('') }
+	assert true
+}
+
+fun test_or_in_array_methods() {
+	mut a := []i32
+	a.push(fail_int() or { 1 })
+	a.push_many(fail_arr() or { [2, 3] })
+	a[0] = fail_int() or { 7 }
+	assert a.length == 3
+	assert a[0] == 7
+}
+
+fun test_or_in_returned_value() {
+	r := return_or_in_result() or { 0 }
+	assert r == 6
+}
