@@ -360,7 +360,7 @@ pub struct MapInit {
 
 // `(expr)`
 pub struct ParExpr {
-	pub expr Expr
+	global expr Expr
 	pub pos token.Pos
 }
 
@@ -407,7 +407,7 @@ pub struct StructInit {
 
 pub struct StructInitField {
 	pub name string
-	pub expr Expr
+	global expr Expr
 	global typ Type
 	pub pos token.Pos
 }
