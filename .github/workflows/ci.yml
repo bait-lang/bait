@@ -70,6 +70,7 @@ jobs:
           # bait test -b c tests/struct
           bait test -b c tests/sumtype
           # bait test -b c tests/type
+          bait test -b c tests/type/infer_type_test.bt
       - name: Run lib tests
         run: |
           # bait test -b c lib/bait
@@ -115,6 +116,7 @@ jobs:
           bait test -b c -cc tcc tests/overload
           bait test -b c -cc tcc tests/result
           bait test -b c -cc tcc tests/string
+          bait test -b c -cc tcc tests/type/infer_type_test.bt
       - name: Run lib tests
         run: |
           bait test -b c -cc tcc lib/builtin
