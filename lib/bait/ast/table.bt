@@ -58,6 +58,39 @@ pub fun (t Table) unwrap_generic(sym TypeSymbol) TypeSymbol {
 	return sym
 }
 
+// Name of an instance of a generic struct, e.g. `Foo[i32]`
+pub fun (t Table) generic_inst_name(base Type, concrete []Type) string {
+	mut names := []string
+	for typ in concrete {
+		names.push(t.type_name(typ))
+	}
+	return t.get_sym(base).mix_name + '[' + names.join(',') + ']'
+}
+
+// Returns the instance of the generic struct `base` with the concrete types. Instances are unique by name.
+pub fun (t Table) find_or_register_generic_inst(base Type, concrete []Type) Type {
+	name := t.generic_inst_name(base, concrete)
+	idx := t.get_idx(name)
+	if idx > 0 as Type {
+		return idx
+	}
+
+	// Store a copy: `concrete` may be a slice that later passes overwrite in place
+	mut conc := []Type
+	for typ in concrete {
+		conc.push(typ)
+	}
+	return t.register_sym(TypeSymbol{
+		kind = .generic_inst
+		mix_name = name
+		pkg = t.get_sym(base).pkg
+		parent = base
+		info = GenericInst{
+			concrete_types = conc
+		}
+	})
+}
+
 pub fun (mut t Table) register_concrete(key string, concrete []Type) bool {
 	if t.generic_fun_types[key].contains(concrete) {
 		return false

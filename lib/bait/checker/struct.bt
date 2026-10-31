@@ -59,8 +59,34 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 	c.cur_generic_names = prev_generic_names
 }
 
+// Resolves the generic types of the current generic fun instantiation in `typ`.
+// Instances of generic structs are registered with their concrete types, so the generators can emit them.
+fun (c Checker) concrete_type(typ ast.Type) ast.Type {
+	sym := c.table.get_sym(typ)
+	if sym.kind == .generic and c.cur_concrete_types.length > 0 {
+		i := c.cur_fun.generic_names.index(sym.mix_name)
+		if i < 0 or i >= c.cur_concrete_types.length {
+			return typ
+		}
+		conc := c.cur_concrete_types[i]
+		return conc.set_nr_amp(conc.get_nr_amp() + typ.get_nr_amp())
+	}
+
+	if sym.kind == .generic_inst and c.cur_concrete_types.length > 0 {
+		inst := sym.info as ast.GenericInst
+		mut conc := []ast.Type
+		for t in inst.concrete_types {
+			conc.push(c.concrete_type(t))
+		}
+		return c.table.find_or_register_generic_inst(sym.parent, conc).set_nr_amp(typ.get_nr_amp())
+	}
+
+	return typ
+}
+
 fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 	gen_sym := c.table.get_sym(node.typ)
+	_ = c.concrete_type(node.typ)
 	mut sym := c.table.unwrap_generic(gen_sym)
 	if sym.kind == .placeholder {
 		c.error('undefined struct ${node.name}', node.pos)
