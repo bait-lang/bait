@@ -43,6 +43,19 @@ fun test_struct_pointer() {
 	assert copy.x == 5
 }
 
+fun test_pointer_rebind() {
+	a := Point{
+		x = 1
+	}
+	b := Point{
+		x = 2
+	}
+	mut ptr := &a
+	ptr = &b
+	assert ptr.x == 2
+	assert a.x == 1
+}
+
 fun test_pointer_to_pointer() {
 	n := 1
 	nptr := &n
