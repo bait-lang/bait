@@ -51,6 +51,7 @@ All notable changes are documented in this file.
 - gen: Improve Performance by optimizing reserved keyword lookup (~5x for self compile)
 - Store arrays in hot lookup paths as constants
 - token: Utilize enum ranges for token kind lookups instead of array scans
+- _[JS]_ Only create the default value of map reads if the key is missing
 
 ### CLI and Tooling
 - check-md: add `--backend` option

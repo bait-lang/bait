@@ -181,11 +181,11 @@ fun (mut g Gen) index_expr(node ast.IndexExpr){
 			g.expr(node.index)
 			g.write(', ')
 		} else {
-			g.write('Map_get_set(')
+			g.write('Map_get_or_init(')
 			g.expr(node.left)
 			g.write(', ')
 			g.expr(node.index)
-			g.write(', ')
+			g.write(', () => ')
 			info := sym.info as ast.MapInfo
 			g.write_default_value(info.val_type)
 			g.write(')')

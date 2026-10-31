@@ -1,0 +1,25 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+struct Item {
+	mut count i32
+}
+
+fun test_read_missing_key() {
+	mut m := map[string]Item
+	assert m['a'].count == 0
+	assert m.contains('a')
+	assert m.length == 1
+
+	// Every missing key gets its own default value
+	m['a'].count = 3
+	assert m['b'].count == 0
+	assert m['a'].count == 3
+}
+
+fun test_read_missing_key_keeps_value() {
+	mut m := map[string][]i32
+	m['a'].push(1)
+	m['a'].push(2)
+	assert m['a'].length == 2
+}
