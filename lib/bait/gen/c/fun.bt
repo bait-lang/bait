@@ -131,6 +131,12 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 			}
 		}
 
+		// `hp.str()`: generated string functions take the value, also for pointers
+		if name == 'str' and node.left_type.get_nr_amp() > 0 and not sym.has_method('str') {
+			g.expr_to_string(node.left, node.left_type)
+			return
+		}
+
 		name = c_name(sym.mix_name + '_' + node.name)
 	} else if node.lang != .bait{
 		name = node.name.replace('C.', '')

@@ -9,14 +9,15 @@ import bait.errors
 const LB := if os.platform() == 'windows' { '\\r\\n' } else { '\\n' }
 
 fun (mut g Gen) get_str_fun(typ ast.Type) string {
-	conc := g.concrete_type(typ)
+	conc := g.concrete_type(typ).set_nr_amp(0)
 	g.table.needed_str_funs.push(conc)
 	sym := g.table.get_sym(conc)
 	return c_esc('${sym.mix_name}_str')
 }
 
 // TODO transformer?
-fun (mut g Gen) generate_str_fun(typ ast.Type) {
+fun (mut g Gen) generate_str_fun(ptr_typ ast.Type) {
+	typ := ptr_typ.set_nr_amp(0)
 	sym := g.table.get_sym(typ)
 	if g.generated_str_funs.contains(typ) {
 		return

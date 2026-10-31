@@ -62,3 +62,12 @@ fun test_pointer_to_pointer() {
 	nptr2 := &nptr
 	assert typeof(nptr2) == '**i32'
 }
+
+fun test_pointer_str() {
+	p := Point{
+		x = 3
+	}
+	ptr := &p
+	assert ptr.str() == p.str()
+	assert '${ptr}' == '${p}'
+}
