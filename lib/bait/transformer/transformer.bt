@@ -221,6 +221,8 @@ fun (mut t Transformer) call_expr(mut node ast.CallExpr) {
 		err_decl := ast.AssignStmt{
 			op = .decl_assign
 			left = ast.Ident{ name = "err" }
+			left_type = ast.STRING_TYPE
+			right_type = ast.STRING_TYPE
 			right = ast.SelectorExpr{
 				expr = ast.Ident{ name = node.or_block.uid }
 				field_name = "msg"
@@ -230,15 +232,18 @@ fun (mut t Transformer) call_expr(mut node ast.CallExpr) {
 
 		// Last line: Set Result data
 		//   `_t12.data = <expr>`
-		if node.or_block.stmts.last() is ast.ExprStmt {
+		last := node.or_block.stmts.last()
+		if last is ast.ExprStmt and last.typ != ast.VOID_TYPE {
 			idx := node.or_block.stmts.length - 1
 			node.or_block.stmts[idx] = ast.AssignStmt{
 				op = .assign
+				left_type = node.return_type
+				right_type = last.typ
 				left = ast.SelectorExpr{
 					expr = ast.Ident{ name = node.or_block.uid }
 					field_name = "data"
 				}
-				right = (node.or_block.stmts[idx] as ast.ExprStmt).expr
+				right = last.expr
 			}
 		}
 
