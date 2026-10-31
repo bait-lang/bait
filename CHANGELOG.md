@@ -118,6 +118,7 @@ All notable changes are documented in this file.
 - Do not infer invalid number type for indexing
 - Change `unnecessary mut` from error to warning
 - Struct init: support aliases and error for non-structs instead of crashing
+- Error for type aliases that refer to themselves
 
 ### Standard Library
 - builtin:

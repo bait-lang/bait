@@ -145,6 +145,9 @@ fun (c Checker) does_type_exist(sym ast.TypeSymbol, pos token.Pos) bool {
 	}
 
 	if sym.kind == .alias_type {
+		if c.table.get_final_sym(sym).kind == .alias_type {
+			return false // Alias cycle, see `type_decl`
+		}
 		parent_sym := c.table.get_sym(sym.parent)
 		return c.does_type_exist(parent_sym, pos)
 	}

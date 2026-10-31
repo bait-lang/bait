@@ -45,7 +45,8 @@ pub fun (t Table) unwrap_result(typ Type) Type {
 
 pub fun (t Table) get_final_sym(sym TypeSymbol) TypeSymbol {
 	mut s := sym
-	for s.kind == .alias_type {
+	// The limit stops at alias cycles, which the checker reports
+	for i := 0; s.kind == .alias_type and i < t.type_symbols.length; i += 1 {
 		s = t.get_sym(s.parent)
 	}
 	return s

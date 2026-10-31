@@ -1,0 +1,11 @@
+type Self := Self
+type First := Second
+type Second := First
+
+struct Foo {
+	a First
+}
+
+fun main() {
+	_ = First{}
+}

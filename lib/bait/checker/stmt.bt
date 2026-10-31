@@ -242,5 +242,7 @@ fun (c Checker) loop_control_stmt(node ast.LoopControlStmt) {
 }
 
 fun (c Checker) type_decl(node ast.TypeDecl) {
-	// Nothing to do
+	if c.table.get_final_sym(c.table.get_sym(node.typ)).kind == .alias_type {
+		c.error('alias ${node.name} refers to itself', node.pos)
+	}
 }

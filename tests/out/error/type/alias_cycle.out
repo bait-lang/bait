@@ -1,0 +1,4 @@
+tests/out/error/type/alias_cycle.in.bt:1:1 error: alias Self refers to itself
+tests/out/error/type/alias_cycle.in.bt:2:1 error: alias First refers to itself
+tests/out/error/type/alias_cycle.in.bt:3:1 error: alias Second refers to itself
+tests/out/error/type/alias_cycle.in.bt:10:6 error: cannot use Second as struct
