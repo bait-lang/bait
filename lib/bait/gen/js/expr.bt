@@ -87,7 +87,7 @@ fun (mut g Gen) as_cast(node ast.AsCast) {
 	if node.target == ast.I64_TYPE or node.target == ast.U64_TYPE or node.target == ast.U32_TYPE {
 		g.write('BigInt(')
 		g.expr(node.expr)
-		if node.expr is ast.IntegerLiteral {
+		if node.expr is ast.IntegerLiteral and not is_bigint_literal(node.expr as ast.IntegerLiteral) {
 			g.write('n')
 		}
 		g.write(')')
@@ -168,6 +168,13 @@ fun (mut g Gen) ident(node ast.Ident) {
 
 fun (mut g Gen) integer_literal(node ast.IntegerLiteral){
 	g.write(node.val)
+	if is_bigint_literal(node) {
+		g.write('n')
+	}
+}
+
+fun is_bigint_literal(node ast.IntegerLiteral) bool {
+	return node.typ == ast.I64_TYPE or node.typ == ast.U64_TYPE
 }
 
 fun (mut g Gen) index_expr(node ast.IndexExpr){

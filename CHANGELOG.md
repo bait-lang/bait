@@ -63,6 +63,7 @@ All notable changes are documented in this file.
 - Fix octal escapes in interpolated strings
 - Truncate narrowing integer casts
 - Use `0n` as default value of `i64` and `u64`
+- Emit `i64` and `u64` literals as BigInt
 
 ### Performance
 - gen: Improve Performance by optimizing reserved keyword lookup (~5x for self compile)
