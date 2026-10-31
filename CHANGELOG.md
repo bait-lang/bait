@@ -52,6 +52,7 @@ All notable changes are documented in this file.
 - Fix `@noreturn` calls in branches of `if` and `match` expressions
 - Fix top-level array, map and call constants with tcc
 - Fix `static` variables with non-constant initialisers
+- Fix `if` and `match` expressions in top-level constants
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`
