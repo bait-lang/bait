@@ -324,6 +324,11 @@ fun (mut c Checker) prefix_expr(mut node ast.PrefixExpr) ast.Type {
 		return node.typ
 	}
 
+	if node.op == .amp {
+		node.typ = typ.set_nr_amp(typ.get_nr_amp() + 1)
+		return node.typ
+	}
+
 	node.typ = typ
 	return typ
 }

@@ -1,12 +1,51 @@
 // SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
+struct Point {
+	mut x i32
+}
+
+fun (p Point) get_x() i32 {
+	return p.x
+}
+
+fun (mut p Point) inc() {
+	p.x += 1
+}
+
 fun test_pointer_deref() {
 	n := 42
-	nptr := n as &i32
+	nptr := &n
 	assert typeof(nptr) == '*i32'
 
 	n2 := *nptr
 	assert typeof(n2) == 'i32'
 	assert n2 == n
+}
+
+fun test_struct_pointer() {
+	mut p := Point{
+		x = 1
+	}
+	mut ptr := &p
+	assert typeof(ptr) == '*Point'
+	assert ptr.x == 1
+	assert ptr.get_x() == 1
+
+	ptr.inc()
+	assert p.x == 2
+
+	ptr.x = 5
+	assert p.x == 5
+
+	copy := *ptr
+	assert typeof(copy) == 'Point'
+	assert copy.x == 5
+}
+
+fun test_pointer_to_pointer() {
+	n := 1
+	nptr := &n
+	nptr2 := &nptr
+	assert typeof(nptr2) == '**i32'
 }
