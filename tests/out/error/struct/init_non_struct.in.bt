@@ -1,0 +1,13 @@
+type Number := i32
+type Variant := i32 | string
+
+fun id[T](a T) T {
+	_ = T{}
+	return a
+}
+
+fun main() {
+	_ = Number{}
+	_ = Variant{}
+	_ = id(1)
+}

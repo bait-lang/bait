@@ -87,3 +87,22 @@ fun test_nested_default_values() {
 	o := Outer{}
 	assert o.a.b.balance == 50
 }
+
+type AccountAlias := Account
+type AliasAlias := AccountAlias
+
+fun test_alias_init() {
+	a := AccountAlias{}
+	assert a.balance == 50
+	assert typeof(a) == 'AccountAlias'
+
+	b := AccountAlias{
+		balance = 4
+	}
+	assert b.balance == 4
+
+	c := AliasAlias{
+		balance = 5
+	}
+	assert c.balance == 5
+}

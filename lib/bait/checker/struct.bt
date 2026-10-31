@@ -87,9 +87,13 @@ fun (c Checker) concrete_type(typ ast.Type) ast.Type {
 fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 	gen_sym := c.table.get_sym(node.typ)
 	_ = c.concrete_type(node.typ)
-	mut sym := c.table.unwrap_generic(gen_sym)
+	mut sym := c.table.unwrap_generic(c.table.get_final_sym(gen_sym))
 	if sym.kind == .placeholder {
 		c.error('undefined struct ${node.name}', node.pos)
+		return ast.ERROR_TYPE
+	}
+	if not (sym.info is ast.StructInfo) {
+		c.error('cannot use ${sym.mix_name} as struct', node.pos)
 		return ast.ERROR_TYPE
 	}
 	if not sym.is_pub and sym.mix_name.contains('.') and sym.pkg != c.pkg {
