@@ -52,8 +52,19 @@ fun outer[U](u U) U {
 	return wrap(u)
 }
 
+fun id[U](u U) U {
+	return u
+}
+
+fun pass_instance[T](t T) T {
+	return id(Holder[T]{
+		item = t
+	}).item
+}
+
 fun test_generic_fun_creates_instance() {
 	assert wrap(3) == 3
 	assert wrap("s") == "s"
 	assert outer(true)
+	assert pass_instance(4) == 4
 }
