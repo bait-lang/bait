@@ -1,0 +1,41 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+// Types are used before they are declared
+
+struct UsesAll {
+	a AliasOfAlias
+	b ArrAlias
+	c MapAlias
+	d LaterStruct
+	f LaterEnum
+	g FunAlias
+}
+
+type AliasOfAlias := Alias
+type Alias := LaterStruct
+type ArrAlias := []LaterStruct
+type MapAlias := map[string]LaterStruct
+
+struct LaterStruct {
+	x i32
+}
+
+enum LaterEnum {
+	one
+	two
+}
+
+type FunAlias := fun (s LaterStruct) i32
+
+fun test_types_used_before_declaration() {
+	u := UsesAll{
+		g = fun (s LaterStruct) i32 { return s.x + 1 }
+	}
+	assert u.a.x == 0
+	assert u.b.length == 0
+	assert u.c.length == 0
+	assert u.d.x == 0
+	assert u.f == .one
+	assert u.g(u.d) == 1
+}

@@ -29,6 +29,8 @@ struct Gen {
 	mut generated_str_funs []ast.Type
 	mut generated_sum_casts []string
 	mut generated_results []string
+	mut generated_type_defs []string
+	mut generated_struct_bodies []string
 	mut tmp_counter i32
 	mut loop_label_names []string
 	mut loop_continue_targets []string

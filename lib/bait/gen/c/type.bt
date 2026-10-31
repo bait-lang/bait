@@ -13,12 +13,13 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 	return g.table.get_sym(g.cur_concrete_types[sym.mix_name])
 }
 
-fun (g Gen) typ(typ ast.Type) string {
+fun (mut g Gen) typ(typ ast.Type) string {
 	sym := g.concrete_sym(typ)
 	if sym.kind == .result {
 		return g.result_name(sym.parent)
 	}
 
+	g.type_def(sym)
 	name := c_name(sym.mix_name.replace('C.', ''))
 	ptrs := '*'.repeat(typ.get_nr_amp())
 	prefix := if sym.kind == .enum_ { 'enum ' } else { '' }
@@ -26,55 +27,99 @@ fun (g Gen) typ(typ ast.Type) string {
 }
 
 fun (mut g Gen) write_types() {
+	// Typedefs are written in dependency order, see `type_def`
+	for sym in g.table.type_symbols {
+		g.type_def(sym)
+	}
+
 	for sym in g.table.type_symbols {
 		if sym.mix_name.starts_with('C.') {
 			continue
 		}
 
-		cname := c_esc(sym.mix_name)
 		if sym.info is ast.StructInfo {
-			info := sym.info as ast.StructInfo
-			g.type_defs_out.write('typedef struct ${cname} ${cname};\n')
-			g.type_impls_out.write('struct ${cname} {\n')
-			for field in info.fields {
-				type_str := g.typ(field.typ)
-				field_name := c_esc(field.name)
-				g.type_impls_out.write('\t${type_str} ${field_name};\n')
-			}
-			g.type_impls_out.write('};\n')
-		} else if sym.kind == .sum_type {
-			g.write_sum_type(sym)
-		} else if sym.info is ast.ArrayInfo {
-			g.type_defs_out.write('typedef Array ${cname};\n')
-		} else if sym.info is ast.MapInfo {
-			g.type_defs_out.write('typedef Map ${cname};\n')
-		} else if sym.kind == .fun_ {
-			info := sym.info as ast.FunInfo
-			if not info.is_alias {
-				continue
-			}
-
-			ccname := cname.replace(" ", "_").replace("(", "_").replace(")", "_").replace(",", "")
-			g.type_defs_out.write('typedef ${g.typ(info.return_type)} (*${ccname})(')
-			for i, param in info.param_types {
-				g.type_defs_out.write(g.typ(param))
-				if i < info.param_types.length - 1 {
-					g.type_defs_out.write(', ')
-				}
-			}
-			g.type_defs_out.write(');\n')
-		}
-		 else if sym.kind == .alias_type or sym.kind == .number {
-			g.type_defs_out.write('typedef ${g.typ(sym.parent)} ${cname};\n')
-		} else if sym.kind == .enum_ {
-			info := sym.info as ast.EnumInfo
-			g.type_defs_out.write('enum ${cname} {\n')
-			for val in info.vals {
-				g.type_defs_out.write('\t${c_esc(val)},\n')
-			}
-			g.type_defs_out.write('};\n')
+			g.write_struct_body(sym)
 		}
 	}
 
 	g.write_result_types()
+}
+
+// Writes the body of a struct, unless it was written before. Structs stored by
+// value in a field are written first, because their size has to be known.
+fun (mut g Gen) write_struct_body(sym ast.TypeSymbol) {
+	if g.generated_struct_bodies.contains(sym.mix_name) {
+		return
+	}
+	g.generated_struct_bodies.push(sym.mix_name)
+
+	info := sym.info as ast.StructInfo
+	mut fields := ''
+	for field in info.fields {
+		g.write_value_struct(field.typ)
+		fields += '\t${g.typ(field.typ)} ${c_esc(field.name)};\n'
+	}
+	g.type_impls_out.write('struct ${c_esc(sym.mix_name)} {\n')
+	g.type_impls_out.write(fields)
+	g.type_impls_out.write('};\n')
+}
+
+// Writes the body of the struct that `typ` stores by value, directly or through aliases
+fun (mut g Gen) write_value_struct(typ ast.Type) {
+	if typ.get_nr_amp() > 0 {
+		return
+	}
+
+	sym := g.concrete_sym(typ)
+	if sym.kind == .alias_type {
+		g.write_value_struct(sym.parent)
+	} else if sym.info is ast.StructInfo and not sym.mix_name.starts_with('C.') {
+		g.write_struct_body(sym)
+	}
+}
+
+// Writes the typedef or definition of a user type, unless it was written before.
+// The types it refers to are written first, so the order of the type symbols
+// does not matter (e.g. an alias of a struct declared later in the file).
+fun (mut g Gen) type_def(sym ast.TypeSymbol) {
+	if sym.mix_name.starts_with('C.') or g.generated_type_defs.contains(sym.mix_name) {
+		return
+	}
+	g.generated_type_defs.push(sym.mix_name)
+
+	cname := c_esc(sym.mix_name)
+	if sym.info is ast.StructInfo {
+		// Only the forward declaration, the body is written by write_struct_body
+		g.type_defs_out.write('typedef struct ${cname} ${cname};\n')
+	} else if sym.kind == .sum_type {
+		g.write_sum_type(sym)
+	} else if sym.info is ast.ArrayInfo {
+		g.type_defs_out.write('typedef Array ${cname};\n')
+	} else if sym.info is ast.MapInfo {
+		g.type_defs_out.write('typedef Map ${cname};\n')
+	} else if sym.kind == .fun_ {
+		info := sym.info as ast.FunInfo
+		if not info.is_alias {
+			return
+		}
+
+		ccname := cname.replace(" ", "_").replace("(", "_").replace(")", "_").replace(",", "")
+		ret := g.typ(info.return_type)
+		mut params := []string
+		for param in info.param_types {
+			params.push(g.typ(param))
+		}
+		param_str := params.join(', ')
+		g.type_defs_out.write('typedef ${ret} (*${ccname})(${param_str});\n')
+	} else if sym.kind == .alias_type or sym.kind == .number {
+		parent := g.typ(sym.parent)
+		g.type_defs_out.write('typedef ${parent} ${cname};\n')
+	} else if sym.kind == .enum_ {
+		info := sym.info as ast.EnumInfo
+		g.type_defs_out.write('enum ${cname} {\n')
+		for val in info.vals {
+			g.type_defs_out.write('\t${c_esc(val)},\n')
+		}
+		g.type_defs_out.write('};\n')
+	}
 }

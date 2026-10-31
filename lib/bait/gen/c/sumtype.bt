@@ -14,10 +14,13 @@ fun (mut g Gen) write_sum_type(sym ast.TypeSymbol) {
 	info := sym.info as ast.SumTypeInfo
 
 	g.type_defs_out.write('typedef struct ${cname} ${cname};\n')
-	g.sum_impls_out.write('struct ${cname} {\n\tunion {\n')
+	// Variant types are written before the union starts
+	mut variants := ''
 	for var in info.variants {
-		g.sum_impls_out.write('\t\t${g.typ(var)}* ${g.variant_name(var)};\n')
+		variants += '\t\t${g.typ(var)}* ${g.variant_name(var)};\n'
 	}
+	g.sum_impls_out.write('struct ${cname} {\n\tunion {\n')
+	g.sum_impls_out.write(variants)
 	g.sum_impls_out.write('\t};\n\tint typ;\n};\n')
 }
 
