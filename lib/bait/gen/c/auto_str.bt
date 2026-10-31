@@ -119,7 +119,7 @@ ${cases}	}
 
 		mut cases := ''
 		for val in info.vals {
-			cases += '\t\tcase ${c_esc(val)}: return from_c_string("${val}");\n'
+			cases += '\t\tcase ${enum_val_name(sym.mix_name, val)}: return from_c_string("${val}");\n'
 		}
 		g.auto_funs_out.write('string ${fname}(${type_str} it) {
 	switch (it) {

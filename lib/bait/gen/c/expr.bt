@@ -139,7 +139,8 @@ fun (mut g Gen) char_literal(node ast.CharLiteral) {
 }
 
 fun (mut g Gen) enum_val(node ast.EnumVal) {
-	g.write(c_esc(node.val))
+	enum_name := g.table.get_sym(node.typ).mix_name
+	g.write(enum_val_name(enum_name, node.val))
 }
 
 fun (mut g Gen) float_literal(node ast.FloatLiteral) {

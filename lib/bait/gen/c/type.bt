@@ -32,6 +32,15 @@ fun fun_type_name(sym ast.TypeSymbol) string {
 	return c_esc(sym.mix_name).replace('&', 'ptr_').replace(' ', '_').replace('(', '_').replace(')', '_').replace(',', '')
 }
 
+// Values of bait enums are prefixed with the enum name, so they don't clash with each other or with C identifiers.
+// Values of C enums are declared by the C header and keep their names.
+fun enum_val_name(enum_name string, val string) string {
+	if enum_name.starts_with('C.') {
+		return c_esc(val)
+	}
+	return c_name(enum_name) + '__' + val
+}
+
 fun (mut g Gen) write_types() {
 	// Typedefs are written in dependency order, see `type_def`
 	for sym in g.table.type_symbols {
@@ -124,7 +133,7 @@ fun (mut g Gen) type_def(sym ast.TypeSymbol) {
 		info := sym.info as ast.EnumInfo
 		g.type_defs_out.write('enum ${cname} {\n')
 		for val in info.vals {
-			g.type_defs_out.write('\t${c_esc(val)},\n')
+			g.type_defs_out.write('\t${enum_val_name(sym.mix_name, val)},\n')
 		}
 		g.type_defs_out.write('};\n')
 	}

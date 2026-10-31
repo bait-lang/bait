@@ -29,6 +29,7 @@ All notable changes are documented in this file.
 - Implement sum types: tagged union with boxed variants, smartcasts, `is`, `as`, `str()` and equality
 - Implement result type, `!`, `or {}` and error handling
 - Implement auto-string conversion for enums
+- Prefix enum values with their enum name to avoid clashes with other enums and C identifiers
 - Generate equality functions for structs and aliases
 - Implement hashmaps
 - Implement floats
