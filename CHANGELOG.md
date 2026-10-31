@@ -40,6 +40,7 @@ All notable changes are documented in this file.
 - Fix integer overflows
 - Fix loop labels
 - Fix type definitions that use types declared later (e.g. aliases of structs)
+- Implement function types as C function pointers in struct fields and parameters
 - Increase test coverage
 - Fix empty struct field inits with tcc
 - Fix struct fields named like C keywords (e.g. `default`, `signed`) on access and in `str()`

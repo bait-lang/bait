@@ -1,0 +1,50 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+// Function types with signatures that are similar, but not the same
+
+type Cb := fun (s string) i32
+
+struct Holder {
+	a fun (p &u8) void
+	b fun (p u8) void
+	c fun (p []i32) i32
+	d fun (p map[string]i32) bool
+	e fun (f fun (i i32) i32) i32
+	g fun () void
+	h fun (s Holder) Holder
+	k Cb
+}
+
+fun my_cb(s string) i32 {
+	return s.length
+}
+
+fun test_fun_type_names() {
+	h := Holder{
+		a = fun (p &u8) void {}
+		b = fun (p u8) void {}
+		c = fun (p []i32) i32 { return p.length }
+		d = fun (p map[string]i32) bool { return p.length == 1 }
+		e = fun (f fun (i i32) i32) i32 { return f(1) }
+		g = fun () void {}
+		h = fun (s Holder) Holder { return s }
+		k = my_cb
+	}
+
+	h.a(0 as &u8)
+	h.b(1)
+	assert h.c([1, 2, 3]) == 3
+	assert h.d(map{'a': 1})
+	assert h.e(fun (i i32) i32 { return i + 2 }) == 3
+	h.g()
+	assert h.h(h).k('abc') == 3
+	assert h.k('abcd') == 4
+
+	assert via_pointer(&h)
+}
+
+// Field calls through a pointer
+fun via_pointer(hp &Holder) bool {
+	return hp.k('ab') == 2 and hp.c([1]) == 1
+}

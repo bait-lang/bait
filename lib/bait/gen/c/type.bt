@@ -20,16 +20,26 @@ fun (mut g Gen) typ(typ ast.Type) string {
 	}
 
 	g.type_def(sym)
-	name := c_name(sym.mix_name.replace('C.', ''))
+	name := if sym.kind == .fun_ { fun_type_name(sym) } else { c_name(sym.mix_name.replace('C.', '')) }
 	ptrs := '*'.repeat(typ.get_nr_amp())
 	prefix := if sym.kind == .enum_ { 'enum ' } else { '' }
 	return prefix + name + ptrs
 }
 
+// The C name of the typedef of a function type. Anonymous function types are named
+// after their signature, so the name is sanitised to be a valid identifier.
+fun fun_type_name(sym ast.TypeSymbol) string {
+	return c_esc(sym.mix_name).replace('&', 'ptr_').replace(' ', '_').replace('(', '_').replace(')', '_').replace(',', '')
+}
+
 fun (mut g Gen) write_types() {
 	// Typedefs are written in dependency order, see `type_def`
 	for sym in g.table.type_symbols {
-		g.type_def(sym)
+		// Function types are only written when they are used, see `typ`.
+		// Signatures of builtin functions can use types that are not defined in C.
+		if sym.kind != .fun_ {
+			g.type_def(sym)
+		}
 	}
 
 	for sym in g.table.type_symbols {
@@ -99,18 +109,14 @@ fun (mut g Gen) type_def(sym ast.TypeSymbol) {
 		g.type_defs_out.write('typedef Map ${cname};\n')
 	} else if sym.kind == .fun_ {
 		info := sym.info as ast.FunInfo
-		if not info.is_alias {
-			return
-		}
-
-		ccname := cname.replace(" ", "_").replace("(", "_").replace(")", "_").replace(",", "")
+		// Parameter types are written first, so that the typedef can refer to them
 		ret := g.typ(info.return_type)
 		mut params := []string
 		for param in info.param_types {
 			params.push(g.typ(param))
 		}
-		param_str := params.join(', ')
-		g.type_defs_out.write('typedef ${ret} (*${ccname})(${param_str});\n')
+		param_str := if params.length == 0 { 'void' } else { params.join(', ') }
+		g.type_defs_out.write('typedef ${ret} (*${fun_type_name(sym)})(${param_str});\n')
 	} else if sym.kind == .alias_type or sym.kind == .number {
 		parent := g.typ(sym.parent)
 		g.type_defs_out.write('typedef ${parent} ${cname};\n')
