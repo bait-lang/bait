@@ -12,6 +12,8 @@ fun (s PubStruct) priv_method(){}
 
 type PubAlias := PubStruct
 
+pub type ExportedAlias := PubStruct
+
 pub enum PubEnum{
 	a
 }

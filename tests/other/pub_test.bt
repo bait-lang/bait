@@ -7,6 +7,12 @@ struct UsesPub{
 	p pubpriv.PubAlias
 }
 
+fun test_pub_type() {
+	s := pubpriv.ExportedAlias{}
+	assert s.pub_method()
+	assert typeof(s) == 'bait.test_pkgs.pubpriv.ExportedAlias'
+}
+
 fun test_pub_works(){
 	s := pubpriv.PubStruct{}
 	assert s.pub_method()

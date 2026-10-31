@@ -29,8 +29,13 @@ fun (mut p Parser) pub_stmt() !ast.Stmt {
 		.key_interface{ p.interface_decl()! }
 		.key_static { p.static_decl()! }
 		.key_struct{ p.struct_decl()! }
-		else{ error('cannot use pub keyword before ${p.peek()}') }
+		.key_type{ p.type_decl()! }
+		else{ p.invalid_pub()! }
 	}
+}
+
+fun (mut p Parser) invalid_pub() !ast.Stmt {
+	return error('cannot use pub keyword before ${p.peek()}')
 }
 
 fun (mut p Parser) script_mode_or_error() !ast.Stmt {
