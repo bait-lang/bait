@@ -1,0 +1,59 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+struct Pair[K, V]{
+	key K
+	val V
+}
+
+struct Holder[T]{
+	mut item T
+	n i32 := 2
+}
+
+struct Inner{
+	mut v i32
+}
+
+fun test_multiple_generic_names() {
+	p := Pair[i32, string]{
+		key = 1
+		val = "one"
+	}
+	assert p.key == 1
+	assert p.val == "one"
+}
+
+fun test_default_field_of_instance() {
+	h := Holder[string]{
+		item = "x"
+	}
+	assert h.n == 2
+	assert h.item == "x"
+}
+
+fun test_instance_of_later_declared_struct() {
+	h := Holder[Inner]{
+		item = Inner{
+			v = 9
+		}
+	}
+	assert h.item.v == 9
+}
+
+fun wrap[T](t T) T {
+	f := Holder[T]{
+		item = t
+	}
+	return f.item
+}
+
+fun outer[U](u U) U {
+	return wrap(u)
+}
+
+fun test_generic_fun_creates_instance() {
+	assert wrap(3) == 3
+	assert wrap("s") == "s"
+	assert outer(true)
+}

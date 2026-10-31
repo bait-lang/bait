@@ -48,6 +48,7 @@ All notable changes are documented in this file.
 - Fix struct fields named like C keywords (e.g. `default`, `signed`) on access and in `str()`
 - Initialize struct fields with their default values
 - Fix default values of sum type struct fields
+- Implement generic structs: one C struct per instance, e.g. `Foo[i32]`
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`

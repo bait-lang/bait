@@ -91,6 +91,35 @@ pub fun (t Table) find_or_register_generic_inst(base Type, concrete []Type) Type
 	})
 }
 
+// Fields of an instance of a generic struct with the generic types replaced by the concrete types.
+// The fields are new values: the fields of the generic struct itself must stay unchanged.
+pub fun (t Table) generic_inst_fields(sym TypeSymbol) []StructField {
+	info := t.get_sym(sym.parent).info as StructInfo
+	inst := sym.info as GenericInst
+	mut fields := []StructField
+	for f in info.fields {
+		mut typ := f.typ
+		fsym := t.get_sym(f.typ)
+		gi := info.generic_names.index(fsym.mix_name)
+		if fsym.kind == .generic and gi >= 0 {
+			conc := inst.concrete_types[gi]
+			typ = conc.set_nr_amp(conc.get_nr_amp() + f.typ.get_nr_amp())
+		}
+		fields.push(StructField{
+			name = f.name
+			typ = typ
+			expr = f.expr
+			expr_type = f.expr_type
+			pos = f.pos
+			is_mut = f.is_mut
+			is_pub = f.is_pub
+			is_global = f.is_global
+			attrs = f.attrs
+		})
+	}
+	return fields
+}
+
 pub fun (mut t Table) register_concrete(key string, concrete []Type) bool {
 	if t.generic_fun_types[key].contains(concrete) {
 		return false

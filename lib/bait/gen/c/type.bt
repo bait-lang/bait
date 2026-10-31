@@ -5,23 +5,19 @@ package c
 import bait.ast
 
 fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
-	sym := g.table.get_sym(typ)
-	if sym.kind != .generic or g.cur_concrete_types.length == 0 {
-		return sym
-	}
-
-	return g.table.get_sym(g.cur_concrete_types[sym.mix_name])
+	return g.table.get_sym(g.concrete_type(typ))
 }
 
 fun (mut g Gen) typ(typ ast.Type) string {
-	sym := g.concrete_sym(typ)
+	conc := g.concrete_type(typ)
+	sym := g.table.get_sym(conc)
 	if sym.kind == .result {
 		return g.result_name(sym.parent)
 	}
 
 	g.type_def(sym)
 	name := if sym.kind == .fun_ { fun_type_name(sym) } else { c_name(sym.mix_name.replace('C.', '')) }
-	ptrs := '*'.repeat(typ.get_nr_amp())
+	ptrs := '*'.repeat(conc.get_nr_amp())
 	prefix := if sym.kind == .enum_ { 'enum ' } else { '' }
 	return prefix + name + ptrs
 }
@@ -51,30 +47,28 @@ fun (mut g Gen) write_types() {
 		}
 	}
 
-	for sym in g.table.type_symbols {
-		if sym.mix_name.starts_with('C.') {
-			continue
-		}
-
-		if sym.info is ast.StructInfo {
-			g.write_struct_body(sym)
-		}
-	}
-
+	g.write_struct_bodies()
 	g.write_result_types()
+}
+
+// Writes the bodies of all structs that are not written yet. Instances of generic
+// structs are included, see `write_struct_body`.
+fun (mut g Gen) write_struct_bodies() {
+	for sym in g.table.type_symbols {
+		g.write_struct_body(sym)
+	}
 }
 
 // Writes the body of a struct, unless it was written before. Structs stored by
 // value in a field are written first, because their size has to be known.
 fun (mut g Gen) write_struct_body(sym ast.TypeSymbol) {
-	if g.generated_struct_bodies.contains(sym.mix_name) {
+	if not g.is_c_struct(sym) or g.generated_struct_bodies.contains(sym.mix_name) {
 		return
 	}
 	g.generated_struct_bodies.push(sym.mix_name)
 
-	info := sym.info as ast.StructInfo
 	mut fields := ''
-	for field in info.fields {
+	for field in g.sym_fields(sym) {
 		g.write_value_struct(field.typ)
 		fields += '\t${g.typ(field.typ)} ${c_esc(field.name)};\n'
 	}
@@ -92,7 +86,7 @@ fun (mut g Gen) write_value_struct(typ ast.Type) {
 	sym := g.concrete_sym(typ)
 	if sym.kind == .alias_type {
 		g.write_value_struct(sym.parent)
-	} else if sym.info is ast.StructInfo and not sym.mix_name.starts_with('C.') {
+	} else {
 		g.write_struct_body(sym)
 	}
 }
@@ -100,6 +94,7 @@ fun (mut g Gen) write_value_struct(typ ast.Type) {
 // Writes the typedef or definition of a user type, unless it was written before.
 // The types it refers to are written first, so the order of the type symbols
 // does not matter (e.g. an alias of a struct declared later in the file).
+// Struct bodies are not written here, see `write_struct_body`.
 fun (mut g Gen) type_def(sym ast.TypeSymbol) {
 	if sym.mix_name.starts_with('C.') or g.generated_type_defs.contains(sym.mix_name) {
 		return
@@ -107,7 +102,7 @@ fun (mut g Gen) type_def(sym ast.TypeSymbol) {
 	g.generated_type_defs.push(sym.mix_name)
 
 	cname := c_esc(sym.mix_name)
-	if sym.info is ast.StructInfo {
+	if g.is_c_struct(sym) {
 		// Only the forward declaration, the body is written by write_struct_body
 		g.type_defs_out.write('typedef struct ${cname} ${cname};\n')
 	} else if sym.kind == .sum_type {

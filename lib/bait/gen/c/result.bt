@@ -21,6 +21,8 @@ fun (mut g Gen) result_type(value ast.Type) string {
 	g.generated_results.push(name)
 
 	g.result_defs_out.write('typedef struct ${name} ${name};\n')
+	// The value is embedded, so its struct comes first, e.g. an instance of a generic struct first reached here
+	g.write_value_struct(value)
 	g.type_impls_out.write('struct ${name} {\n\tbool is_error;\n\tstring msg;\n')
 	if value != ast.VOID_TYPE {
 		g.type_impls_out.write('\t${g.typ(value)} data;\n')

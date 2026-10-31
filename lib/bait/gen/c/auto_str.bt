@@ -9,8 +9,9 @@ import bait.errors
 const LB := if os.platform() == 'windows' { '\\r\\n' } else { '\\n' }
 
 fun (mut g Gen) get_str_fun(typ ast.Type) string {
-	g.table.needed_str_funs.push(typ)
-	sym := g.table.get_sym(typ)
+	conc := g.concrete_type(typ)
+	g.table.needed_str_funs.push(conc)
+	sym := g.table.get_sym(conc)
 	return c_esc('${sym.mix_name}_str')
 }
 
@@ -22,6 +23,11 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	}
 
 	if sym.has_method('str') {
+		return
+	}
+
+	// Generic types are generated for their concrete types
+	if g.has_generic(typ) {
 		return
 	}
 
@@ -53,8 +59,8 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 		return
 	}
 
-	if sym.kind == .struct_ {
-		info := sym.info as ast.StructInfo
+	if sym.kind == .struct_ or sym.kind == .generic_inst {
+		fields := g.struct_fields(typ)
 
 		g.fun_decls_out.write('string ${fname}(${sname} it);')
 
@@ -64,10 +70,10 @@ fun (mut g Gen) generate_str_fun(typ ast.Type) {
 	strings__Builder b = strings__new_builder(100);
 	strings__Builder_write(&b, space);
 	strings__Builder_write(&b, from_c_string("${sym.mix_name}{"));\n')
-		if info.fields.length > 0 {
+		if fields.length > 0 {
 			g.auto_funs_out.write('\tstrings__Builder_write(&b, from_c_string("${LB}"));\n')
 		}
-		for field in info.fields {
+		for field in fields {
 			if typ == field.typ {
 				g.auto_funs_out.write('\tstrings__Builder_write(&b, space);
 	strings__Builder_write(&b, from_c_string("  ${field.name} = ${sym.mix_name}{...}${LB}"));\n')

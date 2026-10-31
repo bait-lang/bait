@@ -1,0 +1,95 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package c
+
+import bait.ast
+
+// Resolves the generic types of the current instantiation in `typ`: generic params and instances of generic structs
+fun (g Gen) concrete_type(typ ast.Type) ast.Type {
+	if g.cur_concrete_types.length == 0 {
+		return typ
+	}
+
+	sym := g.table.get_sym(typ)
+	if sym.kind == .generic {
+		if not g.cur_concrete_types.contains(sym.mix_name) {
+			return typ
+		}
+		conc := g.cur_concrete_types[sym.mix_name]
+		return conc.set_nr_amp(conc.get_nr_amp() + typ.get_nr_amp())
+	}
+
+	if sym.kind == .generic_inst {
+		inst := sym.info as ast.GenericInst
+		mut conc := []ast.Type
+		mut changed := false
+		for t in inst.concrete_types {
+			ct := g.concrete_type(t)
+			changed = changed or ct != t
+			conc.push(ct)
+		}
+		if not changed {
+			return typ
+		}
+		return g.table.find_or_register_generic_inst(sym.parent, conc).set_nr_amp(typ.get_nr_amp())
+	}
+
+	return typ
+}
+
+// Whether `typ` still refers to generic params, so it has no C type outside of an instantiation
+fun (g Gen) has_generic(typ ast.Type) bool {
+	sym := g.table.get_sym(typ)
+	if sym.kind == .generic {
+		return true
+	}
+
+	if sym.kind == .generic_inst {
+		inst := sym.info as ast.GenericInst
+		for t in inst.concrete_types {
+			if g.has_generic(t) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// Fields of a struct type. For instances of generic structs, the generic types are replaced by the concrete types.
+fun (g Gen) struct_fields(typ ast.Type) []ast.StructField {
+	return g.sym_fields(g.table.get_sym(g.concrete_type(typ)))
+}
+
+// Fields of a struct or an instance of a generic struct, see `struct_fields`
+fun (g Gen) sym_fields(sym ast.TypeSymbol) []ast.StructField {
+	if sym.kind == .generic_inst {
+		return g.table.generic_inst_fields(sym)
+	}
+
+	info := sym.info as ast.StructInfo
+	return info.fields
+}
+
+// Whether `sym` is a struct with a C struct of its own. Generic structs have none, and
+// instances with generic params are written per instantiation, so they are skipped.
+fun (g Gen) is_c_struct(sym ast.TypeSymbol) bool {
+	if sym.mix_name.starts_with('C.') {
+		return false
+	}
+
+	if sym.kind == .generic_inst {
+		inst := sym.info as ast.GenericInst
+		for t in inst.concrete_types {
+			if g.has_generic(t) {
+				return false
+			}
+		}
+		return true
+	}
+
+	if sym.info is ast.StructInfo {
+		info := sym.info as ast.StructInfo
+		return info.generic_names.length == 0
+	}
+	return false
+}

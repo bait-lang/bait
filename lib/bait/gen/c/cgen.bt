@@ -84,6 +84,9 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 		g.generate_str_fun(typ)
 	}
 
+	// Instances first reached during generation have no body yet, see `write_types`
+	g.write_struct_bodies()
+
 	// Join all parts
 	return g.headers() + g.result_defs_out.str() + g.type_defs_out.str() + g.sum_impls_out.str() + g.fun_decls_out.str() + g.type_impls_out.str() + g.auto_funs_out.str() + g.globals_out.str() + '\n' + g.out.str()
 }
@@ -190,7 +193,7 @@ fun (mut g Gen) save_stmt_offset() {
 }
 
 fun c_name(n string) string {
-	return n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_')
+	return n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_').replace(',', '_').replace('&', 'ptr_')
 }
 
 fun c_esc(n string) string {

@@ -1,0 +1,114 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+// TODO enable on JS: `assert` on struct instances and zero values of `T` fields
+struct Foo[T]{
+	mut x T
+	mut y T
+}
+
+struct Bar{
+	mut n i32
+}
+
+struct Ptr[T]{
+	p T
+}
+
+fun test_equality() {
+	a := Foo[i32]{
+		x = 1
+	}
+	b := Foo[i32]{
+		x = 1
+	}
+	c := Foo[i32]{
+		x = 2
+	}
+	assert a == b
+	assert a != c
+}
+
+fun test_auto_str() {
+	a := Foo[i32]{
+		x = 7
+	}
+	assert a.str().contains('Foo[i32]{')
+	assert a.str().contains('x = 7')
+}
+
+fun test_zero_values() {
+	f := Foo[Bar]{}
+	assert f.x.n == 0
+	assert f.y.n == 0
+}
+
+fun test_pointer_type_arg() {
+	b := Bar{
+		n = 2
+	}
+	p := Ptr[&Bar]{
+		p = &b
+	}
+	assert p.p.n == 2
+}
+
+fun same[T](a T, b T) bool {
+	x := Foo[T]{
+		x = a
+	}
+	y := Foo[T]{
+		x = b
+	}
+	return x == y
+}
+
+fun test_equality_in_generic_fun() {
+	assert same(1, 1)
+	assert not same(1, 2)
+	assert same("a", "a")
+}
+
+// The instances below embed their type argument by value. Struct fields can't name an instance,
+// so the type arguments come from the generic params of `unbox` and the instance is written
+// after the type it embeds.
+struct Box[T]{
+	item T
+}
+
+struct Inner{
+	n i32
+}
+
+type AliasInner := Inner
+
+fun unbox[T](t T) T {
+	b := Box[T]{
+		item = t
+	}
+	return b.item
+}
+
+fun test_instance_embedding_instance() {
+	f := Foo[i32]{
+		x = 3
+	}
+	assert unbox(f).x == 3
+}
+
+// Struct init through an alias is not supported by the checker, so the alias is only used as a parameter type
+fun unbox_alias(a AliasInner) i32 {
+	return unbox(a).n
+}
+
+fun test_instance_embedding_struct_through_alias() {
+	assert unbox_alias(Inner{
+		n = 4
+	}) == 4
+}
+
+fun test_instance_embedding_struct() {
+	assert unbox(Inner{
+		n = 5
+	}).n == 5
+}
