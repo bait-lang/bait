@@ -359,7 +359,7 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 		if init_idx != -1 {
 			g.expr_as(node.fields[init_idx].expr, node.fields[init_idx].typ, field.typ)
 		} else if not (field.expr is ast.InvalidExpr) {
-			g.expr(field.expr)
+			g.expr_as(field.expr, field.expr_type, field.typ)
 		} else {
 			g.write(g.zero_init(field.typ))
 		}

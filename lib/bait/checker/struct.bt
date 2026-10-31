@@ -41,6 +41,7 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 			continue
 		}
 		typ := c.expr(mut field.expr)
+		field.expr_type = typ
 		if not c.check_types(typ, field.typ) {
 			c.error('default value not matches field type ${c.table.type_name(field.typ)}', (field.expr as ast.InvalidExpr).pos)
 		}

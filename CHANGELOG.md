@@ -43,6 +43,7 @@ All notable changes are documented in this file.
 - Fix empty struct field inits with tcc
 - Fix struct fields named like C keywords (e.g. `default`, `signed`) on access and in `str()`
 - Initialize struct fields with their default values
+- Fix default values of sum type struct fields
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`

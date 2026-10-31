@@ -157,6 +157,7 @@ pub struct StructField {
 	pub name string
 	pub typ Type
 	pub expr Expr := InvalidExpr{}
+	global expr_type Type // Type of the default value, set by the checker
 	pub pos token.Pos
 	pub is_mut bool
 	pub is_pub bool
