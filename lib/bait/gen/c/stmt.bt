@@ -248,9 +248,35 @@ fun (mut g Gen) loop_control_stmt(node ast.LoopControlStmt){
 fun (mut g Gen) static_decl(node ast.StaticDecl){
 	name := c_name(node.name)
 	pkg := c_name(g.pkg)
+	full_name := pkg + '__' + name
+	g.save_stmt_offset()
 	expr := g.expr_string(node.expr)
 	typ := g.typ(node.typ)
-	g.globals_out.write('${typ} ${pkg}__${name} = ${expr};\n')
+	if is_c_literal(node.expr) {
+		g.globals_out.write('${typ} ${full_name} = ${expr};\n')
+	} else {
+		g.init_global_in_main(full_name, typ, expr)
+	}
+}
+
+// Only these can be used as C static initialisers
+fun is_c_literal(expr ast.Expr) bool {
+	return expr is ast.IntegerLiteral or expr is ast.FloatLiteral or expr is ast.BoolLiteral or expr is ast.CharLiteral
+}
+
+// Declares a global and assigns its value in main, which is needed for values that are not
+// C constants. `val` is the output of `expr_string()`: statements it needs (e.g. for an `if`
+// expression) come before its last line, which is the value.
+fun (mut g Gen) init_global_in_main(full_name string, typ string, val string) {
+	g.globals_out.write('${typ} ${full_name};\n')
+	last_line := val.index_last('\n')
+	if last_line < 0 {
+		g.main_inits_out.write('\t${full_name} = ${val};\n')
+	} else {
+		stmts := val.substr(0, last_line + 1)
+		value := val.substr(last_line + 1, val.length)
+		g.main_inits_out.write('\t{\n${stmts}\t${full_name} = ${value};\n\t}\n')
+	}
 }
 
 fun (g Gen) interface_decl(node ast.InterfaceDecl){
