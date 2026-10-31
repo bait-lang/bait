@@ -1,0 +1,7 @@
+fun main() {
+	x := 4
+	assert x == 4
+	assert x < 5 and x > 3
+	assert not (x == 3)
+	println('after assert')
+}

@@ -104,7 +104,7 @@ fun (mut t Transformer) assert_stmt(mut node ast.AssertStmt) ast.Stmt {
 				ast.IfBranch{
 					cond = ast.PrefixExpr{
 						op = .key_not
-						right = node.expr
+						right = ast.ParExpr{ expr = node.expr }
 					}
 					stmts = [
 						ast.ExprStmt{

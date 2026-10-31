@@ -54,6 +54,7 @@ All notable changes are documented in this file.
 - Fix top-level array, map and call constants with tcc
 - Fix `static` variables with non-constant initialisers
 - Fix `if` and `match` expressions in top-level constants
+- Fix non-test `assert`, which never fired for comparisons
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`

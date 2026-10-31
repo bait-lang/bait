@@ -1,0 +1,26 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+import os
+
+const DIR := '${os.dir($FILE)}/non_test_assert'
+
+fun run_fixture(name string) os.CmdRes {
+	mut backend := 'js'
+	$if C {
+		backend = 'c'
+	}
+	return os.exec('bun ${$BAITEXE} --nocolor -b ${backend} run ${DIR}/${name}.in.bt')
+}
+
+fun test_failing_assert_stops_program() {
+	res := run_fixture('failing')
+	assert res.code != 0
+	assert not res.stdout.contains('after assert')
+}
+
+fun test_passing_assert_continues() {
+	res := run_fixture('passing')
+	assert res.code == 0
+	assert res.stdout.contains('after assert')
+}
