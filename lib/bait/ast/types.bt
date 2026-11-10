@@ -80,9 +80,9 @@ pub struct TypeSymbol{
 	pub mut pkg string
 	pub mut mix_name string
 	pub mut kind TypeKind
-	pub mut methods []FunDecl
+	global methods []FunDecl
 	pub mut parent Type
-	pub mut overloads map[string]FunDecl
+	global overloads map[string]FunDecl
 	pub mut is_pub bool
 	global info TypeInfo := EmptyInfo{}
 }
@@ -126,7 +126,7 @@ pub fun (sym TypeSymbol) has_method(name string) bool {
 	return false
 }
 
-pub fun (t Table) register_builtins(){
+pub fun (mut t Table) register_builtins(){
 	// IMPORTANT: Order of registration must match the order of the constants above
 	_ = t.register_sym(TypeSymbol{ mix_name = '_' }) // PLACEHOLDER_TYPE
 	_ = t.register_sym(TypeSymbol{ mix_name = '_err' }) // ERROR_TYPE
@@ -157,7 +157,7 @@ pub fun (t Table) register_builtins(){
 	_ = t.register_sym(TypeSymbol{ mix_name = 'any'})
 }
 
-pub fun (t Table) register_num(name string) {
+pub fun (mut t Table) register_num(name string) {
 	_ = t.register_sym(TypeSymbol{
 		mix_name = name
 		kind = .number

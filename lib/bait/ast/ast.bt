@@ -24,13 +24,13 @@ pub struct AssignStmt {
 }
 
 pub struct Block {
-	pub stmts []Stmt
+	global stmts []Stmt
 	pub pos token.Pos
 }
 
 pub struct ConstDecl {
 	pub name string
-	pub expr Expr := InvalidExpr{}
+	global expr Expr := InvalidExpr{}
 	pub pos token.Pos
 	pub lang Language
 	global typ Type
@@ -56,17 +56,17 @@ pub struct ExprStmt {
 
 pub struct ForLoop {
 	pub label string
-	pub cond Expr
-	pub stmts []Stmt
+	global cond Expr
+	global stmts []Stmt
 	pub pos token.Pos
 }
 
 pub struct ForClassicLoop {
 	pub label string
-	pub init Stmt
-	pub cond Expr
-	pub inc Stmt
-	pub stmts []Stmt
+	global init Stmt
+	global cond Expr
+	global inc Stmt
+	global stmts []Stmt
 	pub pos token.Pos
 }
 
@@ -76,13 +76,13 @@ pub struct ForInLoop {
 	pub label string
 	pub idxvar Expr // TmpVar | Ident
 	pub valvar Ident
-	pub expr Expr
+	global expr Expr
 	global stmts []Stmt
 	pub pos token.Pos
 }
 
 pub struct AnonFun {
-	pub decl FunDecl
+	global decl FunDecl
 	pub typ Type
 	pub pos token.Pos
 }
@@ -124,7 +124,7 @@ pub struct LoopControlStmt {
 pub struct StaticDecl {
 	global typ Type
 	pub name string
-	pub expr Expr
+	global expr Expr
 	pub pos token.Pos
 }
 
@@ -178,14 +178,14 @@ pub struct ArrayInit {
 	global elem_type Type
 	global exprs []Expr
 	global expr_types []Type
-	pub length_expr Expr := InvalidExpr{}
-	pub cap_expr Expr := InvalidExpr{}
+	global length_expr Expr := InvalidExpr{}
+	global cap_expr Expr := InvalidExpr{}
 	pub pos token.Pos
 }
 
 pub struct AsCast {
 	global expr_type Type
-	pub expr Expr
+	global expr Expr
 	pub target Type
 	pub pos token.Pos
 }
@@ -320,16 +320,16 @@ pub struct IfMatch {
 }
 
 pub struct IfBranch {
-	pub cond Expr
-	pub stmts []Stmt
+	global cond Expr
+	global stmts []Stmt
 	pub pos token.Pos
 }
 
 pub struct IndexExpr {
 	global is_selector bool
 	global left_type Type
-	pub left Expr
-	pub index Expr
+	global left Expr
+	global index Expr
 	pub pos token.Pos
 }
 
@@ -354,7 +354,7 @@ pub struct MapInit {
 	global key_type Type
 	global val_type Type
 	global keys []Expr
-	pub vals []Expr
+	global vals []Expr
 	global val_types []Type
 	pub pos token.Pos
 }
@@ -368,7 +368,7 @@ pub struct ParExpr {
 pub struct PrefixExpr {
 	global typ Type
 	pub op token.Token
-	pub right Expr
+	global right Expr
 	pub pos token.Pos
 }
 
@@ -380,7 +380,7 @@ pub struct RangeExpr {
 
 pub struct SelectorExpr {
 	global expr_type Type
-	pub expr Expr
+	global expr Expr
 	pub field_name string
 	pub pos token.Pos
 }
@@ -394,7 +394,7 @@ pub struct StringLiteral {
 pub struct StringInterLiteral {
 	pub vals []string
 	global exprs []Expr
-	pub expr_types []Type
+	global expr_types []Type
 	pub pos token.Pos
 }
 
@@ -418,7 +418,7 @@ pub struct TmpVar {}
 
 pub struct TypeOf {
 	global typ Type
-	pub expr Expr
+	global expr Expr
 	pub pos token.Pos
 }
 
@@ -448,5 +448,5 @@ pub struct File {
 	pub lang Language
 	pub pkg_name string // Full package name
 	pub imports []Import
-	pub stmts []Stmt
+	global stmts []Stmt
 }

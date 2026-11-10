@@ -10,7 +10,7 @@ import bait.token
 
 struct Gen {
 	pref preference.Prefs
-	table ast.Table
+	mut table &ast.Table
 	mut path string
 	mut pkg string
 	mut type_defs_out strings.Builder
@@ -28,13 +28,14 @@ struct Gen {
 	mut is_for_loop_head bool
 	mut is_lhs_assign bool
 	mut is_array_map_set bool
+	mut is_for_in_val bool
 	// Cached comptime variables
 	mut baitexe string
 	mut baitdir string
 	mut baithash string
 }
 
-pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
+pub fun gen(files []ast.File, table &ast.Table, pref preference.Prefs) string {
 	mut g := Gen{
 		pref = pref
 		table = table
@@ -216,7 +217,7 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 }
 
 fun js_name(n string) string {
-	return n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_')
+	return n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_').replace('&', 'ptr_')
 }
 
 fun js_esc(n string) string {

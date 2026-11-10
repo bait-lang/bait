@@ -79,10 +79,11 @@ fun (mut c Checker) infix_expr(mut node ast.InfixExpr) ast.Type {
 }
 
 // x is Variant
-fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
+fun (mut c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 	mut right := node.right as ast.Ident
 	if right.pkg == "" and c.pkg != 'main' and c.pkg != "builtin" {
 		right.pkg = c.pkg
+		node.right = right
 	}
 	node.right_type = c.table.get_idx(right.full_name())
 

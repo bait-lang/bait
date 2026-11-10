@@ -27,14 +27,14 @@ pub struct Parser {
 	mut expr_pkg string
 	mut is_for_init bool
 	mut is_struct_possible bool
-	pub mut table ast.Table
+	pub mut table &ast.Table
 	pub mut sema_ctx &context.SemanticContext
 	pub mut lexer lexer.Lexer
 	pub mut infos []errors.Message
 	pub mut warnings []errors.Message
 }
 
-pub fun new(table ast.Table, sema_ctx &context.SemanticContext, pref preference.Prefs) Parser {
+pub fun new(table &ast.Table, sema_ctx &context.SemanticContext, pref preference.Prefs) Parser {
 	return Parser{
 		table = table
 		sema_ctx = sema_ctx

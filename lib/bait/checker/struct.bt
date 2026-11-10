@@ -63,7 +63,7 @@ fun (mut c Checker) struct_decl(node ast.StructDecl) {
 
 // Resolves the generic types of the current generic fun instantiation in `typ`.
 // Instances of generic structs are registered with their concrete types, so the generators can emit them.
-fun (c Checker) concrete_type(typ ast.Type) ast.Type {
+fun (mut c Checker) concrete_type(typ ast.Type) ast.Type {
 	sym := c.table.get_sym(typ)
 	if sym.kind == .generic and c.cur_concrete_types.length > 0 {
 		i := c.cur_fun.generic_names.index(sym.mix_name)
@@ -129,7 +129,7 @@ fun (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 	return node.typ
 }
 
-fun (c Checker) check_init_field_values(init ast.StructInit, info ast.StructInfo) {
+fun (mut c Checker) check_init_field_values(init ast.StructInit, info ast.StructInfo) {
 	for def_field in info.fields {
 		// Field requires initialization if ...
 		// ... reference

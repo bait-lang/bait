@@ -11,7 +11,7 @@ const FIELD_ACCESS_KINDS := [ast.TypeKind.struct_, .interface_, .array, .string,
 fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
 	expected_save := c.expected_type
 	t := match expr {
-		ast.AnonFun { c.anon_fun(expr) }
+		ast.AnonFun { c.anon_fun(mut expr) }
 		ast.ArrayInit { c.array_init(mut expr) }
 		ast.AsCast { c.as_cast(mut expr) }
 		ast.BlankIdent { c.blank_ident(expr) }
@@ -28,9 +28,9 @@ fun (mut c Checker) expr(mut expr ast.Expr) ast.Type {
 		ast.InfixExpr { c.infix_expr(mut expr) }
 		ast.IntegerLiteral { c.integer_literal(mut expr) }
 		ast.MapInit { c.map_init(mut expr) }
-		ast.ParExpr { c.par_expr(expr) }
+		ast.ParExpr { c.par_expr(mut expr) }
 		ast.PrefixExpr { c.prefix_expr(mut expr) }
-		ast.RangeExpr { c.range_expr(expr) }
+		ast.RangeExpr { c.range_expr(mut expr) }
 		ast.SelectorExpr { c.selector_expr(mut expr) }
 		ast.StringLiteral { c.string_literal(expr) }
 		ast.StringInterLiteral { c.string_inter_literal(mut expr) }
@@ -215,6 +215,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		// Resolve type (hoisting)
 		if obj.typ == ast.VOID_TYPE {
 			obj.typ = c.expr(obj.expr)
+			c.update_in_scope(node.name, node.pkg, obj)
 		}
 
 		// Always prefix with package
@@ -282,7 +283,7 @@ fun (mut c Checker) map_init(mut node ast.MapInit) ast.Type {
 	return node.typ
 }
 
-fun (mut c Checker) par_expr(node ast.ParExpr) ast.Type {
+fun (mut c Checker) par_expr(mut node ast.ParExpr) ast.Type {
 	return c.expr(node.expr)
 }
 
@@ -339,6 +340,7 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 	if node.expr is ast.IndexExpr {
 		mut expr := node.expr as ast.IndexExpr
 		expr.is_selector = true
+		node.expr = expr
 	}
 
 	node.expr_type = c.expr(node.expr)

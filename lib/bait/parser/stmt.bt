@@ -150,7 +150,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	if ffi.lang != .bait {
 		typ := p.parse_type()!
 
-		ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
+		mut ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
 		ffi_scope.register(name, context.ScopeObject{
 			kind = .constant
 			pkg = ffi.pkg
@@ -294,8 +294,8 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 		name += p.check_name()!
 	}
 
-	// TODO investigate why registration of the sym after loop with methods as struct field does not work
-	mut tsym := ast.TypeSymbol{
+	// Register before parsing the methods, as they need the type
+	tsym := ast.TypeSymbol{
 		kind = .interface_
 		mix_name = name
 		is_pub = is_pub
@@ -328,7 +328,6 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 		if p.tok == .lpar {
 			m := p.interface_method(fname, typ)!
 			methods.push(m)
-			tsym.methods.push(m)
 			continue
 		}
 
@@ -342,9 +341,13 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 	}
 	p.next()
 
-	tsym.info = ast.StructInfo {
+	// Store methods and fields in the registered symbol
+	mut sym := p.table.get_sym(typ)
+	sym.methods.push_many(methods)
+	sym.info = ast.StructInfo{
 		fields = fields
 	}
+	p.table.type_symbols[typ.idx()] = sym
 
 	return ast.InterfaceDecl{
 		lang = lang

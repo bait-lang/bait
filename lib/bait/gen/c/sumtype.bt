@@ -50,7 +50,7 @@ fun (mut g Gen) raw_sum_expr(expr ast.Expr) string {
 	return g.expr_string(expr)
 }
 
-fun (g Gen) is_variant_of(typ ast.Type, sum ast.Type) bool {
+fun (mut g Gen) is_variant_of(typ ast.Type, sum ast.Type) bool {
 	sym := g.concrete_sym(sum)
 	if sum.get_nr_amp() > 0 or sym.kind != .sum_type {
 		return false

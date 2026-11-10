@@ -67,7 +67,7 @@ fun (mut c Checker) index_expr(mut node ast.IndexExpr) ast.Type {
 	return node.left_type
 }
 
-fun (mut c Checker) range_expr(node ast.RangeExpr) ast.Type {
+fun (mut c Checker) range_expr(mut node ast.RangeExpr) ast.Type {
 	if not c.is_index {
 		c.error("range expression is only allowed for indexing", node.pos)
 		return ast.ERROR_TYPE

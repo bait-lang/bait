@@ -59,6 +59,8 @@ All notable changes are documented in this file.
 - Fix rebinding pointer variables
 - Fix `static` variables inside anonymous functions
 - Fix default values of by-value struct fields
+- Fix zero values of array and map struct fields
+- Reading a missing map key inserts the default value, like in JS
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`
@@ -67,6 +69,8 @@ All notable changes are documented in this file.
 - Truncate narrowing integer casts
 - Use `0n` as default value of `i64` and `u64`
 - Emit `i64` and `u64` literals as BigInt
+- Structs have value semantics: they are copied on assignment, in struct, array and map inits, when pushed and when returned. Arrays and maps inside a copied struct are copied too
+- Fix references to numbers, strings, pointers and other non-object values (`&n`, `*ptr`)
 
 ### Performance
 - gen: Improve Performance by optimizing reserved keyword lookup (~5x for self compile)

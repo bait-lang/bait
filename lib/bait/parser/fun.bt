@@ -87,12 +87,13 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 
 	// Register method or function
 	if is_method {
-		sym := p.table.get_sym(params[0].typ)
+		mut sym := p.table.get_sym(params[0].typ)
 		// TODO move this error into checker
 		if lang == .bait and sym.has_method(name) {
 			return error('Method "${name}" already exists on type "${sym.mix_name}"')
 		}
 		sym.methods.push(node)
+		p.table.type_symbols[params[0].typ.idx()] = sym
 	} else {
 		mut param_types := []ast.Type
 		for param in params {
@@ -114,7 +115,7 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 				key = key
 			})
 		} else {
-			ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
+			mut ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
 			ffi_scope.register(name, context.ScopeObject{
 				kind = .function
 				is_pub = true

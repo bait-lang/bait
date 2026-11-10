@@ -1,0 +1,6 @@
+tests/out/error/mutability/reference.in.bt:19:2 warning: call to `mut` method `push` through immutable `f`
+tests/out/error/mutability/reference.in.bt:20:2 warning: assignment through immutable `f`
+tests/out/error/mutability/reference.in.bt:21:11 warning: `mut` argument through immutable `f`
+tests/out/error/mutability/reference.in.bt:22:2 warning: call to `mut` method `push` through immutable `b`
+tests/out/error/mutability/reference.in.bt:23:2 warning: assignment through immutable `a`
+tests/out/error/mutability/reference.in.bt:27:3 warning: assignment through immutable field `Foo.m`

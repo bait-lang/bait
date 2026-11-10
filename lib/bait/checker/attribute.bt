@@ -26,7 +26,7 @@ const STRUCT_FIELD_ATTRS := map{
 	'required': AttrValue.none
 }
 
-fun (c Checker) check_attribute(attr ast.Attribute, known_list map[string]AttrValue) bool {
+fun (mut c Checker) check_attribute(attr ast.Attribute, known_list map[string]AttrValue) bool {
 	// Check attribute is implemented
 	if not known_list.contains(attr.name) {
 		c.warn('unknown attribute "${attr.name}"', attr.pos)
@@ -47,7 +47,7 @@ fun (c Checker) check_attribute(attr ast.Attribute, known_list map[string]AttrVa
 	return true
 }
 
-fun (c Checker) check_fun_attrs(mut node ast.FunDecl){
+fun (mut c Checker) check_fun_attrs(mut node ast.FunDecl){
 	for attr in node.attrs {
 		if not c.check_attribute(attr, FUN_ATTRS) {
 			continue
@@ -62,7 +62,7 @@ fun (c Checker) check_fun_attrs(mut node ast.FunDecl){
 	}
 }
 
-fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
+fun (mut c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 	if not node.is_method {
 		c.warn('operator overloading can only be used on methods', attr.pos)
 		return
@@ -80,7 +80,7 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 	}
 
 	// Check for duplicate overload
-	rec_sym := c.table.get_sym(node.params[0].typ)
+	mut rec_sym := c.table.get_sym(node.params[0].typ)
 	if rec_sym.overloads.contains(attr.value) {
 		// TODO print positions of all overloads
 		c.error('"${attr.value}" was overloaded twice for type "${rec_sym.mix_name}"', attr.pos)
@@ -94,9 +94,10 @@ fun (c Checker) attr_overload(node ast.FunDecl, attr ast.Attribute) {
 	} else if attr.value == '==' {
 		rec_sym.overloads['!='] = node
 	}
+	c.table.type_symbols[node.params[0].typ.idx()] = rec_sym
 }
 
-fun (c Checker) attr_export(attr ast.Attribute) {
+fun (mut c Checker) attr_export(attr ast.Attribute) {
 	// TODO REDEF handle this error like fun redefinition and show all places where the name is used
 	if c.export_names.contains(attr.value) {
 		c.error('@export name "${attr.value}" is already used', attr.pos)
@@ -105,7 +106,7 @@ fun (c Checker) attr_export(attr ast.Attribute) {
 	c.export_names.push(attr.value)
 }
 
-fun (c Checker) check_fun_attrs_on_call(call ast.CallExpr, attrs []ast.Attribute) {
+fun (mut c Checker) check_fun_attrs_on_call(call ast.CallExpr, attrs []ast.Attribute) {
 	if attrs.length == 0 {
 		return
 	}
@@ -140,7 +141,7 @@ fun (c Checker) check_fun_attrs_on_call(call ast.CallExpr, attrs []ast.Attribute
 	}
 }
 
-fun (c Checker) check_struct_field_attrs(node ast.StructDecl){
+fun (mut c Checker) check_struct_field_attrs(node ast.StructDecl){
 	for field in node.fields {
 		for attr in field.attrs {
 			if not c.check_attribute(attr, STRUCT_FIELD_ATTRS) {

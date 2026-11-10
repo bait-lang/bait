@@ -5,9 +5,9 @@ package context
 import bait.ast
 
 pub struct Scope {
-	pub parent &Scope
-	pub objects map[string]ScopeObject
-	pub redefined_syms []string
+	pub mut parent &Scope
+	pub mut objects map[string]ScopeObject
+	pub mut redefined_syms []string
 	pub is_local bool // Inside a function, not a file or package scope
 	global is_closure bool // Outermost scope of an anonymous function
 }
@@ -19,7 +19,7 @@ pub struct ScopeObject{
 	pub mut is_pub bool
 	pub mut is_mut bool
 	pub mut pkg string // TODO SCOPES move this into Scope (requires multi return)
-	pub mut expr ast.Expr := ast.Void{} // const / static: resolve type on use
+	global expr ast.Expr := ast.Void{} // const / static: resolve type on use
 
 	// Only for functions (Note: will be cleaned up in the refactor to use sumtypes)
 	pub noreturn bool
@@ -47,12 +47,12 @@ const UNKNOWN_OBJECT := ScopeObject{
 }
 
 // Register an object in the selected scope
-pub fun (s Scope) register(name string, obj ScopeObject) {
+pub fun (mut s Scope) register(name string, obj ScopeObject) {
 	s.objects[name] = obj
 }
 
 // Register an object but error for duplicates
-pub fun (s Scope) register_unique(name string, obj ScopeObject) {
+pub fun (mut s Scope) register_unique(name string, obj ScopeObject) {
 	if s.is_known(name) {
 		s.redefined_syms.push(name)
 		return
@@ -76,6 +76,17 @@ pub fun (s Scope) get_parent(name string) ScopeObject {
 		return s.parent.get_parent(name)
 	}
 	return UNKNOWN_OBJECT
+}
+
+// Replace the object `name` in the nearest scope that contains it
+pub fun (mut s Scope) update_parent(name string, obj ScopeObject) {
+	if s.objects.contains(name) {
+		s.objects[name] = obj
+		return
+	}
+	if s.parent != 0 as Scope {
+		s.parent.update_parent(name, obj)
+	}
 }
 
 // Whether `name` is a local of a function enclosing the anonymous function of this scope

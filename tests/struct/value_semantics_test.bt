@@ -1,0 +1,150 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+struct Point {
+	mut x i32
+}
+
+struct Line {
+	mut a Point
+	mut b Point
+}
+
+const ORIGIN := Point{}
+
+fun (p Point) moved() i32 {
+	mut q := p
+	q.x += 10
+	return q.x
+}
+
+fun identity(p Point) Point {
+	return p
+}
+
+fun test_assign_copies() {
+	a := Point{
+		x = 1
+	}
+	mut b := a
+	b.x = 2
+	assert a.x == 1
+
+	b = a
+	b.x = 3
+	assert a.x == 1
+}
+
+fun test_const_copies() {
+	mut p := ORIGIN
+	p.x = 1
+	assert ORIGIN.x == 0
+}
+
+fun test_field_copies() {
+	mut l := Line{}
+	mut p := l.a
+	p.x = 5
+	assert l.a.x == 0
+
+	l.b = p
+	p.x = 6
+	assert l.b.x == 5
+
+	mut l2 := l
+	l2.b.x = 7
+	assert l.b.x == 5
+}
+
+fun test_struct_init_copies() {
+	mut p := Point{
+		x = 3
+	}
+	l := Line{
+		a = p
+	}
+	p.x = 4
+	assert l.a.x == 3
+}
+
+fun test_array_elements_copy() {
+	mut p := Point{
+		x = 1
+	}
+	mut arr := [p]
+	p.x = 2
+	assert arr[0].x == 1
+
+	mut q := arr[0]
+	q.x = 9
+	assert arr[0].x == 1
+
+	arr.push(q)
+	q.x = 10
+	assert arr[1].x == 9
+
+	arr[0] = q
+	q.x = 11
+	assert arr[0].x == 10
+}
+
+fun test_map_values_copy() {
+	mut p := Point{
+		x = 1
+	}
+	mut m := map[string]Point
+	m['a'] = p
+	p.x = 2
+	assert m['a'].x == 1
+
+	m['b'] = p
+	p.x = 3
+	assert m['b'].x == 2
+}
+
+fun test_receiver_and_return_copy() {
+	a := Point{
+		x = 1
+	}
+	assert a.moved() == 11
+	assert a.x == 1
+
+	mut b := identity(a)
+	b.x = 2
+	assert a.x == 1
+}
+
+fun test_deref_copies() {
+	mut a := Point{
+		x = 1
+	}
+	r := &a
+	mut c := *r
+	c.x = 3
+	assert a.x == 1
+}
+
+struct Holder {
+	mut nums []i32
+	mut refs []&Point
+	mut m map[string]i32
+}
+
+fun test_containers_in_struct_copy() {
+	mut p := Point{}
+	mut a := Holder{
+		nums = []i32
+		refs = [&p]
+		m = map[string]i32
+	}
+
+	mut b := a
+	b.nums.push(1)
+	b.m['k'] = 1
+	assert a.nums.length == 0
+	assert a.m.length == 0
+
+	// References are still shared
+	b.refs[0].x = 4
+	assert p.x == 4
+}
