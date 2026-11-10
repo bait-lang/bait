@@ -4,7 +4,7 @@ package context
 
 // Information shared between parser and checker
 pub struct SemanticContext {
-	pub mut scopes map[string]&Scope // Package and FFI scopes
+	global scopes map[string]&Scope // Package and FFI scopes
 }
 
 // Get or add scope without parent

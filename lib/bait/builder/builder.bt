@@ -56,7 +56,7 @@ fun (b Builder) collect_user_files(path string) ![]string {
 	return b.bait_files_in_dir(path)!
 }
 
-fun (b Builder) parse_file(path string, pkg string) ast.File {
+fun (mut b Builder) parse_file(path string, pkg string) ast.File {
 	text := os.read_file(path)
 	b.parser.init(text, path, pkg)
 	return b.parser.parse()

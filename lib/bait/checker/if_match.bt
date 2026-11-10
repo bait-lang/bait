@@ -47,7 +47,7 @@ fun (mut c Checker) if_match(mut node ast.IfMatch) ast.Type {
 
 	mut branch_exprs := []string
 	mut nr_branches_return := 0
-	for i, branch in node.branches {
+	for i, mut branch in node.branches {
 		c.open_scope()
 
 		// Condition

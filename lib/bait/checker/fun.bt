@@ -11,7 +11,7 @@ const ARRAY_ELEM_ARG_METHODS := ['push', 'push_many_with_len']
 const ARRAY_CONCAT_METHODS := ['concat', 'push_many']
 const ARRAY_RETURN_ARRAY_METHODS := ['filter', 'reverse', 'slice', 'copy', 'from_js_arr']
 
-fun (mut c Checker) anon_fun(node ast.AnonFun) ast.Type {
+fun (mut c Checker) anon_fun(mut node ast.AnonFun) ast.Type {
 	root_fun_decl := c.cur_fun
 	c.cur_fun = node.decl
 	c.open_scope()
@@ -24,7 +24,7 @@ fun (mut c Checker) anon_fun(node ast.AnonFun) ast.Type {
 }
 
 // Anonymous functions are plain functions, which have no access to the locals around them
-fun (c Checker) check_capture(name string, pkg string, pos token.Pos) {
+fun (mut c Checker) check_capture(name string, pkg string, pos token.Pos) {
 	if pkg.length == 0 and c.scope.is_captured(name) {
 		c.error('anonymous function cannot capture local `${name}`', pos)
 	}
@@ -94,7 +94,7 @@ fun (mut c Checker) fun_instance(mut node ast.FunDecl) {
 	}
 }
 
-fun (c Checker) fun_params(params []ast.Param){
+fun (mut c Checker) fun_params(params []ast.Param){
 	for p in params {
 		// Name shadowing
 		c.scope.expect_unknown(p.name) or {

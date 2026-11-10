@@ -150,7 +150,7 @@ fun (mut p Parser) const_decl() !ast.ConstDecl{
 	if ffi.lang != .bait {
 		typ := p.parse_type()!
 
-		ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
+		mut ffi_scope := p.sema_ctx.obtain_root_scope(ffi.pkg)
 		ffi_scope.register(name, context.ScopeObject{
 			kind = .constant
 			pkg = ffi.pkg

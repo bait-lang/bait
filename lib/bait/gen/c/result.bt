@@ -5,7 +5,7 @@ package c
 import bait.ast
 
 // The name of the result struct with a value of type `value`
-fun (g Gen) result_name(value ast.Type) string {
+fun (mut g Gen) result_name(value ast.Type) string {
 	return c_esc('Result[' + g.concrete_sym(value).mix_name + ']')
 }
 

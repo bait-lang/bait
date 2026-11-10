@@ -377,7 +377,7 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 }
 
 // Whether `typ` is stored by value and has fields with default values, directly or nested
-fun (g Gen) has_field_defaults(typ ast.Type) bool {
+fun (mut g Gen) has_field_defaults(typ ast.Type) bool {
 	if typ.get_nr_amp() > 0 {
 		return false
 	}
@@ -395,7 +395,7 @@ fun (g Gen) has_field_defaults(typ ast.Type) bool {
 	return false
 }
 
-fun (g Gen) zero_init(typ ast.Type) string {
+fun (mut g Gen) zero_init(typ ast.Type) string {
 	if typ.get_nr_amp() > 0 {
 		return '0'
 	}

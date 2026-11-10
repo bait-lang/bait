@@ -10,7 +10,7 @@ import bait.token
 
 struct Gen {
 	pref preference.Prefs
-	table ast.Table
+	mut table ast.Table
 	mut path string
 	mut pkg string
 	mut type_defs_out strings.Builder

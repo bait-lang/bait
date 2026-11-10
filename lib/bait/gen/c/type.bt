@@ -4,7 +4,7 @@ package c
 
 import bait.ast
 
-fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
+fun (mut g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 	return g.table.get_sym(g.concrete_type(typ))
 }
 

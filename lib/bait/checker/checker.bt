@@ -10,8 +10,8 @@ import bait.token
 
 pub struct Checker{
 	prefs preference.Prefs
-	table ast.Table
-	sema_ctx &context.SemanticContext
+	mut table ast.Table
+	mut sema_ctx &context.SemanticContext
 	pub mut gen_ctx &context.GenContext
 	mut files []&ast.File
 	mut file ast.File
@@ -45,7 +45,7 @@ pub fun (mut c Checker) check_files(mut files []ast.File) {
 	c.files = files
 
 	for mut f in files {
-		c.check(f)
+		c.check(mut f)
 
 		f.infos = c.infos
 		f.warnings = c.warnings
@@ -108,7 +108,7 @@ fun (mut c Checker) change_file(file ast.File) {
 	}
 }
 
-fun (mut c Checker) check(file ast.File) {
+fun (mut c Checker) check(mut file ast.File) {
 	c.change_file(file)
 
 	if c.pkg == 'main' {
@@ -162,7 +162,7 @@ fun (c Checker) find_in_scope(name string, pkg string) context.ScopeObject {
 }
 
 // Store a modified object in the scope it was found in by `find_in_scope`
-fun (c Checker) update_in_scope(name string, pkg string, obj context.ScopeObject) {
+fun (mut c Checker) update_in_scope(name string, pkg string, obj context.ScopeObject) {
 	if pkg.length > 0 {
 		c.sema_ctx.scopes[pkg].update_parent(name, obj)
 		return
@@ -170,7 +170,7 @@ fun (c Checker) update_in_scope(name string, pkg string, obj context.ScopeObject
 	c.scope.update_parent(name, obj)
 }
 
-fun (c Checker) info(msg string, pos token.Pos){
+fun (mut c Checker) info(msg string, pos token.Pos){
 	c.infos.push(errors.Message{
 		kind = .info
 		path = c.path
@@ -180,7 +180,7 @@ fun (c Checker) info(msg string, pos token.Pos){
 	})
 }
 
-fun (c Checker) warn(msg string, pos token.Pos){
+fun (mut c Checker) warn(msg string, pos token.Pos){
 	c.warnings.push(errors.Message{
 		kind = .warning
 		path = c.path
@@ -190,7 +190,7 @@ fun (c Checker) warn(msg string, pos token.Pos){
 	})
 }
 
-fun (c Checker) error(msg string, pos token.Pos){
+fun (mut c Checker) error(msg string, pos token.Pos){
 	c.errors.push(errors.Message{
 		kind = .error
 		path = c.path
@@ -200,7 +200,7 @@ fun (c Checker) error(msg string, pos token.Pos){
 	})
 }
 
-fun (c Checker) generic_error(msg string){
+fun (mut c Checker) generic_error(msg string){
 	c.errors.push(errors.Message{
 		kind = .error
 		msg = msg

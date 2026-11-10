@@ -9,7 +9,7 @@ import bait.errors
 
 struct Gen {
 	pref preference.Prefs
-	table ast.Table
+	mut table ast.Table
 	mut path string
 	mut pkg string
 	mut main_inits_out strings.Builder
@@ -93,7 +93,7 @@ pub fun gen(files []ast.File, table ast.Table, pref preference.Prefs) string {
 	return g.headers() + g.result_defs_out.str() + g.type_defs_out.str() + g.sum_impls_out.str() + g.fun_decls_out.str() + g.type_impls_out.str() + g.auto_funs_out.str() + g.globals_out.str() + g.anon_funs_out.str() + '\n' + g.out.str()
 }
 
-fun (g Gen) process_imports(imports []ast.Import) {
+fun (mut g Gen) process_imports(imports []ast.Import) {
 	for imp in imports {
 		// TODO handle alias clash
 		if imp.lang == .bait or g.foreign_imports.contains(imp.name) {

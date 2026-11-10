@@ -45,7 +45,7 @@ fun (mut c Checker) return_stmt(mut node ast.ReturnStmt) {
 }
 
 // Check all statements in a block where the last one should return a value
-fun (mut c Checker) stmts_with_return(stmts []ast.Stmt, expected ast.Type) ast.Type {
+fun (mut c Checker) stmts_with_return(mut stmts []ast.Stmt, expected ast.Type) ast.Type {
 	for i := 0; i < stmts.length - 1; i += 1 {
 		c.stmt(mut stmts[i])
 	}
