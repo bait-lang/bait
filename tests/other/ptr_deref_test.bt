@@ -71,3 +71,30 @@ fun test_pointer_str() {
 	assert ptr.str() == p.str()
 	assert '${ptr}' == '${p}'
 }
+
+fun test_number_reference() {
+	mut n := 1
+	r := &n
+	n = 5
+	assert *r == 5
+}
+
+fun test_pointer_to_pointer_deref() {
+	n := 3
+	nptr := &n
+	nptr2 := &nptr
+	assert **nptr2 == 3
+}
+
+fun set_x(mut p &Point, x i32) {
+	p.x = x
+}
+
+fun test_reference_param() {
+	mut a := Point{
+		x = 1
+	}
+	mut r := &a
+	set_x(mut r, 2)
+	assert a.x == 2
+}

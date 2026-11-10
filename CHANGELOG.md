@@ -67,6 +67,8 @@ All notable changes are documented in this file.
 - Truncate narrowing integer casts
 - Use `0n` as default value of `i64` and `u64`
 - Emit `i64` and `u64` literals as BigInt
+- Structs have value semantics: they are copied on assignment, in struct, array and map inits, when pushed and when returned
+- Fix references to numbers, strings, pointers and other non-object values (`&n`, `*ptr`)
 
 ### Performance
 - gen: Improve Performance by optimizing reserved keyword lookup (~5x for self compile)

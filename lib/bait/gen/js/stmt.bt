@@ -64,6 +64,11 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 
 fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 	g.save_stmt_offset()
+
+	// The value variable of `for x in arr` refers to the element
+	copy := not g.is_for_in_val
+	g.is_for_in_val = false
+
 	if node.op == .decl_assign {
 		left := node.left as ast.Ident
 		if left.is_mut {
@@ -92,7 +97,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 
 	if g.is_array_map_set {
 		g.is_array_map_set = false
-		g.expr(node.right)
+		g.assign_right(node, copy)
 		g.writeln(')')
 		return
 	}
@@ -100,9 +105,17 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 	g.write(' ')
 	g.write(node.op.js_repr())
 	g.write(' ')
-	g.expr(node.right)
+	g.assign_right(node, copy)
 	if not g.is_for_loop_head {
 		g.writeln('')
+	}
+}
+
+fun (mut g Gen) assign_right(node ast.AssignStmt, copy bool) {
+	if copy and (node.op == .assign or node.op == .decl_assign) {
+		g.expr_value(node.right, node.right_type)
+	} else {
+		g.expr(node.right)
 	}
 }
 
@@ -193,6 +206,7 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 	container := g.expr_string(node.expr)
 	g.writeln('for (let ${i} = 0; ${i} < ${container}.length; ${i}++) {')
 	val_name := js_esc(node.valvar.name)
+	g.is_for_in_val = true
 	g.stmts(node.stmts)
 	g.writeln('}')
 }
@@ -205,6 +219,7 @@ fun (mut g Gen) for_in_map(node ast.ForInLoop){
 	idxvar := g.expr_string(node.idxvar)
 	g.writeln('for (let ${i} = 0; ${i} < ${keys_var}.length; ${i}++) {')
 	g.writeln('\tconst ${idxvar} = Array_get(${keys_var}, ${i})')
+	g.is_for_in_val = true
 	g.stmts(node.stmts)
 	g.writeln('}')
 }
@@ -230,7 +245,7 @@ fun (mut g Gen) return_stmt(node ast.ReturnStmt){
 	g.write('return')
 	if not (node.expr is ast.InvalidExpr) {
 		g.write(" ")
-		g.expr(node.expr)
+		g.expr_value(node.expr, node.typ)
 	}
 	g.writeln('')
 }

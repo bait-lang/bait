@@ -1,0 +1,138 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package js
+
+import bait.ast
+
+// Value and reference semantics
+//
+// Structs are JS objects but have value semantics: whenever an existing struct value
+// (variable, field, element, dereference, ...) is stored somewhere else, it is copied
+// with its generated `$clone()` method. Fresh values (struct inits, calls) are not copied.
+//
+// References to structs, arrays and maps are the JS object itself.
+// References to all other types (numbers, strings, pointers, sum types, ...) are boxes
+// with a getter and setter for the referenced location: `{ get $v() {...}, set $v($n) {...} }`.
+
+// resolve_type replaces a generic type with its current concrete type
+fun (g Gen) resolve_type(typ ast.Type) ast.Type {
+	sym := g.table.get_sym(typ)
+	if sym.kind == .generic and g.cur_concrete_types.contains(sym.mix_name) {
+		conc := g.cur_concrete_types[sym.mix_name]
+		return conc.set_nr_amp(conc.get_nr_amp() + typ.get_nr_amp())
+	}
+	return typ
+}
+
+// is_value_struct reports whether values of `typ` have to be copied when stored
+fun (g Gen) is_value_struct(typ ast.Type) bool {
+	t := g.resolve_type(typ)
+	if t.get_nr_amp() > 0 {
+		return false
+	}
+	sym := g.table.get_final_sym(g.table.get_sym(t))
+	if sym.kind != .struct_ and sym.kind != .generic_inst {
+		return false
+	}
+	// Arrays and maps are shared containers
+	return not (sym.pkg == 'builtin' and (sym.mix_name == 'Array' or sym.mix_name == 'Map'))
+}
+
+// is_boxed_ref reports whether a reference to a value of `typ` needs a box
+fun (g Gen) is_boxed_ref(pointee ast.Type) bool {
+	t := g.resolve_type(pointee)
+	if t.get_nr_amp() > 0 {
+		return true
+	}
+	kind := g.table.get_final_sym(g.table.get_sym(t)).kind
+	return not (kind == .struct_ or kind == .generic_inst or kind == .array or kind == .map or kind == .interface_)
+}
+
+// is_fresh_value reports whether `expr` creates a new value that is owned by nobody else
+fun is_fresh_value(expr ast.Expr) bool {
+	return expr is ast.StructInit or expr is ast.CallExpr or expr is ast.ArrayInit or expr is ast.MapInit
+}
+
+// expr_value writes `expr` of type `typ` and copies it if it is a struct stored elsewhere
+fun (mut g Gen) expr_value(expr ast.Expr, typ ast.Type) {
+	if is_fresh_value(expr) or not g.is_value_struct(typ) {
+		g.expr(expr)
+		return
+	}
+
+	is_ident := expr is ast.Ident
+	if is_ident {
+		g.expr(expr)
+		g.write('.$clone()')
+		return
+	}
+
+	g.write('(')
+	g.expr(expr)
+	g.write(').$clone()')
+}
+
+// clone_method writes the `$clone()` method of a struct
+fun (mut g Gen) clone_method(jsname string, fields []ast.StructField) {
+	g.writeln('${jsname}.prototype.$clone = function () {')
+	g.indent += 1
+	g.writeln('const c = Object.assign(Object.create(${jsname}.prototype), this)')
+	for field in fields {
+		if g.is_value_struct(field.typ) {
+			name := field.name
+			g.writeln('if (c.${name}) c.${name} = c.${name}.$clone()')
+		}
+	}
+	g.writeln('return c')
+	g.indent -= 1
+	g.writeln('}')
+}
+
+// ref_expr writes `&expr`, where `pointee` is the type of `expr`
+fun (mut g Gen) ref_expr(expr ast.Expr, pointee ast.Type) {
+	if not g.is_boxed_ref(pointee) {
+		g.expr(expr)
+		return
+	}
+
+	getter := g.expr_string(expr)
+
+	// Immutable variables are JS constants, which cannot be assigned
+	if expr is ast.Ident {
+		ident := expr as ast.Ident
+		if not ident.is_mut {
+			g.write('{ get $v() { return ${getter} } }')
+			return
+		}
+	}
+
+	// The setter has to be generated like the left side of an assignment
+	was_line_empty := g.empty_line
+	start := g.out.length
+	g.is_lhs_assign = true
+	g.expr(expr)
+	g.is_lhs_assign = false
+	if g.is_array_map_set {
+		g.is_array_map_set = false
+		g.write('$n)')
+	} else {
+		g.write(' = $n')
+	}
+	setter := g.cut_back_to(start).trim_space()
+	g.empty_line = was_line_empty
+
+	g.write('{ get $v() { return ${getter} }, set $v($n) { ${setter} } }')
+}
+
+// deref writes the access of the value behind a reference of type `typ`
+// for `levels` dereferences
+fun (mut g Gen) write_deref(typ ast.Type, levels i32) {
+	t := g.resolve_type(typ)
+	mut nr := t.get_nr_amp()
+	for i := 0; i < levels and nr > 0; i += 1 {
+		nr -= 1
+		if g.is_boxed_ref(t.set_nr_amp(nr)) {
+			g.write('.$v')
+		}
+	}
+}

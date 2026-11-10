@@ -68,7 +68,7 @@ fun (mut g Gen) array_init(node ast.ArrayInit) {
 	if node.length_expr is ast.InvalidExpr {
 		g.write('[')
 		for i, expr in node.exprs {
-			g.expr(expr)
+			g.expr_value(expr, node.elem_type)
 			if i < node.exprs.length - 1 {
 				g.write(', ')
 			}
@@ -287,7 +287,7 @@ fun (mut g Gen) map_init(node ast.MapInit) {
 		g.write('[')
 		g.expr_to_string(key, node.key_type)
 		g.write('.str, ')
-		g.expr(node.vals[i])
+		g.expr_value(node.vals[i], node.val_type)
 		g.write(']')
 		if i < node.keys.length - 1 {
 			g.write(', ')
@@ -314,9 +314,24 @@ fun (mut g Gen) prefix_expr(node ast.PrefixExpr){
 		}
 	}
 
-	if node.op != .mul and node.op != .amp {
-		g.write(node.op.js_repr())
+	// Auto (de)referenced method receivers have no type and are handled like JS objects
+	if node.op == .amp {
+		if node.typ.idx() == 0 {
+			g.expr(node.right)
+		} else {
+			g.ref_expr(node.right, node.typ.set_nr_amp(node.typ.get_nr_amp() - 1))
+		}
+		return
 	}
+	if node.op == .mul {
+		g.expr(node.right)
+		if node.typ.idx() != 0 {
+			g.write_deref(node.typ.set_nr_amp(node.typ.get_nr_amp() + 1), 1)
+		}
+		return
+	}
+
+	g.write(node.op.js_repr())
 	if node.right is ast.InfixExpr and (node.right as ast.InfixExpr).op == .key_is {
 		g.write('(')
 		g.expr(node.right)
@@ -328,6 +343,7 @@ fun (mut g Gen) prefix_expr(node ast.PrefixExpr){
 
 fun (mut g Gen) selector_expr(node ast.SelectorExpr) {
 	g.expr(node.expr)
+	g.write_deref(node.expr_type, node.expr_type.get_nr_amp())
 	g.write('.')
 	g.write(node.field_name)
 }
