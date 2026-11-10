@@ -380,7 +380,7 @@ pub struct RangeExpr {
 
 pub struct SelectorExpr {
 	global expr_type Type
-	pub expr Expr
+	global expr Expr
 	pub field_name string
 	pub pos token.Pos
 }

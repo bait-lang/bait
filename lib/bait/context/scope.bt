@@ -78,6 +78,17 @@ pub fun (s Scope) get_parent(name string) ScopeObject {
 	return UNKNOWN_OBJECT
 }
 
+// Replace the object `name` in the nearest scope that contains it
+pub fun (s Scope) update_parent(name string, obj ScopeObject) {
+	if s.objects.contains(name) {
+		s.objects[name] = obj
+		return
+	}
+	if s.parent != 0 as Scope {
+		s.parent.update_parent(name, obj)
+	}
+}
+
 // Whether `name` is a local of a function enclosing the anonymous function of this scope
 pub fun (s Scope) is_captured(name string) bool {
 	mut cur := s

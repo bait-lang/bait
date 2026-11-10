@@ -215,6 +215,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 		// Resolve type (hoisting)
 		if obj.typ == ast.VOID_TYPE {
 			obj.typ = c.expr(obj.expr)
+			c.update_in_scope(node.name, node.pkg, obj)
 		}
 
 		// Always prefix with package
@@ -339,6 +340,7 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 	if node.expr is ast.IndexExpr {
 		mut expr := node.expr as ast.IndexExpr
 		expr.is_selector = true
+		node.expr = expr
 	}
 
 	node.expr_type = c.expr(node.expr)

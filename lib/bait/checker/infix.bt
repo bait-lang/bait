@@ -83,6 +83,7 @@ fun (c Checker) is_sumtype_variant_infix(mut node ast.InfixExpr) ast.Type {
 	mut right := node.right as ast.Ident
 	if right.pkg == "" and c.pkg != 'main' and c.pkg != "builtin" {
 		right.pkg = c.pkg
+		node.right = right
 	}
 	node.right_type = c.table.get_idx(right.full_name())
 

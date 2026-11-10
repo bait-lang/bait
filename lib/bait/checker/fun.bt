@@ -336,6 +336,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		info := final_sym.info as ast.ArrayInfo
 		c.expected_type = info.elem_type
 		arg.typ = c.expr(arg.expr)
+		node.args[0] = arg
 		if not c.check_types(arg.typ, info.elem_type) {
 			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(info.elem_type)} in argument 1', node.pos)
 		}
@@ -346,6 +347,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		mut arg := node.args[0]
 		c.expected_type = left_expr_type
 		arg.typ = c.expr(arg.expr)
+		node.args[0] = arg
 		if not c.check_types(arg.typ, left_expr_type) {
 			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(left_expr_type)} in argument 1', node.pos)
 		}
