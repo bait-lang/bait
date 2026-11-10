@@ -72,15 +72,49 @@ fun (mut g Gen) expr_value(expr ast.Expr, typ ast.Type) {
 	g.write(').$clone()')
 }
 
+// clone_code returns a JS expression that copies `val` of type `typ` as part of a struct copy,
+// or an empty string if it can be shared. Arrays and maps are copied with their elements,
+// so a copied struct never shares them with the original.
+fun (g Gen) clone_code(val string, typ ast.Type, depth i32) string {
+	t := g.resolve_type(typ)
+	if t.get_nr_amp() > 0 {
+		return ''
+	}
+	sym := g.table.get_final_sym(g.table.get_sym(t))
+	if sym.kind == .array {
+		info := sym.info as ast.ArrayInfo
+		x := '$e${depth}'
+		elem := g.clone_code(x, info.elem_type, depth + 1)
+		data := if elem.length == 0 { '[...${val}.data]' } else { '${val}.data.map((${x}) => ${elem})' }
+		return 'new bait_Array({ data: ${data}, length: ${val}.length })'
+	}
+	if sym.kind == .map {
+		info := sym.info as ast.MapInfo
+		x := '$e${depth}'
+		elem := g.clone_code(x, info.val_type, depth + 1)
+		data := if elem.length == 0 {
+			'new Map(${val}.data)'
+		} else {
+			'new Map(Array.from(${val}.data, ([k, ${x}]) => [k, ${elem}]))'
+		}
+		return 'new bait_Map({ data: ${data}, length: ${val}.length })'
+	}
+	if g.is_value_struct(t) {
+		return '${val}.$clone()'
+	}
+	return ''
+}
+
 // clone_method writes the `$clone()` method of a struct
 fun (mut g Gen) clone_method(jsname string, fields []ast.StructField) {
 	g.writeln('${jsname}.prototype.$clone = function () {')
 	g.indent += 1
 	g.writeln('const c = Object.assign(Object.create(${jsname}.prototype), this)')
 	for field in fields {
-		if g.is_value_struct(field.typ) {
-			name := field.name
-			g.writeln('if (c.${name}) c.${name} = c.${name}.$clone()')
+		name := field.name
+		code := g.clone_code('c.${name}', field.typ, 0)
+		if code.length > 0 {
+			g.writeln('if (c.${name}) c.${name} = ${code}')
 		}
 	}
 	g.writeln('return c')
