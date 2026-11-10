@@ -47,6 +47,17 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 		return
 	}
 
+	// `for mut val in arr`: `val` points to the element
+	if g.is_for_in_ref {
+		g.is_for_in_ref = false
+		left := node.left as ast.Ident
+		g.write('${g.typ(node.right_type)}* ${c_esc(left.name)} = &')
+		g.expr(node.right)
+		g.writeln(';')
+		g.ref_vars.push(left.name)
+		return
+	}
+
 	if node.op == .decl_assign {
 		type_str := g.typ(node.right_type)
 		g.write('${type_str} ')
@@ -204,13 +215,22 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 	i := g.expr_string(node.idxvar)
 	container := g.expr_string(node.expr)
 	g.writeln('for (i32 ${i} = 0; ${i} < ${container}.length; ${i}++) {')
-	g.stmts(node.stmts)
+	g.for_in_body(node, sym.kind != .string)
 	if continue_label.length > 0 {
 		g.writeln('${continue_label}: ;')
 		g.pop_loop_continue_label()
 	}
 	g.writeln('}')
 	g.write_label(node.label)
+}
+
+// The body of a for-in loop. Its first statement declares the value variable.
+fun (mut g Gen) for_in_body(node ast.ForInLoop, can_ref bool) {
+	is_ref := node.valvar.is_mut and can_ref
+	g.is_for_in_ref = is_ref
+	old_ref_vars := g.ref_vars.copy()
+	g.stmts(node.stmts)
+	g.ref_vars = old_ref_vars
 }
 
 fun (mut g Gen) for_in_map(node ast.ForInLoop){
@@ -225,7 +245,7 @@ fun (mut g Gen) for_in_map(node ast.ForInLoop){
 	idxvar := g.expr_string(node.idxvar)
 	g.writeln('for (i32 ${i} = 0; ${i} < ${keys_var}.length; ${i}++) {')
 	g.writeln('\tstring ${idxvar} = *(string*)(Array_get(${keys_var}, ${i}));')
-	g.stmts(node.stmts)
+	g.for_in_body(node, true)
 	if continue_label.length > 0 {
 		g.writeln('${continue_label}: ;')
 		g.pop_loop_continue_label()

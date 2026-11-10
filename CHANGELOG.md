@@ -61,6 +61,7 @@ All notable changes are documented in this file.
 - Fix default values of by-value struct fields
 - Fix zero values of array and map struct fields
 - Reading a missing map key inserts the default value, like in JS
+- Pass `mut` parameters by reference and make `for mut` values point to the element
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`
@@ -71,6 +72,7 @@ All notable changes are documented in this file.
 - Emit `i64` and `u64` literals as BigInt
 - Structs have value semantics: they are copied on assignment, in struct, array and map inits, when pushed and when returned. Arrays and maps inside a copied struct are copied too
 - Fix references to numbers, strings, pointers and other non-object values (`&n`, `*ptr`)
+- Pass `mut` parameters by reference and make `for mut` values refer to the element, also for numbers, strings and reassigned structs
 
 ### Performance
 - gen: Improve Performance by optimizing reserved keyword lookup (~5x for self compile)
@@ -100,6 +102,7 @@ All notable changes are documented in this file.
 - gen: do not generate main call in script mode
 - gen: Handle more expressions in failed asserts
 - checker: fix number promotion in function call arguments
+- checker: error for functions with `mut` parameters used as values and for `mut` parameters of anonymous functions, as function types cannot express them yet
 - Generics:
   - fix stale concrete types on shared generic call nodes
   - resolve concrete types of nested generic calls in the correct order

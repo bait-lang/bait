@@ -111,6 +111,22 @@ pub struct Param {
 	pub pos token.Pos
 }
 
+// Whether the parameter is passed by reference: `mut` params that are not pointers already
+pub fun (p Param) is_ref() bool {
+	return p.is_mut and p.typ.get_nr_amp() == 0
+}
+
+// Whether `e` denotes a storage location that can be referenced
+pub fun is_lvalue(e Expr) bool {
+	if e is ParExpr {
+		return is_lvalue(e.expr)
+	}
+	if e is PrefixExpr {
+		return e.op == .mul
+	}
+	return e is Ident or e is SelectorExpr or e is IndexExpr
+}
+
 pub fun (fn FunDecl) is_main() bool {
 	return not fn.is_method and fn.name == 'main'
 }
@@ -248,6 +264,7 @@ pub struct CallArg {
 	global exp_type Type
 	global expr Expr
 	pub is_mut bool
+	global is_ref_param bool // The parameter takes a reference, see `Param.is_ref()`
 }
 
 pub enum OrKind {

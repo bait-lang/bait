@@ -59,7 +59,9 @@ fun (mut g Gen) anon_fun(node ast.AnonFun) {
 		}
 	}
 	g.writeln(') {')
+	old_ref_vars := g.ref_params(node.decl.params, false)
 	g.stmts(node.decl.stmts)
+	g.ref_vars = old_ref_vars
 	g.write('}')
 }
 
@@ -164,6 +166,9 @@ fun (mut g Gen) ident(node ast.Ident) {
 	}
 
 	g.write(js_esc(node.full_name()))
+	if node.pkg.length == 0 and g.ref_vars.contains(node.name) {
+		g.write('.$v')
+	}
 }
 
 fun (mut g Gen) integer_literal(node ast.IntegerLiteral){

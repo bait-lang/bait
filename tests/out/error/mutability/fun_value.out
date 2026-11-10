@@ -1,0 +1,2 @@
+tests/out/error/mutability/fun_value.in.bt:8:7 error: function `inc` with `mut` parameters cannot be used as a value
+tests/out/error/mutability/fun_value.in.bt:10:12 error: anonymous functions cannot have `mut` parameters yet
