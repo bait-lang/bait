@@ -16,7 +16,7 @@ import bait.util.timers
 
 struct Builder {
 	mut prefs preference.Prefs
-	mut parsed_files []&ast.File
+	mut parsed_files []ast.File
 	mut parsed_pkgs []string
 	mut checker checker.Checker
 	mut parser parser.Parser
@@ -177,7 +177,7 @@ pub fun compile(prefs preference.Prefs) i32 {
 	mut looked := []string
 	mut pkg_order := []string
 	order_pkgs(mut pkg_order, root_pkg, deps, mut looked)
-	mut sorted_files := []&ast.File
+	mut sorted_files := []ast.File
 	for pkg in pkg_order {
 		for f in ast_files {
 			if f.pkg_name == pkg {

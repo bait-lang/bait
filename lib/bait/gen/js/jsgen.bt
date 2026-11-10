@@ -217,7 +217,7 @@ fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
 }
 
 fun js_name(n string) string {
-	return n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_')
+	return n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_').replace('&', 'ptr_')
 }
 
 fun js_esc(n string) string {
