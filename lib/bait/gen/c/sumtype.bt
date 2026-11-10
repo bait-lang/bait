@@ -45,7 +45,7 @@ fun (g Gen) unsmartcast_type(expr ast.Expr, typ ast.Type) ast.Type {
 // Write `expr` without applying a smartcast
 fun (mut g Gen) raw_sum_expr(expr ast.Expr) string {
 	if expr is ast.Ident {
-		return c_esc(expr.full_name())
+		return g.ident_name(expr)
 	}
 	return g.expr_string(expr)
 }

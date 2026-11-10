@@ -38,6 +38,8 @@ struct Gen {
 	mut loop_continue_targets []string
 	mut cur_concrete_types map[string]ast.Type
 	mut cur_fun ast.FunDecl
+	mut ref_vars []string // `mut` params and `for mut` values, which are pointers in C
+	mut is_for_in_ref bool // The next declaration is the value of a `for mut` loop
 	mut is_lhs_assign bool
 	mut is_array_map_set bool
 	mut is_for_loop_head bool

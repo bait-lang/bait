@@ -158,7 +158,7 @@ fun (mut g Gen) ident(node ast.Ident) {
 		return
 	}
 
-	name := c_esc(node.full_name())
+	name := g.ident_name(node)
 	if node.smartcast_from != 0 as ast.Type {
 		field := g.sum_field(node.smartcast_from, name, node.smartcast_to)
 		g.write('(*${field})')
@@ -166,6 +166,15 @@ fun (mut g Gen) ident(node ast.Ident) {
 	}
 
 	g.write(name)
+}
+
+// The C name of an ident. Variables that are references in C are dereferenced.
+fun (g Gen) ident_name(node ast.Ident) string {
+	name := c_esc(node.full_name())
+	if node.pkg.length == 0 and g.ref_vars.contains(node.name) {
+		return '(*${name})'
+	}
+	return name
 }
 
 fun (mut g Gen) index_expr(node ast.IndexExpr) {

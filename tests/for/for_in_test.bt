@@ -40,7 +40,44 @@ fun test_mutable_value() {
 	for mut a in arr {
 		a += 1
 	}
-	assert arr == [1, 2, 3]
-	// TODO REFVAL handle `mut a` as reference
-	// assert arr == [2, 4, 6]
+	assert arr == [2, 3, 4]
+}
+
+struct Item {
+	mut n i32
+}
+
+fun test_mutable_value_struct() {
+	mut items := [Item{}, Item{}]
+	for mut it in items {
+		it.n = 1
+	}
+	assert items[1].n == 1
+
+	for mut it in items {
+		it = Item{ n = 5 }
+	}
+	assert items[0].n == 5
+}
+
+fun test_mutable_value_nested() {
+	mut grid := [[1, 2], [3]]
+	for mut row in grid {
+		for mut x in row {
+			x *= 10
+		}
+		row.push(0)
+	}
+	assert grid == [[10, 20, 0], [30, 0]]
+}
+
+fun test_mutable_map_value() {
+	mut m := map[string]i32
+	m['a'] = 1
+	m['b'] = 2
+	for k, mut v in m {
+		v += 1
+	}
+	assert m['a'] == 2
+	assert m['b'] == 3
 }

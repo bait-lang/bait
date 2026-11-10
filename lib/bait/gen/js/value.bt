@@ -128,6 +128,31 @@ fun (mut g Gen) ref_expr(expr ast.Expr, pointee ast.Type) {
 		g.expr(expr)
 		return
 	}
+	g.box_expr(expr)
+}
+
+// box_expr writes a box for the location `expr`
+//
+// `mut` params and `for mut` values are always boxes, so that assigning them
+// changes the original location. Inside the function or loop, the box is unwrapped
+// whenever the variable is used.
+fun (mut g Gen) box_expr(expr ast.Expr) {
+	if expr is ast.Ident {
+		// Pass on an existing box
+		ident := expr as ast.Ident
+		if ident.pkg.length == 0 and g.ref_vars.contains(ident.name) {
+			g.write(js_esc(ident.name))
+			return
+		}
+	}
+
+	if not ast.is_lvalue(expr) {
+		// Temporary values, e.g. results of calls, can only be modified by the callee
+		g.write('{ $v: ')
+		g.expr(expr)
+		g.write(' }')
+		return
+	}
 
 	getter := g.expr_string(expr)
 

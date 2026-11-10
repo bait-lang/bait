@@ -43,7 +43,9 @@ fun (mut g Gen) fun_decl(node ast.FunDecl) {
 	g.write('${name}(')
 	g.fun_params(node.params)
 	g.writeln(') {')
+	old_ref_vars := g.ref_params(node.params, node.is_method)
 	g.stmts(node.stmts)
+	g.ref_vars = old_ref_vars
 	g.writeln('}')
 
 	export_attr := node.attrs.find_attr('export')
@@ -61,6 +63,19 @@ fun (mut g Gen) fun_params(params []ast.Param){
 			g.write(", ")
 		}
 	}
+}
+
+// Set the `mut` params that receive a box as the current ref vars and return the previous ones
+fun (mut g Gen) ref_params(params []ast.Param, is_method bool) []string {
+	old := g.ref_vars
+	g.ref_vars = []string
+	for i, p in params {
+		// Mutable receivers already have a pointer type
+		if p.is_ref() and not (is_method and i == 0) {
+			g.ref_vars.push(p.name)
+		}
+	}
+	return old
 }
 
 fun (mut g Gen) call_expr(node ast.CallExpr) {
@@ -169,8 +184,10 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 
 fun (mut g Gen) call_args(args []ast.CallArg) {
 	for i, a in args {
-		// Builtin `any` parameters store their argument, e.g. `arr.insert(i, val)`
-		if a.exp_type == ast.ANY_TYPE {
+		if a.is_ref_param {
+			g.box_expr(a.expr)
+		} else if a.exp_type == ast.ANY_TYPE {
+			// Builtin `any` parameters store their argument, e.g. `arr.insert(i, val)`
 			g.expr_value(a.expr, a.typ)
 		} else {
 			g.expr(a.expr)

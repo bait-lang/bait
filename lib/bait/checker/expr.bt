@@ -225,6 +225,7 @@ fun (mut c Checker) ident(mut node ast.Ident) ast.Type {
 	}
 
 	c.check_capture(node.name, node.pkg, node.pos)
+	c.check_fun_value(node.full_name(), obj, node.pos)
 
 	// Set mutability for other checks
 	node.is_mut = obj.is_mut

@@ -1,0 +1,11 @@
+fun inc(mut n i32) {
+	n += 1
+}
+
+fun ptr(mut n &i32) {}
+
+fun use_values() {
+	f := inc // err
+	g := ptr
+	h := fun (mut n i32) {} // err
+}
