@@ -361,10 +361,8 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 			g.expr_as(node.fields[init_idx].expr, node.fields[init_idx].typ, field.typ)
 		} else if not (field.expr is ast.InvalidExpr) {
 			g.expr_as(field.expr, field.expr_type, field.typ)
-		} else if g.has_field_defaults(field.typ) {
-			g.struct_init(ast.StructInit{
-				typ = field.typ
-			})
+		} else if g.needs_default_init(field.typ) {
+			g.default_value(field.typ)
 		} else {
 			g.write(g.zero_init(field.typ))
 		}
@@ -376,23 +374,46 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 	g.write('}')
 }
 
-// Whether `typ` is stored by value and has fields with default values, directly or nested
-fun (mut g Gen) has_field_defaults(typ ast.Type) bool {
+// Whether the default value of `typ` is not all zero bytes.
+// This is the case for arrays, maps and by-value structs with such fields or field defaults.
+fun (mut g Gen) needs_default_init(typ ast.Type) bool {
 	if typ.get_nr_amp() > 0 {
 		return false
 	}
 
 	sym := g.table.get_final_sym(g.concrete_sym(typ))
+	if sym.kind == .array or sym.kind == .map {
+		return true
+	}
 	if sym.kind != .struct_ and sym.kind != .generic_inst {
 		return false
 	}
 
 	for field in g.struct_fields(typ) {
-		if not (field.expr is ast.InvalidExpr) or g.has_field_defaults(field.typ) {
+		if not (field.expr is ast.InvalidExpr) or g.needs_default_init(field.typ) {
 			return true
 		}
 	}
 	return false
+}
+
+// Write the default value of a type for which `needs_default_init` is true
+fun (mut g Gen) default_value(typ ast.Type) {
+	sym := g.table.get_final_sym(g.concrete_sym(typ))
+	if sym.kind == .array {
+		info := sym.info as ast.ArrayInfo
+		g.write('new_array(0, 0, sizeof(${g.typ(info.elem_type)}))')
+		return
+	}
+	if sym.kind == .map {
+		info := sym.info as ast.MapInfo
+		g.write('new_map(sizeof(${g.typ(info.val_type)}), 0)')
+		return
+	}
+
+	g.struct_init(ast.StructInit{
+		typ = typ
+	})
 }
 
 fun (mut g Gen) zero_init(typ ast.Type) string {

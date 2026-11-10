@@ -49,7 +49,8 @@ fun map_next_cap(min_cap i32) i32 {
 }
 
 pub fun new_map(val_size i32, min_cap i32) Map {
-	cap := map_next_cap(min_cap)
+	// Empty maps allocate their slots on the first insert
+	cap := if min_cap > 0 { map_next_cap(min_cap) } else { 0 }
 	return Map{
 		hashes = []u32{length = cap}
 		used = []bool{length = cap}

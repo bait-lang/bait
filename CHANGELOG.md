@@ -59,6 +59,7 @@ All notable changes are documented in this file.
 - Fix rebinding pointer variables
 - Fix `static` variables inside anonymous functions
 - Fix default values of by-value struct fields
+- Fix zero values of array and map struct fields
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`

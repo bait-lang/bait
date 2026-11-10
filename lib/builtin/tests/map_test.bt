@@ -22,3 +22,45 @@ fun test_literal_init() {
 	assert m.length == 2
 	assert m['b'] == 'B'
 }
+
+struct Collections {
+	mut list []i32
+	mut strs []string
+	mut nums map[string]i32
+	mut groups map[string][]i32
+}
+
+fun test_zero_value_fields() {
+	mut c := Collections{}
+	c.list.push(1)
+	c.list.push(2)
+	assert c.list == [1, 2]
+
+	c.strs.push('a')
+	assert c.strs == ['a']
+
+	c.nums['x'] = 7
+	assert c.nums['x'] == 7
+
+	c.groups['g'] = [5]
+	assert c.groups['g'] == [5]
+	assert c.groups.length == 1
+}
+
+struct Nested {
+	mut inner Collections
+}
+
+static g_nested := Nested{}
+
+fun (mut n Nested) add(name string, val i32) {
+	n.inner.nums[name] = val
+	n.inner.list.push(val)
+}
+
+fun test_zero_value_nested_fields() {
+	g_nested.add('a', 1)
+	g_nested.add('b', 2)
+	assert g_nested.inner.nums['b'] == 2
+	assert g_nested.inner.list == [1, 2]
+}
