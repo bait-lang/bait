@@ -10,7 +10,7 @@ import bait.token
 
 pub struct Checker{
 	prefs preference.Prefs
-	mut table ast.Table
+	mut table &ast.Table
 	mut sema_ctx &context.SemanticContext
 	pub mut gen_ctx &context.GenContext
 	mut files []&ast.File

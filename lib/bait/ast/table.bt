@@ -10,8 +10,8 @@ pub struct Table {
 	pub mut generic_fun_types map[string][][]Type // Array of concrete types used for each generic fun
 }
 
-pub fun new_table() Table {
-	mut t := Table{}
+pub fun new_table() &Table {
+	mut t := &Table{}
 	t.register_builtins()
 	return t
 }
