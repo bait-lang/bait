@@ -101,7 +101,11 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 				c.error('cannot assign to field of immutable variable `${lident.name}`', node.pos)
 				return
 			}
+		} else {
+			c.warn_immutable_root(left.expr, 'assignment')
 		}
+	} else if node.left is ast.IndexExpr {
+		c.warn_immutable_root(node.left, 'assignment')
 	}
 
 	// Type check

@@ -1,0 +1,28 @@
+struct Foo {
+	mut arr []i32
+	m map[string]i32
+}
+
+struct Bar {
+	mut foo Foo
+}
+
+fun take_mut(mut a []i32) {}
+
+fun ok(mut f Foo) {
+	f.arr.push(1)
+	f.arr[0] = 2
+	take_mut(mut f.arr)
+}
+
+fun warn(f Foo, b Bar, a []i32) {
+	f.arr.push(1)
+	f.arr[0] = 2
+	take_mut(mut f.arr)
+	b.foo.arr.push(1)
+	a[0] = 1
+}
+
+fun warn_field(mut f Foo) {
+	f.m['a'] = 1
+}

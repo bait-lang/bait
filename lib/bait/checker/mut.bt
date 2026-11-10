@@ -27,3 +27,36 @@ fun (c Checker) expect_field_mutable(left ast.SelectorExpr) bool {
 	}
 	return true
 }
+
+// warn_immutable_root warns if `e` mutates (through `.field` or `[index]` chains)
+// a value whose root variable or fields are immutable.
+// These cases only work because of reference semantics and are not enforced yet.
+fun (mut c Checker) warn_immutable_root(e ast.Expr, what string) {
+	if e is ast.Ident {
+		if not e.is_mut {
+			c.warn('${what} through immutable `${e.full_name()}`', e.pos)
+		}
+		return
+	}
+
+	if e is ast.SelectorExpr {
+		sym := c.table.get_sym(e.expr_type)
+		field := sym.find_field(e.field_name, c.table)
+		if field.typ != ast.ERROR_TYPE {
+			if (not field.is_mut or sym.pkg != c.pkg) and not field.is_global {
+				c.warn('${what} through immutable field `${sym.mix_name}.${e.field_name}`', e.pos)
+				return
+			}
+		}
+		c.warn_immutable_root(e.expr, what)
+		return
+	}
+
+	if e is ast.IndexExpr {
+		// Writing through a raw pointer does not mutate the variable itself
+		if e.left_type.get_nr_amp() > 0 {
+			return
+		}
+		c.warn_immutable_root(e.left, what)
+	}
+}
