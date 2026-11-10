@@ -47,6 +47,8 @@ pub fun (mut c Checker) check_files(mut files []ast.File) {
 	for mut f in files {
 		c.check(mut f)
 
+		// `c.file` is a copy of `f`
+		f.generic_funs = c.file.generic_funs
 		f.infos = c.infos
 		f.warnings = c.warnings
 		f.errors = c.errors
