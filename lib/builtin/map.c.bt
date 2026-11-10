@@ -197,6 +197,16 @@ pub fun map_get(m &Map, key string) &void {
 	return m.zero
 }
 
+// Like `map_get`, but a missing key is inserted first. Its value is zeroed and then
+// written by `init`, a C function `void (*)(void*)`, unless that is NULL.
+pub fun map_get_or_init(mut m &Map, key string, init &void) &void {
+	if not map_contains(m, key) {
+		map_set(mut m, key, m.zero)
+		#C.'if (init) { ((void (*)(void*))init)(map_get(m, key)); }'
+	}
+	return map_get(m, key)
+}
+
 pub fun (m Map) keys() []string {
 	return m.order.copy()
 }

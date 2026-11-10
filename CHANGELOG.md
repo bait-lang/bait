@@ -60,6 +60,7 @@ All notable changes are documented in this file.
 - Fix `static` variables inside anonymous functions
 - Fix default values of by-value struct fields
 - Fix zero values of array and map struct fields
+- Reading a missing map key inserts the default value, like in JS
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`

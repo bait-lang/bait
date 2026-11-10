@@ -23,6 +23,28 @@ fun test_literal_init() {
 	assert m['b'] == 'B'
 }
 
+struct Item {
+	mut count i32
+}
+
+fun test_read_missing_key() {
+	mut m := map[string]Item
+	assert m['a'].count == 0
+	assert m.keys() == ['a']
+
+	// Every missing key gets its own default value
+	m['a'].count = 3
+	assert m['b'].count == 0
+	assert m['a'].count == 3
+}
+
+fun test_read_missing_key_keeps_value() {
+	mut m := map[string][]i32
+	m['a'].push(1)
+	m['a'].push(2)
+	assert m['a'].length == 2
+}
+
 struct Collections {
 	mut list []i32
 	mut strs []string
@@ -39,10 +61,11 @@ fun test_zero_value_fields() {
 	c.strs.push('a')
 	assert c.strs == ['a']
 
+	assert c.nums['missing'] == 0
 	c.nums['x'] = 7
 	assert c.nums['x'] == 7
 
-	c.groups['g'] = [5]
+	c.groups['g'].push(5)
 	assert c.groups['g'] == [5]
 	assert c.groups.length == 1
 }
@@ -53,14 +76,27 @@ struct Nested {
 
 static g_nested := Nested{}
 
-fun (mut n Nested) add(name string, val i32) {
-	n.inner.nums[name] = val
-	n.inner.list.push(val)
+fun (mut n Nested) add(name string) {
+	n.inner.groups[name].push(1)
 }
 
 fun test_zero_value_nested_fields() {
-	g_nested.add('a', 1)
-	g_nested.add('b', 2)
-	assert g_nested.inner.nums['b'] == 2
-	assert g_nested.inner.list == [1, 2]
+	g_nested.add('a')
+	g_nested.add('a')
+	assert g_nested.inner.groups['a'] == [1, 1]
+	assert g_nested.inner.list.length == 0
+}
+
+struct WithDefaults {
+	mut n i32 := 5
+	mut list []i32
+}
+
+fun test_read_missing_key_struct_defaults() {
+	mut m := map[string]WithDefaults
+	assert m['a'].n == 5
+	m['a'].list.push(1)
+	m['b'].list.push(2)
+	assert m['a'].list == [1]
+	assert m['b'].list == [2]
 }

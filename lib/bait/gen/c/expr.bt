@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 package c
 
+import strings
 import bait.ast
 import bait.errors
 import bait.util.escape
@@ -180,11 +181,13 @@ fun (mut g Gen) index_expr(node ast.IndexExpr) {
 			g.expr(node.index)
 			g.write(', (${val_type_str}[])')
 		} else {
-			g.write('(*(${val_type_str}*)(map_get(&')
+			// Like JS, reading a missing key inserts the default value
+			init_fun := g.map_init_fun(info.val_type)
+			g.write('(*(${val_type_str}*)(map_get_or_init(&')
 			g.expr(node.left)
 			g.write(', ')
 			g.expr(node.index)
-			g.write(')))')
+			g.write(', ${init_fun})))')
 		}
 		return
 	}
@@ -414,6 +417,38 @@ fun (mut g Gen) default_value(typ ast.Type) {
 	g.struct_init(ast.StructInit{
 		typ = typ
 	})
+}
+
+// Name of a C function `void (void*)` that writes the default value of `typ`,
+// used to initialize missing map values. `NULL` if zeroed memory is enough.
+fun (mut g Gen) map_init_fun(typ ast.Type) string {
+	if not g.needs_default_init(typ) {
+		return 'NULL'
+	}
+
+	type_str := g.typ(typ)
+	fname := '_map_init_${type_str}'
+	if g.generated_map_inits.contains(fname) {
+		return fname
+	}
+	g.generated_map_inits.push(fname)
+
+	// Capture the default value instead of writing it to the current function
+	old_out := g.out
+	old_indent := g.indent
+	old_empty_line := g.empty_line
+	g.out = strings.new_builder(100)
+	g.empty_line = false
+	g.default_value(typ)
+	val := g.out.str()
+	g.out = old_out
+	g.indent = old_indent
+	g.empty_line = old_empty_line
+
+	g.fun_decls_out.write('void ${fname}(void* p);\n')
+	// After globals, as struct defaults may refer to them
+	g.anon_funs_out.write('void ${fname}(void* p) {\n\t*(${type_str}*)p = ${val};\n}\n')
+	return fname
 }
 
 fun (mut g Gen) zero_init(typ ast.Type) string {

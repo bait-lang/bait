@@ -27,6 +27,7 @@ struct Gen {
 	mut stmt_offsets []i32
 	mut foreign_imports []string // C header files
 	mut generated_eq_funs []ast.Type
+	mut generated_map_inits []string
 	mut generated_str_funs []ast.Type
 	mut generated_sum_casts []string
 	mut generated_results []string
