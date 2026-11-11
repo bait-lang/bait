@@ -336,7 +336,7 @@ fun (mut l Lexer) char_val() token.Token {
 
 fun (mut l Lexer) unexpected_char() token.Token {
 	start := l.pos - 1
-	mut end := start + char_len(l.text[start])
+	mut end := start + char_len(l.text, start)
 	if end > l.text.length {
 		end = l.text.length
 	}

@@ -8,7 +8,13 @@ struct string {
 }
 
 fun (s string) get(i i32) u8 {
-	return u8(s.str.charCodeAt(i as #JS.Number) as #JS.Any)
+	code := s.str.charCodeAt(i as #JS.Number) as i32
+	// Code units above 0xFF do not fit into a byte.
+	// Truncating them could produce ASCII chars (e.g. U+D83D → `=`), so map them to 0xFF instead.
+	if code > 0xFF {
+		return 0xFF
+	}
+	return code as u8
 }
 
 pub fun (s string) bytes() []u8 {

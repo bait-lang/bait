@@ -2,7 +2,12 @@
 // SPDX-License-Identifier: MIT
 package lexer
 
-// JS strings are indexed by UTF-16 code units, so a BMP character is a single unit
-fun char_len(c u8) i32 {
+// Number of UTF-16 code units of the character at `pos`.
+// Characters outside the BMP are encoded as a surrogate pair.
+fun char_len(text string, pos i32) i32 {
+	code := text.str.charCodeAt(pos as #JS.Number) as i32
+	if code >= 0xD800 and code <= 0xDBFF {
+		return 2
+	}
 	return 1
 }

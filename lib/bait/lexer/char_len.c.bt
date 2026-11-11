@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: MIT
 package lexer
 
-// Number of bytes of the UTF-8 encoded character starting with `c`
-fun char_len(c u8) i32 {
+// Number of bytes of the UTF-8 encoded character at `pos`
+fun char_len(text string, pos i32) i32 {
+	c := text[pos]
 	if c >= 0xf0 {
 		return 4
 	}
