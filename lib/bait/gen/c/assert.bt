@@ -120,15 +120,6 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 		g.write(']')
 	} else if node is ast.Ident {
 		g.write(node.full_name())
-	} else if node is ast.ArrayInit {
-		g.write('[')
-		for i, expr in node.exprs {
-			g.assert_side_expr(expr)
-			if i < node.exprs.length - 1 {
-				g.write(', ')
-			}
-		}
-		g.write(']')
 	} else if node is ast.IndexExpr {
 		g.assert_side_expr(node.left)
 		g.write('[')
@@ -137,6 +128,24 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 	} else if node is ast.SelectorExpr {
 		g.assert_side_expr(node.expr)
 		g.write('.${node.field_name}')
+	} else if node is ast.CallExpr {
+		if node.is_method {
+			g.assert_side_expr(node.left)
+			g.write('.${node.name}')
+		} else {
+			g.write(node.full_name())
+		}
+		g.write('(')
+		for i, arg in node.args {
+			if arg.is_mut {
+				g.write('mut ')
+			}
+			g.assert_side_expr(arg.expr)
+			if i < node.args.length - 1 {
+				g.write(', ')
+			}
+		}
+		g.write(')')
 	} else if node is ast.ComptimeVar {
 		g.write('$')
 		g.write(node.kind.str())

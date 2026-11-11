@@ -1,3 +1,15 @@
+struct Foo {
+	val i32
+}
+
+fun (f Foo) get() i32 {
+	return f.val
+}
+
+fun add(a i32, b i32) i32 {
+	return a + b
+}
+
 fun test_all() {
 	assert false
 	assert `a` != `a`
@@ -9,4 +21,9 @@ fun test_all() {
 	arr := [1, 2, 3]
 	assert arr == [4, 5]
 	assert arr[0] > 7
+
+	f := Foo{ val = 1 }
+	assert f.get() == 2
+	assert add(1, f.get()) == 0
+	assert s.contains('x')
 }
