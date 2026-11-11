@@ -64,16 +64,27 @@ fun test_ls() {
 }
 
 fun test_abs_path() {
-	assert os.abs_path('/foo/bar/../baz/./x/') == '/foo/baz/x'
-	assert os.abs_path('/') == '/'
+	if os.platform() == 'windows' {
+		assert os.abs_path('C:\\foo\\bar\\..\\baz\\.\\x\\') == 'C:\\foo\\baz\\x'
+		assert os.abs_path('C:\\') == 'C:\\'
+	} else {
+		assert os.abs_path('/foo/bar/../baz/./x/') == '/foo/baz/x'
+		assert os.abs_path('/') == '/'
+	}
+
 	wd := os.getwd()
 	assert os.abs_path('.') == wd
-	assert os.abs_path('a/b') == '${wd}/a/b'
+	assert os.abs_path('a/b') == os.join_path(wd, ['a', 'b'])
 }
 
 fun test_is_root() {
-	assert os.is_root('/')
-	assert not os.is_root('/foo')
+	if os.platform() == 'windows' {
+		assert os.is_root('C:')
+		assert not os.is_root('C:\\foo')
+	} else {
+		assert os.is_root('/')
+		assert not os.is_root('/foo')
+	}
 }
 
 fun test_executable() {
@@ -119,9 +130,13 @@ fun test_fs_ops() {
 	os.write_file(file, 'hello')
 	assert os.file_mod_time(file) > 0
 
+	// Creating symlinks on Windows may require extra privileges
+	with_link := os.platform() != 'windows'
 	link := os.join_path(base, ['link'])
-	os.symlink(file, link)
-	assert os.read_file(link) == 'hello'
+	if with_link {
+		os.symlink(file, link)
+		assert os.read_file(link) == 'hello'
+	}
 
 	copy := os.join_path(os.tmp_dir(), ['bait_os_test_copy_${$LINE}'])
 	if os.exists(copy) {
@@ -133,8 +148,12 @@ fun test_fs_ops() {
 	os.rmdir_all(copy)
 	assert not os.exists(copy)
 
-	os.rm(link)
-	assert not os.exists(link)
+	if with_link {
+		os.rm(link)
+		assert not os.exists(link)
+	}
+	os.rm(file)
+	assert not os.exists(file)
 	os.rmdir(os.join_path(base, ['c']))
 	assert not os.exists(os.join_path(base, ['c']))
 
