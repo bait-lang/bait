@@ -17,3 +17,13 @@ pub fun #C.setenv(name &u8, value &u8, overwrite i32) i32
 pub fun #C._putenv_s(name &u8, value &u8) i32
 
 pub fun #C.system(cmd &u8) i32
+
+pub fun #C.chdir(path &u8) i32
+
+pub fun #C.mkdir(path &u8, mode i32) i32
+
+pub fun #C.rmdir(path &u8) i32
+
+pub fun #C.unlink(path &u8) i32
+
+pub fun #C.symlink(target &u8, path &u8) i32

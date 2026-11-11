@@ -62,3 +62,82 @@ fun test_ls() {
 		assert os.exists("${$BAITDIR}/lib/os/${n}")
 	}
 }
+
+fun test_abs_path() {
+	assert os.abs_path('/foo/bar/../baz/./x/') == '/foo/baz/x'
+	assert os.abs_path('/') == '/'
+	wd := os.getwd()
+	assert os.abs_path('.') == wd
+	assert os.abs_path('a/b') == '${wd}/a/b'
+}
+
+fun test_is_root() {
+	assert os.is_root('/')
+	assert not os.is_root('/foo')
+}
+
+fun test_executable() {
+	exe := os.executable()
+	assert exe.length > 0
+	assert os.exists(exe)
+	assert os.resource_abs_path('x') == os.join_path(os.dir(exe), ['x'])
+}
+
+fun test_home_dir() {
+	assert os.exists_dir(os.home_dir())
+}
+
+fun test_user_os_arch() {
+	assert os.user_os() != 'unknown'
+	assert os.arch() != 'unknown'
+	assert os.platform() != ''
+}
+
+fun test_chdir_getwd() {
+	old := os.getwd()
+	tmp := os.abs_path(os.tmp_dir())
+	os.chdir(tmp)
+	assert os.getwd() == os.abs_path(tmp) or os.getwd().ends_with(os.file_name(tmp))
+	os.chdir(old)
+	assert os.getwd() == old
+}
+
+fun test_fs_ops() {
+	base := os.join_path(os.tmp_dir(), ['bait_os_test_${$LINE}'])
+	if os.exists(base) {
+		os.rmdir_all(base)
+	}
+
+	nested := os.join_path(base, ['a', 'b'])
+	os.mkdir_all(nested)
+	assert os.exists_dir(nested)
+
+	os.mkdir(os.join_path(base, ['c']))
+	assert os.exists_dir(os.join_path(base, ['c']))
+
+	file := os.join_path(nested, ['f.txt'])
+	os.write_file(file, 'hello')
+	assert os.file_mod_time(file) > 0
+
+	link := os.join_path(base, ['link'])
+	os.symlink(file, link)
+	assert os.read_file(link) == 'hello'
+
+	copy := os.join_path(os.tmp_dir(), ['bait_os_test_copy_${$LINE}'])
+	if os.exists(copy) {
+		os.rmdir_all(copy)
+	}
+	os.cp(base, copy)
+	assert os.read_file(os.join_path(copy, ['a', 'b', 'f.txt'])) == 'hello'
+	assert os.exists_dir(os.join_path(copy, ['c']))
+	os.rmdir_all(copy)
+	assert not os.exists(copy)
+
+	os.rm(link)
+	assert not os.exists(link)
+	os.rmdir(os.join_path(base, ['c']))
+	assert not os.exists(os.join_path(base, ['c']))
+
+	os.rmdir_all(base)
+	assert not os.exists(base)
+}

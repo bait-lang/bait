@@ -91,7 +91,49 @@ pub fun join_path(base string, dirs []string) string {
 }
 
 pub fun platform() string {
-	return 'linux'
+	p := user_os()
+	if p == 'win32' {
+		return 'windows'
+	}
+	return p
+}
+
+// Same values as Node's `process.platform`
+pub fun user_os() string {
+	mut res := ''
+	#C.'const char* name = "unknown";
+	#if defined(_WIN32)
+	name = "win32";
+	#elif defined(__APPLE__)
+	name = "darwin";
+	#elif defined(__linux__)
+	name = "linux";
+	#elif defined(__FreeBSD__)
+	name = "freebsd";
+	#elif defined(__OpenBSD__)
+	name = "openbsd";
+	#endif
+	res = from_c_string((u8*)name)'
+	return res
+}
+
+// Same values as Node's `os.arch()`
+pub fun arch() string {
+	mut res := ''
+	#C.'const char* name = "unknown";
+	#if defined(__x86_64__) || defined(_M_X64)
+	name = "x64";
+	#elif defined(__aarch64__) || defined(_M_ARM64)
+	name = "arm64";
+	#elif defined(__i386__) || defined(_M_IX86)
+	name = "ia32";
+	#elif defined(__arm__) || defined(_M_ARM)
+	name = "arm";
+	#elif defined(__riscv) && __riscv_xlen == 64
+	name = "riscv64";
+	#endif
+	res = from_c_string((u8*)name)'
+	return res
 }
 
 pub struct CmdRes {
@@ -171,4 +213,230 @@ pub fun tmp_dir() string {
 	}
 
 	return '/tmp'
+}
+
+pub fun input(prompt string) string {
+	print(prompt)
+	#C.'fflush(stdout);
+	char buf[1024];
+	ssize_t n = read(0, buf, sizeof(buf));
+	if (n < 0) {
+		n = 0;
+	}'
+	mut res := ''
+	#C.'res = from_c_string(strndup(buf, n));'
+	return res
+}
+
+pub fun getwd() string {
+	mut res := ''
+	#C.'char buf[4096];
+	if (getcwd(buf, sizeof(buf)) != NULL) {
+		res = from_c_string(strdup(buf));
+	}'
+	return res
+}
+
+pub fun chdir(d string) {
+	if #C.chdir(d.str) != 0 {
+		panic('cannot change directory to ${d}')
+	}
+}
+
+pub fun home_dir() string {
+	$if WINDOWS {
+		return getenv('USERPROFILE')
+	}
+	return getenv('HOME')
+}
+
+// Returns the normalized absolute path, resolved against the working directory.
+// Unlike `realpath`, the path does not need to exist and symlinks are kept.
+pub fun abs_path(path string) string {
+	mut full := path
+	if not path.starts_with('/') {
+		wd := getwd()
+		full = '${wd}/${path}'
+	}
+
+	mut parts := []string
+	for seg in full.split('/') {
+		if seg == '' or seg == '.' {
+			continue
+		}
+		if seg == '..' {
+			if parts.length > 0 {
+				parts.trim(parts.length - 1)
+			}
+			continue
+		}
+		parts.push(seg)
+	}
+	return '/' + parts.join('/')
+}
+
+// Returns the absolute path of the running executable
+pub fun executable() string {
+	mut res := ''
+	#C.'char buf[4096];
+	#if defined(__APPLE__)
+	extern int _NSGetExecutablePath(char* buf, uint32_t* size);
+	uint32_t size = sizeof(buf);
+	if (_NSGetExecutablePath(buf, &size) == 0) {
+		char real[4096];
+		if (realpath(buf, real) != NULL) {
+			res = from_c_string(strdup(real));
+		}
+	}
+	#else
+	ssize_t n = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+	if (n > 0) {
+		buf[n] = 0;
+		res = from_c_string(strdup(buf));
+	}
+	#endif
+	(void)buf'
+	if res.length == 0 {
+		return abs_path(ARGS[0])
+	}
+	return res
+}
+
+// Joins `path` to the directory of the running executable
+pub fun resource_abs_path(path string) string {
+	return join_path(dir(executable()), [path])
+}
+
+// Returns the last modification time in milliseconds
+pub fun file_mod_time(path string) i64 {
+	mut res := 0 as i64
+	#C.'struct stat st;
+	if (lstat(path.str, &st) == 0) {
+	#if defined(__APPLE__)
+		res = (i64)st.st_mtimespec.tv_sec * 1000 + st.st_mtimespec.tv_nsec / 1000000;
+	#else
+		res = (i64)st.st_mtim.tv_sec * 1000 + st.st_mtim.tv_nsec / 1000000;
+	#endif
+	}'
+	return res
+}
+
+fun is_link(path string) bool {
+	#C.'struct stat st;
+	if (lstat(path.str, &st) != 0) {
+		return false;
+	}
+	return S_ISLNK(st.st_mode);'
+	return false
+}
+
+pub fun symlink(src string, dest string) {
+	if #C.symlink(src.str, dest.str) != 0 {
+		panic('cannot create symlink ${dest} -> ${src}')
+	}
+}
+
+pub fun mkdir(d string) {
+	if exists(d) {
+		return
+	}
+	if #C.mkdir(d.str, 511) != 0 {
+		panic('cannot create directory ${d}')
+	}
+}
+
+pub fun mkdir_all(d string) {
+	if exists(d) {
+		return
+	}
+	parent := dir(d)
+	if parent != d {
+		mkdir_all(parent)
+	}
+	mkdir(d)
+}
+
+pub fun rm(path string) {
+	if #C.unlink(path.str) != 0 {
+		panic('cannot remove ${path}')
+	}
+}
+
+pub fun rmdir(d string) {
+	if #C.rmdir(d.str) != 0 {
+		panic('cannot remove directory ${d}')
+	}
+}
+
+// Removes a directory and its contents. Symlinks are removed, not followed.
+pub fun rmdir_all(d string) {
+	// Store the entries, as the loop deletes them
+	entries := ls(d)
+	for name in entries {
+		path := join_path(d, [name])
+		if is_dir(path) and not is_link(path) {
+			rmdir_all(path)
+		} else {
+			rm(path)
+		}
+	}
+	rmdir(d)
+}
+
+fun copy_file(src string, dest string) {
+	mut ok := false
+	#C.'FILE* in = fopen(src.str, "rb");
+	FILE* out = NULL;
+	struct stat st;
+	if (in != NULL && fstat(fileno(in), &st) == 0) {
+		out = fopen(dest.str, "wb");
+	}
+	if (out != NULL) {
+		char buf[65536];
+		size_t n;
+		ok = true;
+		while ((n = fread(buf, 1, sizeof(buf), in)) > 0) {
+			if (fwrite(buf, 1, n, out) != n) {
+				ok = false;
+				break;
+			}
+		}
+		if (ferror(in)) {
+			ok = false;
+		}
+		fclose(out);
+		chmod(dest.str, st.st_mode & 07777);
+	}
+	if (in != NULL) {
+		fclose(in);
+	}'
+	if not ok {
+		panic('cannot copy ${src} to ${dest}')
+	}
+}
+
+// Copies a file or a whole directory
+pub fun cp(src string, dest string) {
+	if is_link(src) {
+		mut target := ''
+		#C.'char buf[4096];
+		ssize_t n = readlink(src.str, buf, sizeof(buf) - 1);
+		if (n >= 0) {
+			buf[n] = 0;
+			target = from_c_string(strdup(buf));
+		}'
+		symlink(target, dest)
+		return
+	}
+
+	if not is_dir(src) {
+		copy_file(src, dest)
+		return
+	}
+
+	mkdir_all(dest)
+	entries := ls(src)
+	for name in entries {
+		cp(join_path(src, [name]), join_path(dest, [name]))
+	}
 }

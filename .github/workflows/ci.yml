@@ -86,8 +86,8 @@ jobs:
           bait test -b c lib/math
           bait test -b c lib/os
           bait test -b c lib/strings
-      # - name: Run tool tests
-        # run: bait test cli/tools
+      - name: Run tool tests
+        run: bait test -b c cli/tools
       # - name: Check markdown code blocks
       #   run: |
       #     bait check-md docs/docs.md
@@ -150,6 +150,8 @@ jobs:
           bait test -b c -cc tcc lib/math
           bait test -b c -cc tcc lib/os
           bait test -b c -cc tcc lib/strings
+      - name: Run tool tests
+        run: bait test -b c -cc tcc cli/tools
 
   windows-js:
     runs-on: windows-latest
