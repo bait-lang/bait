@@ -1,0 +1,8 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+package lexer
+
+// JS strings are indexed by UTF-16 code units, so a BMP character is a single unit
+fun char_len(c u8) i32 {
+	return 1
+}
