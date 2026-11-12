@@ -21,7 +21,7 @@ pub struct Parser {
 	mut line i32
 	mut col i32
 	mut pkg_name string
-	mut pkg_scope &context.Scope := 0 as any // Reference to scope of current package
+	mut pkg_scope &context.Scope := 0 as &context.Scope // Reference to scope of current package
 	mut import_aliases map[string]string
 	mut attributes []ast.Attribute
 	mut expr_pkg string
@@ -43,7 +43,7 @@ pub fun new(table &ast.Table, sema_ctx &context.SemanticContext, pref preference
 }
 
 pub fun new_default() Parser {
-	return new(ast.new_table(), context.SemanticContext{}, preference.Prefs{})
+	return new(ast.new_table(), &context.SemanticContext{}, preference.Prefs{})
 }
 
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {

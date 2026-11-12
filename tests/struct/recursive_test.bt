@@ -13,3 +13,34 @@ fun test_holder_init() {
 	h := Holder{}
 	assert true // Code has to compile
 }
+
+struct Node {
+	val i32
+	parent &Node
+}
+
+fun (n Node) depth() i32 {
+	if n.parent != 0 as &Node {
+		return 1 + n.parent.depth()
+	}
+	return 0
+}
+
+fun (n Node) is_root() bool {
+	return n.parent == 0 as &Node
+}
+
+fun test_pointer_eq_compares_address() {
+	root := Node{
+		val = 1
+		parent = 0 as &Node
+	}
+	assert root.depth() == 0
+	assert root.is_root()
+	child := Node{
+		val = 2
+		parent = &root
+	}
+	assert child.depth() == 1
+	assert not child.is_root()
+}

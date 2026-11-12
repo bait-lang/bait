@@ -120,5 +120,12 @@ fun (mut c Checker) assign_stmt(mut node ast.AssignStmt) {
 		}
 
 		c.error('cannot assign type ${c.table.type_name(node.right_type)} to ${c.table.type_name(node.left_type)}', node.pos)
+		return
+	}
+
+	// Assigning a reference to a value. The JS backend does not care, but C does
+	// TODO make this an error
+	if node.left_type.idx() != ast.VOID_TYPE as i32 and node.right_type.get_nr_amp() > node.left_type.get_nr_amp() {
+		c.warn('cannot assign type ${c.table.type_name(node.right_type)} to ${c.table.type_name(node.left_type)}', node.pos)
 	}
 }

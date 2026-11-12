@@ -135,6 +135,11 @@ fun (mut g Gen) bool_literal(node ast.BoolLiteral) {
 }
 
 fun (mut g Gen) char_literal(node ast.CharLiteral) {
+	// C has no `\`` escape; emit a plain backtick
+	if node.val == '\\`' {
+		g.write("'`'")
+		return
+	}
 	val := escape.char(node.val, `'`)
 	g.write("'${val}'")
 }
@@ -258,7 +263,8 @@ fun (mut g Gen) infix_expr(node ast.InfixExpr) {
 		return
 	}
 
-	if node.op == .eq or node.op == .ne {
+	// Pointers are compared by address
+	if (node.op == .eq or node.op == .ne) and g.concrete_type(node.left_type).get_nr_amp() == 0 {
 		eq_fun := g.equality_fun(node.left_type)
 		if eq_fun.length > 0 {
 			if node.op == .ne {

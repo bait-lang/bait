@@ -78,6 +78,10 @@ fun (mut g Gen) equality_fun(raw_typ ast.Type) string {
 		return fname
 	}
 
+	if sym.kind == .map {
+		return g.map_equality_fun(typ, sym)
+	}
+
 	if sym.kind == .sum_type {
 		return g.sum_equality_fun(typ, sym)
 	}
@@ -157,6 +161,39 @@ fun (mut g Gen) struct_equality_fun(typ ast.Type, sym ast.TypeSymbol) string {
 
 	g.auto_funs_out.write('bool ${fname}(${sname} a, ${sname} b) {\n')
 	g.auto_funs_out.write(checks)
+	g.auto_funs_out.write('\treturn true;\n')
+	g.auto_funs_out.write('}\n\n')
+
+	return fname
+}
+
+fun (mut g Gen) map_equality_fun(typ ast.Type, sym ast.TypeSymbol) string {
+	g.generated_eq_funs.push(typ)
+
+	info := sym.info as ast.MapInfo
+	sname := c_esc(sym.mix_name)
+	fname := c_esc('${sym.mix_name}_eq')
+	val_type_str := g.typ(info.val_type)
+
+	g.fun_decls_out.write('bool ${fname}(${sname} a, ${sname} b);\n')
+
+	a_val := '*(${val_type_str}*)map_get(&a, key)'
+	b_val := '*(${val_type_str}*)map_get(&b, key)'
+	check := g.eq_check(info.val_type, a_val, b_val)
+
+	g.auto_funs_out.write('bool ${fname}(${sname} a, ${sname} b) {\n')
+	g.auto_funs_out.write('\tif (a.length != b.length) {\n')
+	g.auto_funs_out.write('\t\treturn false;\n')
+	g.auto_funs_out.write('\t}\n')
+	g.auto_funs_out.write('\tfor (i32 i = 0; i < a.order.length; i++) {\n')
+	g.auto_funs_out.write('\t\tstring key = *(string*)Array_get(a.order, i);\n')
+	g.auto_funs_out.write('\t\tif (!map_contains(&b, key)) {\n')
+	g.auto_funs_out.write('\t\t\treturn false;\n')
+	g.auto_funs_out.write('\t\t}\n')
+	g.auto_funs_out.write('\t\tif (!(${check})) {\n')
+	g.auto_funs_out.write('\t\t\treturn false;\n')
+	g.auto_funs_out.write('\t\t}\n')
+	g.auto_funs_out.write('\t}\n')
 	g.auto_funs_out.write('\treturn true;\n')
 	g.auto_funs_out.write('}\n\n')
 

@@ -16,3 +16,12 @@ fun test_interpolation_keeps_non_ascii() {
 	assert #JS.'s.str.charCodeAt(0)' as i32 == 0x20AC
 	assert #JS.'s.str.charCodeAt(2)' as i32 == 0x65E5
 }
+
+// Code units above 0xFF must not be truncated into ASCII chars
+fun test_index_above_latin1() {
+	s := 'ä€😀'
+	assert s[0] == 0xE4
+	assert s[1] == 0xFF
+	assert s[2] == 0xFF
+	assert s[3] == 0xFF
+}

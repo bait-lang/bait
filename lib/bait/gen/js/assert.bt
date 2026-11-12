@@ -111,6 +111,24 @@ fun (mut g Gen) assert_side_src(node ast.Expr) {
 	} else if node is ast.SelectorExpr {
 		g.assert_side_src(node.expr)
 		g.write('.${node.field_name}')
+	} else if node is ast.CallExpr {
+		if node.is_method {
+			g.assert_side_src(node.left)
+			g.write('.${node.name}')
+		} else {
+			g.write(node.full_name())
+		}
+		g.write('(')
+		for i, arg in node.args {
+			if arg.is_mut {
+				g.write('mut ')
+			}
+			g.assert_side_src(arg.expr)
+			if i < node.args.length - 1 {
+				g.write(', ')
+			}
+		}
+		g.write(')')
 	} else if node is ast.ComptimeVar {
 		g.write('$')
 		g.write(node.kind.str())

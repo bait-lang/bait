@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 package lexer
 
@@ -335,7 +335,13 @@ fun (mut l Lexer) char_val() token.Token {
 }
 
 fun (mut l Lexer) unexpected_char() token.Token {
-	l.val = 'unexpected char ${l.text.substr(l.pos - 1, l.pos)} [L0001]'
+	start := l.pos - 1
+	mut end := start + char_len(l.text, start)
+	if end > l.text.length {
+		end = l.text.length
+	}
+	l.pos = end
+	l.val = 'unexpected char ${l.text.substr(start, end)} [L0001]'
 	return .error
 }
 

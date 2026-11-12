@@ -72,7 +72,7 @@ pub fun (s Scope) get_parent(name string) ScopeObject {
 	if s.objects.contains(name) {
 		return s.objects[name]
 	}
-	if s.parent != 0 as Scope {
+	if s.parent != 0 as &Scope {
 		return s.parent.get_parent(name)
 	}
 	return UNKNOWN_OBJECT
@@ -84,14 +84,14 @@ pub fun (mut s Scope) update_parent(name string, obj ScopeObject) {
 		s.objects[name] = obj
 		return
 	}
-	if s.parent != 0 as Scope {
+	if s.parent != 0 as &Scope {
 		s.parent.update_parent(name, obj)
 	}
 }
 
 // Whether `name` is a local of a function enclosing the anonymous function of this scope
 pub fun (s Scope) is_captured(name string) bool {
-	mut cur := s
+	mut cur := &s
 	mut crossed_closure := false
 	for cur.is_local {
 		if cur.objects.contains(name) {

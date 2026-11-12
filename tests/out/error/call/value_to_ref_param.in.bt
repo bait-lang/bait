@@ -1,0 +1,12 @@
+struct Foo {}
+
+fun f(a i32, foo &Foo) {}
+
+fun g(mut foo Foo) {}
+
+fun main() {
+	f(1, Foo{})
+	f(2, &Foo{})
+	mut v := Foo{}
+	g(mut v)
+}

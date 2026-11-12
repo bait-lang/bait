@@ -11,11 +11,14 @@ All notable changes are documented in this file.
     - Add `split()`, `split_lines()`, `trim_space()`, `is_upper()`
     - Fix infinite loop of `index()` and `replace()` on multi-char patterns
   - _[C]_ []string method: `join()`
+  - _[C]_ map methods: `contains()`, `values()`, `clear()`
   - _[C]_ Fix array capacity growth
   - Fix `all_after()` and `all_after_last()` for multi-char patterns
 - os:
-  - _[C]_ functions: `read_lines()`, `getenv()`, `setenv()`, `tmp_dir()`
+  - _[C]_ functions: `read_lines()`, `getenv()`, `setenv()`, `tmp_dir()`, `abs_path()`, `arch()`, `chdir()`, `cp()`, `executable()`, `file_mod_time()`, `getwd()`, `home_dir()`, `input()`, `is_root()`, `mkdir()`, `mkdir_all()`, `resource_abs_path()`, `rm()`, `rmdir()`, `rmdir_all()`, `symlink()`, `user_os()`
+  - _[C]_ `platform()` detects the actual OS instead of always returning `linux`
   - _[C]_ Fix `ls()` and `exec()` accessing freed string
+  - _[JS]_ Fix `file_mod_time()` crashing on fractional milliseconds
 - math:
   - add function `pow()`
 - strings: `Builder`

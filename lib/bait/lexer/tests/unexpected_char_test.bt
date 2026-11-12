@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
 
 import bait.lexer
@@ -18,4 +18,24 @@ const €'
 		line = 2
 		col = 7
 	}
+}
+
+fun test_unexpected_char_multi_unit() {
+	mut l := lexer.Lexer{}
+	l.init('ä x', .discard)
+
+	assert l.next() == .error
+	assert l.val() == 'unexpected char ä [L0001]'
+	assert l.next() == .name
+	assert l.val() == 'x'
+}
+
+fun test_unexpected_char_emoji() {
+	mut l := lexer.Lexer{}
+	l.init('😀 x', .discard)
+
+	assert l.next() == .error
+	assert l.val() == 'unexpected char 😀 [L0001]'
+	assert l.next() == .name
+	assert l.val() == 'x'
 }

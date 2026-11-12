@@ -100,3 +100,46 @@ fun test_read_missing_key_struct_defaults() {
 	assert m['a'].list == [1]
 	assert m['b'].list == [2]
 }
+
+fun test_contains() {
+	mut m := map[string]i32
+	assert not m.contains('a')
+	m['a'] = 1
+	assert m.contains('a')
+	assert not m.contains('b')
+}
+
+fun test_values() {
+	mut m := map[string]i32
+	m['a'] = 1
+	m['b'] = 2
+	m['c'] = 3
+	assert values_sum(m.values()) == 6
+	assert values_first(m.values()) == 1
+}
+
+fun values_sum(vals []i32) i32 {
+	mut sum := 0
+	for v in vals {
+		sum += v
+	}
+	return sum
+}
+
+fun values_first(vals []i32) i32 {
+	return vals[0]
+}
+
+fun test_clear() {
+	mut m := map[string]string
+	m['a'] = 'A'
+	m['b'] = 'B'
+	m.clear()
+	assert m.length == 0
+	assert not m.contains('a')
+	assert m.keys().length == 0
+
+	m['c'] = 'C'
+	assert m.length == 1
+	assert m['c'] == 'C'
+}

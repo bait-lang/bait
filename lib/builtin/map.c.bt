@@ -210,3 +210,25 @@ pub fun map_get_or_init(mut m &Map, key string, init &void) &void {
 pub fun (m Map) keys() []string {
 	return m.order.copy()
 }
+
+pub fun (m Map) contains(key string) bool {
+	return map_contains(&m, key)
+}
+
+pub fun (m Map) values() []any {
+	res := new_array(m.order.length, m.order.length, m.val_size)
+	for i, key in m.order {
+		res.set(i, map_get(&m, key))
+	}
+	return #C.'res' as []any
+}
+
+pub fun (mut m Map) clear() {
+	m.hashes = []u32
+	m.used = []bool
+	m.keys = []string
+	m.order = []string
+	m.vals = new_array(0, 0, m.val_size)
+	m.length = 0
+	m.cap = 0
+}

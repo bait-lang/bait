@@ -1,0 +1,18 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+package lexer
+
+// Number of bytes of the UTF-8 encoded character at `pos`
+fun char_len(text string, pos i32) i32 {
+	c := text[pos]
+	if c >= 0xf0 {
+		return 4
+	}
+	if c >= 0xe0 {
+		return 3
+	}
+	if c >= 0xc0 {
+		return 2
+	}
+	return 1
+}

@@ -27,19 +27,11 @@ pub fun file_name(path string) string {
 }
 
 pub fun file_mod_time(path string) i64 {
-	return #JS.'JS.fs.lstatSync(path.str).mtimeMs' as i64
+	return #JS.'Math.trunc(JS.fs.lstatSync(path.str).mtimeMs)' as i64
 }
 
 pub fun symlink(src string, dest string) {
 	#JS.fs.symlinkSync(src.str, dest.str)
-}
-
-pub fun is_root(path string) bool {
-	if platform() == 'windows' {
-		return path.length == 2 and path[1] == `:`
-	}
-
-	return path == '/'
 }
 
 pub fun chdir(d string) {
