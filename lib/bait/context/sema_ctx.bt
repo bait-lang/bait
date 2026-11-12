@@ -9,7 +9,7 @@ pub struct SemanticContext {
 
 // Get or add scope without parent
 pub fun (mut ctx SemanticContext) obtain_root_scope(pkg string) &Scope {
-	return ctx.obtain_scope(pkg, 0 as any)
+	return ctx.obtain_scope(pkg, 0 as &Scope)
 }
 
 // Get or add scope below "builtin"

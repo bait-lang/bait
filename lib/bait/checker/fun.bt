@@ -383,7 +383,8 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 
 	// Array methods with return type `any`
 	if left_sym.kind == .array and node.name == "last" {
-		return (left_sym.info as ast.ArrayInfo).elem_type
+		node.return_type = (left_sym.info as ast.ArrayInfo).elem_type
+		return node.return_type
 	}
 
 	c.or_block(mut node)

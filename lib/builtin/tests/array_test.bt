@@ -25,3 +25,14 @@ fun test_copy() {
 	assert a == [9, 2, 3]
 	assert b == [1, 2, 3]
 }
+
+fun test_last() {
+	nums := [1, 2, 3]
+	assert nums.last() == 3
+
+	parts := 'a.b.c'.split('.')
+	mut last := parts.last()
+	assert last == 'c'
+	last = 'd'
+	assert last == 'd'
+}

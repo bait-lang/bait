@@ -15,7 +15,7 @@ pub struct Checker{
 	pub mut gen_ctx &context.GenContext
 	mut files []ast.File
 	mut file ast.File
-	mut scope &context.Scope := 0 as any // Set by `change_file`
+	mut scope &context.Scope := 0 as &context.Scope // Set by `change_file`
 	mut path string
 	mut pkg string
 	mut pkg_alias string

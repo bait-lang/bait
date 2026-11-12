@@ -137,6 +137,15 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 				g.gen_array_push_many(node)
 				return
 			}
+			if name == 'last' {
+				// `Array_last` returns `void*`: cast and dereference to the element type,
+				// which the checker stores as the return type
+				elem_type_str := g.typ(node.return_type)
+				g.write('(*(${elem_type_str}*)(Array_last(')
+				g.expr(node.left)
+				g.write(')))')
+				return
+			}
 		}
 
 		// `hp.str()`: generated string functions take the value, also for pointers
