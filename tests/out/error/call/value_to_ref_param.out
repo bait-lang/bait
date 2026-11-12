@@ -1,0 +1,1 @@
+tests/out/error/call/value_to_ref_param.in.bt:8:2 warning: cannot use Foo as &Foo in argument 2

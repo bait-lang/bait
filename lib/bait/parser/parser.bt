@@ -43,7 +43,7 @@ pub fun new(table &ast.Table, sema_ctx &context.SemanticContext, pref preference
 }
 
 pub fun new_default() Parser {
-	return new(ast.new_table(), context.SemanticContext{}, preference.Prefs{})
+	return new(ast.new_table(), &context.SemanticContext{}, preference.Prefs{})
 }
 
 pub fun (mut p Parser) init(text string, path string, expected_pkg string) {
