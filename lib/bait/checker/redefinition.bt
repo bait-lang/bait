@@ -14,7 +14,7 @@ pub fun (mut c Checker) toplevel_redefinitions() {
 	}
 }
 
-fun (mut c Checker) check_scope_redefs(scope context.Scope) {
+fun (mut c Checker) check_scope_redefs(scope &context.Scope) {
 	redefined_syms := scope.get_unique_redefinitions()
 
 	for redef in redefined_syms {

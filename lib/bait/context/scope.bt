@@ -91,7 +91,7 @@ pub fun (mut s Scope) update_parent(name string, obj ScopeObject) {
 
 // Whether `name` is a local of a function enclosing the anonymous function of this scope
 pub fun (s Scope) is_captured(name string) bool {
-	mut cur := s
+	mut cur := &s
 	mut crossed_closure := false
 	for cur.is_local {
 		if cur.objects.contains(name) {

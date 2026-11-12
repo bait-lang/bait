@@ -1,0 +1,1 @@
+tests/out/error/assign/ref_to_value.in.bt:9:2 warning: cannot assign type &Foo to Foo

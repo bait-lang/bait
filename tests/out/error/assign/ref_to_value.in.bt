@@ -1,0 +1,12 @@
+struct Foo {}
+
+struct Bar {
+	foo &Foo
+}
+
+fun f(b Bar) {
+	mut v := Foo{}
+	v = b.foo
+	mut r := &Foo{}
+	r = b.foo
+}
