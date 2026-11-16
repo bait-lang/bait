@@ -224,7 +224,18 @@ fun (g Gen) concrete_sym(typ ast.Type) &ast.TypeSymbol {
 }
 
 fun js_name(n string) string {
-	return n.replace('.', '__').replace('[]', 'Array_').replace('[', '_').replace(']', '_').replace('&', 'ptr_')
+	// This is called for every name, so skip the replacements that are not needed
+	mut name := n
+	if name.contains('.') {
+		name = name.replace('.', '__')
+	}
+	if name.contains('[') or name.contains(']') {
+		name = name.replace('[]', 'Array_').replace('[', '_').replace(']', '_')
+	}
+	if name.contains('&') {
+		name = name.replace('&', 'ptr_')
+	}
+	return name
 }
 
 fun js_esc(n string) string {
