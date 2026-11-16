@@ -1,0 +1,23 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package cstruct
+
+import 'time.h' as #C._
+
+// C structs declared in a package are global, like any other C symbol.
+// Only the fields that are used need to be declared.
+pub struct #C.tm {
+	pub mut tm_mday i32
+	pub mut tm_mon i32
+	pub mut tm_year i32
+	pub mut tm_isdst i32
+}
+
+pub fun #C.mktime(t &#C.tm) i64
+
+// Returns the date with out of range fields moved into range, e.g. January 32 is February 1
+pub fun normalize(t #C.tm) #C.tm {
+	mut res := t
+	_ := #C.mktime(&res)
+	return res
+}

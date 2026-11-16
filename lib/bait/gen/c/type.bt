@@ -16,10 +16,27 @@ fun (mut g Gen) typ(typ ast.Type) string {
 	}
 
 	g.type_def(sym)
-	name := if sym.kind == .fun_ { fun_type_name(sym) } else { c_name(sym.mix_name.replace('C.', '')) }
 	ptrs := '*'.repeat(conc.get_nr_amp())
+	if sym.kind == .fun_ {
+		return fun_type_name(sym) + ptrs
+	}
+
+	// C types keep their own name. Types built from them, like `[]C.foo`,
+	// are named like Bait types, see `type_def`.
+	if sym.mix_name.starts_with('C.') {
+		name := sym.mix_name.substr(2, sym.mix_name.length)
+		// `struct C.foo` refers to `struct foo`, which C headers usually don't typedef.
+		// Typedef'd C types are declared as interfaces, e.g. `interface C.FILE`.
+		prefix := match sym.kind {
+			.struct_ { 'struct ' }
+			.enum_ { 'enum ' }
+			else { '' }
+		}
+		return prefix + name + ptrs
+	}
+
 	prefix := if sym.kind == .enum_ { 'enum ' } else { '' }
-	return prefix + name + ptrs
+	return prefix + c_name(sym.mix_name) + ptrs
 }
 
 // The C name of the typedef of a function type. Anonymous function types are named

@@ -21,11 +21,24 @@ pub fun (mut c Checker) expect_mutable(e ast.Expr) {
 fun (mut c Checker) expect_field_mutable(left ast.SelectorExpr) bool {
 	sym := c.table.get_sym(left.expr_type)
 	field := sym.find_field(left.field_name, c.table)
-	if (not field.is_mut or sym.pkg != c.pkg) and not field.is_global {
+	if not c.is_field_writable(sym, field) {
 		c.error('field `${sym.mix_name}.${left.field_name}` is immutable', left.pos)
 		return false
 	}
 	return true
+}
+
+// Bait fields declared as `mut` can only be written in their own package.
+// Foreign structs belong to no package, so their `mut` fields can be written anywhere.
+fun (c Checker) is_field_writable(sym ast.TypeSymbol, field ast.StructField) bool {
+	if field.is_global {
+		return true
+	}
+	if not field.is_mut {
+		return false
+	}
+	is_foreign := sym.mix_name.starts_with('C.') or sym.mix_name.starts_with('JS.')
+	return is_foreign or sym.pkg == c.pkg
 }
 
 // warn_immutable_root warns if `e` mutates (through `.field` or `[index]` chains)
@@ -43,7 +56,7 @@ fun (mut c Checker) warn_immutable_root(e ast.Expr, what string) {
 		sym := c.table.get_sym(e.expr_type)
 		field := sym.find_field(e.field_name, c.table)
 		if field.typ != ast.ERROR_TYPE {
-			if (not field.is_mut or sym.pkg != c.pkg) and not field.is_global {
+			if not c.is_field_writable(sym, field) {
 				c.warn('${what} through immutable field `${sym.mix_name}.${e.field_name}`', e.pos)
 				return
 			}

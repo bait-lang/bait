@@ -215,17 +215,17 @@ pub fun exec(cmd string) CmdRes {
 // Blocks until one of the open file descriptors is readable or closed.
 // Negative file descriptors are ignored.
 fun poll_readable(fds []i32, mut ready []bool) i32 {
-	mut res := 0
-	#C.'struct pollfd pfds[2];
-	for (int i = 0; i < 2; i++) {
-		pfds[i].fd = ((i32*)fds.data)[i];
-		pfds[i].events = POLLIN;
-		pfds[i].revents = 0;
+	mut pfds := []#C.pollfd{length = fds.length}
+	for i, fd in fds {
+		pfds[i] = #C.pollfd{
+			fd = fd
+			events = #C.POLLIN
+		}
 	}
-	res = poll(pfds, 2, -1);
-	for (int i = 0; i < 2; i++) {
-		((bool*)ready->data)[i] = pfds[i].revents != 0;
-	}'
+	res := #C.poll(pfds.data as &#C.pollfd, pfds.length, -1)
+	for i, pfd in pfds {
+		ready[i] = pfd.revents != 0
+	}
 	return res
 }
 

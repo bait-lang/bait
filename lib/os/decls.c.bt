@@ -31,6 +31,16 @@ pub fun #C.unlink(path &u8) i32
 
 pub fun #C.symlink(target &u8, path &u8) i32
 
+pub struct #C.pollfd {
+	pub mut fd i32
+	pub mut events i16
+	pub mut revents i16
+}
+
+pub const #C.POLLIN := i16
+
+pub fun #C.poll(fds &#C.pollfd, nfds i32, timeout i32) i32
+
 pub const #C.errno := i32
 pub const #C.EINTR := i32
 

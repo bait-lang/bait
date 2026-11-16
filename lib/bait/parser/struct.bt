@@ -13,8 +13,11 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 
 	lang := p.parse_lang()!
 	mut name := p.check_name()!
+	// Foreign structs are global, so they don't get the package prefix
+	mut mix_name := p.prepend_pkg(name)
 	if lang != .bait {
 		name = lang.prepend_to(name)
+		mix_name = name
 	}
 
 	generic_names := p.generic_type_names()!
@@ -46,7 +49,7 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 
 	tsym := ast.TypeSymbol{
 		kind = .struct_
-		mix_name = p.prepend_pkg(name)
+		mix_name = mix_name
 		is_pub = is_pub
 		pkg = p.pkg_name
 		info = ast.StructInfo{
