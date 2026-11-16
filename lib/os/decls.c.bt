@@ -7,6 +7,9 @@ import 'dirent.h' as #C._
 import 'sys/stat.h' as #C._
 import 'sys/types.h' as #C._
 import 'stdlib.h' as #C._
+import 'sys/wait.h' as #C._
+import 'poll.h' as #C._
+import 'errno.h' as #C._
 
 pub fun #C.access(path &u8, mode i32) i32
 
@@ -27,3 +30,31 @@ pub fun #C.rmdir(path &u8) i32
 pub fun #C.unlink(path &u8) i32
 
 pub fun #C.symlink(target &u8, path &u8) i32
+
+pub const #C.errno := i32
+pub const #C.EINTR := i32
+
+pub fun #C.pipe(fds &i32) i32
+
+pub fun #C.fork() i32
+
+pub fun #C.dup2(old_fd i32, new_fd i32) i32
+
+pub fun #C.close(fd i32) i32
+
+// actual params: path &u8, arg &u8, ...&u8 (NULL terminated)
+pub fun #C.execl(path &u8, arg0 &u8, arg1 &u8, arg2 &u8, end &void) i32
+
+pub fun #C._exit(code i32)
+
+pub fun #C.read(fd i32, buf &void, count i32) i32
+
+pub fun #C.waitpid(pid i32, status &i32, options i32) i32
+
+pub fun #C.WIFEXITED(status i32) bool
+
+pub fun #C.WEXITSTATUS(status i32) i32
+
+pub fun #C.WIFSIGNALED(status i32) bool
+
+pub fun #C.WTERMSIG(status i32) i32

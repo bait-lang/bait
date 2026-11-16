@@ -160,3 +160,32 @@ fun test_fs_ops() {
 	os.rmdir_all(base)
 	assert not os.exists(base)
 }
+
+fun test_exec_separates_stdout_and_stderr() {
+	res := os.exec('echo out && echo err 1>&2')
+	assert res.code == 0
+	assert res.stdout.trim_space() == 'out'
+	assert res.stderr.trim_space() == 'err'
+}
+
+fun test_exec_exit_code() {
+	res := os.exec('exit 3')
+	assert res.code == 3
+	assert res.stdout == ''
+	assert res.stderr == ''
+}
+
+fun test_exec_large_output() {
+	// Both streams exceed the pipe buffer size, so they must be drained concurrently
+	res := os.exec('bun -e "process.stdout.write(\'o\'.repeat(200000)); process.stderr.write(\'e\'.repeat(150000))"')
+	assert res.code == 0
+	assert res.stdout.length == 200000
+	assert res.stderr.length == 150000
+	assert res.stdout.all_before('e') == res.stdout
+}
+
+fun test_exec_unknown_command() {
+	res := os.exec('i_hope_this_command_never_exists_anywhere')
+	assert res.code != 0
+	assert res.stderr != ''
+}

@@ -143,23 +143,120 @@ pub struct CmdRes {
 }
 
 pub fun exec(cmd string) CmdRes {
-	mut res := CmdRes{}
+	mut out_fds := []i32{length = 2}
+	mut err_fds := []i32{length = 2}
+	if #C.pipe(out_fds.data as &i32) != 0 {
+		return exec_error(cmd)
+	}
+	if #C.pipe(err_fds.data as &i32) != 0 {
+		close_fds(out_fds)
+		return exec_error(cmd)
+	}
 
-	#C.'FILE* f;
-	size_t bytes_read;
-	char buf[4096];
+	pid := #C.fork()
+	if pid == 0 {
+		// Child: redirect stdout and stderr into the pipes and run the command
+		_ := #C.dup2(out_fds[1], 1)
+		_ := #C.dup2(err_fds[1], 2)
+		close_fds(out_fds)
+		close_fds(err_fds)
+		_ := #C.execl('/bin/sh'.str, 'sh'.str, '-c'.str, cmd.str, 0 as &void)
+		#C._exit(127)
+	}
 
-	f = popen(cmd.str, "r");
+	// Parent: only reads from the pipes
+	_ := #C.close(out_fds[1])
+	_ := #C.close(err_fds[1])
+	if pid < 0 {
+		_ := #C.close(out_fds[0])
+		_ := #C.close(err_fds[0])
+		return exec_error(cmd)
+	}
 
-	bytes_read = fread(buf, 1, sizeof(buf) - 1, f);'
-	#C."buf[bytes_read] = '\0';
+	// Both pipes are drained alternately, so that the child never blocks on a full pipe
+	mut fds := [out_fds[0], err_fds[0]]
+	mut outputs := [strings.new_builder(4096), strings.new_builder(1024)]
+	mut ready := []bool{length = 2}
+	mut buf := []u8{length = 4096}
+	for fds[0] >= 0 or fds[1] >= 0 {
+		if poll_readable(fds, mut ready) < 0 {
+			if #C.errno == #C.EINTR {
+				continue
+			}
+			break
+		}
 
-	res.code = pclose(f);
+		for i := 0; i < 2; i += 1 {
+			if fds[i] < 0 or not ready[i] {
+				continue
+			}
+			n := #C.read(fds[i], buf.data, buf.length)
+			if n > 0 {
+				outputs[i].push_many_with_len(buf.data as &u8, n)
+			} else if n == 0 or #C.errno != #C.EINTR {
+				_ := #C.close(fds[i])
+				fds[i] = -1
+			}
+		}
+	}
+	for fd in fds {
+		if fd >= 0 {
+			_ := #C.close(fd)
+		}
+	}
 
-	res.stdout = from_c_string(strdup(buf));
-	res.stderr = res.stdout;"
+	return CmdRes{
+		code = wait_exit_code(pid)
+		stdout = outputs[0].str()
+		stderr = outputs[1].str()
+	}
+}
 
+// Blocks until one of the open file descriptors is readable or closed.
+// Negative file descriptors are ignored.
+fun poll_readable(fds []i32, mut ready []bool) i32 {
+	mut res := 0
+	#C.'struct pollfd pfds[2];
+	for (int i = 0; i < 2; i++) {
+		pfds[i].fd = ((i32*)fds.data)[i];
+		pfds[i].events = POLLIN;
+		pfds[i].revents = 0;
+	}
+	res = poll(pfds, 2, -1);
+	for (int i = 0; i < 2; i++) {
+		((bool*)ready->data)[i] = pfds[i].revents != 0;
+	}'
 	return res
+}
+
+// Waits for the process and returns its exit code, or 128 + signal number if it was killed
+fun wait_exit_code(pid i32) i32 {
+	mut status := 0
+	for #C.waitpid(pid, &status, 0) < 0 {
+		if #C.errno != #C.EINTR {
+			return -1
+		}
+	}
+	if #C.WIFEXITED(status) {
+		return #C.WEXITSTATUS(status)
+	}
+	if #C.WIFSIGNALED(status) {
+		return 128 + #C.WTERMSIG(status)
+	}
+	return -1
+}
+
+fun close_fds(fds []i32) {
+	for fd in fds {
+		_ := #C.close(fd)
+	}
+}
+
+fun exec_error(cmd string) CmdRes {
+	return CmdRes{
+		code = -1
+		stderr = 'cannot execute command: ${cmd}'
+	}
 }
 
 pub fun system(cmd string) i32 {
