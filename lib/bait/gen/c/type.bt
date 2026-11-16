@@ -4,7 +4,7 @@ package c
 
 import bait.ast
 
-fun (mut g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
+fun (mut g Gen) concrete_sym(typ ast.Type) &ast.TypeSymbol {
 	return g.table.get_sym(g.concrete_type(typ))
 }
 
@@ -41,7 +41,7 @@ fun (mut g Gen) typ(typ ast.Type) string {
 
 // The C name of the typedef of a function type. Anonymous function types are named
 // after their signature, so the name is sanitised to be a valid identifier.
-fun fun_type_name(sym ast.TypeSymbol) string {
+fun fun_type_name(sym &ast.TypeSymbol) string {
 	return c_esc(sym.mix_name).replace('&', 'ptr_').replace(' ', '_').replace('(', '_').replace(')', '_').replace(',', '')
 }
 
@@ -78,7 +78,7 @@ fun (mut g Gen) write_struct_bodies() {
 
 // Writes the body of a struct, unless it was written before. Structs stored by
 // value in a field are written first, because their size has to be known.
-fun (mut g Gen) write_struct_body(sym ast.TypeSymbol) {
+fun (mut g Gen) write_struct_body(sym &ast.TypeSymbol) {
 	if not g.is_c_struct(sym) or g.generated_struct_bodies.contains(sym.mix_name) {
 		return
 	}
@@ -112,7 +112,7 @@ fun (mut g Gen) write_value_struct(typ ast.Type) {
 // The types it refers to are written first, so the order of the type symbols
 // does not matter (e.g. an alias of a struct declared later in the file).
 // Struct bodies are not written here, see `write_struct_body`.
-fun (mut g Gen) type_def(sym ast.TypeSymbol) {
+fun (mut g Gen) type_def(sym &ast.TypeSymbol) {
 	if sym.mix_name.starts_with('C.') or g.generated_type_defs.contains(sym.mix_name) {
 		return
 	}

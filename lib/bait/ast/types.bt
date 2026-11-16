@@ -96,7 +96,7 @@ pub fun (sym TypeSymbol) full_name() string {
 
 pub fun (sym TypeSymbol) find_field(name string, t Table) StructField {
 	if sym.kind == .generic_inst {
-		return t.unwrap_generic(sym).find_field(name, t)
+		return t.get_sym(sym.parent).find_field(name, t)
 	}
 
 	if sym.info is StructInfo {
@@ -128,9 +128,9 @@ pub fun (sym TypeSymbol) has_method(name string) bool {
 
 pub fun (mut t Table) register_builtins(){
 	// IMPORTANT: Order of registration must match the order of the constants above
-	_ = t.register_sym(TypeSymbol{ mix_name = '_' }) // PLACEHOLDER_TYPE
-	_ = t.register_sym(TypeSymbol{ mix_name = '_err' }) // ERROR_TYPE
-	_ = t.register_sym(TypeSymbol{ mix_name = 'void' })
+	_ = t.register_sym(&TypeSymbol{ mix_name = '_' }) // PLACEHOLDER_TYPE
+	_ = t.register_sym(&TypeSymbol{ mix_name = '_err' }) // ERROR_TYPE
+	_ = t.register_sym(&TypeSymbol{ mix_name = 'void' })
 	_ = t.register_num('i8')
 	_ = t.register_num('i16')
 	_ = t.register_num('i32')
@@ -141,24 +141,24 @@ pub fun (mut t Table) register_builtins(){
 	_ = t.register_num('u64')
 	_ = t.register_num('f32')
 	_ = t.register_num('f64')
-	_ = t.register_sym(TypeSymbol{ mix_name = 'bool' })
-	_ = t.register_sym(TypeSymbol{
+	_ = t.register_sym(&TypeSymbol{ mix_name = 'bool' })
+	_ = t.register_sym(&TypeSymbol{
 		mix_name = 'string'
 		kind = .string
 	})
-	_ = t.register_sym(TypeSymbol{
+	_ = t.register_sym(&TypeSymbol{
 		mix_name = 'Array'
 		kind = .array
 	})
-	_ = t.register_sym(TypeSymbol{
+	_ = t.register_sym(&TypeSymbol{
 		mix_name = 'Map'
 		kind = .map
 	})
-	_ = t.register_sym(TypeSymbol{ mix_name = 'any'})
+	_ = t.register_sym(&TypeSymbol{ mix_name = 'any'})
 }
 
 pub fun (mut t Table) register_num(name string) {
-	_ = t.register_sym(TypeSymbol{
+	_ = t.register_sym(&TypeSymbol{
 		mix_name = name
 		kind = .number
 		is_pub = true

@@ -4,7 +4,7 @@ package ast
 
 pub struct Table {
 	mut type_idxs map[string]Type
-	global type_symbols []TypeSymbol
+	global type_symbols []&TypeSymbol // References, so that lookups do not copy symbols
 	global needed_equality_funs []Type
 	global needed_str_funs []Type
 	pub mut generic_fun_types map[string][][]Type // Array of concrete types used for each generic fun
@@ -20,7 +20,7 @@ pub fun (t Table) get_idx(name string) Type {
 	return t.type_idxs[name]
 }
 
-pub fun (t Table) get_sym(typ Type) TypeSymbol {
+pub fun (t Table) get_sym(typ Type) &TypeSymbol {
 	return t.type_symbols[typ.idx()]
 }
 
@@ -43,7 +43,7 @@ pub fun (t Table) unwrap_result(typ Type) Type {
 	return if sym.kind == .result { sym.parent } else { typ }
 }
 
-pub fun (t Table) get_final_sym(sym TypeSymbol) TypeSymbol {
+pub fun (t Table) get_final_sym(sym &TypeSymbol) &TypeSymbol {
 	mut s := sym
 	// The limit stops at alias cycles, which the checker reports
 	for i := 0; s.kind == .alias_type and i < t.type_symbols.length; i += 1 {
@@ -52,7 +52,7 @@ pub fun (t Table) get_final_sym(sym TypeSymbol) TypeSymbol {
 	return s
 }
 
-pub fun (t Table) unwrap_generic(sym TypeSymbol) TypeSymbol {
+pub fun (t Table) unwrap_generic(sym &TypeSymbol) &TypeSymbol {
 	if sym.kind == .generic_inst {
 		return t.get_sym(sym.parent)
 	}
@@ -81,7 +81,7 @@ pub fun (mut t Table) find_or_register_generic_inst(base Type, concrete []Type) 
 	for typ in concrete {
 		conc.push(typ)
 	}
-	return t.register_sym(TypeSymbol{
+	return t.register_sym(&TypeSymbol{
 		kind = .generic_inst
 		mix_name = name
 		pkg = t.get_sym(base).pkg
@@ -94,7 +94,7 @@ pub fun (mut t Table) find_or_register_generic_inst(base Type, concrete []Type) 
 
 // Fields of an instance of a generic struct with the generic types replaced by the concrete types.
 // The fields are new values: the fields of the generic struct itself must stay unchanged.
-pub fun (t Table) generic_inst_fields(sym TypeSymbol) []StructField {
+pub fun (t Table) generic_inst_fields(sym &TypeSymbol) []StructField {
 	info := t.get_sym(sym.parent).info as StructInfo
 	inst := sym.info as GenericInst
 	mut fields := []StructField
@@ -141,7 +141,8 @@ pub fun (t Table) type_name(typ Type) string {
 	return amps + t.get_sym(typ).mix_name
 }
 
-pub fun (mut t Table) register_sym(sym TypeSymbol) Type {
+// `sym` is stored in the table, so it must be a new symbol
+pub fun (mut t Table) register_sym(sym &TypeSymbol) Type {
 	idx := t.get_idx(sym.mix_name)
 	if idx > 0 as Type {
 		cur_sym := t.get_sym(idx)
@@ -180,7 +181,7 @@ pub fun (mut t Table) find_or_register_array(elem_type Type) Type {
 		return idx
 	}
 
-	return t.register_sym(TypeSymbol{
+	return t.register_sym(&TypeSymbol{
 		kind = .array
 		mix_name = name
 		pkg = elem_sym.pkg
@@ -197,7 +198,7 @@ pub fun (mut t Table) find_or_register_map(key_type Type, val_type Type) Type {
 	if idx > 0 as Type {
 		return idx
 	}
-	return t.register_sym(TypeSymbol{
+	return t.register_sym(&TypeSymbol{
 		kind = .map
 		mix_name = name
 		parent = MAP_TYPE
@@ -216,7 +217,7 @@ pub fun (mut t Table) find_or_register_fun(param_types []Type, return_type Type,
 		return idx
 	}
 
-	return t.register_sym(TypeSymbol{
+	return t.register_sym(&TypeSymbol{
 		kind = .fun_
 		mix_name = name
 		info = FunInfo{
@@ -234,7 +235,7 @@ pub fun (mut t Table) find_type_or_add_placeholder(name string, pkg string) Type
 		return idx
 	}
 
-	return t.register_sym(TypeSymbol{
+	return t.register_sym(&TypeSymbol{
 		kind = .placeholder
 		mix_name = name
 		pkg = pkg
@@ -242,7 +243,7 @@ pub fun (mut t Table) find_type_or_add_placeholder(name string, pkg string) Type
 }
 
 // Get the method of a type symbol or any of its parents.
-pub fun (t Table) get_method(sym TypeSymbol, name string) FunDecl {
+pub fun (t Table) get_method(sym &TypeSymbol, name string) FunDecl {
 	mut s := sym
 	for true {
 		for m in s.methods {
@@ -258,7 +259,7 @@ pub fun (t Table) get_method(sym TypeSymbol, name string) FunDecl {
 	return FunDecl{}
 }
 
-pub fun (t Table) get_overload(sym TypeSymbol, op string) FunDecl {
+pub fun (t Table) get_overload(sym &TypeSymbol, op string) FunDecl {
 	mut s := sym
 	for true {
 		if s.overloads.contains(op) {

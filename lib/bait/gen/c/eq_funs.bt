@@ -122,7 +122,7 @@ fun (mut g Gen) eq_check(typ ast.Type, a string, b string) string {
 	return '${a} == ${b}'
 }
 
-fun (mut g Gen) sum_equality_fun(typ ast.Type, sym ast.TypeSymbol) string {
+fun (mut g Gen) sum_equality_fun(typ ast.Type, sym &ast.TypeSymbol) string {
 	g.generated_eq_funs.push(typ)
 
 	info := sym.info as ast.SumTypeInfo
@@ -151,7 +151,7 @@ fun (mut g Gen) sum_equality_fun(typ ast.Type, sym ast.TypeSymbol) string {
 	return fname
 }
 
-fun (mut g Gen) struct_equality_fun(typ ast.Type, sym ast.TypeSymbol) string {
+fun (mut g Gen) struct_equality_fun(typ ast.Type, sym &ast.TypeSymbol) string {
 	g.generated_eq_funs.push(typ)
 
 	sname := c_esc(sym.mix_name)
@@ -174,7 +174,7 @@ fun (mut g Gen) struct_equality_fun(typ ast.Type, sym ast.TypeSymbol) string {
 	return fname
 }
 
-fun (mut g Gen) map_equality_fun(typ ast.Type, sym ast.TypeSymbol) string {
+fun (mut g Gen) map_equality_fun(typ ast.Type, sym &ast.TypeSymbol) string {
 	g.generated_eq_funs.push(typ)
 
 	info := sym.info as ast.MapInfo

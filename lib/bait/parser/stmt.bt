@@ -236,7 +236,7 @@ fun (mut p Parser) enum_decl() !ast.EnumDecl{
 	}
 	p.check(.rcur)!
 
-	typ := p.table.register_sym(ast.TypeSymbol{
+	typ := p.table.register_sym(&ast.TypeSymbol{
 		mix_name = name
 		is_pub = is_pub
 		pkg = p.pkg_name
@@ -295,7 +295,7 @@ fun (mut p Parser) interface_decl() !ast.InterfaceDecl{
 	}
 
 	// Register before parsing the methods, as they need the type
-	tsym := ast.TypeSymbol{
+	tsym := &ast.TypeSymbol{
 		kind = .interface_
 		mix_name = name
 		is_pub = is_pub
@@ -418,7 +418,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 	// Function type
 	if is_fun_type {
 		sym := p.table.get_sym(variants[0])
-		typ := p.table.register_sym(ast.TypeSymbol{
+		typ := p.table.register_sym(&ast.TypeSymbol{
 			kind = .fun_
 			mix_name = name
 			is_pub = is_pub
@@ -440,7 +440,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 
 	// Alias type
 	if p.tok != .pipe {
-		typ := p.table.register_sym(ast.TypeSymbol{
+		typ := p.table.register_sym(&ast.TypeSymbol{
 			kind = .alias_type
 			mix_name = name
 			parent = variants[0]
@@ -466,7 +466,7 @@ fun (mut p Parser) type_decl() !ast.TypeDecl {
 		variants.push(p.parse_type()!)
 	}
 
-	typ := p.table.register_sym(ast.TypeSymbol{
+	typ := p.table.register_sym(&ast.TypeSymbol{
 		kind = .sum_type
 		mix_name = name
 		is_pub = is_pub

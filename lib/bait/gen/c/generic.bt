@@ -61,7 +61,7 @@ fun (mut g Gen) struct_fields(typ ast.Type) []ast.StructField {
 }
 
 // Fields of a struct or an instance of a generic struct, see `struct_fields`
-fun (g Gen) sym_fields(sym ast.TypeSymbol) []ast.StructField {
+fun (g Gen) sym_fields(sym &ast.TypeSymbol) []ast.StructField {
 	if sym.kind == .generic_inst {
 		return g.table.generic_inst_fields(sym)
 	}
@@ -72,7 +72,7 @@ fun (g Gen) sym_fields(sym ast.TypeSymbol) []ast.StructField {
 
 // Whether `sym` is a struct with a C struct of its own. Generic structs have none, and
 // instances with generic params are written per instantiation, so they are skipped.
-fun (g Gen) is_c_struct(sym ast.TypeSymbol) bool {
+fun (g Gen) is_c_struct(sym &ast.TypeSymbol) bool {
 	if sym.mix_name.starts_with('C.') {
 		return false
 	}
