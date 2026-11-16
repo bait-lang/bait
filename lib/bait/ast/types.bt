@@ -100,8 +100,8 @@ pub fun (sym TypeSymbol) find_field(name string, t Table) StructField {
 	}
 
 	if sym.info is StructInfo {
-		info := sym.info as StructInfo
-		for f in info.fields {
+		// Iterate the fields in place: `info := sym.info as StructInfo` would copy all of them
+		for f in (sym.info as StructInfo).fields {
 			if f.name == name {
 				return f
 			}
