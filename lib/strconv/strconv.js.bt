@@ -1,0 +1,10 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+package strconv
+
+// Parses a floating point number from the start of `s`.
+// Returns 0 if no number was found.
+pub fun atof(s string) f64 {
+	n := #JS.'parseFloat(s.str)' as f64
+	return #JS.'Number.isNaN(n) ? 0 : n' as f64
+}

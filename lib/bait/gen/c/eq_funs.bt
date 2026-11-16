@@ -17,6 +17,11 @@ fun (mut g Gen) gen_equality_funs() {
 
 fun (mut g Gen) equality_fun(raw_typ ast.Type) string {
 	typ := g.concrete_type(raw_typ)
+	// Pointers are compared by address
+	if typ.get_nr_amp() > 0 {
+		return ''
+	}
+
 	sym := g.table.get_sym(typ)
 	if g.generated_eq_funs.contains(typ) {
 		return c_esc('${sym.mix_name}_eq')
@@ -53,6 +58,9 @@ fun (mut g Gen) equality_fun(raw_typ ast.Type) string {
 
 		g.fun_decls_out.write('bool ${fname}(${sname} a, ${sname} b);\n')
 
+		// Generate the element equality function before writing this function
+		elem_eq_fun := g.equality_fun(info.elem_type)
+
 		g.auto_funs_out.write('bool ${fname}(${sname} a, ${sname} b) {\n')
 
 		// Compare length
@@ -61,7 +69,6 @@ fun (mut g Gen) equality_fun(raw_typ ast.Type) string {
 		g.auto_funs_out.write('\t}\n')
 
 		// Compare elements
-		elem_eq_fun := g.equality_fun(info.elem_type)
 		g.auto_funs_out.write('\tfor (int i = 0; i < a.length; i++) {\n')
 		if elem_eq_fun.length > 0 {
 			g.auto_funs_out.write('\t\tif (!${elem_eq_fun}(*(${elem_type_str}*)Array_get(a, i), *(${elem_type_str}*)Array_get(b, i))) {\n')

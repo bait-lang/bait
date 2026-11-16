@@ -1,0 +1,26 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+import strconv
+
+fun test_atoi() {
+	assert strconv.atoi('0') == 0
+	assert strconv.atoi('42') == 42
+	assert strconv.atoi('-17') == -17
+	assert strconv.atoi('+5') == 5
+	assert strconv.atoi('  12') == 12
+	assert strconv.atoi('123abc') == 123
+	assert strconv.atoi('2147483647') == 2147483647
+	assert strconv.atoi('') == 0
+	assert strconv.atoi('abc') == 0
+}
+
+fun test_atof() {
+	assert strconv.atof('0') == 0.0
+	assert strconv.atof('1.5') == 1.5
+	assert strconv.atof('-2.25') == -2.25
+	assert strconv.atof('3') == 3.0
+	assert strconv.atof('1e3') == 1000.0
+	assert strconv.atof('  0.5x') == 0.5
+	assert strconv.atof('') == 0.0
+	assert strconv.atof('abc') == 0.0
+}

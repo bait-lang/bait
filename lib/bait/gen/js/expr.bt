@@ -142,6 +142,12 @@ fun (mut g Gen) bool_literal(node ast.BoolLiteral){
 }
 
 fun (mut g Gen) char_literal(node ast.CharLiteral) {
+	// An empty char literal is the null char
+	if node.val.length == 0 {
+		g.write('u8(0)')
+		return
+	}
+
 	g.write('u8("')
 	g.write(escape.char(node.val, `\"`))
 	g.write('")')

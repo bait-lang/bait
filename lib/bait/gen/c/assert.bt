@@ -103,7 +103,7 @@ fun (mut g Gen) assert_side_expr(node ast.Expr) {
 		g.write(')')
 	} else if node is ast.StringLiteral {
 		g.write("'")
-		g.write(escape.linebreak(node.val))
+		g.write(escape.linebreak(unescape_dollar(node.val)))
 		g.write("'")
 	} else if node is ast.CharLiteral {
 		g.write("`")

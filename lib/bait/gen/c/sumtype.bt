@@ -42,12 +42,14 @@ fun (g Gen) unsmartcast_type(expr ast.Expr, typ ast.Type) ast.Type {
 	return typ
 }
 
-// Write `expr` without applying a smartcast
-fun (mut g Gen) raw_sum_expr(expr ast.Expr) string {
+// Write `expr` without applying a smartcast.
+// It is written in place (not via `expr_string`) so a hoisted `!` keeps any prefix intact.
+fun (mut g Gen) raw_sum_expr(expr ast.Expr) {
 	if expr is ast.Ident {
-		return g.ident_name(expr)
+		g.write(g.ident_name(expr))
+		return
 	}
-	return g.expr_string(expr)
+	g.expr(expr)
 }
 
 fun (mut g Gen) is_variant_of(typ ast.Type, sum ast.Type) bool {
@@ -101,12 +103,14 @@ fun (mut g Gen) expr_as(expr ast.Expr, typ ast.Type, exp ast.Type) {
 
 // `x as Variant`
 fun (mut g Gen) sum_unwrap(expr ast.Expr, sum ast.Type, target ast.Type) {
-	val := g.raw_sum_expr(expr)
-	field := g.sum_field(sum, val, target.set_nr_amp(0))
-	if target.get_nr_amp() > 0 {
-		g.write(field)
-	} else {
-		g.write('(*${field})')
+	deref := target.get_nr_amp() == 0
+	if deref {
+		g.write('(*')
+	}
+	g.raw_sum_expr(expr)
+	g.write(g.sum_field(sum, '', target.set_nr_amp(0)))
+	if deref {
+		g.write(')')
 	}
 }
 
@@ -114,5 +118,7 @@ fun (mut g Gen) sum_unwrap(expr ast.Expr, sum ast.Type, target ast.Type) {
 fun (mut g Gen) sum_is(node ast.InfixExpr) {
 	sum := g.unsmartcast_type(node.left, node.left_type)
 	op := if sum.get_nr_amp() > 0 { '->' } else { '.' }
-	g.write('(${g.raw_sum_expr(node.left)}${op}typ == ${node.right_type.idx()})')
+	g.write('(')
+	g.raw_sum_expr(node.left)
+	g.write('${op}typ == ${node.right_type.idx()})')
 }

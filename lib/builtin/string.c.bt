@@ -3,6 +3,7 @@
 package builtin
 
 import strings
+import strconv
 
 struct string {
 	pub mut str &u8
@@ -193,6 +194,14 @@ pub fun (s string) repeat(count i32) string {
 		str = buf
 		length = new_len
 	}
+}
+
+pub fun (s string) toI32() i32 {
+	return strconv.atoi(s)
+}
+
+pub fun (s string) toF64() f64 {
+	return strconv.atof(s)
 }
 
 pub fun (s string) bytes() []u8 {

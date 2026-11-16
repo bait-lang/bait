@@ -1,0 +1,57 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+import bait.test_pkgs.cstruct
+
+// The struct `#C.tm` is declared in another package
+
+fun jan(day i32) #C.tm {
+	return #C.tm{
+		tm_mday = day
+		tm_year = 124
+		tm_isdst = -1
+	}
+}
+
+fun test_lowercase_struct_init() {
+	t := jan(15)
+	assert t.tm_mday == 15
+	assert t.tm_mon == 0
+	assert t.tm_year == 124
+}
+
+fun test_pass_pointer_to_c_function() {
+	mut t := jan(32)
+	_ := #C.mktime(&t)
+	assert t.tm_mday == 1
+	assert t.tm_mon == 1
+}
+
+fun test_struct_from_other_package() {
+	t := cstruct.normalize(jan(33))
+	assert t.tm_mday == 2
+	assert t.tm_mon == 1
+}
+
+fun test_array_of_c_structs() {
+	mut days := []#C.tm{length = 2}
+	days[0].tm_mday = 3
+	days[1] = jan(4)
+	days.push(jan(5))
+
+	assert days.length == 3
+	assert days[0].tm_mday == 3
+	assert days[1].tm_mday + days[2].tm_mday == 9
+
+	mut sum := 0
+	for d in days {
+		sum += d.tm_mday
+	}
+	assert sum == 12
+}
+
+fun test_c_struct_pointer() {
+	mut days := [jan(6)]
+	p := &days[0]
+	assert p.tm_mday == 6
+}

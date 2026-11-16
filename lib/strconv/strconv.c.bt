@@ -1,0 +1,12 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+package strconv
+
+// Parses a floating point number from the start of `s`.
+// Returns 0 if no number was found.
+pub fun atof(s string) f64 {
+	// strtod requires a null terminated string
+	mut buf := #C.calloc(1, s.length + 1)
+	#C.memcpy(buf, s.str, s.length)
+	return #C.'strtod((char*)buf, NULL)' as f64
+}

@@ -86,3 +86,17 @@ fun test_join() {
 	assert ['a', '', 'c'].join('-') == 'a--c'
 	assert ['a', 'b'].join(', ') == 'a, b'
 }
+
+fun test_to_i32() {
+	assert '0'.toI32() == 0
+	assert '123'.toI32() == 123
+	assert '-45'.toI32() == -45
+	assert '7px'.toI32() == 7
+}
+
+fun test_to_f64() {
+	assert '0'.toF64() == 0.0
+	assert '1.25'.toF64() == 1.25
+	assert '-0.5'.toF64() == -0.5
+	assert '2e2'.toF64() == 200.0
+}

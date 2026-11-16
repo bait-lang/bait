@@ -98,6 +98,11 @@ pub fun (a Array) index_last[T](val T) i32 {
 	return -1
 }
 
+pub fun (mut a Array) delete(idx i32) {
+	#C.memmove(#C.'a->data + idx * a->elem_size' as &void, #C.'a->data + (idx + 1) * a->elem_size' as &void, (a.length - idx - 1) * a.elem_size)
+	a.length -= 1
+}
+
 pub fun (a Array) slice(start i32, end i32) Array {
 	mut b := new_array(end - start, end - start, a.elem_size)
 	#C.memcpy(b.data, #C.'a.data + start * a.elem_size' as &void, b.length * b.elem_size)

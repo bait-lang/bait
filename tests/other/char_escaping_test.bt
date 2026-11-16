@@ -5,3 +5,9 @@ fun test_escape_double_quote(){
 	c := `\"`
 	assert true
 }
+
+fun test_empty_char() {
+	c := ``
+	assert c == 0 as u8
+	assert c != `a`
+}

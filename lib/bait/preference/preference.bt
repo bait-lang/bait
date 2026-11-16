@@ -156,7 +156,14 @@ pub fun parse_args(args []string) Prefs {
 		}
 
 		if p.command.ends_with('.bt') {
-			p.out_name = p.command.replace('.bt', ext)
+			// Drop `.bt` and a backend suffix, e.g. `foo.c.bt` becomes `foo`, not the C source name `foo.c`
+			mut base := p.command.substr(0, p.command.length - 3)
+			for suffix in ['.c', '.js'] {
+				if base.ends_with(suffix) {
+					base = base.substr(0, base.length - suffix.length)
+				}
+			}
+			p.out_name = base + ext
 		} else {
 			p.out_name = os.abs_path(p.command).all_after_last(os.PATH_SEP) + ext
 		}

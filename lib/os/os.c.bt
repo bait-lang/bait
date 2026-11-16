@@ -53,20 +53,48 @@ pub fun is_dir(path string) bool {
 }
 
 pub fun read_bytes(path string) []u8 {
-	mut size := 0 as i64
-	#C.'FILE* fp;
-	fp = fopen(path.str, "r");
-	fseek(fp, 0, SEEK_END);
-	size = ftell(fp);
-	fseek(fp, 0, SEEK_SET);'
-	mut res := []u8{length = size as i32}
-	#C.'fread(res.data, 1, size, fp);
-	fclose(fp);'
+	return read_bytes_with_cap(path, 0)
+}
+
+// Reads the whole file. The returned array has room for `extra_cap` more bytes,
+// which are zeroed. Panics if the file cannot be read.
+fun read_bytes_with_cap(path string, extra_cap i32) []u8 {
+	fp := #C.fopen(path.str, 'rb'.str)
+	if fp == 0 as &#C.FILE {
+		panic('cannot open file ${path}')
+	}
+
+	mut size := -1 as i64
+	if #C.fseek(fp, 0, #C.SEEK_END) == 0 {
+		size = #C.ftell(fp)
+	}
+	// Directories can be opened, but have no size
+	if size < 0 or #C.fseek(fp, 0, #C.SEEK_SET) != 0 {
+		_ := #C.fclose(fp)
+		panic('cannot read file ${path}')
+	}
+
+	len := size as i32
+	mut res := []u8{
+		length = len
+		cap = len + extra_cap
+	}
+	nr_read := #C.fread(res.data, 1, len, fp)
+	is_err := #C.ferror(fp) != 0
+	_ := #C.fclose(fp)
+	if is_err {
+		panic('cannot read file ${path}')
+	}
+	// The file may have shrunk since its size was determined
+	if nr_read < len {
+		res.trim(nr_read)
+	}
 	return res
 }
 
 pub fun read_file(path string) string {
-	bytes := read_bytes(path)
+	// The extra byte terminates the string for C functions that use `.str`
+	bytes := read_bytes_with_cap(path, 1)
 	return string{
 		str = bytes.data as &u8
 		length = bytes.length
@@ -76,7 +104,7 @@ pub fun read_file(path string) string {
 pub fun write_file(path string, text string) {
 	#C.'FILE* fp;
 	fp = fopen(path.str, "w");
-	fprintf(fp, text.str);
+	fwrite(text.str, 1, text.length, fp);
 	fclose(fp);'
 }
 
@@ -143,23 +171,120 @@ pub struct CmdRes {
 }
 
 pub fun exec(cmd string) CmdRes {
-	mut res := CmdRes{}
+	mut out_fds := []i32{length = 2}
+	mut err_fds := []i32{length = 2}
+	if #C.pipe(out_fds.data as &i32) != 0 {
+		return exec_error(cmd)
+	}
+	if #C.pipe(err_fds.data as &i32) != 0 {
+		close_fds(out_fds)
+		return exec_error(cmd)
+	}
 
-	#C.'FILE* f;
-	size_t bytes_read;
-	char buf[4096];
+	pid := #C.fork()
+	if pid == 0 {
+		// Child: redirect stdout and stderr into the pipes and run the command
+		_ := #C.dup2(out_fds[1], 1)
+		_ := #C.dup2(err_fds[1], 2)
+		close_fds(out_fds)
+		close_fds(err_fds)
+		_ := #C.execl('/bin/sh'.str, 'sh'.str, '-c'.str, cmd.str, 0 as &void)
+		#C._exit(127)
+	}
 
-	f = popen(cmd.str, "r");
+	// Parent: only reads from the pipes
+	_ := #C.close(out_fds[1])
+	_ := #C.close(err_fds[1])
+	if pid < 0 {
+		_ := #C.close(out_fds[0])
+		_ := #C.close(err_fds[0])
+		return exec_error(cmd)
+	}
 
-	bytes_read = fread(buf, 1, sizeof(buf) - 1, f);'
-	#C."buf[bytes_read] = '\0';
+	// Both pipes are drained alternately, so that the child never blocks on a full pipe
+	mut fds := [out_fds[0], err_fds[0]]
+	mut outputs := [strings.new_builder(4096), strings.new_builder(1024)]
+	mut ready := []bool{length = 2}
+	mut buf := []u8{length = 4096}
+	for fds[0] >= 0 or fds[1] >= 0 {
+		if poll_readable(fds, mut ready) < 0 {
+			if #C.errno == #C.EINTR {
+				continue
+			}
+			break
+		}
 
-	res.code = pclose(f);
+		for i := 0; i < 2; i += 1 {
+			if fds[i] < 0 or not ready[i] {
+				continue
+			}
+			n := #C.read(fds[i], buf.data, buf.length)
+			if n > 0 {
+				outputs[i].push_many_with_len(buf.data as &u8, n)
+			} else if n == 0 or #C.errno != #C.EINTR {
+				_ := #C.close(fds[i])
+				fds[i] = -1
+			}
+		}
+	}
+	for fd in fds {
+		if fd >= 0 {
+			_ := #C.close(fd)
+		}
+	}
 
-	res.stdout = from_c_string(strdup(buf));
-	res.stderr = res.stdout;"
+	return CmdRes{
+		code = wait_exit_code(pid)
+		stdout = outputs[0].str()
+		stderr = outputs[1].str()
+	}
+}
 
+// Blocks until one of the open file descriptors is readable or closed.
+// Negative file descriptors are ignored.
+fun poll_readable(fds []i32, mut ready []bool) i32 {
+	mut pfds := []#C.pollfd{length = fds.length}
+	for i, fd in fds {
+		pfds[i] = #C.pollfd{
+			fd = fd
+			events = #C.POLLIN
+		}
+	}
+	res := #C.poll(pfds.data as &#C.pollfd, pfds.length, -1)
+	for i, pfd in pfds {
+		ready[i] = pfd.revents != 0
+	}
 	return res
+}
+
+// Waits for the process and returns its exit code, or 128 + signal number if it was killed
+fun wait_exit_code(pid i32) i32 {
+	mut status := 0
+	for #C.waitpid(pid, &status, 0) < 0 {
+		if #C.errno != #C.EINTR {
+			return -1
+		}
+	}
+	if #C.WIFEXITED(status) {
+		return #C.WEXITSTATUS(status)
+	}
+	if #C.WIFSIGNALED(status) {
+		return 128 + #C.WTERMSIG(status)
+	}
+	return -1
+}
+
+fun close_fds(fds []i32) {
+	for fd in fds {
+		_ := #C.close(fd)
+	}
+}
+
+fun exec_error(cmd string) CmdRes {
+	return CmdRes{
+		code = -1
+		stderr = 'cannot execute command: ${cmd}'
+	}
 }
 
 pub fun system(cmd string) i32 {

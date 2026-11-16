@@ -1,14 +1,27 @@
 // SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
-struct Foo{}
+struct Foo{
+	x i32
+}
 struct Bar{}
 type Spam := Foo | Bar
 
 fun spam_res() !Spam {
-	return Foo{}
+	return Foo{ x = 3 }
 }
 
 fun test_code_compiles() {
 	assert true
+}
+
+fun test_unwrap_propagated() ! {
+	foo := spam_res()! as Foo
+	assert foo.x == 3
+
+	mut x := 0
+	x = (spam_res()! as Foo).x
+	assert x == 3
+
+	assert spam_res()! is Foo
 }

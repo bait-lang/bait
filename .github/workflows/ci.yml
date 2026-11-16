@@ -71,21 +71,7 @@ jobs:
           bait test -b c tests/type
       - name: Run lib tests
         run: |
-          # bait test -b c lib/bait
-          # bait test -b c lib/bait/lexer/tests
-          bait test -b c lib/bait/lexer/tests/comments_test.bt
-          bait test -b c lib/bait/lexer/tests/numbers_test.bt
-          bait test -b c lib/bait/lexer/tests/position_test.bt
-          bait test -b c lib/bait/lexer/tests/unclosed_string_test.bt
-          bait test -b c lib/bait/util/escape/escape_test.bt
-          bait test -b c lib/builtin
-          # bait test -b c lib/cli
-          bait test -b c lib/cli/parse_string_test.bt
-          bait test -b c lib/encoding
-          bait test -b c lib/hash
-          bait test -b c lib/math
-          bait test -b c lib/os
-          bait test -b c lib/strings
+          bait test -b c lib
       - name: Run tool tests
         run: bait test -b c cli/tools
       # - name: Check markdown code blocks
@@ -135,21 +121,7 @@ jobs:
           bait test -b c -cc tcc tests/type
       - name: Run lib tests
         run: |
-          # bait test -b c -cc tcc lib/bait
-          # bait test -b c -cc tcc lib/bait/lexer/tests
-          bait test -b c -cc tcc lib/bait/lexer/tests/comments_test.bt
-          bait test -b c -cc tcc lib/bait/lexer/tests/numbers_test.bt
-          bait test -b c -cc tcc lib/bait/lexer/tests/position_test.bt
-          bait test -b c -cc tcc lib/bait/lexer/tests/unclosed_string_test.bt
-          bait test -b c -cc tcc lib/bait/util/escape/escape_test.bt
-          bait test -b c -cc tcc lib/builtin
-          # bait test -b c -cc tcc lib/cli
-          bait test -b c -cc tcc lib/cli/parse_string_test.bt
-          bait test -b c -cc tcc lib/encoding
-          bait test -b c -cc tcc lib/hash
-          bait test -b c -cc tcc lib/math
-          bait test -b c -cc tcc lib/os
-          bait test -b c -cc tcc lib/strings
+          bait test -b c -cc tcc lib
       - name: Run tool tests
         run: bait test -b c -cc tcc cli/tools
 

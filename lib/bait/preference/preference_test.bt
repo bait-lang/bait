@@ -1,0 +1,21 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+import bait.preference
+
+fun test_default_out_name_c() {
+	assert preference.parse_args(['-b', 'c', 'build', 'foo.bt']).out_name == 'foo'
+	// The backend suffix is dropped, so that it is not mistaken for the C source output
+	assert preference.parse_args(['-b', 'c', 'build', 'foo.c.bt']).out_name == 'foo'
+	assert preference.parse_args(['-b', 'c', 'run', 'dir/foo.c.bt']).out_name == 'dir/foo'
+}
+
+fun test_default_out_name_js() {
+	assert preference.parse_args(['build', 'foo.bt']).out_name == 'foo.js'
+	assert preference.parse_args(['build', 'foo.js.bt']).out_name == 'foo.js'
+	assert preference.parse_args(['build', 'a.bt.dir/foo.bt']).out_name == 'a.bt.dir/foo.js'
+}
+
+fun test_explicit_out_name() {
+	assert preference.parse_args(['-b', 'c', 'build', 'foo.c.bt', '-o', 'foo.c']).out_name == 'foo.c'
+}

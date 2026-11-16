@@ -1,0 +1,35 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+package strconv
+
+// Parses a decimal integer from the start of `s`.
+// Leading whitespace and an optional sign are allowed.
+// Parsing stops at the first non-digit character.
+// Returns 0 if no digits were found.
+pub fun atoi(s string) i32 {
+	mut i := 0
+	for i < s.length and is_space(s[i]) {
+		i += 1
+	}
+
+	mut neg := false
+	if i < s.length and (s[i] == `-` or s[i] == `+`) {
+		neg = s[i] == `-`
+		i += 1
+	}
+
+	mut n := 0 as i64
+	for i < s.length and s[i] >= `0` and s[i] <= `9` {
+		n = n * 10 + (s[i] - `0`) as i64
+		i += 1
+	}
+
+	if neg {
+		n = -n
+	}
+	return n as i32
+}
+
+fun is_space(c u8) bool {
+	return c == ` ` or c == `\t` or c == `\n` or c == `\r` or c == `\v` or c == `\f`
+}

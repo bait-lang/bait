@@ -135,6 +135,12 @@ fun (mut g Gen) bool_literal(node ast.BoolLiteral) {
 }
 
 fun (mut g Gen) char_literal(node ast.CharLiteral) {
+	// An empty char literal is the null char; C has no `''`
+	if node.val.length == 0 {
+		g.write('0')
+		return
+	}
+
 	// C has no `\`` escape; emit a plain backtick
 	if node.val == '\\`' {
 		g.write("'`'")
@@ -325,6 +331,16 @@ fun (mut g Gen) par_expr(node ast.ParExpr) {
 }
 
 fun (mut g Gen) prefix_expr(node ast.PrefixExpr) {
+	// `&Struct{}` must outlive the current scope, so copy the literal to the heap
+	if node.op == .amp and node.right is ast.StructInit {
+		init := node.right as ast.StructInit
+		type_str := g.typ(init.typ)
+		g.write('(${type_str}*)memcpy(malloc(sizeof(${type_str})), &')
+		g.struct_init(init)
+		g.write(', sizeof(${type_str}))')
+		return
+	}
+
 	g.write(node.op.c_repr())
 	g.expr(node.right)
 }
@@ -340,17 +356,40 @@ fun (mut g Gen) selector_expr(node ast.SelectorExpr) {
 }
 
 fun (mut g Gen) string_literal(node ast.StringLiteral) {
-	val := escape.char(node.val.replace('\n', '\\n'), `\"`)
+	val := c_string_val(node.val)
 	g.write('from_c_string("')
 	g.write(val)
 	g.write('")')
+}
+
+fun c_string_val(val string) string {
+	return escape.char(unescape_dollar(val).replace('\n', '\\n'), `\"`)
+}
+
+// C has no `\$` escape sequence; drop the backslash (but keep `\\$`)
+fun unescape_dollar(s string) string {
+	if not s.contains('\\$') {
+		return s
+	}
+	mut res := ''
+	mut start := 0
+	mut is_escaped := false
+	for i := 0; i < s.length; i += 1 {
+		c := s[i]
+		if c == `$` and is_escaped {
+			res += s.substr(start, i - 1)
+			start = i
+		}
+		is_escaped = c == `\\` and not is_escaped
+	}
+	return res + s.substr(start, s.length)
 }
 
 fun (mut g Gen) string_inter_literal(node ast.StringInterLiteral) {
 	len := node.vals.length + node.exprs.length
 	g.write('interpolate(new_array_from_c(${len}, ${len}, sizeof(string), (string[${len}]){')
 	for i, val in node.vals {
-		esc_val := escape.char(val.replace('\n', '\\n'), `\"`)
+		esc_val := c_string_val(val)
 		g.write('from_c_string("${esc_val}")')
 		g.write(', ')
 		if i < node.exprs.length {
