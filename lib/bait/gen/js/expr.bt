@@ -171,6 +171,11 @@ fun (mut g Gen) ident(node ast.Ident) {
 		return
 	}
 
+	if node.pkg.length == 0 and g.match_cache_name.length > 0 and node.name == g.match_cache_name {
+		g.write(g.match_cache_tmp)
+		return
+	}
+
 	g.write(js_esc(node.full_name()))
 	if node.pkg.length == 0 and g.ref_vars.contains(node.name) {
 		g.write('.$v')
