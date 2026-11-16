@@ -55,7 +55,11 @@ fun main() {
 	prepare_results()
 	hashes := commits_to_measure(read_rows(CSV_PATH), max)
 	if hashes.length == 0 {
+		// Nothing was measured, so rendering would only bump the "Last run"
+		// timestamp and produce a pointless "Re-render index.html" commit.
+		// Leave the results checkout untouched and stop here.
 		println('No new commits to measure.')
+		return
 	}
 	for i, hash in hashes {
 		subject := git_out(BAIT_DIR, 'log -1 --format=%s ${hash}')
