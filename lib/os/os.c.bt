@@ -76,7 +76,7 @@ pub fun read_file(path string) string {
 pub fun write_file(path string, text string) {
 	#C.'FILE* fp;
 	fp = fopen(path.str, "w");
-	fprintf(fp, text.str);
+	fwrite(text.str, 1, text.length, fp);
 	fclose(fp);'
 }
 

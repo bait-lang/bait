@@ -16,6 +16,14 @@ fun test_read_file() {
 	assert normalized == '1\n2\n3\n'
 }
 
+fun test_write_file_no_format() {
+	file := os.join_path(os.tmp_dir(), ['bait_os_test_write_${$LINE}.txt'])
+	text := '100%d done %s'
+	os.write_file(file, text)
+	assert os.read_file(file) == text
+	os.rm(file)
+}
+
 fun test_read_lines() {
 	lines := os.read_lines("${$BAITDIR}/lib/os/testdata/3_lines.txt")
 	assert lines.length == 3
