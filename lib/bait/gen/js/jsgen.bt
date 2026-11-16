@@ -81,6 +81,9 @@ fun (mut g Gen) process_imports(imports []ast.Import) {
 fun (g Gen) headers() string {
 	mut headers := strings.new_builder(100)
 	headers.write('const JS = {}\n')
+	// Boxes for references to array elements and struct fields, see `box_expr`
+	headers.write('class $IdxRef { constructor(a, i) { this.a = a; this.i = i } get $v() { return Array_get(this.a, this.i) } set $v(n) { Array_set(this.a, this.i, n) } }\n')
+	headers.write('class $FieldRef { constructor(o, k) { this.o = o; this.k = k } get $v() { return this.o[this.k] } set $v(n) { this.o[this.k] = n } }\n')
 	for alias, name in g.foreign_imports {
 		headers.write('${alias} = require("${name}")\n')
 	}
@@ -209,7 +212,7 @@ fun (g Gen) get_concrete_name(name string, concrete_types []ast.Type) string {
 	return js_esc(full_name)
 }
 
-fun (g Gen) concrete_sym(typ ast.Type) ast.TypeSymbol {
+fun (g Gen) concrete_sym(typ ast.Type) &ast.TypeSymbol {
 	sym := g.table.get_sym(typ)
 	if sym.kind != .generic or g.cur_concrete_types.length == 0 {
 		return sym

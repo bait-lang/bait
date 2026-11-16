@@ -9,7 +9,7 @@ import bait.ast
 //
 // Definitions only need the typedefs of their variants but are a dependency of
 // structs that embed them, so they are emitted into `sum_impls_out`.
-fun (mut g Gen) write_sum_type(sym ast.TypeSymbol) {
+fun (mut g Gen) write_sum_type(sym &ast.TypeSymbol) {
 	cname := c_esc(sym.mix_name)
 	info := sym.info as ast.SumTypeInfo
 

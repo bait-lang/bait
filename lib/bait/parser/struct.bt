@@ -47,7 +47,7 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 	}
 	p.check(.rcur)!
 
-	tsym := ast.TypeSymbol{
+	tsym := &ast.TypeSymbol{
 		kind = .struct_
 		mix_name = mix_name
 		is_pub = is_pub

@@ -105,21 +105,26 @@ fun (g Gen) clone_code(val string, typ ast.Type, depth i32) string {
 	return ''
 }
 
-// clone_method writes the `$clone()` method of a struct
+// clone_method writes the `$clone()` method of a struct.
+// The copy is created by a constructor that assigns all fields in a fixed order,
+// so all copies share the hidden class of the original, which is much faster than `Object.assign`.
 fun (mut g Gen) clone_method(jsname string, fields []ast.StructField) {
-	g.writeln('${jsname}.prototype.$clone = function () {')
+	ctor := '${jsname}$C'
+	g.writeln('function ${ctor}(o) {')
 	g.indent += 1
-	g.writeln('const c = Object.assign(Object.create(${jsname}.prototype), this)')
 	for field in fields {
 		name := field.name
-		code := g.clone_code('c.${name}', field.typ, 0)
+		code := g.clone_code('o.${name}', field.typ, 0)
 		if code.length > 0 {
-			g.writeln('if (c.${name}) c.${name} = ${code}')
+			g.writeln('this.${name} = o.${name} ? ${code} : o.${name}')
+		} else {
+			g.writeln('this.${name} = o.${name}')
 		}
 	}
-	g.writeln('return c')
 	g.indent -= 1
 	g.writeln('}')
+	g.writeln('${ctor}.prototype = ${jsname}.prototype')
+	g.writeln('${jsname}.prototype.$clone = function () { return new ${ctor}(this) }')
 }
 
 // ref_expr writes `&expr`, where `pointee` is the type of `expr`
@@ -151,6 +156,29 @@ fun (mut g Gen) box_expr(expr ast.Expr) {
 		g.write('{ $v: ')
 		g.expr(expr)
 		g.write(' }')
+		return
+	}
+
+	// Array elements and struct fields get a box object of a shared class (see `headers`),
+	// which is much faster than an object literal with its own accessor functions
+	if expr is ast.IndexExpr {
+		index := expr as ast.IndexExpr
+		if g.table.get_sym(index.left_type).kind == .array {
+			arr := g.expr_string(index.left)
+			idx := g.expr_string(index.index)
+			g.write('new $IdxRef(${arr}, ${idx})')
+			return
+		}
+	}
+	if expr is ast.SelectorExpr {
+		sel := expr as ast.SelectorExpr
+		was_line_empty := g.empty_line
+		start := g.out.length
+		g.expr(sel.expr)
+		g.write_deref(sel.expr_type, sel.expr_type.get_nr_amp())
+		obj := g.cut_back_to(start).trim_space()
+		g.empty_line = was_line_empty
+		g.write('new $FieldRef(${obj}, "${sel.field_name}")')
 		return
 	}
 

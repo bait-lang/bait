@@ -30,7 +30,7 @@ fun (mut c Checker) expect_field_mutable(left ast.SelectorExpr) bool {
 
 // Bait fields declared as `mut` can only be written in their own package.
 // Foreign structs belong to no package, so their `mut` fields can be written anywhere.
-fun (c Checker) is_field_writable(sym ast.TypeSymbol, field ast.StructField) bool {
+fun (c Checker) is_field_writable(sym &ast.TypeSymbol, field ast.StructField) bool {
 	if field.is_global {
 		return true
 	}
