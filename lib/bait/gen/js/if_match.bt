@@ -20,6 +20,14 @@ fun (mut g Gen) if_match(node ast.IfMatch){
 		g.writeln('let ${tmp} = undefined')
 	}
 
+	// Read a boxed match value only once, instead of once per branch condition
+	cache_name := g.match_ref_var(node)
+	mut cache_tmp := ''
+	if cache_name.length > 0 {
+		cache_tmp = g.new_temp_var()
+		g.writeln('const ${cache_tmp} = ${js_esc(cache_name)}.$v')
+	}
+
 	for i, b in node.branches {
 		if i > 0 {
 			g.write("} else ")
@@ -28,7 +36,14 @@ fun (mut g Gen) if_match(node ast.IfMatch){
 			g.writeln("{")
 		} else {
 			g.write("if (")
+			// Only the conditions use the cached value, as the branches may assign the variable
+			old_name := g.match_cache_name
+			old_tmp := g.match_cache_tmp
+			g.match_cache_name = cache_name
+			g.match_cache_tmp = cache_tmp
 			g.expr(b.cond)
+			g.match_cache_name = old_name
+			g.match_cache_tmp = old_tmp
 			g.writeln(") {")
 		}
 
@@ -56,4 +71,23 @@ fun (mut g Gen) if_match(node ast.IfMatch){
 		g.write(cut)
 		g.write(tmp)
 	}
+}
+
+// The `mut` param or `for mut` value matched by `node`, if it is a box. Otherwise an empty string.
+fun (g Gen) match_ref_var(node ast.IfMatch) string {
+	if not node.is_match or node.branches.length == 0 or not (node.branches[0].cond is ast.InfixExpr) {
+		return ''
+	}
+	// Multiple conditions in a branch are chained with `or`
+	mut cond := node.branches[0].cond as ast.InfixExpr
+	for cond.op == .key_or and cond.left is ast.InfixExpr {
+		cond = cond.left as ast.InfixExpr
+	}
+	if cond.left is ast.Ident {
+		ident := cond.left as ast.Ident
+		if ident.pkg.length == 0 and g.ref_vars.contains(ident.name) {
+			return ident.name
+		}
+	}
+	return ''
 }

@@ -31,6 +31,8 @@ struct Gen {
 	mut is_for_in_val bool
 	mut is_for_in_ref bool // The value of a `for mut` loop is a box, see value.bt
 	mut ref_vars []string // `mut` params and `for mut` values, see `box_expr`
+	mut match_cache_name string // Boxed variable read once before the conditions of a match, see `if_match`
+	mut match_cache_tmp string
 	// Cached comptime variables
 	mut baitexe string
 	mut baitdir string
