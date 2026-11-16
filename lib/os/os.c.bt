@@ -53,20 +53,48 @@ pub fun is_dir(path string) bool {
 }
 
 pub fun read_bytes(path string) []u8 {
-	mut size := 0 as i64
-	#C.'FILE* fp;
-	fp = fopen(path.str, "r");
-	fseek(fp, 0, SEEK_END);
-	size = ftell(fp);
-	fseek(fp, 0, SEEK_SET);'
-	mut res := []u8{length = size as i32}
-	#C.'fread(res.data, 1, size, fp);
-	fclose(fp);'
+	return read_bytes_with_cap(path, 0)
+}
+
+// Reads the whole file. The returned array has room for `extra_cap` more bytes,
+// which are zeroed. Panics if the file cannot be read.
+fun read_bytes_with_cap(path string, extra_cap i32) []u8 {
+	fp := #C.fopen(path.str, 'rb'.str)
+	if fp == 0 as &#C.FILE {
+		panic('cannot open file ${path}')
+	}
+
+	mut size := -1 as i64
+	if #C.fseek(fp, 0, #C.SEEK_END) == 0 {
+		size = #C.ftell(fp)
+	}
+	// Directories can be opened, but have no size
+	if size < 0 or #C.fseek(fp, 0, #C.SEEK_SET) != 0 {
+		_ := #C.fclose(fp)
+		panic('cannot read file ${path}')
+	}
+
+	len := size as i32
+	mut res := []u8{
+		length = len
+		cap = len + extra_cap
+	}
+	nr_read := #C.fread(res.data, 1, len, fp)
+	is_err := #C.ferror(fp) != 0
+	_ := #C.fclose(fp)
+	if is_err {
+		panic('cannot read file ${path}')
+	}
+	// The file may have shrunk since its size was determined
+	if nr_read < len {
+		res.trim(nr_read)
+	}
 	return res
 }
 
 pub fun read_file(path string) string {
-	bytes := read_bytes(path)
+	// The extra byte terminates the string for C functions that use `.str`
+	bytes := read_bytes_with_cap(path, 1)
 	return string{
 		str = bytes.data as &u8
 		length = bytes.length

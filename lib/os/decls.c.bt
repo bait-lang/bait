@@ -68,3 +68,18 @@ pub fun #C.WEXITSTATUS(status i32) i32
 pub fun #C.WIFSIGNALED(status i32) bool
 
 pub fun #C.WTERMSIG(status i32) i32
+
+pub const #C.SEEK_SET := i32
+pub const #C.SEEK_END := i32
+
+pub fun #C.fopen(path &u8, mode &u8) &#C.FILE
+
+pub fun #C.fseek(stream &#C.FILE, offset i64, whence i32) i32
+
+pub fun #C.ftell(stream &#C.FILE) i64
+
+pub fun #C.fread(buf &void, size i32, count i32, stream &#C.FILE) i32
+
+pub fun #C.ferror(stream &#C.FILE) i32
+
+pub fun #C.fclose(stream &#C.FILE) i32

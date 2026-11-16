@@ -197,3 +197,15 @@ fun test_exec_unknown_command() {
 	assert res.code != 0
 	assert res.stderr != ''
 }
+
+fun test_read_bytes_binary() {
+	// Line endings and NUL bytes are kept
+	bytes := os.read_bytes("${$BAITDIR}/lib/os/testdata/binary.dat")
+	assert bytes == [`a`, `\r`, `\n`, 0 as u8, `b`]
+}
+
+fun test_read_empty_file() {
+	path := "${$BAITDIR}/lib/os/testdata/empty.txt"
+	assert os.read_bytes(path).length == 0
+	assert os.read_file(path) == ''
+}

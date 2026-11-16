@@ -1,0 +1,34 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+import os
+
+const TMP := os.join_path(os.tmp_dir(), ['bait_os_test_c'])
+
+fun test_read_file_is_nul_terminated() {
+	// C functions that use `.str` rely on the terminating NUL byte
+	s := os.read_file("${$BAITDIR}/lib/os/testdata/3_lines.txt")
+	assert #C.strlen(s.str) == s.length
+
+	empty := os.read_file("${$BAITDIR}/lib/os/testdata/empty.txt")
+	assert #C.strlen(empty.str) == 0
+}
+
+// Runs `code` as main function of a separate program, since a panic would stop the tests
+fun run_main(name string, code string) os.CmdRes {
+	os.mkdir_all(TMP)
+	path := os.join_path(TMP, ['${name}.bt'])
+	os.write_file(path, 'import os\n\nfun main() {\n\t${code}\n}\n')
+	return os.exec('bun ${$BAITEXE} --nocolor -b c run ${path}')
+}
+
+fun test_read_missing_file_panics() {
+	res := run_main('missing', "_ := os.read_file('i/hope/this/never/exists/anywhere')")
+	assert res.code != 0
+	assert res.stderr.contains('cannot open file i/hope/this/never/exists/anywhere')
+}
+
+fun test_read_dir_panics() {
+	res := run_main('dir', "_ := os.read_bytes(os.tmp_dir())")
+	assert res.code != 0
+	assert res.stderr.contains('cannot read file')
+}

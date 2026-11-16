@@ -17,6 +17,11 @@ fun (mut g Gen) gen_equality_funs() {
 
 fun (mut g Gen) equality_fun(raw_typ ast.Type) string {
 	typ := g.concrete_type(raw_typ)
+	// Pointers are compared by address
+	if typ.get_nr_amp() > 0 {
+		return ''
+	}
+
 	sym := g.table.get_sym(typ)
 	if g.generated_eq_funs.contains(typ) {
 		return c_esc('${sym.mix_name}_eq')
