@@ -1,3 +1,3 @@
 error: redefinition of `X`
-tests/out/dirs/redef_files/b.bt:1:1 conflict: const i32
 tests/out/dirs/redef_files/a.bt:1:1 conflict: const i32
+tests/out/dirs/redef_files/b.bt:1:1 conflict: const i32

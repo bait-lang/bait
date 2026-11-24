@@ -11,7 +11,8 @@ pub fun user_args() []string {
 }
 
 pub fun ls(d string) []string {
-	return from_js_string_arr(#JS.fs.readdirSync(d.str))
+	// Sorted, so the order doesn't depend on the filesystem
+	return from_js_string_arr(#JS.'JS.fs.readdirSync(d.str).sort()')
 }
 
 pub fun cp(src string, dest string) {

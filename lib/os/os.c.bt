@@ -22,16 +22,18 @@ pub fun user_args() []string {
 
 pub fun ls(d string) []string {
 	mut res := []string
-	#C.'struct dirent *pDirent;
-	DIR *pDir;
-
-	pDir = opendir(d.str);
-	while((pDirent = readdir(pDir)) != NULL) {
-		if (strcmp(pDirent->d_name, ".") != 0 && strcmp(pDirent->d_name, "..") != 0) {
-			Array_push(&res, (string[]){from_c_string(strdup(pDirent->d_name))});
+	// Sorted, so the order doesn't depend on the filesystem
+	#C.'struct dirent **entries;
+	int n = scandir(d.str, &entries, NULL, alphasort);
+	for (int i = 0; i < n; i++) {
+		if (strcmp(entries[i]->d_name, ".") != 0 && strcmp(entries[i]->d_name, "..") != 0) {
+			Array_push(&res, (string[]){from_c_string(strdup(entries[i]->d_name))});
 		}
+		free(entries[i]);
 	}
-	closedir (pDir);'
+	if (n >= 0) {
+		free(entries);
+	}'
 	return res
 }
 

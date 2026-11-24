@@ -71,6 +71,16 @@ fun test_ls() {
 	}
 }
 
+fun test_ls_sorted() {
+	tmp := os.join_path(os.tmp_dir(), ['bait_ls_sorted'])
+	os.mkdir_all(tmp)
+	for name in ['c.txt', 'a.txt', 'b.txt'] {
+		os.write_file(os.join_path(tmp, [name]), '')
+	}
+	assert os.ls(tmp) == ['a.txt', 'b.txt', 'c.txt']
+	os.rmdir_all(tmp)
+}
+
 fun test_abs_path() {
 	if os.platform() == 'windows' {
 		assert os.abs_path('C:\\foo\\bar\\..\\baz\\.\\x\\') == 'C:\\foo\\baz\\x'
