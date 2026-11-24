@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
+import bait.util.exe
 import os
 
 const TMP := os.tmp_dir() + '/bait/tmpl_test'
@@ -11,16 +12,16 @@ fun testsuite_begin() {
 }
 
 fun test_bin() {
-	assert os.system('bun ${$BAITEXE} init -t bin mybin') == 0
+	assert os.system('${exe.bait_cmd()} init -t bin mybin') == 0
 
-	assert os.system('bun ${$BAITEXE} build ${TMP}/mybin/src') == 0
+	assert os.system('${exe.bait_cmd()} build ${TMP}/mybin/src') == 0
 }
 
 fun test_lib() {
-	assert os.system('bun ${$BAITEXE} init -t lib mylib') == 0
+	assert os.system('${exe.bait_cmd()} init -t lib mylib') == 0
 
-	assert os.system('bun ${$BAITEXE} build --library ${TMP}/mylib/src') == 0
-	assert os.system('bun ${$BAITEXE} test ${TMP}/mylib/tests') == 0
+	assert os.system('${exe.bait_cmd()} build --library ${TMP}/mylib/src') == 0
+	assert os.system('${exe.bait_cmd()} test ${TMP}/mylib/tests') == 0
 }
 
 fun testsuite_end() {

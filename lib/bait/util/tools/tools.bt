@@ -3,6 +3,7 @@
 package tools
 
 import os
+import bait.util.exe
 
 // List of commands implemented as tool
 const TOOLS := [
@@ -26,16 +27,17 @@ pub fun is_tool(name string) bool {
 
 const VERBOSE := os.ARGS.contains('--verbose') or os.ARGS.contains('-v')
 
-// TODO prepare for C backend (respect -b option)
+// Tools are always compiled to JS and run with bun, whether the compiler is
+// JS or a native binary. TODO respect -b option
 
 pub fun launch_tool(name string, args []string) i32 {
 	base_path := os.join_path($BAITDIR, ['cli', 'tools', name])
 	tool_source := find_tool_source(base_path)
 	tool_exe := base_path + '.js'
 
-	// Run Bait to compile the tool
+	// Run the running compiler to compile the tool
 	baitexe := os.executable()
-	comp_res := os.exec('bun ${baitexe} ${tool_source} -o ${tool_exe}')
+	comp_res := os.exec('${exe.cmd_for_exe(baitexe)} ${tool_source} -o ${tool_exe}')
 	if comp_res.code != 0 {
 		eprintln('Failed to compile tool "${name}" with error: ${comp_res.stderr}')
 		return 1
@@ -49,7 +51,7 @@ pub fun launch_tool(name string, args []string) i32 {
 		println('  exe:    ${tool_exe}')
 		println('  args:   ${args_string}')
 	}
-	return os.system('bun ${tool_exe} ${args_string}')
+	return os.system('${exe.cmd_for_exe(tool_exe)} ${args_string}')
 }
 
 fun find_tool_source(base string) string {
