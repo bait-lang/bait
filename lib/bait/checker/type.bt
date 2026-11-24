@@ -44,7 +44,8 @@ fun (c Checker) check_types(got ast.Type, expected ast.Type) bool {
 	}
 
 	if exp_sym.kind == .array and got_sym.kind == .array {
-		if exp_sym.mix_name == 'Array' or got_sym.mix_name == 'Array' {
+		// Builtin `Array` symbol has no `ArrayInfo`
+		if not (exp_sym.info is ast.ArrayInfo) or not (got_sym.info is ast.ArrayInfo) {
 			return true
 		}
 		got_info := got_sym.info as ast.ArrayInfo
@@ -133,13 +134,15 @@ fun (mut c Checker) does_type_exist(sym &ast.TypeSymbol, pos token.Pos) bool {
 		return true
 	}
 
-	if sym.kind == .array {
+	// The builtin `Array`/`Map` symbols keep their kind but carry the `StructInfo`
+	// of the generic container struct (see `register_sym`), so check the info too
+	if sym.kind == .array and sym.info is ast.ArrayInfo {
 		info := sym.info as ast.ArrayInfo
 		elem_sym := c.table.get_sym(info.elem_type)
 		return c.does_type_exist(elem_sym, pos)
 	}
 
-	if sym.kind == .map {
+	if sym.kind == .map and sym.info is ast.MapInfo {
 		info := sym.info as ast.MapInfo
 		key_sym := c.table.get_sym(info.key_type)
 		val_sym := c.table.get_sym(info.val_type)
