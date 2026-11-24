@@ -122,7 +122,7 @@ fun (mut p Parser) partial_assign_stmt(left ast.Expr) !ast.AssignStmt {
 		op = op
 		left = left
 		right = right
-		pos = (left as ast.InvalidExpr).pos
+		pos = left.pos()
 	}
 }
 
