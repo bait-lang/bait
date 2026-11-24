@@ -385,6 +385,27 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		}
 		return node.return_type
 	}
+	// `filter(cb)`: the callback takes an element and returns a bool
+	if final_sym.kind == .array and final_sym.info is ast.ArrayInfo and node.name == 'filter'
+		and left_sym.kind == .array {
+		mut arg := node.args[0]
+		info := final_sym.info as ast.ArrayInfo
+		node.elem_type = info.elem_type
+		arg.typ = c.expr(arg.expr)
+		arg.exp_type = arg.typ
+		node.args[0] = arg
+		arg_sym := c.table.get_final_sym(c.table.get_sym(arg.typ))
+		if arg_sym.info is ast.FunInfo {
+			fun_info := arg_sym.info as ast.FunInfo
+			if fun_info.param_types.length != 1 or not c.check_types(fun_info.param_types[0], info.elem_type)
+				or fun_info.return_type != ast.BOOL_TYPE {
+				c.error('expected `fun (${c.table.type_name(info.elem_type)}) bool` but got ${c.table.type_name(arg.typ)} in argument 1', node.pos)
+			}
+		} else if arg.typ != ast.ERROR_TYPE {
+			c.error('expected a function but got ${c.table.type_name(arg.typ)} in argument 1', node.pos)
+		}
+		return left_expr_type
+	}
 	// Array methods with one argument of `array` type, expecting the specific array type
 	if final_sym.kind == .array and ARRAY_CONCAT_METHODS.contains(node.name) {
 		mut arg := node.args[0]

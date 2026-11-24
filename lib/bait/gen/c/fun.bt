@@ -141,6 +141,10 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 				g.gen_array_insert(node)
 				return
 			}
+			if name == 'filter' {
+				g.gen_array_filter(node)
+				return
+			}
 			if name == 'last' {
 				// `Array_last` returns `void*`: cast and dereference to the element type,
 				// which the checker stores as the return type
@@ -291,4 +295,20 @@ fun (mut g Gen) gen_array_insert(node ast.CallExpr) {
 	g.write(', (${g.typ(elem_type)}[]){')
 	g.expr_as(node.args[1].expr, node.args[1].typ, elem_type)
 	g.write('})')
+}
+
+// `a.filter(cb)` is generated as a statement expression, because the callback
+// takes the element type of the array instead of a generic element
+fun (mut g Gen) gen_array_filter(node ast.CallExpr) {
+	elem_type := g.concrete_type(node.elem_type)
+	elem_str := g.typ(elem_type)
+	g.write('({ Array _filter_src = ')
+	g.expr(node.left)
+	g.write('; ${g.typ(node.args[0].typ)} _filter_cb = ')
+	g.expr(node.args[0].expr)
+	g.write('; Array _filter_res = new_array(0, 0, sizeof(${elem_str})); ')
+	g.write('for (i32 _filter_i = 0; _filter_i < _filter_src.length; _filter_i++) { ')
+	g.write('${elem_str} _filter_el = *(${elem_str}*)Array_get(_filter_src, _filter_i); ')
+	g.write('if (_filter_cb(_filter_el)) { Array_push(&_filter_res, &_filter_el); } } ')
+	g.write('_filter_res; })')
 }

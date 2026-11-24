@@ -159,3 +159,9 @@ pub fun (a Array) reverse_in_place() {
 	}
 	#C.free(tmp)
 }
+
+// The C backend generates calls to `filter` inline (see `gen_array_filter`),
+// as the callback takes the element type of the array.
+pub fun (a Array) filter(fn fun (cond &void) bool) Array {
+	return a.copy()
+}

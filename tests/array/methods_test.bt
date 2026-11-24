@@ -65,3 +65,37 @@ fun test_reverse_structs() {
 	assert b[0].name == 'b'
 	assert a[0].name == 'a'
 }
+
+fun test_array_filter() {
+	// From https://github.com/bait-lang/bait/issues/13
+	args := ['a.txt', 'b.md', 'c.md']
+	md_files := args.filter(fun (a string) bool {
+		return a.ends_with(".md")
+	})
+	assert md_files.length == 2
+	assert typeof(md_files) == "[]string"
+}
+
+fun test_filter_ints() {
+	nums := [1, 2, 3, 4, 5, 6]
+	even := nums.filter(fun (n i32) bool {
+		return n % 2 == 0
+	})
+	assert even == [2, 4, 6]
+	assert nums.length == 6
+
+	none := nums.filter(fun (n i32) bool {
+		return n > 10
+	})
+	assert none.length == 0
+}
+
+fun test_filter_structs() {
+	items := [item('a', 1), item('b', 2), item('c', 3)]
+	big := items.filter(fun (it Item) bool {
+		return it.n >= 2
+	})
+	assert big.length == 2
+	assert big[0].name == 'b'
+	assert big[1].name == 'c'
+}
