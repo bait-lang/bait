@@ -136,9 +136,49 @@ fun (mut g Gen) expr_as(expr ast.Expr, typ ast.Type, exp ast.Type) {
 }
 
 // Write the pointer to the variant `target` stored in the sum type value `expr`
+// Only used for explicit `as` casts, so the variant tag is checked.
 fun (mut g Gen) sum_variant_ptr(expr ast.Expr, sum ast.Type, target ast.Type) {
+	g.write('${g.sum_checked_fun(sum, target.set_nr_amp(0))}(')
+	if sum.get_nr_amp() > 0 {
+		g.write('*')
+	}
 	g.raw_sum_expr(expr)
-	g.write(g.sum_field(sum, '', target.set_nr_amp(0)))
+	g.write(')')
+}
+
+// Generates `Variant* fun(Sum x)` which panics if `x` does not hold `variant`
+fun (mut g Gen) sum_checked_fun(sum ast.Type, variant ast.Type) string {
+	sum_sym := g.concrete_sym(sum)
+	sum_name := c_esc(sum_sym.mix_name)
+	fname := '${g.variant_name(variant)}_from_${sum_name}'
+	if g.generated_sum_casts.contains(fname) {
+		return fname
+	}
+	g.generated_sum_casts.push(fname)
+
+	info := sum_sym.info as ast.SumTypeInfo
+	type_str := g.typ(variant)
+	field := g.variant_name(variant)
+	mut cases := ''
+	for var in info.variants {
+		name := c_string_val(g.table.type_name(var))
+		cases += '\t\tcase ${var.idx()}: got = "${name}"; break;\n'
+	}
+	expected := c_string_val(g.table.type_name(variant))
+	g.fun_decls_out.write('${type_str}* ${fname}(${sum_name} x);\n')
+	g.auto_funs_out.write('${type_str}* ${fname}(${sum_name} x) {
+	if (__builtin_expect(x.typ != ${variant.idx()}, 0)) {
+		const char* got = "uninitialized";
+		switch (x.typ) {
+${cases}		default: break;
+		}
+		char buf[512];
+		snprintf(buf, sizeof(buf), "invalid sum type cast: expected ${expected}, got %s", got);
+		panic(from_c_string(buf));
+	}
+	return x.${field};
+}\n\n')
+	return fname
 }
 
 // `x as Variant`
