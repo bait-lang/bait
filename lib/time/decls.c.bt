@@ -1,0 +1,26 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package time
+
+import 'time.h' as #C._
+
+pub struct #C.timespec {
+	pub mut tv_sec i64
+	pub mut tv_nsec i64
+}
+
+pub struct #C.tm {
+	pub mut tm_sec i32
+	pub mut tm_min i32
+	pub mut tm_hour i32
+	pub mut tm_mday i32
+	pub mut tm_mon i32
+	pub mut tm_year i32
+}
+
+pub const #C.CLOCK_MONOTONIC := i32
+pub const #C.CLOCK_REALTIME := i32
+
+pub fun #C.clock_gettime(clockid i32, tp &#C.timespec) i32
+
+pub fun #C.localtime_r(timep &i64, result &#C.tm) &#C.tm

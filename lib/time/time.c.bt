@@ -1,0 +1,36 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package time
+
+struct Time {
+	pub year i32
+	pub month i32
+	pub day i32
+	pub hour i32
+	pub minute i32
+	pub second i32
+	pub millisecond i32
+	pub unix i64
+}
+
+pub fun now() Time {
+	mut ts := #C.timespec{}
+	_ = #C.clock_gettime(#C.CLOCK_REALTIME, &ts)
+	mut tm := #C.tm{}
+	_ = #C.localtime_r(&ts.tv_sec, &tm)
+	return Time{
+		year = tm.tm_year + 1900
+		month = tm.tm_mon + 1
+		day = tm.tm_mday
+		hour = tm.tm_hour
+		minute = tm.tm_min
+		second = tm.tm_sec
+		millisecond = (ts.tv_nsec / 1000000) as i32
+		unix = ts.tv_sec * 1000 + ts.tv_nsec / 1000000
+	}
+}
+
+@overload('-')
+fun (a Time) minus (b Time) i64 {
+	return a.unix - b.unix
+}
