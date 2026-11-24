@@ -83,3 +83,47 @@ fun test_insert_grows_capacity() {
 	assert a[0] == 99
 	assert a[99] == 0
 }
+
+fun test_reverse() {
+	a := [1, 2, 3]
+	b := a.reverse()
+	assert a == [1, 2, 3]
+	assert b == [3, 2, 1]
+
+	s := ['a', 'b']
+	assert s.reverse() == ['b', 'a']
+	e := []i32{}
+	assert e.reverse().length == 0
+}
+
+fun test_reverse_in_place() {
+	a := [1, 2, 3]
+	a.reverse_in_place()
+	assert a == [3, 2, 1]
+
+	b := [1, 2, 3, 4]
+	b.reverse_in_place()
+	assert b == [4, 3, 2, 1]
+}
+
+fun test_concat() {
+	a := [1, 2]
+	b := [3, 4]
+	c := a.concat(b)
+	assert c == [1, 2, 3, 4]
+	assert a == [1, 2]
+	assert b == [3, 4]
+
+	s := ['a', 'b'].concat(['c'])
+	assert s == ['a', 'b', 'c']
+}
+
+fun test_other_methods() {
+	mut b := [6, 5]
+	b.push(4)
+	b.push_many([3, 2, 1])
+	rb := b.reverse()
+	c := rb.slice(0, 3)
+	assert b.length == 6
+	assert c == [1, 2, 3]
+}

@@ -135,3 +135,27 @@ pub fun (a Array) copy() Array {
 	#C.memcpy(b.data, a.data, a.length * a.elem_size)
 	return b
 }
+
+pub fun (a Array) concat(b Array) Array {
+	mut c := new_array(a.length + b.length, a.length + b.length, a.elem_size)
+	#C.memcpy(c.data, a.data, a.length * a.elem_size)
+	#C.memcpy(#C.'c.data + a.length * a.elem_size' as &void, b.data, b.length * b.elem_size)
+	return c
+}
+
+pub fun (a Array) reverse() Array {
+	b := a.copy()
+	b.reverse_in_place()
+	return b
+}
+
+pub fun (a Array) reverse_in_place() {
+	tmp := #C.malloc(a.elem_size) as &void
+	for i := 0; i < a.length / 2; i += 1 {
+		j := a.length - 1 - i
+		#C.memcpy(tmp, a.get(i), a.elem_size)
+		#C.memcpy(a.get(i), a.get(j), a.elem_size)
+		#C.memcpy(a.get(j), tmp, a.elem_size)
+	}
+	#C.free(tmp)
+}

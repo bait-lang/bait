@@ -270,8 +270,15 @@ fun (mut g Gen) gen_array_push_many(node ast.CallExpr) {
 		g.write('&')
 	}
 	g.expr(node.left)
-	g.write(', &')
-	g.expr(node.args[0].expr)
+	if ast.is_lvalue(node.args[0].expr) {
+		g.write(', &')
+		g.expr(node.args[0].expr)
+	} else {
+		// Temporary values, e.g. array literals and call results, have no address
+		g.write(', &(Array[]){')
+		g.expr(node.args[0].expr)
+		g.write('}[0]')
+	}
 	g.write(')')
 }
 

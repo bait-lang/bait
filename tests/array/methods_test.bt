@@ -39,3 +39,29 @@ fun test_insert_sumtype() {
 	assert es[0] is Other
 	assert es[1] is Item
 }
+
+fun test_concat_strings() {
+	a := ['a', 'b']
+	b := ['c', 'd', 'e']
+	c := a.concat(b)
+	assert c.length == 5
+	assert c[4] == 'e'
+	assert a.length == 2
+}
+
+fun test_concat_structs() {
+	a := [item('a', 1)]
+	b := [item('b', 2), item('c', 3)]
+	c := a.concat(b)
+	assert c.length == 3
+	assert c[0].name == 'a'
+	assert c[2].n == 3
+	assert a.length == 1
+}
+
+fun test_reverse_structs() {
+	a := [item('a', 1), item('b', 2)]
+	b := a.reverse()
+	assert b[0].name == 'b'
+	assert a[0].name == 'a'
+}
