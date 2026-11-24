@@ -183,6 +183,10 @@ fun test_exec_exit_code() {
 	assert res.stderr == ''
 }
 
+fun test_system_exit_code() {
+	assert os.system('exit 3') == 3
+}
+
 fun test_exec_large_output() {
 	// Both streams exceed the pipe buffer size, so they must be drained concurrently
 	res := os.exec('bun -e "process.stdout.write(\'o\'.repeat(200000)); process.stderr.write(\'e\'.repeat(150000))"')

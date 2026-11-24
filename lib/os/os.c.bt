@@ -265,6 +265,11 @@ fun wait_exit_code(pid i32) i32 {
 			return -1
 		}
 	}
+	return wait_status_code(status)
+}
+
+// Converts a wait status to an exit code, or 128 + signal number if killed
+fun wait_status_code(status i32) i32 {
 	if #C.WIFEXITED(status) {
 		return #C.WEXITSTATUS(status)
 	}
@@ -288,7 +293,11 @@ fun exec_error(cmd string) CmdRes {
 }
 
 pub fun system(cmd string) i32 {
-	return #C.system(cmd.str)
+	$if WINDOWS {
+		// On Windows, `system` already returns the exit code
+		return #C.system(cmd.str)
+	}
+	return wait_status_code(#C.system(cmd.str))
 }
 
 pub fun getenv(key string) string {
