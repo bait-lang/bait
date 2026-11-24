@@ -47,3 +47,19 @@ fun test_pow() {
 	assert math.pow(5, 3) == 125
 	assert math.pow(10, 2) == 100
 }
+
+fun test_ceil() {
+	assert math.ceil(1.2) == 2
+	assert math.ceil(-1.2) == -1
+	assert math.ceil(2) == 2
+	assert math.ceil(0) == 0
+	assert math.ceil(-0.5) == 0
+}
+
+fun test_log2() {
+	assert math.log2(1) == 0
+	assert math.log2(2) == 1
+	assert math.log2(8) == 3
+	assert math.log2(0.5) == -1
+	assert math.log2(1024) == 10
+}
