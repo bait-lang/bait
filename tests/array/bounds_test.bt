@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
+import bait.util.exe
 import os
 
 const TMP := os.join_path(os.tmp_dir(), ['bait_array_bounds_test'])
@@ -9,7 +10,7 @@ fun run_main(backend string, name string, code string) os.CmdRes {
 	os.mkdir_all(TMP)
 	path := os.join_path(TMP, ['${backend}_${name}.bt'])
 	os.write_file(path, 'fun main() {\n\t${code}\n}\n')
-	return os.exec('bun ${$BAITEXE} --nocolor -b ${backend} run ${path}')
+	return os.exec('${exe.bait_cmd()} --nocolor -b ${backend} run ${path}')
 }
 
 fun check_panics(name string, code string, msg string) {

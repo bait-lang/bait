@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: Lukas Neubert
 // SPDX-License-Identifier: MIT
+import bait.util.exe
 import os
 
 const TMP := os.join_path(os.tmp_dir(), ['bait_sumtype_as_test'])
@@ -10,7 +11,7 @@ fun run_prog(name string, code string) os.CmdRes {
 	os.mkdir_all(TMP)
 	path := os.join_path(TMP, ['${name}.bt'])
 	os.write_file(path, 'type Value := i32 | string\n\nfun main() {\n\t${code}\n}\n')
-	return os.exec('bun ${$BAITEXE} --nocolor -b c run ${path}')
+	return os.exec('${exe.bait_cmd()} --nocolor -b c run ${path}')
 }
 
 fun test_wrong_as_cast_panics() {
