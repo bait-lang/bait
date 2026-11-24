@@ -77,6 +77,16 @@ pub fun (mut a Array) push(val &void) {
 	a.length += 1
 }
 
+pub fun (mut a Array) insert(i i32, val &void) {
+	if i < 0 or i > a.length {
+		panic("array index out of bounds (0..=${a.length}): ${i}")
+	}
+	a.ensure_cap(a.length + 1)
+	#C.memmove(#C.'a->data + (i + 1) * a->elem_size' as &void, #C.'a->data + i * a->elem_size' as &void, (a.length - i) * a.elem_size)
+	#C.memcpy(#C.'a->data + i * a->elem_size' as &void, val, a.elem_size)
+	a.length += 1
+}
+
 pub fun (mut a Array) push_many(vals &Array) {
 	// TODO fix sym of &a not being found as vals.data is expected as placeholder
 	// a.push_many_with_len(vals.data, vals.length)

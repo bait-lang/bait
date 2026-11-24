@@ -361,6 +361,30 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		}
 		return node.return_type
 	}
+	// `insert(i, el)`: index and the element of the array
+	if final_sym.kind == .array and final_sym.info is ast.ArrayInfo and node.name == 'insert'
+		and node.args.length == 2 {
+		mut idx_arg := node.args[0]
+		c.expected_type = ast.I32_TYPE
+		idx_arg.typ = c.expr(idx_arg.expr)
+		idx_arg.exp_type = def.params[1].typ
+		node.args[0] = idx_arg
+		if not c.check_types(idx_arg.typ, ast.I32_TYPE) {
+			c.error('type ${c.table.type_name(idx_arg.typ)} not matches i32 in argument 1', node.pos)
+		}
+
+		mut arg := node.args[1]
+		info := final_sym.info as ast.ArrayInfo
+		node.elem_type = info.elem_type
+		c.expected_type = info.elem_type
+		arg.typ = c.expr(arg.expr)
+		arg.exp_type = def.params[2].typ
+		node.args[1] = arg
+		if not c.check_types(arg.typ, info.elem_type) {
+			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(info.elem_type)} in argument 2', node.pos)
+		}
+		return node.return_type
+	}
 	// Array methods with one argument of `array` type, expecting the specific array type
 	if final_sym.kind == .array and ARRAY_CONCAT_METHODS.contains(node.name) {
 		mut arg := node.args[0]
@@ -369,6 +393,9 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		node.args[0] = arg
 		if not c.check_types(arg.typ, left_expr_type) {
 			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(left_expr_type)} in argument 1', node.pos)
+		}
+		if node.name == 'concat' {
+			node.return_type = left_expr_type
 		}
 		return node.return_type
 	}

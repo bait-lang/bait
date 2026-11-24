@@ -137,6 +137,10 @@ fun (mut g Gen) call_expr_no_or(node ast.CallExpr) {
 				g.gen_array_push_many(node)
 				return
 			}
+			if name == 'insert' {
+				g.gen_array_insert(node)
+				return
+			}
 			if name == 'last' {
 				// `Array_last` returns `void*`: cast and dereference to the element type,
 				// which the checker stores as the return type
@@ -269,4 +273,15 @@ fun (mut g Gen) gen_array_push_many(node ast.CallExpr) {
 	g.write(', &')
 	g.expr(node.args[0].expr)
 	g.write(')')
+}
+
+fun (mut g Gen) gen_array_insert(node ast.CallExpr) {
+	elem_type := g.concrete_type(node.elem_type)
+	g.write('Array_insert(')
+	g.expr(node.left)
+	g.write(', ')
+	g.expr(node.args[0].expr)
+	g.write(', (${g.typ(elem_type)}[]){')
+	g.expr_as(node.args[1].expr, node.args[1].typ, elem_type)
+	g.write('})')
 }

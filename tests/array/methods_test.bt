@@ -1,0 +1,41 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+struct Item {
+	name string
+	n i32
+}
+
+fun item(name string, n i32) Item {
+	return Item{
+		name = name
+		n = n
+	}
+}
+
+struct Other {
+	x i32
+}
+
+type Either := Item | Other
+
+fun test_insert_struct() {
+	mut items := [item('a', 1), item('c', 3)]
+	items.insert(1, item('b', 2))
+	items.insert(0, item('z', 0))
+	assert items.length == 4
+	assert items[0].name == 'z'
+	assert items[1].name == 'a'
+	assert items[2].name == 'b'
+	assert items[2].n == 2
+	assert items[3].name == 'c'
+}
+
+fun test_insert_sumtype() {
+	mut es := []Either{}
+	es.insert(0, item('x', 1))
+	es.insert(0, Other{ x = 2 })
+	assert es.length == 2
+	assert es[0] is Other
+	assert es[1] is Item
+}
