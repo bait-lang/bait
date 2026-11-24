@@ -207,15 +207,29 @@ fun (mut g Gen) call_args(args []ast.CallArg) {
 
 // Pass the address of an argument to a `mut` parameter
 fun (mut g Gen) ref_arg(a ast.CallArg) {
+	// The variant of a sum type lives behind a pointer, which is passed on
+	// so that the callee modifies the variant itself: `f(mut x as Variant)`
+	if a.expr is ast.AsCast {
+		cast := a.expr as ast.AsCast
+		from := g.unsmartcast_type(cast.expr, cast.expr_type)
+		if g.concrete_sym(from).kind == .sum_type and g.concrete_sym(cast.target).kind != .sum_type
+			and cast.target.get_nr_amp() == 0 {
+			g.sum_variant_ptr(cast.expr, from, cast.target)
+			return
+		}
+	}
+
 	if ast.is_lvalue(a.expr) {
 		g.write('&')
 		g.expr(a.expr)
 		return
 	}
 	// Temporary values, e.g. results of calls, can only be modified by the callee
-	g.write('&(${g.typ(a.exp_type)}){')
+	// An array subscript keeps the initializer a single expression, a plain
+	// compound literal of a struct type would initialize its first field
+	g.write('&(${g.typ(a.exp_type)}[]){')
 	g.expr_as(a.expr, a.typ, a.exp_type)
-	g.write('}')
+	g.write('}[0]')
 }
 
 // TODO fix elem_type (it's placeholder for array but should be the actual type)
