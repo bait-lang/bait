@@ -347,6 +347,10 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 	if FIELD_ACCESS_KINDS.contains(sym.kind) {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
+			// The C map is a handle without a `length` field, see `map_len`
+			if sym.kind == .map and node.field_name == 'length' {
+				return ast.I32_TYPE
+			}
 			c.error('${sym.mix_name} has no field ${node.field_name}', node.pos)
 			return ast.ERROR_TYPE
 		}

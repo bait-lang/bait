@@ -1,0 +1,160 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+// Maps have reference semantics: copies share all state, including the length
+
+struct Tab {
+	mut idxs map[string]i32
+	mut syms []string
+}
+
+fun (t Tab) get(name string) i32 {
+	return t.idxs[name]
+}
+
+fun (mut t Tab) reg(name string) i32 {
+	idx := t.get(name)
+	if idx > 0 {
+		return idx
+	}
+	t.syms.push(name)
+	t.idxs[name] = t.syms.length
+	return t.syms.length
+}
+
+fun test_read_through_by_value_receiver() {
+	mut t := Tab{}
+	for i := 0; i < 40; i += 1 {
+		_ = t.reg('n${i}')
+	}
+	// Reading missing keys through a copy inserts them into the shared map
+	assert t.get('missing1') == 0
+	assert t.get('missing2') == 0
+
+	mut bad := 0
+	for i := 0; i < 40; i += 1 {
+		if t.get('n${i}') != i + 1 {
+			bad += 1
+		}
+	}
+	assert bad == 0
+	assert t.idxs.length == 42
+	assert t.idxs.keys().length == 42
+}
+
+struct Holder {
+	mut m map[string]i32
+}
+
+fun read_holder(h Holder, key string) i32 {
+	return h.m[key]
+}
+
+fun write_holder_map(h Holder, key string, val i32) {
+	mut m := h.m
+	m[key] = val
+}
+
+fun test_struct_passed_by_value() {
+	mut h := Holder{}
+	h.m['a'] = 1
+	assert read_holder(h, 'a') == 1
+	assert read_holder(h, 'b') == 0
+	assert h.m.length == 2
+	assert h.m.keys() == ['a', 'b']
+
+	write_holder_map(h, 'c', 3)
+	assert h.m['c'] == 3
+	assert h.m.length == 3
+}
+
+fun test_assign_then_mutate() {
+	mut a := map[string]i32
+	a['x'] = 1
+	mut b := a
+	b['y'] = 2
+	b['x'] = 10
+	assert a.length == 2
+	assert a['x'] == 10
+	assert a['y'] == 2
+
+	a['z'] = 3
+	assert b.length == 3
+	assert b.keys() == ['x', 'y', 'z']
+}
+
+fun test_many_inserts_through_copy() {
+	mut a := map[string]i32
+	mut b := a
+	for i := 0; i < 100; i += 1 {
+		b['k${i}'] = i
+	}
+	assert a.length == 100
+	for i := 0; i < 100; i += 1 {
+		assert a['k${i}'] == i
+	}
+	assert a.length == 100
+}
+
+fun test_clear_through_copy() {
+	mut a := map[string]i32
+	a['x'] = 1
+	mut b := a
+	b.clear()
+	assert a.length == 0
+	assert not a.contains('x')
+	a['y'] = 2
+	assert b['y'] == 2
+}
+
+// Struct values are copied with their maps, so a copy never shares them with the original
+
+fun test_struct_copy_copies_maps() {
+	mut a := Holder{}
+	a.m['x'] = 1
+	mut b := a
+	b.m['x'] = 2
+	b.m['y'] = 3
+	assert a.m.length == 1
+	assert a.m['x'] == 1
+	assert b.m.length == 2
+}
+
+struct Outer {
+	mut h Holder
+	mut groups map[string]Holder
+}
+
+fun copy_outer(o Outer) Outer {
+	return o
+}
+
+fun test_nested_struct_copy_copies_maps() {
+	mut a := Outer{}
+	a.h.m['x'] = 1
+	a.groups['g'].m['k'] = 1
+
+	mut b := copy_outer(a)
+	b.h.m['x'] = 2
+	b.groups['g'].m['k'] = 2
+	b.groups['h'].m['k'] = 3
+	assert a.h.m['x'] == 1
+	assert a.groups.length == 1
+	assert a.groups['g'].m['k'] == 1
+	assert b.groups['g'].m['k'] == 2
+}
+
+fun test_map_element_copy() {
+	mut m := map[string]Holder
+	m['a'].m['x'] = 1
+	mut h := m['a']
+	h.m['x'] = 2
+	assert m['a'].m['x'] == 1
+
+	// The value variable of a for-in loop refers to the element
+	for _, v in m {
+		mut vm := v.m
+		vm['y'] = 5
+	}
+	assert m['a'].m['y'] == 5
+}

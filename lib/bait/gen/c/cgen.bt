@@ -28,6 +28,7 @@ struct Gen {
 	mut foreign_imports []string // C header files
 	mut generated_eq_funs []ast.Type
 	mut generated_map_inits []string
+	mut generated_clone_funs []string
 	mut generated_str_funs []ast.Type
 	mut generated_sum_casts []string
 	mut generated_results []string
@@ -39,6 +40,7 @@ struct Gen {
 	mut cur_concrete_types map[string]ast.Type
 	mut cur_fun ast.FunDecl
 	mut ref_vars []string // `mut` params and `for mut` values, which are pointers in C
+	mut is_for_in_val bool // The next declaration is the value of a for-in loop
 	mut is_for_in_ref bool // The next declaration is the value of a `for mut` loop
 	mut is_lhs_assign bool
 	mut is_array_map_set bool
