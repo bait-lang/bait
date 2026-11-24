@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
 // SPDX-License-Identifier: MIT
 
+import bait.util.exe
 import os
 
 const DIR := '${os.dir($FILE)}/non_test_assert'
@@ -10,7 +11,7 @@ fun run_fixture(name string) os.CmdRes {
 	$if C {
 		backend = 'c'
 	}
-	return os.exec('bun ${$BAITEXE} --nocolor -b ${backend} run ${DIR}/${name}.in.bt')
+	return os.exec('${exe.bait_cmd()} --nocolor -b ${backend} run ${DIR}/${name}.in.bt')
 }
 
 fun test_failing_assert_stops_program() {
