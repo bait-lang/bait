@@ -48,15 +48,26 @@ fun (mut a Array) ensure_cap(min i32) {
 	a.cap = cap
 }
 
+fun (a Array) check_bounds(i i32) {
+	if i < 0 or i >= a.length {
+		panic("array index out of bounds (0..${a.length}): ${i}")
+	}
+}
+
 pub fun (a &Array) set(i i32, val &void) {
+	a.check_bounds(i)
 	#C.memcpy(#C.'a->data + i * a->elem_size' as &void, val, a.elem_size)
 }
 
 pub fun (a Array) get(i i32) &void {
+	a.check_bounds(i)
 	return #C.'a.data + i * a.elem_size' as &void
 }
 
 pub fun (a Array) last() &void {
+	if a.length == 0 {
+		panic("array is empty")
+	}
 	return a.get(a.length - 1)
 }
 

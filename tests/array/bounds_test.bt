@@ -1,0 +1,43 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+import os
+
+const TMP := os.join_path(os.tmp_dir(), ['bait_array_bounds_test'])
+
+// Runs `code` as main function of a separate program on both backends
+fun run_main(backend string, name string, code string) os.CmdRes {
+	os.mkdir_all(TMP)
+	path := os.join_path(TMP, ['${backend}_${name}.bt'])
+	os.write_file(path, 'fun main() {\n\t${code}\n}\n')
+	return os.exec('bun ${$BAITEXE} --nocolor -b ${backend} run ${path}')
+}
+
+fun check_panics(name string, code string, msg string) {
+	for backend in ['js', 'c'] {
+		res := run_main(backend, name, code)
+		assert res.code != 0
+		assert res.stderr.contains(msg)
+	}
+}
+
+fun test_get_out_of_bounds_panics() {
+	check_panics('get_high', 'a := [1, 2, 3]\n\ti := 3\n\tprintln(a[i])', 'array index out of bounds (0..3): 3')
+	check_panics('get_neg', 'a := [1, 2, 3]\n\ti := -1\n\tprintln(a[i])', 'array index out of bounds (0..3): -1')
+}
+
+fun test_set_out_of_bounds_panics() {
+	check_panics('set_high', 'mut a := [1, 2, 3]\n\ti := 5\n\ta[i] = 1', 'array index out of bounds (0..3): 5')
+}
+
+fun test_last_of_empty_panics() {
+	check_panics('last_empty', 'a := []i32\n\tprintln(a.last())', 'array')
+}
+
+fun test_in_bounds_is_fine() {
+	a := [1, 2, 3]
+	mut b := a.copy()
+	b[2] = 7
+	assert a[2] == 3
+	assert b[2] == 7
+	assert a.last() == 3
+}

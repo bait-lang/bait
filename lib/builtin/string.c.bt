@@ -11,6 +11,10 @@ struct string {
 }
 
 fun (s string) get(i i32) u8 {
+	// Like JS, reading out of range yields 0 (the lexer relies on it)
+	if i < 0 or i >= s.length {
+		return 0
+	}
 	return s.str[i]
 }
 
