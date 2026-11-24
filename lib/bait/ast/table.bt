@@ -49,6 +49,10 @@ pub fun (t Table) get_final_sym(sym &TypeSymbol) &TypeSymbol {
 	for i := 0; s.kind == .alias_type and i < t.type_symbols.length; i += 1 {
 		s = t.get_sym(s.parent)
 	}
+	// In a cycle, where the loop stops depends on the number of types
+	if s.kind == .alias_type {
+		return sym
+	}
 	return s
 }
 
