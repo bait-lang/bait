@@ -9,6 +9,7 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 	pos := p.pos()
 	is_pub := p.check_pub()
 	p.check(.key_fun)!
+	p.generic_scope.clear()
 
 	mut lang := ast.Language.bait
 	mut is_method := false
@@ -131,6 +132,7 @@ fun (mut p Parser) fun_decl() !ast.FunDecl{
 	if lang == .bait {
 		node.stmts = p.parse_block()!
 	}
+	p.generic_scope.clear()
 
 	node.is_method = is_method
 	return node

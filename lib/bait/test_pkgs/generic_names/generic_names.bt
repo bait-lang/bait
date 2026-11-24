@@ -1,0 +1,16 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package generic_names
+
+// A user type named like the generic param `T` of `ident`
+pub struct T {
+	pub mut n i32
+}
+
+pub fun make() T {
+	return T{n = 7}
+}
+
+pub fun ident[T](x T) T {
+	return x
+}

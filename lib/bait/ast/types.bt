@@ -79,12 +79,24 @@ pub enum TypeKind {
 pub struct TypeSymbol{
 	pub mut pkg string
 	pub mut mix_name string
+	// Name the symbol is stored under in the table, see `lookup_key`. Empty if it is `mix_name`.
+	pub mut key string
 	pub mut kind TypeKind
 	global methods []FunDecl
 	pub mut parent Type
 	global overloads map[string]FunDecl
 	pub mut is_pub bool
 	global info TypeInfo := EmptyInfo{}
+}
+
+// The name the symbol is stored under in the table. It is only different from `mix_name`
+// for generic params and types built from them: their names can be the same as the names
+// of user types, so they get unique keys. `mix_name` is what is shown and used in C and JS.
+pub fun (sym TypeSymbol) lookup_key() string {
+	if sym.key.length > 0 {
+		return sym.key
+	}
+	return sym.mix_name
 }
 
 pub fun (sym TypeSymbol) full_name() string {

@@ -1,0 +1,12 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+import bait.test_pkgs.generic_names
+
+fun test_generic_fun_next_to_pkg_type_named_t() {
+	f := generic_names.make()
+	assert f.n == 7
+	assert generic_names.ident(f).n == 7
+	assert generic_names.ident(9) == 9
+	assert generic_names.ident('s') == 's'
+}

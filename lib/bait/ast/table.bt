@@ -72,10 +72,19 @@ pub fun (t Table) generic_inst_name(base Type, concrete []Type) string {
 	return t.get_sym(base).mix_name + '[' + names.join(',') + ']'
 }
 
-// Returns the instance of the generic struct `base` with the concrete types. Instances are unique by name.
+// Key of an instance of a generic struct, see `TypeSymbol.lookup_key`
+fun (t Table) generic_inst_key(base Type, concrete []Type) string {
+	mut keys := []string
+	for typ in concrete {
+		keys.push(t.type_key(typ))
+	}
+	return t.get_sym(base).lookup_key() + '[' + keys.join(',') + ']'
+}
+
+// Returns the instance of the generic struct `base` with the concrete types. Instances are unique by key.
 pub fun (mut t Table) find_or_register_generic_inst(base Type, concrete []Type) Type {
-	name := t.generic_inst_name(base, concrete)
-	idx := t.get_idx(name)
+	key := t.generic_inst_key(base, concrete)
+	idx := t.get_idx(key)
 	if idx > 0 as Type {
 		return idx
 	}
@@ -87,7 +96,8 @@ pub fun (mut t Table) find_or_register_generic_inst(base Type, concrete []Type) 
 	}
 	return t.register_sym(&TypeSymbol{
 		kind = .generic_inst
-		mix_name = name
+		mix_name = t.generic_inst_name(base, concrete)
+		key = key
 		pkg = t.get_sym(base).pkg
 		parent = base
 		info = GenericInst{
@@ -145,9 +155,16 @@ pub fun (t Table) type_name(typ Type) string {
 	return amps + t.get_sym(typ).mix_name
 }
 
+// Key of a type in the table, see `TypeSymbol.lookup_key`. Unlike `type_name`, it tells apart generic params from user types.
+pub fun (t Table) type_key(typ Type) string {
+	amps := '&'.repeat(typ.get_nr_amp())
+	return amps + t.get_sym(typ).lookup_key()
+}
+
 // `sym` is stored in the table, so it must be a new symbol
 pub fun (mut t Table) register_sym(sym &TypeSymbol) Type {
-	idx := t.get_idx(sym.mix_name)
+	key := sym.lookup_key()
+	idx := t.get_idx(key)
 	if idx > 0 as Type {
 		cur_sym := t.get_sym(idx)
 		if cur_sym.kind == .placeholder {
@@ -173,21 +190,22 @@ pub fun (mut t Table) register_sym(sym &TypeSymbol) Type {
 
 	new_idx := t.type_symbols.length as Type
 	t.type_symbols.push(sym)
-	t.type_idxs[sym.mix_name] = new_idx
+	t.type_idxs[key] = new_idx
 	return new_idx
 }
 
 pub fun (mut t Table) find_or_register_array(elem_type Type) Type {
 	elem_sym := t.get_sym(elem_type)
-	name := '[]' + t.type_name(elem_type)
-	idx := t.get_idx(name)
+	key := '[]' + t.type_key(elem_type)
+	idx := t.get_idx(key)
 	if idx > 0 as Type {
 		return idx
 	}
 
 	return t.register_sym(&TypeSymbol{
 		kind = .array
-		mix_name = name
+		mix_name = '[]' + t.type_name(elem_type)
+		key = key
 		pkg = elem_sym.pkg
 		parent = ARRAY_TYPE
 		info = ArrayInfo{
@@ -197,14 +215,15 @@ pub fun (mut t Table) find_or_register_array(elem_type Type) Type {
 }
 
 pub fun (mut t Table) find_or_register_map(key_type Type, val_type Type) Type {
-	name := 'map[${t.type_name(key_type)}]${t.type_name(val_type)}'
-	idx := t.get_idx(name)
+	key := 'map[${t.type_key(key_type)}]${t.type_key(val_type)}'
+	idx := t.get_idx(key)
 	if idx > 0 as Type {
 		return idx
 	}
 	return t.register_sym(&TypeSymbol{
 		kind = .map
-		mix_name = name
+		mix_name = 'map[${t.type_name(key_type)}]${t.type_name(val_type)}'
+		key = key
 		parent = MAP_TYPE
 		info = MapInfo{
 			key_type = key_type
@@ -215,20 +234,39 @@ pub fun (mut t Table) find_or_register_map(key_type Type, val_type Type) Type {
 
 // FIXME register fun aliases as alias with fun info
 pub fun (mut t Table) find_or_register_fun(param_types []Type, return_type Type, alias bool) Type {
-	name := t.fun_signature(param_types, return_type)
-	idx := t.get_idx(name)
+	key := t.fun_key(param_types, return_type)
+	idx := t.get_idx(key)
 	if idx > 0 as Type {
 		return idx
 	}
 
 	return t.register_sym(&TypeSymbol{
 		kind = .fun_
-		mix_name = name
+		mix_name = t.fun_signature(param_types, return_type)
+		key = key
 		info = FunInfo{
 			is_alias = alias
 			param_types = param_types
 			return_type = return_type
 		}
+	})
+}
+
+// Returns the generic param `name` of a fun or struct. Its key cannot clash with a user type,
+// because the `#` cannot occur in a Bait identifier. The parser resolves `name` inside its
+// declaration only, see `Parser.generic_scope`.
+pub fun (mut t Table) register_generic(name string) Type {
+	key := name + '#'
+	idx := t.get_idx(key)
+	if idx > 0 as Type {
+		return idx
+	}
+
+	return t.register_sym(&TypeSymbol{
+		kind = .generic
+		mix_name = name
+		key = key
+		is_pub = true
 	})
 }
 
