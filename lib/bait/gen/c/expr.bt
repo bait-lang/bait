@@ -160,6 +160,10 @@ fun (mut g Gen) float_literal(node ast.FloatLiteral) {
 }
 
 fun (mut g Gen) hash_expr(node ast.HashExpr) {
+	// Code for other backends is ignored (checker warns)
+	if node.lang == .js {
+		return
+	}
 	g.write(node.val)
 }
 
