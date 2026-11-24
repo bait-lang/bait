@@ -1,0 +1,21 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+import bait.util.exe
+
+fun test_cmd_for_js_file_uses_bun() {
+	assert exe.cmd_for_exe('/opt/bait/bait.js') == 'bun /opt/bait/bait.js'
+	assert exe.cmd_for_exe('bait2.js') == 'bun bait2.js'
+}
+
+fun test_cmd_for_native_exe_runs_directly() {
+	assert exe.cmd_for_exe('/opt/bait/bait') == '/opt/bait/bait'
+	assert exe.cmd_for_exe('bait.exe') == 'bait.exe'
+}
+
+fun test_bait_cmd_matches_compiler_path() {
+	if $BAITEXE.ends_with('.js') {
+		assert exe.bait_cmd() == 'bun ${$BAITEXE}'
+	} else {
+		assert exe.bait_cmd() == $BAITEXE
+	}
+}

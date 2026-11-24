@@ -1,0 +1,21 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package exe
+
+// Shell command prefix that runs the compiler: `bun <path>` for a JS compiler,
+// `<path>` for a native one.
+// $BAITEXE is expanded when the calling program is compiled, so this is the
+// compiler that compiled that program. Inside the compiler itself, use
+// cmd_for_exe(os.executable()), since $BAITEXE there is the bootstrap compiler.
+pub fun bait_cmd() string {
+	return cmd_for_exe($BAITEXE)
+}
+
+// Shell command that runs the executable at `path`. JS files need bun,
+// everything else (native binaries) is executed directly.
+pub fun cmd_for_exe(path string) string {
+	if path.ends_with('.js') {
+		return 'bun ${path}'
+	}
+	return path
+}
