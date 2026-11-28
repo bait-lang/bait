@@ -3,6 +3,7 @@
 package main
 
 import os
+import bait.util.exe
 import cli.options
 
 fun main() {
@@ -18,7 +19,7 @@ fun main() {
 		args.push(out)
 	}
 
-	res := os.exec('bun ${$BAITEXE} ${args.join(' ')} cli/bait.bt')
+	res := os.exec('${exe.bait_cmd()} ${args.join(' ')} cli/bait.bt')
 	if res.stdout.length > 0 {
 		println(res.stdout)
 	}

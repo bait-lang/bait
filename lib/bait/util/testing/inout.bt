@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 package testing
 
+import bait.util.exe
 import os
 
 pub struct InOutRunner {
@@ -23,7 +24,7 @@ pub fun (runner InOutRunner) test_dir(dir string) {
 		return
 	}
 
-	res := os.exec('bun ${$BAITEXE} --nocolor ${runner.cmd_options} run ${abs_dir}')
+	res := os.exec('${exe.bait_cmd()} --nocolor ${backend_option()} ${runner.cmd_options} run ${abs_dir}')
 	if runner.check_stdout and res.code != 0 {
 		eprintln('compilation failed: ${res.stderr}')
 		assert false
@@ -94,10 +95,33 @@ pub fun in_out_runner(runner InOutRunner) {
 			cmd = 'test'
 		}
 
-		res := os.exec('bun ${$BAITEXE} --nocolor ${runner.cmd_options} ${cmd} ${file}')
+		res := os.exec('${exe.bait_cmd()} --nocolor ${backend_option()} ${runner.cmd_options} ${cmd} ${file}')
 
 		runner.check_result(res, file.replace('.in.bt', '.out'))
+
+		if cmd == 'build' {
+			remove_build_output(file)
+		}
 	}
+}
+
+// Remove the executable created by `build` with the default out name
+fun remove_build_output(file string) {
+	mut out := file.replace('.in.bt', '.in')
+	$if JS {
+		out += '.js'
+	}
+	if os.exists(out) {
+		os.rm(out)
+	}
+}
+
+// Forward the backend the runner itself was compiled for
+fun backend_option() string {
+	$if C {
+		return '-b c'
+	}
+	return '-b js'
 }
 
 fun normalize(s string) string {

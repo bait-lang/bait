@@ -79,6 +79,17 @@ fun test_is_upper() {
 	assert 'ABC123'.is_upper()
 }
 
+fun test_is_capital() {
+	assert 'Hello'.is_capital()
+	assert 'A'.is_capital()
+	assert 'B123'.is_capital()
+	assert not 'hello'.is_capital()
+	assert not 'HELLO'.is_capital()
+	assert not 'Hello World'.is_capital()
+	assert not '1Hello'.is_capital()
+	assert not ''.is_capital()
+}
+
 fun test_join() {
 	assert ([]string).join(',') == ''
 	assert ['a'].join(',') == 'a'

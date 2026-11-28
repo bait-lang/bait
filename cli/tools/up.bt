@@ -3,6 +3,7 @@
 package main
 
 import bait.util
+import bait.util.exe
 import os
 
 fun main() {
@@ -26,9 +27,9 @@ fun main() {
 	}
 
 	// Recompile Bait
-	self_res := os.exec('bun ${$BAITEXE} self')
+	self_res := os.exec('${exe.bait_cmd()} self')
 	if self_res.code == 0 {
-		new_version := os.exec('bun ${$BAITEXE} version').stdout.trim_space()
+		new_version := os.exec('${exe.bait_cmd()} version').stdout.trim_space()
 		println('Bait updated successfully to ${new_version}.')
 		return
 	}

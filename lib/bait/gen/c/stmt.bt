@@ -40,6 +40,10 @@ fun (mut g Gen) stmt(stmt ast.Stmt) {
 
 fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	g.save_stmt_offset()
+	// The value variable of `for x in arr` refers to the element
+	copy := not g.is_for_in_val
+	g.is_for_in_val = false
+
 	if node.left is ast.BlankIdent {
 		g.write('(void)(')
 		g.expr(node.right)
@@ -85,7 +89,7 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	if g.is_array_map_set {
 		g.is_array_map_set = false
 		g.write('{')
-		g.expr_as(node.right, node.right_type, node.left_type)
+		g.assign_right(node, copy)
 		g.writeln('});')
 		return
 	}
@@ -93,9 +97,17 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt) {
 	g.write(' ')
 	g.write(node.op.c_repr())
 	g.write(' ')
-	g.expr_as(node.right, node.right_type, node.left_type)
+	g.assign_right(node, copy)
 	if not g.is_for_loop_head {
 		g.writeln(';')
+	}
+}
+
+fun (mut g Gen) assign_right(node ast.AssignStmt, copy bool) {
+	if copy and (node.op == .assign or node.op == .decl_assign) {
+		g.expr_value(node.right, node.right_type, node.left_type)
+	} else {
+		g.expr_as(node.right, node.right_type, node.left_type)
 	}
 }
 
@@ -227,6 +239,7 @@ fun (mut g Gen) for_in_loop(node ast.ForInLoop){
 // The body of a for-in loop. Its first statement declares the value variable.
 fun (mut g Gen) for_in_body(node ast.ForInLoop, can_ref bool) {
 	is_ref := node.valvar.is_mut and can_ref
+	g.is_for_in_val = true
 	g.is_for_in_ref = is_ref
 	old_ref_vars := g.ref_vars.copy()
 	g.stmts(node.stmts)
@@ -318,7 +331,7 @@ fun (mut g Gen) return_stmt(node ast.ReturnStmt){
 	g.write('return')
 	if not (node.expr is ast.InvalidExpr) {
 		g.write(" ")
-		g.expr_as(node.expr, node.typ, g.cur_fun.return_type)
+		g.expr_value(node.expr, node.typ, g.cur_fun.return_type)
 	}
 	g.writeln(';')
 }

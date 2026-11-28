@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 package testing
 
+import bait.util.exe
 import os
 
 pub enum BuildTarget {
@@ -20,7 +21,7 @@ pub struct BuildRunner{
 }
 
 pub fun (mut runner BuildRunner) build_single(name string) {
-	cmd := 'bun ${$BAITEXE} ${runner.cmd_options} ${runner.root}/${name}'
+	cmd := '${exe.bait_cmd()} ${runner.cmd_options} ${runner.root}/${name}'
 	code := os.system(cmd)
 
 	if code == 0 {

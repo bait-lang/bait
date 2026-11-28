@@ -26,3 +26,26 @@ fun test_cast_in_block() {
 	}
 	a = Cat{} // `a` should still have type `Animal`
 }
+
+fun variant_name(a Animal) string {
+	return match a {
+		Cat { "cat" }
+		Dog { "dog" }
+	}
+}
+
+fun woofs_and_variant(woofs i32, variant string) string {
+	return "${woofs} ${variant}"
+}
+
+// An `as` cast inside an expression must not narrow the variable for later uses
+fun test_cast_does_not_smartcast() {
+	a := get_animal()
+	assert woofs_and_variant((a as Dog).woofs, variant_name(a)) == "0 dog"
+
+	mut b := get_animal()
+	b = Cat{}
+	assert variant_name(b) == "cat"
+	_ = (b as Cat)
+	assert variant_name(b) == "cat"
+}

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 package main
 
+import bait.util.exe
 import cli.options
 import os
 
@@ -100,7 +101,7 @@ fun check_block_runs(path string, block CodeBlock, backend string) bool {
 	tmp_file := os.join_path(os.tmp_dir(), [tmp_name])
 	os.write_file(tmp_file, block.text)
 
-	res := os.exec('bun ${$BAITEXE} "${tmp_file}" --script --backend ${backend}')
+	res := os.exec('${exe.bait_cmd()} "${tmp_file}" --script --backend ${backend}')
 
 	if res.code != 0 {
 		println('${path}:${block.start_idx + 1}')

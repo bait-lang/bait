@@ -113,7 +113,8 @@ fun (mut g Gen) write_value_struct(typ ast.Type) {
 // does not matter (e.g. an alias of a struct declared later in the file).
 // Struct bodies are not written here, see `write_struct_body`.
 fun (mut g Gen) type_def(sym &ast.TypeSymbol) {
-	if sym.mix_name.starts_with('C.') or g.generated_type_defs.contains(sym.mix_name) {
+	// Generic params have no C type. Their names can be the names of user types, so they are not recorded.
+	if sym.kind == .generic or sym.mix_name.starts_with('C.') or g.generated_type_defs.contains(sym.mix_name) {
 		return
 	}
 	g.generated_type_defs.push(sym.mix_name)

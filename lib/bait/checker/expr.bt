@@ -52,7 +52,7 @@ fun (mut c Checker) non_void_expr(mut expr ast.Expr) !ast.Type {
 	}
 
 	if typ == ast.VOID_TYPE {
-		c.error("expected non-void expression", (expr as ast.InvalidExpr).pos)
+		c.error("expected non-void expression", expr.pos())
 		return error("")
 	}
 
@@ -104,7 +104,7 @@ fun (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 			c.expected_type = typ
 		}
 		if not c.check_types(typ, node.elem_type) {
-			pos := (e as ast.InvalidExpr).pos
+			pos := e.pos()
 			c.error('expected element type ${c.table.type_name(node.elem_type)}, got ${c.table.type_name(typ)}', pos)
 		}
 	}
@@ -136,13 +136,6 @@ fun (mut c Checker) as_cast(mut node ast.AsCast) ast.Type {
 	if expr_type.get_nr_amp() >= 1 and node.target.get_nr_amp() == 0 {
 		c.error('cannot cast to normal type from pointer', node.pos)
 		return expr_type
-	}
-
-	// Smartcast sumtypes
-	// TODO check if expr is part of target
-	if expr_sym.kind == .sum_type and node.expr is ast.Ident {
-		expr := node.expr as ast.Ident
-		c.scope.smartcast(expr.full_name(), node.target, expr_type)
 	}
 
 	return node.target
@@ -270,12 +263,10 @@ fun (mut c Checker) map_init(mut node ast.MapInit) ast.Type {
 			node.val_type = val_type
 		} else {
 			if not c.check_types(key_type, node.key_type) {
-				key_expr := key as ast.InvalidExpr
-				c.error('expected key type ${c.table.type_name(node.key_type)}, got ${c.table.type_name(key_type)}', key_expr.pos)
+				c.error('expected key type ${c.table.type_name(node.key_type)}, got ${c.table.type_name(key_type)}', key.pos())
 			}
 			if not c.check_types(val_type, node.val_type) {
-				val_expr := node.vals[i] as ast.InvalidExpr
-				c.error('expected value type ${c.table.type_name(node.val_type)}, got ${c.table.type_name(val_type)}', val_expr.pos)
+				c.error('expected value type ${c.table.type_name(node.val_type)}, got ${c.table.type_name(val_type)}', node.vals[i].pos())
 			}
 		}
 	}
@@ -356,6 +347,10 @@ fun (mut c Checker) selector_expr(mut node ast.SelectorExpr) ast.Type {
 	if FIELD_ACCESS_KINDS.contains(sym.kind) {
 		field := sym.find_field(node.field_name, c.table)
 		if field.name.length == 0 {
+			// The C map is a handle without a `length` field, see `map_len`
+			if sym.kind == .map and node.field_name == 'length' {
+				return ast.I32_TYPE
+			}
 			c.error('${sym.mix_name} has no field ${node.field_name}', node.pos)
 			return ast.ERROR_TYPE
 		}

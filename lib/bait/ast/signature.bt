@@ -10,11 +10,20 @@ pub fun (t Table) fun_decl_signature(node FunDecl) string {
 
 // TODO generic funs
 fun (t Table) fun_signature(params []Type, return_type Type) string {
+	return t.signature_with(params, return_type, false)
+}
+
+// Key of a fun type, see `TypeSymbol.lookup_key`
+fun (t Table) fun_key(params []Type, return_type Type) string {
+	return t.signature_with(params, return_type, true)
+}
+
+fun (t Table) signature_with(params []Type, return_type Type, by_key bool) string {
 	mut param_strs := []string{ length = params.length }
 	for i, p in params {
-		param_strs[i] = t.type_name(p)
+		param_strs[i] = if by_key { t.type_key(p) } else { t.type_name(p) }
 	}
-	ret := t.type_name(return_type)
+	ret := if by_key { t.type_key(return_type) } else { t.type_name(return_type) }
 
 	return "fun (" + param_strs.join(", ") + ") " + ret
 }

@@ -1,0 +1,36 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+import time
+
+fun test_stopwatch() {
+	mut w := time.Stopwatch{}
+	assert w.elapsed() == 0
+
+	w.start()
+	first := w.elapsed()
+	assert first >= 0
+
+	// Wait until at least one millisecond has passed
+	for i := 0; i < 20000000 and w.elapsed() == first; i += 1 {}
+	assert w.elapsed() > first
+
+	w.stop()
+	stopped := w.elapsed()
+	assert stopped >= first
+	assert w.elapsed() == stopped
+
+	w.restart()
+	assert w.elapsed() >= 0
+}
+
+fun test_now() {
+	t := time.now()
+	assert t.year >= 2020 and t.year <= 2100
+	assert t.month >= 1 and t.month <= 12
+	assert t.day >= 1 and t.day <= 31
+	assert t.hour >= 0 and t.hour <= 23
+	assert t.minute >= 0 and t.minute <= 59
+	assert t.second >= 0 and t.second <= 60
+	assert t.millisecond >= 0 and t.millisecond < 1000
+	assert t.unix > 0
+}

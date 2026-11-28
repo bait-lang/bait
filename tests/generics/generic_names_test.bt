@@ -1,0 +1,59 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+// User types named like the generic params `T` below
+struct T {
+	mut idxs map[string]i32
+}
+
+fun (t T) get(name string) i32 {
+	return t.idxs[name]
+}
+
+struct Box[T]{
+	mut v T
+}
+
+fun test_user_type_named_like_generic_param() {
+	mut t := T{}
+	t.idxs['a'] = 1
+	l := t.idxs.length
+	assert l == 1
+	assert t.get('a') == 1
+}
+
+fun ident[T](x T) T {
+	return x
+}
+
+fun count_pushed[T](x T) i32 {
+	mut arr := []T{}
+	arr.push(x)
+	return arr.length
+}
+
+fun test_generic_fun_next_to_user_type() {
+	t := T{}
+	assert ident(5) == 5
+	assert ident('s') == 's'
+	assert ident(t).idxs.length == 0
+
+	mut ts := []T{}
+	ts.push(t)
+	assert ts.length == 1
+
+	assert count_pushed('x') == 1
+	assert count_pushed(t) == 1
+}
+
+fun test_generic_struct_next_to_user_type() {
+	b := Box[i32]{
+		v = 2
+	}
+	assert b.v == 2
+
+	c := Box[T]{
+		v = T{}
+	}
+	assert c.v.idxs.length == 0
+}

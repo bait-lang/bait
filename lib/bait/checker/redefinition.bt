@@ -38,7 +38,7 @@ fun (mut c Checker) add_conflicts(name string) {
 
 		for stmt in file.stmts {
 			if is_redef(name, stmt) {
-				c.conflict_err(file.path, (stmt as ast.InvalidStmt).pos, c.get_signature(stmt))
+				c.conflict_err(file.path, stmt.pos(), c.get_signature(stmt))
 			}
 		}
 	}

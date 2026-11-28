@@ -22,6 +22,7 @@ fun (mut p Parser) parse_type() !ast.Type {
 		return p.table.register_sym(&ast.TypeSymbol{
 			kind = .result
 			mix_name = 'Result[' + tsym.mix_name + ']'
+			key = 'Result[' + tsym.lookup_key() + ']'
 			parent = typ
 		})
 	}
@@ -68,6 +69,11 @@ fun (mut p Parser) parse_type() !ast.Type {
 
 fun (mut p Parser) parse_name_type(lang ast.Language) !ast.Type {
 	mut name := lang.prepend_to(p.check_name()!)
+
+	// Generic params shadow types of the same name, e.g. `T` in `fun f[T](x T)`
+	if lang == .bait and p.tok != .dot and p.generic_scope.contains(name) {
+		return p.generic_scope[name]
+	}
 
 	// Build full name and handle imported types
 	if p.tok == .dot {
@@ -155,16 +161,9 @@ fun (mut p Parser) generic_type_names() ![]string {
 		if not name[0].is_upper() {
 			return error('generic type names have to be capital letters')
 		}
+		// The generic name is only visible inside the fun or struct, see `parse_name_type`
+		p.generic_scope[name] = p.table.register_generic(name)
 		names.push(name)
-
-		idx := p.table.get_idx(name)
-		if idx == 0 {
-			_ = p.table.register_sym(&ast.TypeSymbol{
-				mix_name = name
-				kind = .generic
-				is_pub = true
-			})
-		}
 
 		if p.tok == .rsqr {
 			break

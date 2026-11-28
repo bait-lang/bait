@@ -8,13 +8,18 @@ const map_min_cap := 8
 const map_max_load_num := 7
 const map_max_load_den := 10
 
+// A map is a handle to heap-allocated state, so all copies of a map share it (like in JS)
 struct Map {
+	mut s &MapState
+}
+
+struct MapState {
 	mut hashes []u32
 	mut used []bool
 	mut keys []string
 	mut order []string
 	mut vals Array
-	pub mut length i32
+	mut length i32
 	mut cap i32
 	mut val_size i32
 	mut zero &void
@@ -52,14 +57,16 @@ pub fun new_map(val_size i32, min_cap i32) Map {
 	// Empty maps allocate their slots on the first insert
 	cap := if min_cap > 0 { map_next_cap(min_cap) } else { 0 }
 	return Map{
-		hashes = []u32{length = cap}
-		used = []bool{length = cap}
-		keys = []string{length = cap}
-		order = []string{cap = cap}
-		vals = new_array(cap, cap, val_size)
-		cap = cap
-		val_size = val_size
-		zero = #C.calloc(1, val_size) as &void
+		s = &MapState{
+			hashes = []u32{length = cap}
+			used = []bool{length = cap}
+			keys = []string{length = cap}
+			order = []string{cap = cap}
+			vals = new_array(cap, cap, val_size)
+			cap = cap
+			val_size = val_size
+			zero = #C.calloc(1, val_size) as &void
+		}
 	}
 }
 
@@ -73,142 +80,163 @@ pub fun new_map_from_c(len i32, val_size i32, keys &string, vals &void) Map {
 	return m
 }
 
-fun map_rehash(mut m &Map, new_cap i32) {
-	old_hashes := m.hashes
-	old_used := m.used
-	old_keys := m.keys
-	old_order := m.order
-	old_vals := m.vals
-	old_cap := m.cap
-
-	m.hashes = []u32{length = new_cap}
-	m.used = []bool{length = new_cap}
-	m.keys = []string{length = new_cap}
-	m.order = []string{cap = old_order.length}
-	m.vals = new_array(new_cap, new_cap, m.val_size)
-	m.cap = new_cap
-	m.length = 0
-
-	old_map := Map{
-		hashes = old_hashes
-		used = old_used
-		keys = old_keys
-		order = old_order
-		vals = old_vals
-		length = old_order.length
-		cap = old_cap
-		val_size = m.val_size
-		zero = m.zero
+// The state of `m`. Maps are always created by `new_map`, a zeroed map has none.
+fun map_state(m Map) &MapState {
+	if m.s == 0 as &MapState {
+		panic('map is not initialized')
 	}
+	return m.s
+}
 
-	for key in old_order {
-		map_set(mut m, key, map_get(&old_map, key))
+// Number of entries of `m`, used for `m.length`
+pub fun map_len(m Map) i32 {
+	if m.s == 0 as &MapState {
+		return 0
+	}
+	return m.s.length
+}
+
+fun map_rehash(mut s &MapState, new_cap i32) {
+	old_used := s.used
+	old_keys := s.keys
+	old_vals := s.vals
+	old_cap := s.cap
+
+	s.hashes = []u32{length = new_cap}
+	s.used = []bool{length = new_cap}
+	s.keys = []string{length = new_cap}
+	s.vals = new_array(new_cap, new_cap, s.val_size)
+	s.cap = new_cap
+
+	// Reinsert the slots; the insertion order is kept in `order`
+	for i := 0; i < old_cap; i += 1 {
+		if old_used[i] {
+			map_insert_slot(mut s, old_keys[i], old_vals.get(i))
+		}
 	}
 }
 
-fun map_ensure_cap(mut m &Map, min_len i32) {
-	if m.cap == 0 {
-		map_rehash(mut m, map_min_cap)
+// Write `key` and `val` to the first free slot. `key` must not be in the map yet.
+fun map_insert_slot(mut s &MapState, key string, val &void) {
+	hash := map_hash(key)
+	mut i := (hash % (s.cap as u32)) as i32
+	for s.used[i] {
+		i += 1
+		if i == s.cap {
+			i = 0
+		}
+	}
+	s.used[i] = true
+	s.hashes[i] = hash
+	s.keys[i] = key
+	s.vals.set(i, val)
+}
+
+fun map_ensure_cap(mut s &MapState, min_len i32) {
+	if s.cap == 0 {
+		map_rehash(mut s, map_min_cap)
 		return
 	}
 
-	if min_len * map_max_load_den < m.cap * map_max_load_num {
+	if min_len * map_max_load_den < s.cap * map_max_load_num {
 		return
 	}
 
-	map_rehash(mut m, m.cap * 2)
+	map_rehash(mut s, s.cap * 2)
+}
+
+// Slot index of `key`, or -1 if it is missing
+fun map_find(s &MapState, key string) i32 {
+	if s.cap == 0 {
+		return -1
+	}
+
+	hash := map_hash(key)
+	mut i := (hash % (s.cap as u32)) as i32
+	for step := 0; step < s.cap; step += 1 {
+		if not s.used[i] {
+			return -1
+		}
+		if s.hashes[i] == hash and map_key_eq(s.keys[i], key) {
+			return i
+		}
+		i += 1
+		if i == s.cap {
+			i = 0
+		}
+	}
+	return -1
 }
 
 pub fun map_contains(m &Map, key string) bool {
-	if m.cap == 0 {
+	if m.s == 0 as &MapState {
 		return false
 	}
-
-	hash := map_hash(key)
-	mut i := (hash % (m.cap as u32)) as i32
-	for step := 0; step < m.cap; step += 1 {
-		if not m.used[i] {
-			return false
-		}
-		if m.hashes[i] == hash and map_key_eq(m.keys[i], key) {
-			return true
-		}
-		i += 1
-		if i == m.cap {
-			i = 0
-		}
-	}
-	return false
+	return map_find(m.s, key) >= 0
 }
 
-pub fun map_set(mut m &Map, key string, val &void) {
-	map_ensure_cap(mut m, m.length + 1)
-
-	hash := map_hash(key)
-	mut i := (hash % (m.cap as u32)) as i32
-	for step := 0; step < m.cap; step += 1 {
-		if not m.used[i] {
-			m.used[i] = true
-			m.hashes[i] = hash
-			m.keys[i] = key
-			m.order.push(key)
-			m.vals.set(i, val)
-			m.length += 1
-			return
-		}
-
-		if m.hashes[i] == hash and map_key_eq(m.keys[i], key) {
-			m.vals.set(i, val)
-			return
-		}
-
-		i += 1
-		if i == m.cap {
-			i = 0
-		}
+pub fun map_set(m &Map, key string, val &void) {
+	mut s := map_state(*m)
+	i := map_find(s, key)
+	if i >= 0 {
+		s.vals.set(i, val)
+		return
 	}
 
-	map_rehash(mut m, m.cap * 2)
-	map_set(mut m, key, val)
+	// The load factor stays below 1, so there is always a free slot
+	map_ensure_cap(mut s, s.length + 1)
+	map_insert_slot(mut s, key, val)
+	s.order.push(key)
+	s.length += 1
 }
 
+// Pointer to the value of `key`, or to a zeroed value if it is missing
 pub fun map_get(m &Map, key string) &void {
-	if m.cap == 0 {
-		return m.zero
+	s := map_state(*m)
+	i := map_find(s, key)
+	if i < 0 {
+		return s.zero
 	}
-
-	hash := map_hash(key)
-	mut i := (hash % (m.cap as u32)) as i32
-	for step := 0; step < m.cap; step += 1 {
-		if not m.used[i] {
-			return m.zero
-		}
-
-		if m.hashes[i] == hash and map_key_eq(m.keys[i], key) {
-			return m.vals.get(i)
-		}
-
-		i += 1
-		if i == m.cap {
-			i = 0
-		}
-	}
-
-	return m.zero
+	return s.vals.get(i)
 }
 
 // Like `map_get`, but a missing key is inserted first. Its value is zeroed and then
 // written by `init`, a C function `void (*)(void*)`, unless that is NULL.
-pub fun map_get_or_init(mut m &Map, key string, init &void) &void {
-	if not map_contains(m, key) {
-		map_set(mut m, key, m.zero)
-		#C.'if (init) { ((void (*)(void*))init)(map_get(m, key)); }'
+pub fun map_get_or_init(m &Map, key string, init &void) &void {
+	s := map_state(*m)
+	mut i := map_find(s, key)
+	if i < 0 {
+		map_set(m, key, s.zero)
+		i = map_find(s, key)
+		val := s.vals.get(i)
+		#C.'if (init) { ((void (*)(void*))init)(val); }'
 	}
-	return map_get(m, key)
+	return s.vals.get(i)
+}
+
+// A copy of `m` with its own state. Each copied value is passed to `clone_val`,
+// a C function `void (*)(void*)` that copies it in place, unless that is NULL.
+pub fun map_clone(m Map, clone_val &void) Map {
+	if m.s == 0 as &MapState {
+		return m
+	}
+
+	mut res := new_map(m.s.val_size, m.s.length * 2)
+	for key in m.s.order {
+		map_set(&res, key, map_get(&m, key))
+		if clone_val != 0 as &void {
+			val := map_get(&res, key)
+			#C.'((void (*)(void*))clone_val)(val);'
+		}
+	}
+	return res
 }
 
 pub fun (m Map) keys() []string {
-	return m.order.copy()
+	if m.s == 0 as &MapState {
+		return []string
+	}
+	return m.s.order.copy()
 }
 
 pub fun (m Map) contains(key string) bool {
@@ -216,19 +244,25 @@ pub fun (m Map) contains(key string) bool {
 }
 
 pub fun (m Map) values() []any {
-	res := new_array(m.order.length, m.order.length, m.val_size)
-	for i, key in m.order {
+	s := map_state(m)
+	res := new_array(s.order.length, s.order.length, s.val_size)
+	for i, key in s.order {
 		res.set(i, map_get(&m, key))
 	}
 	return #C.'res' as []any
 }
 
 pub fun (mut m Map) clear() {
-	m.hashes = []u32
-	m.used = []bool
-	m.keys = []string
-	m.order = []string
-	m.vals = new_array(0, 0, m.val_size)
-	m.length = 0
-	m.cap = 0
+	if m.s == 0 as &MapState {
+		return
+	}
+	// Clear the shared state in place, so all copies see it
+	mut s := m.s
+	s.hashes = []u32
+	s.used = []bool
+	s.keys = []string
+	s.order = []string
+	s.vals = new_array(0, 0, s.val_size)
+	s.length = 0
+	s.cap = 0
 }

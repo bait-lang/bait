@@ -1,0 +1,114 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package c
+
+import bait.ast
+
+// Value semantics of structs with maps
+//
+// A map is a handle to shared state, so copies of a map share it (like in JS).
+// Structs have value semantics: whenever an existing struct value (variable, field,
+// element, dereference, ...) is stored somewhere else, its maps are copied,
+// so the copy never shares them with the original. Fresh values (struct inits, calls)
+// are not copied. Arguments and receivers are not copied either, which matches JS.
+
+// is_fresh_value reports whether `expr` creates a new value that is owned by nobody else
+fun is_fresh_value(expr ast.Expr) bool {
+	return expr is ast.StructInit or expr is ast.CallExpr or expr is ast.ArrayInit or expr is ast.MapInit
+}
+
+// expr_value writes `expr` like `expr_as`, but copies the maps of a struct stored elsewhere
+fun (mut g Gen) expr_value(expr ast.Expr, typ ast.Type, exp ast.Type) {
+	if is_fresh_value(expr) or g.is_variant_of(typ, exp) or not g.needs_clone(typ) {
+		g.expr_as(expr, typ, exp)
+		return
+	}
+
+	g.write('${g.clone_fun(typ)}(')
+	g.expr(expr)
+	g.write(')')
+}
+
+// needs_clone reports whether `typ` is a struct that contains a map by value
+fun (mut g Gen) needs_clone(typ ast.Type) bool {
+	if typ.get_nr_amp() > 0 {
+		return false
+	}
+
+	sym := g.table.get_final_sym(g.concrete_sym(typ))
+	if sym.kind != .struct_ and sym.kind != .generic_inst {
+		return false
+	}
+	if sym.pkg == 'builtin' and (sym.mix_name == 'Array' or sym.mix_name == 'Map') {
+		return false
+	}
+
+	for field in g.struct_fields(typ) {
+		if g.is_map_value(field.typ) or g.needs_clone(field.typ) {
+			return true
+		}
+	}
+	return false
+}
+
+fun (mut g Gen) is_map_value(typ ast.Type) bool {
+	return typ.get_nr_amp() == 0 and g.table.get_final_sym(g.concrete_sym(typ)).kind == .map
+}
+
+// clone_code returns a C expression that copies `val` of type `typ`,
+// or an empty string if it can be shared
+fun (mut g Gen) clone_code(val string, typ ast.Type) string {
+	if g.is_map_value(typ) {
+		info := g.table.get_final_sym(g.concrete_sym(typ)).info as ast.MapInfo
+		return 'map_clone(${val}, ${g.clone_val_fun(info.val_type)})'
+	}
+	if g.needs_clone(typ) {
+		return '${g.clone_fun(typ)}(${val})'
+	}
+	return ''
+}
+
+// Name of a C function `T (T)` that copies a struct value and its maps
+fun (mut g Gen) clone_fun(typ ast.Type) string {
+	conc := g.concrete_type(typ)
+	type_str := g.typ(conc)
+	fname := '_clone_${type_str}'
+	if g.generated_clone_funs.contains(fname) {
+		return fname
+	}
+	g.generated_clone_funs.push(fname)
+
+	mut body := ''
+	for field in g.struct_fields(conc) {
+		name := c_esc(field.name)
+		code := g.clone_code('o.${name}', field.typ)
+		if code.length > 0 {
+			body += '\to.${name} = ${code};\n'
+		}
+	}
+
+	g.fun_decls_out.write('${type_str} ${fname}(${type_str} o);\n')
+	g.auto_funs_out.write('${type_str} ${fname}(${type_str} o) {\n${body}\treturn o;\n}\n\n')
+	return fname
+}
+
+// Name of a C function `void (void*)` that copies a map value in place,
+// passed to `map_clone`. `NULL` if map values can be shared.
+fun (mut g Gen) clone_val_fun(typ ast.Type) string {
+	conc := g.concrete_type(typ)
+	type_str := g.typ(conc)
+	code := g.clone_code('*(${type_str}*)p', conc)
+	if code.length == 0 {
+		return 'NULL'
+	}
+
+	fname := '_clone_val_${type_str}'
+	if g.generated_clone_funs.contains(fname) {
+		return fname
+	}
+	g.generated_clone_funs.push(fname)
+
+	g.fun_decls_out.write('void ${fname}(void* p);\n')
+	g.auto_funs_out.write('void ${fname}(void* p) {\n\t*(${type_str}*)p = ${code};\n}\n\n')
+	return fname
+}

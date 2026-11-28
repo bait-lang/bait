@@ -76,7 +76,7 @@ fun (mut g Gen) array_init(node ast.ArrayInit){
 	g.write('new_array_from_c(${len}, ${len}, sizeof(${elem_type}), (${elem_type}[${len}]){')
 	g.indent += 1
 	for i, expr in node.exprs {
-		g.expr_as(expr, node.expr_types[i], node.elem_type)
+		g.expr_value(expr, node.expr_types[i], node.elem_type)
 		g.write(', ')
 	}
 	g.indent -= 1
@@ -100,7 +100,7 @@ fun (mut g Gen) map_init(node ast.MapInit) {
 	}
 	g.write('}, (${val_type_str}[${len}]){')
 	for i, val in node.vals {
-		g.expr_as(val, node.val_types[i], node.val_type)
+		g.expr_value(val, node.val_types[i], node.val_type)
 		if i < len - 1 {
 			g.write(', ')
 		}
@@ -160,6 +160,10 @@ fun (mut g Gen) float_literal(node ast.FloatLiteral) {
 }
 
 fun (mut g Gen) hash_expr(node ast.HashExpr) {
+	// Code for other backends is ignored (checker warns)
+	if node.lang == .js {
+		return
+	}
 	g.write(node.val)
 }
 
@@ -346,6 +350,15 @@ fun (mut g Gen) prefix_expr(node ast.PrefixExpr) {
 }
 
 fun (mut g Gen) selector_expr(node ast.SelectorExpr) {
+	// A map is a handle to shared state, which holds the length
+	if node.field_name == 'length' and g.table.get_final_sym(g.concrete_sym(node.expr_type)).kind == .map {
+		g.write('map_len(')
+		g.write('*'.repeat(node.expr_type.get_nr_amp()))
+		g.expr(node.expr)
+		g.write(')')
+		return
+	}
+
 	g.expr(node.expr)
 	if node.expr_type.get_nr_amp() > 0 {
 		g.write('->')
@@ -415,9 +428,9 @@ fun (mut g Gen) struct_init(node ast.StructInit) {
 		g.write('.${name} = ')
 		init_idx := inited_fields.index(field.name)
 		if init_idx != -1 {
-			g.expr_as(node.fields[init_idx].expr, node.fields[init_idx].typ, field.typ)
+			g.expr_value(node.fields[init_idx].expr, node.fields[init_idx].typ, field.typ)
 		} else if not (field.expr is ast.InvalidExpr) {
-			g.expr_as(field.expr, field.expr_type, field.typ)
+			g.expr_value(field.expr, field.expr_type, field.typ)
 		} else if g.needs_default_init(field.typ) {
 			g.default_value(field.typ)
 		} else {

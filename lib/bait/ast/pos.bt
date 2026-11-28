@@ -1,0 +1,63 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+package ast
+
+import bait.token
+
+// Source position of an expression. Variants without a position return the default pos
+pub fun (e Expr) pos() token.Pos {
+	return match e {
+		AnonFun { e.pos }
+		ArrayInit { e.pos }
+		AsCast { e.pos }
+		BlankIdent { e.pos }
+		BoolLiteral { e.pos }
+		CallExpr { e.pos }
+		CharLiteral { e.pos }
+		ComptimeVar { e.pos }
+		EnumVal { e.pos }
+		FloatLiteral { e.pos }
+		HashExpr { e.pos }
+		Ident { e.pos }
+		IfMatch { e.pos }
+		IndexExpr { e.pos }
+		InfixExpr { e.pos }
+		IntegerLiteral { e.pos }
+		MapInit { e.pos }
+		ParExpr { e.pos }
+		PrefixExpr { e.pos }
+		RangeExpr { e.pos }
+		SelectorExpr { e.pos }
+		StringLiteral { e.pos }
+		StringInterLiteral { e.pos }
+		StructInit { e.pos }
+		TypeOf { e.pos }
+		InvalidExpr { e.pos }
+		else { token.Pos{} }
+	}
+}
+
+// Source position of a statement. Variants without a position return the default pos
+pub fun (s Stmt) pos() token.Pos {
+	return match s {
+		AssertStmt { s.pos }
+		AssignStmt { s.pos }
+		Block { s.pos }
+		ConstDecl { s.pos }
+		EnumDecl { s.pos }
+		ExprStmt { s.expr.pos() }
+		ForLoop { s.pos }
+		ForClassicLoop { s.pos }
+		ForInLoop { s.pos }
+		FunDecl { s.pos }
+		StaticDecl { s.pos }
+		InterfaceDecl { s.pos }
+		ReturnStmt { s.pos }
+		StructDecl { s.pos }
+		TypeDecl { s.pos }
+		LoopControlStmt { s.pos }
+		IfMatch { s.pos }
+		InvalidStmt { s.pos }
+		else { token.Pos{} }
+	}
+}

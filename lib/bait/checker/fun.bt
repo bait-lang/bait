@@ -350,7 +350,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	// Array methods with one argument of `any` type, expecting the element
-	if final_sym.kind == .array and ARRAY_ELEM_ARG_METHODS.contains(node.name) {
+	if final_sym.kind == .array and final_sym.info is ast.ArrayInfo and ARRAY_ELEM_ARG_METHODS.contains(node.name) {
 		mut arg := node.args[0]
 		info := final_sym.info as ast.ArrayInfo
 		c.expected_type = info.elem_type
@@ -361,6 +361,51 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		}
 		return node.return_type
 	}
+	// `insert(i, el)`: index and the element of the array
+	if final_sym.kind == .array and final_sym.info is ast.ArrayInfo and node.name == 'insert'
+		and node.args.length == 2 {
+		mut idx_arg := node.args[0]
+		c.expected_type = ast.I32_TYPE
+		idx_arg.typ = c.expr(idx_arg.expr)
+		idx_arg.exp_type = def.params[1].typ
+		node.args[0] = idx_arg
+		if not c.check_types(idx_arg.typ, ast.I32_TYPE) {
+			c.error('type ${c.table.type_name(idx_arg.typ)} not matches i32 in argument 1', node.pos)
+		}
+
+		mut arg := node.args[1]
+		info := final_sym.info as ast.ArrayInfo
+		node.elem_type = info.elem_type
+		c.expected_type = info.elem_type
+		arg.typ = c.expr(arg.expr)
+		arg.exp_type = def.params[2].typ
+		node.args[1] = arg
+		if not c.check_types(arg.typ, info.elem_type) {
+			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(info.elem_type)} in argument 2', node.pos)
+		}
+		return node.return_type
+	}
+	// `filter(cb)`: the callback takes an element and returns a bool
+	if final_sym.kind == .array and final_sym.info is ast.ArrayInfo and node.name == 'filter'
+		and left_sym.kind == .array {
+		mut arg := node.args[0]
+		info := final_sym.info as ast.ArrayInfo
+		node.elem_type = info.elem_type
+		arg.typ = c.expr(arg.expr)
+		arg.exp_type = arg.typ
+		node.args[0] = arg
+		arg_sym := c.table.get_final_sym(c.table.get_sym(arg.typ))
+		if arg_sym.info is ast.FunInfo {
+			fun_info := arg_sym.info as ast.FunInfo
+			if fun_info.param_types.length != 1 or not c.check_types(fun_info.param_types[0], info.elem_type)
+				or fun_info.return_type != ast.BOOL_TYPE {
+				c.error('expected `fun (${c.table.type_name(info.elem_type)}) bool` but got ${c.table.type_name(arg.typ)} in argument 1', node.pos)
+			}
+		} else if arg.typ != ast.ERROR_TYPE {
+			c.error('expected a function but got ${c.table.type_name(arg.typ)} in argument 1', node.pos)
+		}
+		return left_expr_type
+	}
 	// Array methods with one argument of `array` type, expecting the specific array type
 	if final_sym.kind == .array and ARRAY_CONCAT_METHODS.contains(node.name) {
 		mut arg := node.args[0]
@@ -369,6 +414,9 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 		node.args[0] = arg
 		if not c.check_types(arg.typ, left_expr_type) {
 			c.error('type ${c.table.type_name(arg.typ)} not matches ${c.table.type_name(left_expr_type)} in argument 1', node.pos)
+		}
+		if node.name == 'concat' {
+			node.return_type = left_expr_type
 		}
 		return node.return_type
 	}
@@ -382,7 +430,7 @@ fun (mut c Checker) method_call(mut node ast.CallExpr) ast.Type {
 	}
 
 	// Array methods with return type `any`
-	if left_sym.kind == .array and node.name == "last" {
+	if left_sym.kind == .array and left_sym.info is ast.ArrayInfo and node.name == "last" {
 		node.return_type = (left_sym.info as ast.ArrayInfo).elem_type
 		return node.return_type
 	}
@@ -471,8 +519,7 @@ fun (mut c Checker) call_args(mut node ast.CallExpr, poffset i32, generic_names 
 		} else if not param.is_mut and param_type.get_nr_amp() > arg.typ.get_nr_amp()
 			and arg.typ != ast.ANY_TYPE and param_type.idx() != ast.VOID_TYPE as i32 {
 			// Passing a value where a reference is expected, e.g. `f(Foo{})` for `fun f(x &Foo)`
-			// TODO make this an error
-			c.warn('cannot use ${c.table.type_name(arg.typ)} as ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
+			c.error('cannot use ${c.table.type_name(arg.typ)} as ${c.table.type_name(param_type)} in argument ${i + 1}', node.pos)
 		}
 
 		arg.exp_type = param_type

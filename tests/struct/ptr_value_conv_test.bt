@@ -1,0 +1,79 @@
+// SPDX-FileCopyrightText: Lukas Neubert <lukas.neubert@proton.me>
+// SPDX-License-Identifier: MIT
+
+struct Item {
+	mut a i32
+	mut b i32
+}
+
+struct Holder {
+	item &Item
+}
+
+type Shape := Circle | Square
+
+struct Circle {
+	mut r i32
+}
+
+struct Square {
+	mut side i32
+}
+
+// 1. `&T` argument to a by-value `T` parameter
+fun sum_item(it Item) i32 {
+	return it.a + it.b
+}
+
+fun test_ptr_arg_to_value_param() {
+	h := Holder{
+		item = &Item{
+			a = 3
+			b = 4
+		}
+	}
+	assert sum_item(h.item) == 7
+}
+
+fun make_shape() Shape {
+	return Circle{
+		r = 1
+	}
+}
+
+// 2. `mut x as Variant` passes the variant itself
+fun grow(mut c Circle) {
+	c.r += 5
+}
+
+fun test_mut_sumtype_as_arg() {
+	mut s := make_shape()
+	grow(mut s as Circle)
+	assert (s as Circle).r == 6
+}
+
+// 3. returning a struct literal from a function returning `&T`
+fun new_item(a i32, b i32) &Item {
+	return Item{
+		a = a
+		b = b
+	}
+}
+
+fun test_return_struct_init_as_ptr() {
+	it := new_item(5, 6)
+	assert it.a == 5
+	assert it.b == 6
+}
+
+// 4. pushing a `&T` into a `[]T`
+fun test_push_ptr_to_array() {
+	mut items := []Item
+	items.push(new_item(1, 2))
+	items.push(new_item(3, 4))
+	assert items.length == 2
+	assert items[0].a == 1
+	assert items[0].b == 2
+	assert items[1].a == 3
+	assert items[1].b == 4
+}

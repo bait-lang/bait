@@ -15,6 +15,27 @@ fun (mut g Gen) get_str_fun(typ ast.Type) string {
 	return c_esc('${sym.mix_name}_str')
 }
 
+// Whether the generated str fun of `typ` is multiline and has to be indented when nested.
+// JS passes an indent to the str funs, the C ones indent the finished string instead.
+fun (g Gen) str_needs_indent(typ ast.Type) bool {
+	sym := g.table.get_sym(typ.set_nr_amp(0))
+	if sym.has_method('str') {
+		return false
+	}
+	if sym.kind == .alias_type {
+		return g.str_needs_indent(sym.parent)
+	}
+	return sym.kind == .struct_ or sym.kind == .generic_inst or sym.kind == .array or sym.kind == .sum_type
+}
+
+// C expression of `val` (a string), indented by one level if needed
+fun (g Gen) indent_str(typ ast.Type, val string) string {
+	if g.str_needs_indent(typ) {
+		return 'string_replace(${val}, from_c_string("\\n"), from_c_string("\\n  "))'
+	}
+	return val
+}
+
 // TODO transformer?
 fun (mut g Gen) generate_str_fun(ptr_typ ast.Type) {
 	typ := ptr_typ.set_nr_amp(0)
@@ -41,6 +62,7 @@ fun (mut g Gen) generate_str_fun(ptr_typ ast.Type) {
 		info := sym.info as ast.ArrayInfo
 		elem_type_str := g.typ(info.elem_type)
 		el_str := g.get_str_fun(info.elem_type)
+		el_call := g.indent_str(info.elem_type, '${el_str}(*(${elem_type_str}*)Array_get(a, i))')
 
 		g.fun_decls_out.write('string ${fname}(${sname} a);\n')
 
@@ -48,7 +70,7 @@ fun (mut g Gen) generate_str_fun(ptr_typ ast.Type) {
 	strings__Builder b = strings__new_builder(100);
 	strings__Builder_write(&b, from_c_string("["));
 	for (int i = 0; i < a.length; i++) {
-		string el = ${el_str}(*(${elem_type_str}*)Array_get(a, i));
+		string el = ${el_call};
 		strings__Builder_write(&b, el);
 		if (i < a.length - 1) {
 			strings__Builder_write(&b, from_c_string(", "));
@@ -82,10 +104,11 @@ fun (mut g Gen) generate_str_fun(ptr_typ ast.Type) {
 			}
 
 			str_fun_name := g.get_str_fun(field.typ)
+			field_call := g.indent_str(field.typ, '${str_fun_name}(it.${c_esc(field.name)})')
 			// TODO pass indent to str fun if needed
 			g.auto_funs_out.write('\tstrings__Builder_write(&b, space);
 	strings__Builder_write(&b, from_c_string("  ${field.name} = "));
-	strings__Builder_write(&b, ${str_fun_name}(it.${c_esc(field.name)}));
+	strings__Builder_write(&b, ${field_call});
 	strings__Builder_write(&b, from_c_string("${LB}"));\n')
 		}
 
@@ -136,7 +159,55 @@ ${cases}	}
 		return
 	}
 
-	// TODO map, alias, result
+	if sym.kind == .map {
+		info := sym.info as ast.MapInfo
+		val_type_str := g.typ(info.val_type)
+		val_str := g.get_str_fun(info.val_type)
+
+		g.fun_decls_out.write('string ${fname}(${sname} m);\n')
+
+		// Only the stable map API is used: Map_keys returns the keys in insertion order
+		g.auto_funs_out.write('string ${fname}(${sname} m) {
+	Array_string keys = Map_keys(m);
+	strings__Builder b = strings__new_builder(100);
+	strings__Builder_write_u8(&b, \'{\');
+	for (int i = 0; i < keys.length; i++) {
+		string key = *(string*)Array_get(keys, i);
+		strings__Builder_write_u8(&b, \'\\\'\');
+		strings__Builder_write(&b, key);
+		strings__Builder_write(&b, from_c_string("\': "));
+		string val = ${val_str}(*(${val_type_str}*)map_get(&m, key));
+		strings__Builder_write(&b, val);
+		if (i < keys.length - 1) {
+			strings__Builder_write(&b, from_c_string(", "));
+		}
+	}
+	strings__Builder_write_u8(&b, \'}\');
+	return strings__Builder_str(&b);
+}\n\n')
+		return
+	}
+
+	if sym.kind == .alias_type {
+		par_fun_name := g.get_str_fun(sym.parent)
+
+		g.fun_decls_out.write('string ${fname}(${sname} it);\n')
+		g.auto_funs_out.write('string ${fname}(${sname} it) {
+	return ${par_fun_name}(it);
+}\n\n')
+		return
+	}
+
+	if sym.kind == .result and sym.parent != ast.VOID_TYPE {
+		par_fun_name := g.get_str_fun(sym.parent)
+		rname := g.typ(typ)
+
+		g.fun_decls_out.write('string ${fname}(${rname} it);\n')
+		g.auto_funs_out.write('string ${fname}(${rname} it) {
+	return ${par_fun_name}(it.data);
+}\n\n')
+		return
+	}
 
 	errors.generic_error('cannot convert ${sym.mix_name} to string')
 	exit(1)

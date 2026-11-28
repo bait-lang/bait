@@ -3,3 +3,5 @@ tests/out/error/generics/nonexistent_generic_sym.in.bt:5:14 error: unknown type 
 tests/out/error/generics/nonexistent_generic_sym.in.bt:6:15 error: undefined ident `x`
 tests/out/error/generics/nonexistent_generic_sym.in.bt:6:23 error: undefined ident `x`
 tests/out/error/generics/nonexistent_generic_sym.in.bt:6:34 error: undefined ident `y`
+tests/out/error/generics/nonexistent_generic_sym.in.bt:10:10 error: type i32 not matches T in argument 1
+tests/out/error/generics/nonexistent_generic_sym.in.bt:10:10 error: type i32 not matches T in argument 2

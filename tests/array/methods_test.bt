@@ -1,0 +1,101 @@
+// SPDX-FileCopyrightText: Lukas Neubert
+// SPDX-License-Identifier: MIT
+
+struct Item {
+	name string
+	n i32
+}
+
+fun item(name string, n i32) Item {
+	return Item{
+		name = name
+		n = n
+	}
+}
+
+struct Other {
+	x i32
+}
+
+type Either := Item | Other
+
+fun test_insert_struct() {
+	mut items := [item('a', 1), item('c', 3)]
+	items.insert(1, item('b', 2))
+	items.insert(0, item('z', 0))
+	assert items.length == 4
+	assert items[0].name == 'z'
+	assert items[1].name == 'a'
+	assert items[2].name == 'b'
+	assert items[2].n == 2
+	assert items[3].name == 'c'
+}
+
+fun test_insert_sumtype() {
+	mut es := []Either{}
+	es.insert(0, item('x', 1))
+	es.insert(0, Other{ x = 2 })
+	assert es.length == 2
+	assert es[0] is Other
+	assert es[1] is Item
+}
+
+fun test_concat_strings() {
+	a := ['a', 'b']
+	b := ['c', 'd', 'e']
+	c := a.concat(b)
+	assert c.length == 5
+	assert c[4] == 'e'
+	assert a.length == 2
+}
+
+fun test_concat_structs() {
+	a := [item('a', 1)]
+	b := [item('b', 2), item('c', 3)]
+	c := a.concat(b)
+	assert c.length == 3
+	assert c[0].name == 'a'
+	assert c[2].n == 3
+	assert a.length == 1
+}
+
+fun test_reverse_structs() {
+	a := [item('a', 1), item('b', 2)]
+	b := a.reverse()
+	assert b[0].name == 'b'
+	assert a[0].name == 'a'
+}
+
+fun test_array_filter() {
+	// From https://github.com/bait-lang/bait/issues/13
+	args := ['a.txt', 'b.md', 'c.md']
+	md_files := args.filter(fun (a string) bool {
+		return a.ends_with(".md")
+	})
+	assert md_files.length == 2
+	assert typeof(md_files) == "[]string"
+}
+
+fun test_filter_ints() {
+	nums := [1, 2, 3, 4, 5, 6]
+	even := nums.filter(fun (n i32) bool {
+		return n % 2 == 0
+	})
+	assert even == [2, 4, 6]
+	assert nums.length == 6
+
+	none := nums.filter(fun (n i32) bool {
+		return n > 10
+	})
+	assert none.length == 0
+}
+
+fun test_filter_structs() {
+	items := [item('a', 1), item('b', 2), item('c', 3)]
+	big := items.filter(fun (it Item) bool {
+		return it.n >= 2
+	})
+	assert big.length == 2
+	assert big[0].name == 'b'
+	assert big[1].name == 'c'
+}

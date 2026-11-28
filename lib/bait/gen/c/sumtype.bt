@@ -89,6 +89,24 @@ fun (mut g Gen) sum_cast_str(val string, typ ast.Type, exp ast.Type) string {
 	return val
 }
 
+// Whether `typ` is a pointer to the struct that `exp` holds by value.
+// Only structs are converted: other types (u8 vs &u8, aliases of builtin types) are
+// either represented the same way or must be left as they are.
+fun (mut g Gen) is_ptr_to_value(typ ast.Type, exp ast.Type) bool {
+	if typ.get_nr_amp() != exp.get_nr_amp() + 1 or typ.idx() != exp.idx() {
+		return false
+	}
+	return g.concrete_sym(exp).kind == .struct_
+}
+
+// Whether the struct literal `expr` of type `typ` is used where the pointer `exp` is expected
+fun (mut g Gen) is_value_to_ptr(expr ast.Expr, typ ast.Type, exp ast.Type) bool {
+	if not (expr is ast.StructInit) or exp.get_nr_amp() != typ.get_nr_amp() + 1 or typ.idx() != exp.idx() {
+		return false
+	}
+	return g.concrete_sym(typ).kind == .struct_
+}
+
 // Write `expr` of type `typ` where `exp` is expected, boxing it if needed
 fun (mut g Gen) expr_as(expr ast.Expr, typ ast.Type, exp ast.Type) {
 	if g.is_variant_of(typ, exp) {
@@ -98,7 +116,69 @@ fun (mut g Gen) expr_as(expr ast.Expr, typ ast.Type, exp ast.Type) {
 		return
 	}
 
+	if g.is_ptr_to_value(typ, exp) {
+		g.write('(*')
+		g.expr(expr)
+		g.write(')')
+		return
+	}
+
+	if g.is_value_to_ptr(expr, typ, exp) {
+		// A struct literal must outlive the current scope, so copy it to the heap
+		type_str := g.typ(typ)
+		g.write('(${type_str}*)memcpy(malloc(sizeof(${type_str})), &')
+		g.expr(expr)
+		g.write(', sizeof(${type_str}))')
+		return
+	}
+
 	g.expr(expr)
+}
+
+// Write the pointer to the variant `target` stored in the sum type value `expr`
+// Only used for explicit `as` casts, so the variant tag is checked.
+fun (mut g Gen) sum_variant_ptr(expr ast.Expr, sum ast.Type, target ast.Type) {
+	g.write('${g.sum_checked_fun(sum, target.set_nr_amp(0))}(')
+	if sum.get_nr_amp() > 0 {
+		g.write('*')
+	}
+	g.raw_sum_expr(expr)
+	g.write(')')
+}
+
+// Generates `Variant* fun(Sum x)` which panics if `x` does not hold `variant`
+fun (mut g Gen) sum_checked_fun(sum ast.Type, variant ast.Type) string {
+	sum_sym := g.concrete_sym(sum)
+	sum_name := c_esc(sum_sym.mix_name)
+	fname := '${g.variant_name(variant)}_from_${sum_name}'
+	if g.generated_sum_casts.contains(fname) {
+		return fname
+	}
+	g.generated_sum_casts.push(fname)
+
+	info := sum_sym.info as ast.SumTypeInfo
+	type_str := g.typ(variant)
+	field := g.variant_name(variant)
+	mut cases := ''
+	for var in info.variants {
+		name := c_string_val(g.table.type_name(var))
+		cases += '\t\tcase ${var.idx()}: got = "${name}"; break;\n'
+	}
+	expected := c_string_val(g.table.type_name(variant))
+	g.fun_decls_out.write('${type_str}* ${fname}(${sum_name} x);\n')
+	g.auto_funs_out.write('${type_str}* ${fname}(${sum_name} x) {
+	if (__builtin_expect(x.typ != ${variant.idx()}, 0)) {
+		const char* got = "uninitialized";
+		switch (x.typ) {
+${cases}		default: break;
+		}
+		char buf[512];
+		snprintf(buf, sizeof(buf), "invalid sum type cast: expected ${expected}, got %s", got);
+		panic(from_c_string(buf));
+	}
+	return x.${field};
+}\n\n')
+	return fname
 }
 
 // `x as Variant`
@@ -107,8 +187,7 @@ fun (mut g Gen) sum_unwrap(expr ast.Expr, sum ast.Type, target ast.Type) {
 	if deref {
 		g.write('(*')
 	}
-	g.raw_sum_expr(expr)
-	g.write(g.sum_field(sum, '', target.set_nr_amp(0)))
+	g.sum_variant_ptr(expr, sum, target)
 	if deref {
 		g.write(')')
 	}

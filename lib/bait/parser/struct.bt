@@ -10,6 +10,7 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 	pos := p.pos()
 	is_pub := p.check_pub()
 	p.check(.key_struct)!
+	p.generic_scope.clear()
 
 	lang := p.parse_lang()!
 	mut name := p.check_name()!
@@ -62,6 +63,7 @@ fun (mut p Parser) struct_decl() !ast.StructDecl{
 		kind = .type_
 		typ = typ
 	})
+	p.generic_scope.clear()
 
 	return ast.StructDecl{
 		lang = lang

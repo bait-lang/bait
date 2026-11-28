@@ -48,21 +48,42 @@ fun (mut a Array) ensure_cap(min i32) {
 	a.cap = cap
 }
 
+fun (a Array) check_bounds(i i32) {
+	if i < 0 or i >= a.length {
+		panic("array index out of bounds (0..${a.length}): ${i}")
+	}
+}
+
 pub fun (a &Array) set(i i32, val &void) {
+	a.check_bounds(i)
 	#C.memcpy(#C.'a->data + i * a->elem_size' as &void, val, a.elem_size)
 }
 
 pub fun (a Array) get(i i32) &void {
+	a.check_bounds(i)
 	return #C.'a.data + i * a.elem_size' as &void
 }
 
 pub fun (a Array) last() &void {
+	if a.length == 0 {
+		panic("array is empty")
+	}
 	return a.get(a.length - 1)
 }
 
 pub fun (mut a Array) push(val &void) {
 	a.ensure_cap(a.length + 1)
 	#C.memmove(#C.'a->data + a->elem_size * (a->length)' as &void, val, a.elem_size)
+	a.length += 1
+}
+
+pub fun (mut a Array) insert(i i32, val &void) {
+	if i < 0 or i > a.length {
+		panic("array index out of bounds (0..=${a.length}): ${i}")
+	}
+	a.ensure_cap(a.length + 1)
+	#C.memmove(#C.'a->data + (i + 1) * a->elem_size' as &void, #C.'a->data + i * a->elem_size' as &void, (a.length - i) * a.elem_size)
+	#C.memcpy(#C.'a->data + i * a->elem_size' as &void, val, a.elem_size)
 	a.length += 1
 }
 
@@ -113,4 +134,34 @@ pub fun (a Array) copy() Array {
 	mut b := new_array(a.length, a.cap, a.elem_size)
 	#C.memcpy(b.data, a.data, a.length * a.elem_size)
 	return b
+}
+
+pub fun (a Array) concat(b Array) Array {
+	mut c := new_array(a.length + b.length, a.length + b.length, a.elem_size)
+	#C.memcpy(c.data, a.data, a.length * a.elem_size)
+	#C.memcpy(#C.'c.data + a.length * a.elem_size' as &void, b.data, b.length * b.elem_size)
+	return c
+}
+
+pub fun (a Array) reverse() Array {
+	b := a.copy()
+	b.reverse_in_place()
+	return b
+}
+
+pub fun (a Array) reverse_in_place() {
+	tmp := #C.malloc(a.elem_size) as &void
+	for i := 0; i < a.length / 2; i += 1 {
+		j := a.length - 1 - i
+		#C.memcpy(tmp, a.get(i), a.elem_size)
+		#C.memcpy(a.get(i), a.get(j), a.elem_size)
+		#C.memcpy(a.get(j), tmp, a.elem_size)
+	}
+	#C.free(tmp)
+}
+
+// The C backend generates calls to `filter` inline (see `gen_array_filter`),
+// as the callback takes the element type of the array.
+pub fun (a Array) filter(fn fun (cond &void) bool) Array {
+	return a.copy()
 }

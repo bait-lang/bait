@@ -81,8 +81,8 @@ fun (mut g Gen) assign_stmt(node ast.AssignStmt){
 	}
 
 	if node.op == .decl_assign {
-		left := node.left as ast.Ident
-		if left.is_mut {
+		// `_ := x` declares a blank identifier, which is never mutable
+		if node.left is ast.Ident and (node.left as ast.Ident).is_mut {
 			g.write('let ')
 		} else {
 			g.write('const ')
