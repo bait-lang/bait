@@ -105,6 +105,7 @@ td .cell { display: inline-flex; flex-direction: column; align-items: flex-end; 
 td .cell .delta { font-size: 11px; }
 tbody tr:hover { background: var(--row-hover); }
 tbody tr.hl { background: var(--row-hover); }
+th.c-start, td.c-start { border-left: 1px solid var(--border); }
 .sw { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
 
 .charts .wide { grid-column: 1 / -1; }

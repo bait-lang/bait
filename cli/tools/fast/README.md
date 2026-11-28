@@ -28,4 +28,6 @@ bait fast -c 1a2b3c4
 ## How it works
 For each commit, it bootstraps the compiler (`stable bait.js → fast1.js → fast.js`), then runs `fast.js --timings cli/bait.bt` repeatedly. Failed builds or runs store only commit information.
 
+It then builds a native compiler with the C backend (`fast.js -b c → fastc`) and measures `fastc -b c --timings cli/bait.bt` the same way. These results go into the `c_` columns. If the C build or run fails (e.g. for commits before the C backend could compile itself), they stay empty and the JS results are kept. Peak memory of `fastc` is reported by `rss.js`, which also adds Bun's startup time to the C total.
+
 The [fast workflow](../../../.github/workflows/fast.yml) runs `bait fast --push` daily. Pushing can authenticate with `TIABEAST_BOT_TOKEN`.

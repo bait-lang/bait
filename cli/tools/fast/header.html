@@ -28,21 +28,30 @@
 		<div class="card">
 			<div class="chart-head">
 				<h2>Self-compile time [ms]</h2>
+				<div class="legend backends"></div>
 			</div>
 			<div class="chart" id="line"></div>
 		</div>
 		<div class="card">
 			<div class="chart-head">
 				<h2>Peak memory [MB]</h2>
+				<div class="legend backends"></div>
 			</div>
 			<div class="chart" id="mem"></div>
 		</div>
-		<div class="card wide">
+		<div class="card">
 			<div class="chart-head">
-				<h2>Time per stage</h2>
-				<div class="legend" id="legend"></div>
+				<h2>Time per stage, JS</h2>
+				<div class="legend stages"></div>
 			</div>
 			<div class="chart" id="stack"></div>
+		</div>
+		<div class="card">
+			<div class="chart-head">
+				<h2>Time per stage, C</h2>
+				<div class="legend stages"></div>
+			</div>
+			<div class="chart" id="c-stack"></div>
 		</div>
 	</section>
 
@@ -57,7 +66,7 @@
 						<th class="l">Date</th>
 						<th class="l">Commit</th>
 						<th class="l">Message</th>
-						<th>Total</th>
+						<th><i class="sw" style="background:var(--series-1)"></i>JS total</th>
 						<th><i class="sw" style="background:var(--series-1)"></i>Parse</th>
 						<th><i class="sw" style="background:var(--series-3)"></i>Check</th>
 						<th><i class="sw" style="background:var(--series-4)"></i>Transform</th>
@@ -66,6 +75,10 @@
 						<th>Out lines</th>
 						<th>bait.js size</th>
 						<th>Lines/s</th>
+						<th class="c-start"><i class="sw" style="background:var(--series-2)"></i>C total</th>
+						<th>C peak memory</th>
+						<th>bait.c size</th>
+						<th>C lines/s</th>
 					</tr>
 				</thead>
 				<tbody id="rows">
