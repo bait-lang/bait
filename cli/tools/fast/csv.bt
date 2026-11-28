@@ -43,6 +43,24 @@ fun (r Row) c_failed() bool {
 	return r.c_total < 0
 }
 
+// The C results in the fields of the JS results, so both can be displayed the same way
+fun (r Row) c_view() Row {
+	return Row{
+		hash = r.hash
+		date = r.date
+		subject = r.subject
+		total = r.c_total
+		parse = r.c_parse
+		check = r.c_check
+		transform = r.c_transform
+		gen = r.c_gen
+		max_rss_kb = r.c_max_rss_kb
+		out_lines = r.c_out_lines
+		out_bytes = r.c_out_bytes
+		src_lines = r.c_src_lines
+	}
+}
+
 // Values of NUM_COLS in the same order
 fun (r Row) nums() []i32 {
 	return [r.total, r.parse, r.depgraph, r.check, r.transform, r.gen, r.max_rss_kb, r.out_lines, r.out_bytes, r.src_lines, r.c_total, r.c_parse, r.c_check, r.c_transform, r.c_gen, r.c_max_rss_kb, r.c_out_lines, r.c_out_bytes, r.c_src_lines]

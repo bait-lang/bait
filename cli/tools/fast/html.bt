@@ -67,27 +67,33 @@ fun table_rows(rows []Row) string {
 			p = rows[prevs[i]]
 		}
 
-		sb.write('\t\t\t\t\t<tr data-hash="${r.hash}">${head}')
-		sb.write('<td class="total">${cell(fmt_ms(r.total), r.total, p.total, 'ms')}</td>')
-		sb.write('<td>${cell(fmt_ms(r.parse), r.parse, p.parse, 'ms')}</td>')
-		sb.write('<td>${cell(fmt_ms(r.check), r.check, p.check, 'ms')}</td>')
-		sb.write('<td>${cell(fmt_ms(r.transform), r.transform, p.transform, 'ms')}</td>')
-		sb.write('<td>${cell(fmt_ms(r.gen), r.gen, p.gen, 'ms')}</td>')
-		sb.write('<td>${cell(fmt_mb(r.max_rss_kb), r.max_rss_kb, p.max_rss_kb, 'mb')}</td>')
-		sb.write('<td>${fmt_int(r.out_lines)}</td>')
-		sb.write('<td>${cell(fmt_kb(r.out_bytes), r.out_bytes, p.out_bytes, 'kb')}</td>')
-		sb.write('<td>${lines_per_sec(r.src_lines, r.parse + r.check + r.transform + r.gen)}</td>')
-
 		// C columns compare to the previous commit with C results
 		mut cp := Row{}
 		if c_prevs[i] >= 0 {
 			cp = rows[c_prevs[i]]
 		}
-		sb.write('<td class="total c-start">${cell(fmt_ms(r.c_total), r.c_total, cp.c_total, 'ms')}</td>')
-		sb.write('<td>${cell(fmt_mb(r.c_max_rss_kb), r.c_max_rss_kb, cp.c_max_rss_kb, 'mb')}</td>')
-		sb.write('<td>${cell(fmt_kb(r.c_out_bytes), r.c_out_bytes, cp.c_out_bytes, 'kb')}</td>')
-		sb.write('<td>${lines_per_sec(r.c_src_lines, r.c_parse + r.c_check + r.c_transform + r.c_gen)}</td></tr>\n')
+
+		has_c := if r.c_failed() { '' } else { ' data-c' }
+		sb.write('\t\t\t\t\t<tr data-hash="${r.hash}"${has_c}>${head}')
+		sb.write(backend_cells(r, p, 'js'))
+		sb.write(backend_cells(r.c_view(), cp.c_view(), 'c'))
+		sb.write('</tr>\n')
 	}
+	return sb.str()
+}
+
+// Columns of one backend. The page shows those of one backend at a time
+fun backend_cells(r Row, p Row, cls string) string {
+	mut sb := strings.new_builder(1000)
+	sb.write('<td class="${cls} total">${cell(fmt_ms(r.total), r.total, p.total, 'ms')}</td>')
+	sb.write('<td class="${cls}">${cell(fmt_ms(r.parse), r.parse, p.parse, 'ms')}</td>')
+	sb.write('<td class="${cls}">${cell(fmt_ms(r.check), r.check, p.check, 'ms')}</td>')
+	sb.write('<td class="${cls}">${cell(fmt_ms(r.transform), r.transform, p.transform, 'ms')}</td>')
+	sb.write('<td class="${cls}">${cell(fmt_ms(r.gen), r.gen, p.gen, 'ms')}</td>')
+	sb.write('<td class="${cls}">${cell(fmt_mb(r.max_rss_kb), r.max_rss_kb, p.max_rss_kb, 'mb')}</td>')
+	sb.write('<td class="${cls}">${fmt_int(r.out_lines)}</td>')
+	sb.write('<td class="${cls}">${cell(fmt_kb(r.out_bytes), r.out_bytes, p.out_bytes, 'kb')}</td>')
+	sb.write('<td class="${cls}">${lines_per_sec(r.src_lines, r.parse + r.check + r.transform + r.gen)}</td>')
 	return sb.str()
 }
 

@@ -247,11 +247,19 @@ function drawStack(id, p) {
 	});
 }
 
-// --- range (table rows are rendered by bait fast) ---
+// --- range and backend (table rows are rendered by bait fast) ---
+const table = document.getElementById('commits');
 function filterRows() {
 	const inRange = new Set(shown.map(r => r.hash));
-	document.querySelectorAll('#rows tr').forEach(tr => { tr.hidden = !inRange.has(tr.dataset.hash); });
+	// Commits without C results are left out of the C table
+	const needC = table.dataset.backend === 'c';
+	document.querySelectorAll('#rows tr').forEach(tr => { tr.hidden = !inRange.has(tr.dataset.hash) || (needC && !('c' in tr.dataset)); });
 }
+document.querySelectorAll('#backend button').forEach(b => b.addEventListener('click', () => {
+	document.querySelectorAll('#backend button').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+	table.dataset.backend = b.dataset.b;
+	filterRows();
+}));
 document.querySelectorAll('#range button').forEach(b => b.addEventListener('click', () => {
 	document.querySelectorAll('#range button').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
 	shown = b.dataset.r === 'all' ? ok : recent;

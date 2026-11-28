@@ -58,27 +58,29 @@
 	<section class="card table-card">
 		<div class="table-head">
 			<h2>Commits</h2>
+			<div class="filters" id="backend" role="group" aria-label="Backend shown in the table">
+				<button type="button" data-b="js" aria-pressed="true">JS</button>
+				<button type="button" data-b="c" aria-pressed="false">C</button>
+			</div>
 		</div>
 		<div class="scroll">
-			<table>
+			<table id="commits" data-backend="js">
 				<thead>
 					<tr>
 						<th class="l">Date</th>
 						<th class="l">Commit</th>
 						<th class="l">Message</th>
-						<th><i class="sw" style="background:var(--series-1)"></i>JS total</th>
+						<th class="js"><i class="sw" style="background:var(--series-1)"></i>Total</th>
+						<th class="c"><i class="sw" style="background:var(--series-2)"></i>Total</th>
 						<th><i class="sw" style="background:var(--series-1)"></i>Parse</th>
 						<th><i class="sw" style="background:var(--series-3)"></i>Check</th>
 						<th><i class="sw" style="background:var(--series-4)"></i>Transform</th>
 						<th><i class="sw" style="background:var(--series-5)"></i>Gen</th>
 						<th>Peak memory</th>
 						<th>Out lines</th>
-						<th>bait.js size</th>
+						<th class="js">bait.js size</th>
+						<th class="c">bait.c size</th>
 						<th>Lines/s</th>
-						<th class="c-start"><i class="sw" style="background:var(--series-2)"></i>C total</th>
-						<th>C peak memory</th>
-						<th>bait.c size</th>
-						<th>C lines/s</th>
 					</tr>
 				</thead>
 				<tbody id="rows">
