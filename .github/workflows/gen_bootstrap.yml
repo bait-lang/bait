@@ -1,4 +1,4 @@
-name: Generate baitjs
+name: Generate bootstrap
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
       - 'lib/**'
 
 jobs:
-  gen-baitjs:
+  gen-bootstrap:
     if: github.repository == 'bait-lang/bait'
     runs-on: ubuntu-latest
     env:
@@ -18,13 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
-      - name: Build baitjs
+      - name: Bootstrap
         run: |
           ./make.sh --no-self
-      - name: Generate, commit and push latest bait.js
+      - name: Generate, commit and push latest bait.js and bait.c
         id: genCommitPush
         continue-on-error: true
-        run: ./bait run cli/tools/gen-baitjs.bt
-      - name: Attempt to generate baitjs on breaking change
+        run: ./bait run cli/tools/gen-bootstrap.bt
+      - name: Attempt to generate bootstrap on breaking change
         if: steps.genCommitPush.outcome == 'failure'
-        run: bun ~/.bait/baitjs/bait.js run cli/tools/gen-baitjs.bt
+        run: bun ~/.bait/bootstrap/bait.js run cli/tools/gen-bootstrap.bt

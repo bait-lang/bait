@@ -11,10 +11,10 @@ const GIT_MAIL := '131296262+tiabeast-bot@users.noreply.github.com'
 
 const MAIN_REPO_COMMIT_URL := 'https://github.com/bait-lang/bait/commit'
 
-// Exit if not in CI because gen-baitjs is only meant for use in GH Actions
+// Exit if not in CI because gen-bootstrap is only meant for use in GH Actions
 fun ci_or_exit() {
 	if os.getenv('CI') != 'true' {
-		eprintln('gen-baitjs is only meant to be run in CI.')
+		eprintln('gen-bootstrap is only meant to be run in CI.')
 		exit(1)
 	}
 }
@@ -29,31 +29,20 @@ fun main() {
 	errors += git_command('config --global user.name "${GIT_USER}"')
 	errors += git_command('config --global user.email "${GIT_MAIL}"')
 
-	baitjs_dir := os.join_path(os.home_dir(), ['.bait', 'baitjs'])
-	os.rmdir_all(baitjs_dir)
+	bootstrap_dir := os.join_path(os.home_dir(), ['.bait', 'bootstrap'])
+	os.rmdir_all(bootstrap_dir)
 
 	access_token := os.getenv('TIABEAST_BOT_TOKEN')
-	errors += git_command('clone --depth 1 https://${GIT_USER}:${access_token}@github.com/bait-lang/baitjs.git ${baitjs_dir}')
+	errors += git_command('clone --depth 1 https://${GIT_USER}:${access_token}@github.com/bait-lang/bootstrap.git ${bootstrap_dir}')
 
-	println('Building bait.js...')
-	res := os.exec('${exe.bait_cmd()} cli/bait.bt -o ${baitjs_dir}/bait.js')
-	if res.code != 0 {
-		eprintln('Failed to build bait.js.')
-		exit(1)
-	}
+	gen_compiler(bootstrap_dir, 'js', 'bait.js')
+	gen_compiler(bootstrap_dir, 'c', 'bait.c')
 
-	// Sanity check for a reasonable file size
-	lines := os.read_lines('bait.js')
-	if lines.length < 4000 {
-		eprintln('bait.js is too small. Something went wrong.')
-		exit(1)
-	}
-
-	// Stage changes in baitjs repo
-	errors += git_command('-C ${baitjs_dir} add .')
+	// Stage changes in bootstrap repo
+	errors += git_command('-C ${bootstrap_dir} add bait.js bait.c')
 
 	// Exit if there is nothing to commit
-	has_changes := git_command('-C ${baitjs_dir} diff-index --quiet HEAD')
+	has_changes := git_command('-C ${bootstrap_dir} diff-index --quiet HEAD')
 	if has_changes == 0 {
 		println('No changes to commit.')
 		exit(0)
@@ -66,19 +55,40 @@ fun main() {
 	short_hash := commit_hash.substr(0, 7)
 	original_msg := os.exec('git log -1 --oneline --pretty=%s HEAD').stdout.trim_space()
 
-	// Create commit in baitjs
+	// Create commit in bootstrap
 	println('Creating commit...')
-	os.chdir(baitjs_dir)
+	os.chdir(bootstrap_dir)
 	commit_msg := '[bait:${branch}] ${short_hash} - ${original_msg}'
 	errors += git_command('commit -m "${commit_msg}" -m "${MAIN_REPO_COMMIT_URL}/${commit_hash}"')
 
-	// Safety rebase and push to baitjs
-	println('Pushing to baitjs...')
+	// Safety rebase and push to bootstrap
+	println('Pushing to bootstrap...')
 	errors += git_command('pull --rebase')
 	errors += git_command('push')
 
 	// Exit with the number of errors
 	exit(errors)
+}
+
+// Compile the compiler with the given backend into `bootstrap_dir/file`.
+// Exits on failure, so a broken backend never gets pushed.
+fun gen_compiler(bootstrap_dir string, backend string, file string) {
+	println('Building ${file}...')
+	out := os.join_path(bootstrap_dir, [file])
+	res := os.exec('${exe.bait_cmd()} -b ${backend} cli/bait.bt -o ${out}')
+	if res.code != 0 {
+		eprintln('Failed to build ${file}:')
+		eprintln(res.stdout)
+		eprintln(res.stderr)
+		exit(1)
+	}
+
+	// Sanity check for a reasonable file size
+	lines := os.read_lines(out)
+	if lines.length < 4000 {
+		eprintln('${file} is too small. Something went wrong.')
+		exit(1)
+	}
 }
 
 fun git_command(cmd string) i32 {

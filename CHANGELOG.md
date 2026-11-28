@@ -88,6 +88,8 @@ All notable changes are documented in this file.
 ### CLI and Tooling
 - check-md: add `--backend` option
 - add tool `fast` to measure compiler self-compilation time across commits
+- rename `gen-baitjs` to `gen-bootstrap`: the `bait-lang/bootstrap` repo (formerly `baitjs`) now contains `bait.js` and `bait.c`
+- make: bootstrap from `~/.bait/bootstrap`
 
 ### Testing
 - respect `.c.bt` and `.js.bt` file extensions for test files

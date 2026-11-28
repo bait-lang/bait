@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-BAITJS_DIR="$HOME/.bait/baitjs"
+BOOTSTRAP_DIR="$HOME/.bait/bootstrap"
+OLD_BAITJS_DIR="$HOME/.bait/baitjs"
+BOOTSTRAP_URL="https://github.com/bait-lang/bootstrap"
 
 # Parse arguments
 IS_LOCAL=0
@@ -18,16 +20,22 @@ for i in "$@"; do
   esac
 done
 
-download_baitjs() {
-  # Pull or clone baitjs
-  if [ -f $BAITJS_DIR/bait.js ]; then
+download_bootstrap() {
+  # Migrate clone of the old baitjs repo
+  if [ ! -d "$BOOTSTRAP_DIR" ] && [ -d "$OLD_BAITJS_DIR" ]; then
+    mv "$OLD_BAITJS_DIR" "$BOOTSTRAP_DIR"
+    git -C "$BOOTSTRAP_DIR" remote set-url origin $BOOTSTRAP_URL
+  fi
+
+  # Pull or clone bootstrap
+  if [ -f $BOOTSTRAP_DIR/bait.js ]; then
     if [ $IS_LOCAL == 0 ]; then
-      git -C $BAITJS_DIR pull --quiet
+      git -C $BOOTSTRAP_DIR pull --quiet
     fi
   elif [ $IS_LOCAL == 0 ]; then
-    git clone --depth 1 https://github.com/bait-lang/baitjs $BAITJS_DIR
+    git clone --depth 1 $BOOTSTRAP_URL $BOOTSTRAP_DIR
   else
-    echo "baitjs not found locally. Run without \"--local\""
+    echo "bootstrap not found locally. Run without \"--local\""
     exit 1
   fi
 }
@@ -39,13 +47,13 @@ bootstrap() {
 
   # Just compile once (required for implementing breaking changes)
   if [ $NO_SELF == 1 ]; then
-    cp $BAITJS_DIR/bait.js . # Required to set correct value for $BAITDIR, etc.
+    cp $BOOTSTRAP_DIR/bait.js . # Required to set correct value for $BAITDIR, etc.
     bun bait.js cli/bait.bt -o bait.js
     return
   fi
 
   # Compile new bait.js and ensure self compilation is working
-  bun $BAITJS_DIR/bait.js cli/bait.bt -o bait1.js
+  bun $BOOTSTRAP_DIR/bait.js cli/bait.bt -o bait1.js
   bun bait1.js cli/bait.bt -o bait2.js
   bun bait2.js self -o bait.js
 }
@@ -82,7 +90,7 @@ cleanup() {
   rm -f bait1.js bait2.js
 }
 
-download_baitjs
+download_bootstrap
 bootstrap
 check_success true
 cleanup
