@@ -4,10 +4,10 @@ package main
 
 import os
 
-const CSV_HEADER := 'hash,date,total,parse,depgraph,check,transform,gen,max_rss_kb,out_lines,out_bytes,src_lines,subject'
+// Numeric columns in file order. The `c_` columns measure the native compiler built by the C backend
+const NUM_COLS := ['total', 'parse', 'depgraph', 'check', 'transform', 'gen', 'max_rss_kb', 'out_lines', 'out_bytes', 'src_lines', 'c_total', 'c_parse', 'c_check', 'c_transform', 'c_gen', 'c_max_rss_kb', 'c_out_lines', 'c_out_bytes', 'c_src_lines']
 
-// Number of columns before the subject
-const NR_FIXED_COLS := 12
+const CSV_HEADER := 'hash,date,' + NUM_COLS.join(',') + ',subject'
 
 // Measurement of a single commit. Missing values (e.g. a failed build) are -1
 struct Row {
@@ -23,6 +23,15 @@ struct Row {
 	mut out_lines i32 := -1
 	mut out_bytes i32 := -1
 	mut src_lines i32 := -1
+	mut c_total i32 := -1
+	mut c_parse i32 := -1
+	mut c_check i32 := -1
+	mut c_transform i32 := -1
+	mut c_gen i32 := -1
+	mut c_max_rss_kb i32 := -1
+	mut c_out_lines i32 := -1
+	mut c_out_bytes i32 := -1
+	mut c_src_lines i32 := -1
 	mut subject string
 }
 
@@ -30,12 +39,63 @@ fun (r Row) failed() bool {
 	return r.total < 0
 }
 
+fun (r Row) c_failed() bool {
+	return r.c_total < 0
+}
+
+// The C results in the fields of the JS results, so both can be displayed the same way
+fun (r Row) c_view() Row {
+	return Row{
+		hash = r.hash
+		date = r.date
+		subject = r.subject
+		total = r.c_total
+		parse = r.c_parse
+		check = r.c_check
+		transform = r.c_transform
+		gen = r.c_gen
+		max_rss_kb = r.c_max_rss_kb
+		out_lines = r.c_out_lines
+		out_bytes = r.c_out_bytes
+		src_lines = r.c_src_lines
+	}
+}
+
+// Values of NUM_COLS in the same order
+fun (r Row) nums() []i32 {
+	return [r.total, r.parse, r.depgraph, r.check, r.transform, r.gen, r.max_rss_kb, r.out_lines, r.out_bytes, r.src_lines, r.c_total, r.c_parse, r.c_check, r.c_transform, r.c_gen, r.c_max_rss_kb, r.c_out_lines, r.c_out_bytes, r.c_src_lines]
+}
+
+fun (mut r Row) set_num(col string, n i32) {
+	match col {
+		'total' { r.total = n }
+		'parse' { r.parse = n }
+		'depgraph' { r.depgraph = n }
+		'check' { r.check = n }
+		'transform' { r.transform = n }
+		'gen' { r.gen = n }
+		'max_rss_kb' { r.max_rss_kb = n }
+		'out_lines' { r.out_lines = n }
+		'out_bytes' { r.out_bytes = n }
+		'src_lines' { r.src_lines = n }
+		'c_total' { r.c_total = n }
+		'c_parse' { r.c_parse = n }
+		'c_check' { r.c_check = n }
+		'c_transform' { r.c_transform = n }
+		'c_gen' { r.c_gen = n }
+		'c_max_rss_kb' { r.c_max_rss_kb = n }
+		'c_out_lines' { r.c_out_lines = n }
+		'c_out_bytes' { r.c_out_bytes = n }
+		'c_src_lines' { r.c_src_lines = n }
+		else {}
+	}
+}
+
 // The subject is the only free-text field. It's always quoted and goes last,
 // so a malformed quote can't shift the numeric columns
 fun (r Row) csv() string {
-	nums := [r.total, r.parse, r.depgraph, r.check, r.transform, r.gen, r.max_rss_kb, r.out_lines, r.out_bytes, r.src_lines]
 	mut cols := [r.hash, r.date]
-	for n in nums {
+	for n in r.nums() {
 		cols.push(csv_num(n))
 	}
 	cols.push('"' + r.subject.replace('"', '""') + '"')
@@ -49,6 +109,8 @@ fun csv_num(n i32) string {
 	return n.str()
 }
 
+// Columns are looked up by the header, so files written by older versions
+// of this tool (with fewer columns) can still be read
 fun read_rows(path string) []Row {
 	mut rows := []Row
 	if not os.exists(path) {
@@ -58,9 +120,9 @@ fun read_rows(path string) []Row {
 	if lines.length == 0 {
 		return rows
 	}
-	// Files written before `out_bytes` was added have one column less
-	has_bytes := lines[0].split(',').contains('out_bytes')
-	nr_fixed := if has_bytes { NR_FIXED_COLS } else { NR_FIXED_COLS - 1 }
+	header := lines[0].split(',')
+	// Every column except the trailing subject
+	nr_fixed := header.length - 1
 	for i, line in lines {
 		if i == 0 or line.trim_space().length == 0 {
 			continue
@@ -69,35 +131,32 @@ fun read_rows(path string) []Row {
 			eprintln('${path}:${i + 1}: skipping malformed row')
 			continue
 		}
-		rows.push(parse_row(line, has_bytes))
+		rows.push(parse_row(line, header))
 	}
 	return rows
 }
 
-fun parse_row(line string, has_bytes bool) Row {
-	mut cols := line.split(',')
-	if not has_bytes {
-		cols.insert(10, '')
-	}
-	mut subject := cols.slice(NR_FIXED_COLS, cols.length).join(',')
+fun parse_row(line string, header []string) Row {
+	cols := line.split(',')
+	nr_fixed := header.length - 1
+	mut subject := cols.slice(nr_fixed, cols.length).join(',')
 	if subject.length >= 2 and subject.starts_with('"') and subject.ends_with('"') {
 		subject = subject.substr(1, subject.length - 1).replace('""', '"')
 	}
-	return Row{
-		hash = cols[0]
-		date = cols[1]
-		total = parse_num(cols[2])
-		parse = parse_num(cols[3])
-		depgraph = parse_num(cols[4])
-		check = parse_num(cols[5])
-		transform = parse_num(cols[6])
-		gen = parse_num(cols[7])
-		max_rss_kb = parse_num(cols[8])
-		out_lines = parse_num(cols[9])
-		out_bytes = parse_num(cols[10])
-		src_lines = parse_num(cols[11])
+	mut row := Row{
 		subject = subject
 	}
+	for i := 0; i < nr_fixed; i += 1 {
+		name := header[i]
+		if name == 'hash' {
+			row.hash = cols[i]
+		} else if name == 'date' {
+			row.date = cols[i]
+		} else {
+			row.set_num(name, parse_num(cols[i]))
+		}
+	}
+	return row
 }
 
 fun parse_num(s string) i32 {
