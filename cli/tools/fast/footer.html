@@ -24,6 +24,8 @@ const BACKENDS = [
 	['', 'JS', '--series-1'],
 	['c_', 'C', '--series-2'],
 ];
+// Key prefixes of backends toggled off in the line charts
+const hiddenBackends = new Set();
 const toMb = (kb) => kb == null ? null : Math.round(kb / 1024 * 10) / 10;
 
 const rows = DATA.map(([hash, date, subject, total, parse, check, transform, gen, memKb, outLines, outBytes, srcLines,
@@ -111,7 +113,7 @@ function tipHtml(r, stagesOf) {
 		}
 	}
 	for (const [p, name, v] of BACKENDS) {
-		if (stagesOf != null && stagesOf !== p) continue;
+		if (stagesOf != null ? stagesOf !== p : hiddenBackends.has(p)) continue;
 		if (r[p + 'total'] == null) continue;
 		const prev = prevOf(r, p);
 		h += `<div class="t-row t-total"><span><i style="background:var(${v})"></i>${name} total</span><span>${fmt(r[p + 'total'])} ms</span></div>`;
@@ -137,7 +139,11 @@ function drawLine(id, key, label) {
 	const W = host.clientWidth, H = 200, m = { t: 10, r: 8, b: 22, l: 44 };
 	const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': label }, host);
 	// One line per backend; commits without results for a backend leave a gap
-	const series = BACKENDS.filter(([p]) => shown.some(r => r[p + key] != null));
+	const series = BACKENDS.filter(([p]) => !hiddenBackends.has(p) && shown.some(r => r[p + key] != null));
+	if (!series.length) {
+		host.innerHTML = '<div class="empty">No backend selected</div>';
+		return;
+	}
 	const vals = series.flatMap(([p]) => shown.map(r => r[p + key]).filter(v => v != null));
 	let lo = Math.min(...vals), hi = Math.max(...vals);
 	const pad = Math.max((hi - lo) * 0.15, hi * 0.02);
@@ -268,7 +274,22 @@ document.querySelectorAll('#range button').forEach(b => b.addEventListener('clic
 }));
 
 const legend = (items) => items.map(([, l, v]) => `<span><i style="background:var(${v})"></i>${l}</span>`).join('');
-document.querySelectorAll('.legend.backends').forEach(e => { e.innerHTML = legend(BACKENDS); });
+// Backend legends toggle the backend's line in both line charts
+const backendLegend = () => BACKENDS.map(([p, l, v]) =>
+	`<button type="button" data-p="${p}" aria-pressed="${!hiddenBackends.has(p)}"><i style="background:var(${v})"></i>${l}</button>`).join('');
+function renderBackendLegends() {
+	document.querySelectorAll('.legend.backends').forEach(e => { e.innerHTML = backendLegend(); });
+}
+document.querySelectorAll('.legend.backends').forEach(e => e.addEventListener('click', (ev) => {
+	const b = ev.target.closest('button');
+	if (!b) return;
+	const p = b.dataset.p;
+	if (hiddenBackends.has(p)) hiddenBackends.delete(p); else hiddenBackends.add(p);
+	renderBackendLegends();
+	drawLine('line', 'total', 'Self-compile time [ms]');
+	drawLine('mem', 'memory', 'Peak memory [MB]');
+}));
+renderBackendLegends();
 document.querySelectorAll('.legend.stages').forEach(e => { e.innerHTML = legend(STAGES); });
 
 function drawAll() {
