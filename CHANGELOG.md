@@ -4,23 +4,34 @@ All notable changes are documented in this file.
 > Bait is currently in an Alpha State (`0.0.x`). Breaking changes may occur at any time.
 
 
-## 0.0.10 - unreleased
+## 0.0.10 - 2026-11-28
 ### Standard Library
 - builtin:
   - _[C]_ string methods
-    - Add `split()`, `split_lines()`, `trim_space()`, `is_upper()`
+    - Add `split()`, `split_lines()`, `trim_space()`, `is_upper()`, `is_capital()`, `toI32()`, `toF64()`
+    - Out-of-range index reads return `0` like in JS
     - Fix infinite loop of `index()` and `replace()` on multi-char patterns
   - _[C]_ []string method: `join()`
   - _[C]_ map methods: `contains()`, `values()`, `clear()`
+  - _[C]_ array methods: `delete()`, `insert()`, `concat()`, `reverse()`, `reverse_in_place()`, `filter()`
+  - _[C]_ Check array bounds and panic on `last()` of empty arrays
   - _[C]_ Fix array capacity growth
   - Fix `all_after()` and `all_after_last()` for multi-char patterns
 - os:
   - _[C]_ functions: `read_lines()`, `getenv()`, `setenv()`, `tmp_dir()`, `abs_path()`, `arch()`, `chdir()`, `cp()`, `executable()`, `file_mod_time()`, `getwd()`, `home_dir()`, `input()`, `is_root()`, `mkdir()`, `mkdir_all()`, `resource_abs_path()`, `rm()`, `rmdir()`, `rmdir_all()`, `symlink()`, `user_os()`
   - _[C]_ `platform()` detects the actual OS instead of always returning `linux`
   - _[C]_ Fix `ls()` and `exec()` accessing freed string
+  - _[C]_ `exec()` captures stderr separately and returns the actual exit code
+  - _[C]_ `system()` returns the exit code instead of the raw wait status
+  - _[C]_ Fix `write_file()` with `%` characters
+  - _[C]_ `read_file()` and `read_bytes()` read binary files, return null-terminated strings and panic if the file cannot be read
+  - `ls()` returns sorted results, so the order is filesystem independent
   - _[JS]_ Fix `file_mod_time()` crashing on fractional milliseconds
 - math:
   - add function `pow()`
+  - _[C]_ functions: `ceil()`, `log2()`
+- strconv: new package with `atoi()` and `atof()`
+- time: _[C]_ implement the package
 - strings: `Builder`
   - `str()` clears the builder after returning its string
   - _[C]_ `str()` returns null-terminated strings
@@ -65,6 +76,15 @@ All notable changes are documented in this file.
 - Fix zero values of array and map struct fields
 - Reading a missing map key inserts the default value, like in JS
 - Pass `mut` parameters by reference and make `for mut` values point to the element
+- Maps have reference semantics like in JS; copied structs get copies of their maps
+- Fix sum type `as` casts on `!` calls and panic on casts with a mismatching variant
+- Fix order of generated equality functions for nested arrays; compare pointers by address
+- Allocate `&Struct{}` on the heap
+- Fix pointer/value conversions in arguments, returns and array pushes
+- Generate `str()` functions for maps, aliases and results
+- Fix empty char literals and `\$` escapes in strings
+- C interop: use `struct foo` for C structs, allow lowercase C struct inits (`#C.pollfd{}`) and writing `mut` fields of C structs from any package
+- The compiler can compile itself with the C backend
 
 ### JS Backend
 - Fix wrapping of `i8`, `i16` and `i32`
@@ -75,6 +95,8 @@ All notable changes are documented in this file.
 - Emit `i64` and `u64` literals as BigInt
 - Structs have value semantics: they are copied on assignment, in struct, array and map inits, when pushed and when returned. Arrays and maps inside a copied struct are copied too
 - Fix references to numbers, strings, pointers and other non-object values (`&n`, `*ptr`)
+- Fix empty char literals
+- Ignore `#C.` code instead of generating it
 - Pass `mut` parameters by reference and make `for mut` values refer to the element, also for numbers, strings and reassigned structs
 
 ### Performance
@@ -84,15 +106,22 @@ All notable changes are documented in this file.
 - _[JS]_ Only create the default value of map reads if the key is missing
 - parser: Only create token positions when they are stored
 - checker: Reuse the result of failed scope and attribute lookups
+- ast: Store type symbols by reference, so lookups do not copy them
+- _[JS]_ Clone structs with a constructor that keeps the hidden class instead of `Object.assign`
+- _[JS]_ Use shared classes for references to array elements and struct fields
 
 ### CLI and Tooling
 - check-md: add `--backend` option
 - add tool `fast` to measure compiler self-compilation time across commits
 - rename `gen-baitjs` to `gen-bootstrap`: the `bait-lang/bootstrap` repo (formerly `baitjs`) now contains `bait.js` and `bait.c`
 - make: bootstrap from `~/.bait/bootstrap`
+- tools and test runners support running a natively compiled compiler
+- Default output name of `foo.c.bt` / `foo.js.bt` drops the backend suffix (`foo` / `foo.js`)
 
 ### Testing
 - respect `.c.bt` and `.js.bt` file extensions for test files
+- in/out tests run on the C backend
+- CI: run all `tests` and `lib` tests on the C backend
 
 ### Compiler internals
 - parser: support `pub type` and error instead of hanging on invalid `pub` statements
@@ -101,6 +130,9 @@ All notable changes are documented in this file.
 - gen: use `strings.Builder` instead of string concatenation
 - escape: fix `char()` mangling non-ASCII text
 - lexer: show the actual character in `unexpected char` errors
+- parser: scope generic params to their function or struct, so they no longer clash with types of the same name
+- checker: an `as` cast inside an expression no longer smartcasts the variable
+- checker: report the original alias in alias cycles
 
 ### Other Changes
 - CI: add linux-tcc job
