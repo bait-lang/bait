@@ -1,6 +1,8 @@
 @echo off
 
-set "BAITJS_DIR=%USERPROFILE%\.bait\baitjs"
+set "BOOTSTRAP_DIR=%USERPROFILE%\.bait\bootstrap"
+set "OLD_BAITJS_DIR=%USERPROFILE%\.bait\baitjs"
+set "BOOTSTRAP_URL=https://github.com/bait-lang/bootstrap"
 
 REM Parse arguments
 set "IS_LOCAL=0"
@@ -11,23 +13,29 @@ for %%i in (%*) do (
   )
 )
 
-:download_baitjs
-if exist "%BAITJS_DIR%\bait.js" (
+:download_bootstrap
+REM Migrate clone of the old baitjs repo
+if not exist "%BOOTSTRAP_DIR%" if exist "%OLD_BAITJS_DIR%" (
+  move "%OLD_BAITJS_DIR%" "%BOOTSTRAP_DIR%" >nul
+  git -C "%BOOTSTRAP_DIR%" remote set-url origin %BOOTSTRAP_URL%
+)
+
+if exist "%BOOTSTRAP_DIR%\bait.js" (
   if "%IS_LOCAL%"=="0" (
-    git -C "%BAITJS_DIR%" pull --quiet
+    git -C "%BOOTSTRAP_DIR%" pull --quiet
   )
 ) else (
   if "%IS_LOCAL%"=="0" (
-    git clone --depth 1 https://github.com/bait-lang/baitjs "%BAITJS_DIR%"
+    git clone --depth 1 %BOOTSTRAP_URL% "%BOOTSTRAP_DIR%"
   ) else (
-    echo baitjs not found locally. Run without "--local"
+    echo bootstrap not found locally. Run without "--local"
     exit /b 1
   )
 )
 
 :bootstrap
 REM Compile new bait.js and ensure self compilation is working
-bun "%BAITJS_DIR%\bait.js" cli\bait.bt -o bait1.js
+bun "%BOOTSTRAP_DIR%\bait.js" cli\bait.bt -o bait1.js
 bun bait1.js cli\bait.bt -o bait2.js
 bun bait2.js self -o bait.js
 

@@ -5,9 +5,9 @@ This document outlines some maintenance processes and tasks.
 The CI contains jobs to ensure bootstrapping works.
 In case it was broken anyways, e.g. due to a prematurely merged PR, follow these steps:
 
-1. `baitjs`: Revert the bad commit
+1. `bootstrap`: Revert the bad commit
    ```sh
-   cd ~/.bait/baitjs
+   cd ~/.bait/bootstrap
    git revert HEAD --no-edit
    git push
    ```
